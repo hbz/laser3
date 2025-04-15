@@ -259,7 +259,7 @@
         <br/>
         <br/>
         <g:if test="${editable && participants}">
-            <button name="deleteCostItems" value="true" type="submit"
+            <button name="deleteCostItems" value="true" type="submit" id="processSurveyCostItemsBulk_del_btn"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
                     data-confirm-term-how="delete"

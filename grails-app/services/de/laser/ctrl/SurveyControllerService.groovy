@@ -246,6 +246,8 @@ class SurveyControllerService {
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
+            result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
             result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
 
             result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
@@ -362,7 +364,22 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
+
+
 
             result.countCostItems = CostItem.executeQuery('select count(*) from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
 
@@ -450,7 +467,20 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : SurveyConfigPackage.executeQuery('select scp.pkg.id from SurveyConfigPackage scp where scp.surveyConfig = :surConfig order by scp.pkg.name', [surConfig: result.surveyConfig])[0]
 
@@ -574,6 +604,11 @@ class SurveyControllerService {
                 params.remove("removeUUID")
             }else if(params.selectedPkgs || params.pkgListToggler) {
 
+                if(params.processOption == 'unlinkPackages') {
+                    List uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                    params.uuids = uuidPkgs
+                }
+
                 result.putAll(packageService.getWekbPackages(params))
 
                 List selectedPkgs = []
@@ -618,6 +653,7 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         else {
 
+            result.propList = PropertyDefinition.findAllPublicAndPrivateVendorProp(contextService.getOrg())
 
             if(params.initial){
                 params.isMyX = ['wekb_exclusive']
@@ -816,74 +852,77 @@ class SurveyControllerService {
 
             if (selectedMembers) {
 
+
+                if (!(params.deleteCostItems == "true")) {
+                    RefdataValue billing_currency = null
+                    if (params.long('newCostCurrency')) //GBP,etc
+                    {
+                        billing_currency = RefdataValue.get(params.newCostCurrency)
+                    }
+                    SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
+                    Closure newDate = { param, format ->
+                        Date date
+                        try {
+                            date = dateFormat.parse(param)
+                        } catch (Exception e) {
+                            log.debug("Unable to parse date : ${param} in format ${format}")
+                        }
+                        date
+                    }
+
+                    Date startDate = newDate(params.newStartDate, dateFormat.toPattern())
+                    Date endDate = newDate(params.newEndDate, dateFormat.toPattern())
+
+                    RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
+                    RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
+                    RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
+
+                    String costDescription = params.newDescription ? params.newDescription.trim() : null
+                    String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
+
+                    Boolean billingSumRounding = params.newBillingSumRounding == 'on'
+                    Boolean finalCostRounding = params.newFinalCostRounding == 'on'
+
+                    NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
+                    def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
+
+
+                    def tax_key = null
+                    if (!params.newTaxRate.contains("null")) {
+                        String[] newTaxRate = params.newTaxRate.split("§")
+                        RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
+                        int taxRate = Integer.parseInt(newTaxRate[1])
+                        switch (taxType.id) {
+                            case RDStore.TAX_TYPE_TAXABLE.id:
+                                switch (taxRate) {
+                                    case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
+                                        break
+                                    case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                                        break
+                                    case 16: tax_key = CostItem.TAX_TYPES.TAXABLE_16
+                                        break
+                                    case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                                        break
+                                }
+                                break
+                            case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
+                                tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                                break
+                            case RDStore.TAX_TYPE_NOT_TAXABLE.id:
+                                tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                                break
+                            case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
+                                tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                                break
+                            case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
+                                tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
+                                break
+                        }
+
+                    }
+                }
+
                 RefdataValue selectedCostItemElement = params.bulkSelectedCostItemElementID ? (RefdataValue.get(Long.valueOf(params.bulkSelectedCostItemElementID))) : null
-
-                RefdataValue billing_currency = null
-                if (params.long('newCostCurrency')) //GBP,etc
-                {
-                    billing_currency = RefdataValue.get(params.newCostCurrency)
-                }
-                SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-                Closure newDate = { param, format ->
-                    Date date
-                    try {
-                        date = dateFormat.parse(param)
-                    } catch (Exception e) {
-                        log.debug("Unable to parse date : ${param} in format ${format}")
-                    }
-                    date
-                }
-
-                Date startDate = newDate(params.newStartDate, dateFormat.toPattern())
-                Date endDate = newDate(params.newEndDate, dateFormat.toPattern())
-
-                RefdataValue cost_item_status = (params.newCostItemStatus && params.newCostItemStatus != RDStore.GENERIC_NULL_VALUE.id.toString()) ? (RefdataValue.get(params.long('newCostItemStatus'))) : null
-                RefdataValue cost_item_element = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))) : null
-                RefdataValue cost_item_element_configuration = (params.ciec && params.ciec != 'null') ? RefdataValue.get(params.long('ciec')) : null
-
-                String costDescription = params.newDescription ? params.newDescription.trim() : null
-                String costTitle = params.newCostTitle ? params.newCostTitle.trim() : null
-
-                Boolean billingSumRounding = params.newBillingSumRounding == 'on'
-                Boolean finalCostRounding = params.newFinalCostRounding == 'on'
-
-                NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
-                def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
-
-
-                def tax_key = null
-                if (!params.newTaxRate.contains("null")) {
-                    String[] newTaxRate = params.newTaxRate.split("§")
-                    RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
-                    int taxRate = Integer.parseInt(newTaxRate[1])
-                    switch (taxType.id) {
-                        case RDStore.TAX_TYPE_TAXABLE.id:
-                            switch (taxRate) {
-                                case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
-                                    break
-                                case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
-                                    break
-                                case 16: tax_key = CostItem.TAX_TYPES.TAXABLE_16
-                                    break
-                                case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
-                                    break
-                            }
-                            break
-                        case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
-                            tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
-                            break
-                        case RDStore.TAX_TYPE_NOT_TAXABLE.id:
-                            tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
-                            break
-                        case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
-                            tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
-                            break
-                        case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
-                            tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
-                            break
-                    }
-
-                }
 
                 boolean costItemsForSurveyPackage = params.selectPkg == "true" ? true : false
 
@@ -4024,7 +4063,20 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4071,7 +4123,20 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4301,7 +4366,20 @@ class SurveyControllerService {
 
             result.participantsList = []
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 

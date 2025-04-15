@@ -1033,12 +1033,27 @@ class FilterService {
             base_qry += " and surveyOrg.finishDate is not null"
         }
 
+        if (params.discoverySystemsFrontend) {
+            base_qry += "and exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = surveyOrg.org.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
+        }
+        if (params.discoverySystemsIndex) {
+            base_qry += "and exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = surveyOrg.org.id and dsi.index.id in (:indices))"
+            queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
+        }
+
         if (params.filterPropDef) {
                 PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
-                base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
-                queryParams.put('propDef', pd)
-                if (params.filterProp) {
-                    if (pd.isRefdataValueType()) {
+
+                if (pd.descr == PropertyDefinition.ORG_PROP) {
+                    def psq = propertyService.evalFilterQuery(params, '', 'surveyOrg.org', queryParams)
+                    base_qry +=  psq.query.split(' and', 2)[1]
+                    queryParams << psq.queryParams
+                }else {
+                    base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
+                    queryParams.put('propDef', pd)
+                    if (params.filterProp) {
+                        if (pd.isRefdataValueType()) {
                             List<String> selFilterProps = params.filterProp.split(',')
                             List filterProp = []
                             selFilterProps.each { String sel ->
@@ -1056,49 +1071,45 @@ class FilterService {
                                 base_qry += " surResult.refValue in (:prop) "
                                 queryParams.put('prop', filterProp)
                             }
-                    }
-                    else if (pd.isLongType()) {
+                        } else if (pd.isLongType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.longValue = null "
                             } else {
                                 base_qry += " and surResult.longValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isStringType()) {
+                        } else if (pd.isStringType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.stringValue = null "
                             } else {
                                 base_qry += " and lower(surResult.stringValue) like lower(:prop) "
                                 queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                             }
-                    }
-                    else if (pd.isBigDecimalType()) {
+                        } else if (pd.isBigDecimalType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.decValue = null "
                             } else {
                                 base_qry += " and surResult.decValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isDateType()) {
+                        } else if (pd.isDateType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.dateValue = null "
                             } else {
                                 base_qry += " and surResult.dateValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isURLType()) {
+                        } else if (pd.isURLType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.urlValue = null "
                             } else {
                                 base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
+                        }
                     }
+                    base_qry += ')'
                 }
-                base_qry += ')'
         }
 
         if(params.chartFilter){
