@@ -1367,6 +1367,10 @@ class ControlledListService {
                 String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name end as name) from Provider p ${providerNameFilter} order by p.name"
                 results.addAll(Provider.executeQuery(qryString, qryParams))
             }
+            else if(params.adminLinking) {
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name) from Provider p where ${providerNameFilter} order by p.name"
+                results.addAll(Provider.executeQuery(qryString, qryParams))
+            }
             else {
                 if(providerNameFilter)
                     providerNameFilter = "and ${providerNameFilter}"
@@ -1404,7 +1408,7 @@ class ControlledListService {
             consortiumFilter = "and sub.instanceOf is null"
         */
         if (params.query) {
-            vendorNameFilter = "(genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
+            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
@@ -1418,22 +1422,26 @@ class ControlledListService {
             }
         }
         else if(params.tableView) {
-            String qryString = "select vendor from Vendor vendor where ${vendorNameFilter} order by vendor.sortname, vendor.name"
+            String qryString = "select v from Vendor v where ${vendorNameFilter} order by v.sortname, v.name"
             results.addAll(Vendor.executeQuery(qryString, qryParams))
         }
         else {
             if(params.displayWekbFlag) {
                 if(vendorNameFilter)
                     vendorNameFilter = "where ${vendorNameFilter}"
-                String qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name end as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname, vendor.name"
+                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value,case when v.gokbId != null then concat(v.name,' (we:kb)') else v.name end as name) from Vendor v ${vendorNameFilter} order by v.sortname, v.name"
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
+            }
+            else if(params.adminLinking) {
+                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name) from Vendor v where ${vendorNameFilter} order by v.name"
                 results.addAll(Vendor.executeQuery(qryString, qryParams))
             }
             else {
                 if(vendorNameFilter)
                     vendorNameFilter = "and ${vendorNameFilter}"
                 qryParams.context = institution
-                String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context ${vendorNameFilter} order by vendor.sortname asc",
+                String qryString1 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from PackageVendor pv join pv.vendor v, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.sortname asc",
+                qryString2 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from Vendor v where v.createdBy = :context ${vendorNameFilter} order by v.sortname asc",
                 qryString3 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from VendorRole vr join vr.vendor v where vr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.name"
                 results.addAll(Vendor.executeQuery(qryString1, qryParams))
                 results.addAll(Vendor.executeQuery(qryString2, qryParams))

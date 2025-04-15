@@ -254,10 +254,9 @@
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
-            <g:set var="existSubforOrg"
-                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedNonHiddenSubscribers()?.id?.contains(org?.id)}"/>
+            <g:set var="orgSub" value="${(surveyConfig.subscription || params.sub instanceof Subscription) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf = :sub',
+                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], sub: (params.sub instanceof Subscription ? params.sub : surveyConfig.subscription)])[0] : null}"/>
 
-            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
         <tr class="${org.isArchived() ? 'warning' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
@@ -683,7 +682,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfo')}">
                 <td>
-                    <g:if test="${existSubforOrg}">
+                    <g:if test="${orgSub}">
 
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
@@ -697,26 +696,27 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
-                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="center aligned" style="${(orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
-                        <g:if test="${existSubforOrg}">
+                    <g:if test="${orgSub}">
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
+                            <br/>
                         </g:if>
 
                         <g:link controller="subscription" action="show" id="${orgSub.id}">
-                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br />
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br/>
                             <g:formatDate formatName="default.date.format.notime" date="${orgSub.endDate}"/>
                         </g:link>
 
-                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"
+                                            overwriteEditable="${false}"/>
                     </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
                 <td>
-                    <g:if test="${existSubforOrg}">
+                    <g:if test="${orgSub}">
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
@@ -731,7 +731,7 @@
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                <g:if test="${existSubforOrg}">
+                <g:if test="${orgSub}">
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>

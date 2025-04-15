@@ -9,6 +9,7 @@ import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.FileCryptService
 import de.laser.GenericOIDService
+import de.laser.GlobalService
 import de.laser.HelpService
 import de.laser.IssueEntitlementService
 import de.laser.OrgSetting
@@ -392,8 +393,29 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupProviders() {
-        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params), queryParams = [contextOrg: contextService.getOrg()]
         model.providerList = result.results
+        String consortiumFilter = "", subscriptionFilter = ""
+        if(contextService.getOrg().isCustomerType_Consortium()) {
+            if(GlobalService.isset(params, 'subscription')) {
+                subscriptionFilter = "and oo.sub = :filterSub"
+                queryParams.filterSub = Subscription.get(params.subscription)
+            }
+            else
+                consortiumFilter = "and oo.sub.instanceOf = null"
+        }
+        List currProvLinks = Provider.executeQuery('select new map(pvr.provider.id as provId, pvr.isShared as isShared) from ProviderRole pvr, OrgRole oo where pvr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
+        if(currProvLinks) {
+            model.currProviders = currProvLinks.provId.toSet()
+            model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
+            if(GlobalService.isset(params, 'subscription'))
+                model.currProvSharedLinks = currProvLinks.collectEntries { row -> [row.provId, row.isShared] }
+            else model.currProvSharedLinks = [:]
+        }
+        else {
+            model.currProviders = []
+            model.currProvSharedLinks = [:]
+        }
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
@@ -406,8 +428,30 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupVendors() {
-        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params), queryParams = [contextOrg: contextService.getOrg()]
         model.vendorList = result.results
+        String consortiumFilter = "", subscriptionFilter = ""
+        if(contextService.getOrg().isCustomerType_Consortium()) {
+            if(GlobalService.isset(params, 'subscription')) {
+                subscriptionFilter = "and oo.sub = :filterSub"
+                queryParams.filterSub = Subscription.get(params.subscription)
+            }
+            else
+                consortiumFilter = "and oo.sub.instanceOf = null"
+        }
+        List currVenLinks = Vendor.executeQuery('select new map(vr.vendor.id as venId, vr.isShared as isShared) from VendorRole vr, OrgRole oo where vr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
+        if(currVenLinks) {
+            model.currVendors = currVenLinks.venId.toSet()
+            model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
+            if(GlobalService.isset(params, 'subscription'))
+                model.currVenSharedLinks = currVenLinks.collectEntries { row -> [row.venId, row.isShared] }
+            else model.currVenSharedLinks = [:]
+        }
+        else {
+            model.currVendors = []
+            model.currVenSharedLinks = [:]
+        }
+        model.currVenLinks = currVenLinks
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'

@@ -643,29 +643,32 @@ class AjaxController {
         Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
         if(params.containsKey('takeSelectedSubs')) {
             Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
-            vendors.each { Vendor vendorToLink ->
-                List<VendorRole> duplicateVendorRoles = VendorRole.findAllBySubscriptionInListAndVendor(subscriptions, vendorToLink)
-                if(duplicateVendorRoles)
-                    subscriptions.removeAll(duplicateVendorRoles.subscription)
-                subscriptions.each { Subscription subToLink ->
-                    VendorRole new_link = new VendorRole(vendor: vendorToLink, subscription: subToLink)
+            if(subscriptions) {
+                vendors.each { Vendor vendorToLink ->
+                    List<VendorRole> duplicateVendorRoles = VendorRole.findAllBySubscriptionInListAndVendor(subscriptions, vendorToLink)
+                    if(duplicateVendorRoles)
+                        subscriptions.removeAll(duplicateVendorRoles.subscription)
+                    subscriptions.each { Subscription subToLink ->
+                        VendorRole new_link = new VendorRole(vendor: vendorToLink, subscription: subToLink)
 
-                    if (new_link.save()) {
-                        if (subToLink.checkSharePreconditions(new_link)) {
-                            new_link.isShared = true
-                            new_link.save()
+                        if (new_link.save()) {
+                            if (subToLink.checkSharePreconditions(new_link)) {
+                                new_link.isShared = true
+                                new_link.save()
 
-                            subToLink.updateShare(new_link)
-                        }
-                    } else {
-                        log.error("Problem saving new vendor link ..")
-                        new_link.errors.each { e ->
-                            log.error( e.toString() )
+                                subToLink.updateShare(new_link)
+                            }
+                        } else {
+                            log.error("Problem saving new vendor link ..")
+                            new_link.errors.each { e ->
+                                log.error( e.toString() )
+                            }
                         }
                     }
                 }
+                managementService.clearSubscriptionCache(params)
             }
-            managementService.clearSubscriptionCache(params)
+            else flash.error = message(code: 'subscriptionsManagement.noSelectedSubscriptions')
         }
         else if(owner) {
 
@@ -736,30 +739,33 @@ class AjaxController {
         Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
         if(params.containsKey('takeSelectedSubs')) {
             Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
-            providers.each { Provider providerToLink ->
-                List<ProviderRole> duplicateProviderRoles = ProviderRole.findAllBySubscriptionInListAndProvider(subscriptions, providerToLink)
-                if(duplicateProviderRoles)
-                    subscriptions.removeAll(duplicateProviderRoles.subscription)
-                subscriptions.each { Subscription subToLink ->
-                    ProviderRole new_link = new ProviderRole(provider: providerToLink, subscription: subToLink)
+            if(subscriptions) {
+                providers.each { Provider providerToLink ->
+                    List<ProviderRole> duplicateProviderRoles = ProviderRole.findAllBySubscriptionInListAndProvider(subscriptions, providerToLink)
+                    if(duplicateProviderRoles)
+                        subscriptions.removeAll(duplicateProviderRoles.subscription)
+                    subscriptions.each { Subscription subToLink ->
+                        ProviderRole new_link = new ProviderRole(provider: providerToLink, subscription: subToLink)
 
-                    if (new_link.save()) {
-                        // log.debug("Org link added")
-                        if (subToLink.checkSharePreconditions(new_link)) {
-                            new_link.isShared = true
-                            new_link.save()
+                        if (new_link.save()) {
+                            // log.debug("Org link added")
+                            if (subToLink.checkSharePreconditions(new_link)) {
+                                new_link.isShared = true
+                                new_link.save()
 
-                            subToLink.updateShare(new_link)
-                        }
-                    } else {
-                        log.error("Problem saving new provider link ..")
-                        new_link.errors.each { e ->
-                            log.error( e.toString() )
+                                subToLink.updateShare(new_link)
+                            }
+                        } else {
+                            log.error("Problem saving new provider link ..")
+                            new_link.errors.each { e ->
+                                log.error( e.toString() )
+                            }
                         }
                     }
                 }
+                managementService.clearSubscriptionCache(params)
             }
-            managementService.clearSubscriptionCache(params)
+            else flash.error = message(code: 'subscriptionsManagement.noSelectedSubscriptions')
         }
         else if(owner) {
             providers.each{ Provider providerToLink ->
@@ -840,6 +846,8 @@ class AjaxController {
             }
         }
         managementService.clearSubscriptionCache(params)
+        if(!subscriptions)
+            flash.error = message(code: 'subscriptionsManagement.noSelectedSubscriptions')
         if(sharedProviderRoles > 0)
             flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedProviderRoles])
         redirect(url: request.getHeader('referer'))
@@ -866,6 +874,8 @@ class AjaxController {
             }
         }
         managementService.clearSubscriptionCache(params)
+        if(!subscriptions)
+            flash.error = message(code: 'subscriptionsManagement.noSelectedSubscriptions')
         if(sharedVendorRoles > 0)
             flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedVendorRoles])
         redirect(url: request.getHeader('referer'))

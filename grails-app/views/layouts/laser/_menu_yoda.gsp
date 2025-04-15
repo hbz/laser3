@@ -188,7 +188,6 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="freezeSubscriptionHoldings">${message(code:'menu.admin.freezeSubscriptionHoldings')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</ui:link>
-%{--                <ui:link addItemAttributes="true" controller="yoda" action="gdc_docContextTargetOrg">GDC: Fix DocContext.targetOrg</ui:link> // ERMS-6460--}%
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</ui:link>
                 <ui:link addItemAttributes="true" class="item role="menuitem" js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"

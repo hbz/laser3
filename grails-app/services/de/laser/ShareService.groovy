@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.interfaces.ShareSupport
+import de.laser.storage.RDStore
 import de.laser.wekb.Package
 import de.laser.wekb.ProviderRole
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -38,6 +39,10 @@ class ShareService {
                 sharedFrom:     share,
                 isShared:       false
         )
+        if (clonedShare.license && clonedShare.license.getAllLicensee().size() == 1)
+            clonedShare.targetOrg = clonedShare.license.getLicensee()
+        else if(clonedShare.subscription)
+            clonedShare.targetOrg = clonedShare.subscription.getSubscriber()
         if (clonedShare.save()) {
             if(target instanceof Subscription) {
                 //damn that three-tier inheritance level ... check if there are departments for a consortial subscription!!!! Show David!!!
@@ -47,6 +52,7 @@ class ShareService {
                             owner:          share.owner ,
                             subscription:   d,
                             sharedFrom:     share,
+                            targetOrg:      d.getSubscriber(),
                             isShared:       false
                     )
                     clonedDescendantShare.save()

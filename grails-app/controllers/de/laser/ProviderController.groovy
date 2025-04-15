@@ -22,6 +22,7 @@ import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderLink
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorLink
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -261,6 +262,7 @@ class ProviderController {
             result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
             result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
+            result.links = ProviderLink.executeQuery('select pl from ProviderLink pl where pl.from = :provider or pl.to = :provider', [provider: provider])
             result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]
             result.currentLicensesCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: contextService.getOrg()])[0]
             result.subLinks = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: contextService.getOrg()])[0]
@@ -341,7 +343,7 @@ class ProviderController {
     })
     def link() {
         linksGenerationService.linkProviderVendor(params, ProviderLink.class.name)
-        redirect action: 'show', id: params.context
+        redirect action: 'show', id: params.context.split(':')[1]
     }
 
     /**

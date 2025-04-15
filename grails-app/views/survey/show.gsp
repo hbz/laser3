@@ -141,7 +141,11 @@
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.isMandatory')}</dt>
                             <dd>
-                                ${surveyInfo.isMandatory ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
+                                <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id] && !surveyInfo.isSubscriptionSurvey}">
+                                    <ui:xEditableBoolean owner="${surveyInfo}" field="isMandatory"/>
+                                </g:if><g:else>
+                                    <ui:xEditableBoolean owner="${surveyInfo}" field="isMandatory" overwriteEditable="false"/>
+                                </g:else>
                             </dd>
 
                         </dl>
@@ -215,76 +219,37 @@
 
                             </dl>
 
-                            <dl>
-                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.label')}</dt>
-                                <dd>
-                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
-                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey"/>
-                                    </g:if><g:else>
-                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey" overwriteEditable="false"/>
-                                    </g:else>
-
-                                </dd>
-                            </dl>
-
                         </g:if>
 
                     </div>
                 </div>
             </div>
-            <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">
-                <g:set var="finish"
-                       value="${SurveyOrg.findAllByFinishDateIsNotNullAndSurveyConfig(surveyConfig).size()}"/>
-                <g:set var="total"
-                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
-                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-                    <div class="ui card">
+            <g:set var="finish"
+                   value="${SurveyOrg.countBySurveyConfigAndFinishDateIsNotNull(surveyConfig)}"/>
+            <g:set var="total"
+                   value="${SurveyOrg.countBySurveyConfig(surveyConfig)}"/>
 
-                        <div class="content">
-                            <div class="ui indicating progress" id="finishProcess" data-percent="${finishProcess}">
-                                <div class="bar">
-                                </div>
+            <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+            <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
+                <div class="ui card">
 
-                                <div class="label"
-                                     style="background-color: transparent"><g:formatNumber number="${finishProcess}"
-                                                                                           type="number"
-                                                                                           maxFractionDigits="2"
-                                                                                           minFractionDigits="2"/>% <g:message
-                                        code="surveyInfo.finished"/></div>
+                    <div class="content">
+                        <div class="ui indicating progress" id="finishProcess2" data-percent="${finishProcess}">
+                            <div class="bar">
                             </div>
+
+                            <div class="label"
+                                 style="background-color: transparent"><g:formatNumber number="${finishProcess}"
+                                                                                       type="number"
+                                                                                       maxFractionDigits="2"
+                                                                                       minFractionDigits="2"/>% <g:message
+                                    code="surveyInfo.finished"/></div>
                         </div>
                     </div>
-                </g:if>
+                </div>
             </g:if>
-            <g:else>
-                <g:set var="finish"
-                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
-                <g:set var="total"
-                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
-                <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
-                <g:if test="${finishProcess > 0 || surveyInfo.status?.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-                    <div class="ui card">
-
-                        <div class="content">
-                            <div class="ui indicating progress" id="finishProcess2" data-percent="${finishProcess}">
-                                <div class="bar">
-                                </div>
-
-                                <div class="label"
-                                     style="background-color: transparent"><g:formatNumber number="${finishProcess}"
-                                                                                           type="number"
-                                                                                           maxFractionDigits="2"
-                                                                                           minFractionDigits="2"/>% <g:message
-                                        code="surveyInfo.finished"/></div>
-                            </div>
-                        </div>
-                    </div>
-                </g:if>
-
-            </g:else>
 
             <br/>
             <g:if test="${surveyConfig}">

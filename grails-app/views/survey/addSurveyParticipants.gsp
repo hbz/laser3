@@ -25,11 +25,6 @@
 
 <ui:objectStatus object="${surveyInfo}" />
 
-<g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyParticipants"
-        params="${[id: params.id, surveyConfigID: surveyConfig.id]}"><g:message code="default.button.back"/></g:link>
-<br>
-<br>
-
 <ui:messages data="${flash}"/>
 
 <br />
@@ -42,7 +37,7 @@
                         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                     <laser:render template="/templates/filter/orgFilter"
                                   model="[
-                                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus', surveyConfig.subscription ? 'hasSubscription, subRunTimeMultiYear' : '']],
+                                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['hasSubscription', 'subRunTimeMultiYear'], ['subscriptionAdjustDropdown']],
                                           tmplConfigFormFilter: true
                                   ]"/>
                 </g:form>
@@ -65,7 +60,7 @@
                                   model="[orgList          : consortiaMembers,
                                           tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                                           tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
-                                          tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription ? 'surveySubInfo' : '')]
+                                          tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.sub ? 'surveySubInfo' : '')]
                                   ]"/>
 
                     <br/>
