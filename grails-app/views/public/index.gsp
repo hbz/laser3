@@ -55,7 +55,7 @@
                                                 code="springSecurity.login.username.label"/>:</label>
 
                                             <div class="ui left icon input">
-                                                <i class="user icon"></i>
+                                                <i class="${Icon.ATTR.TASK_CREATOR}"></i>
                                                 <input type="text" class="text_"
                                                        name="${SpringSecurityUtils.securityConfig.apf.usernameParameter}"
                                                        id="username"/>
@@ -67,7 +67,7 @@
                                                 code="springSecurity.login.password.label"/>:</label>
 
                                             <div class="ui left icon input">
-                                                <i class="lock icon"></i>
+                                                <i class="${Icon.ATTR.DOCUMENT_CONFIDENTIALITY}"></i>
                                                 <input type="password" class="text_"
                                                        name="${SpringSecurityUtils.securityConfig.apf.passwordParameter}"
                                                        id="password"/>
@@ -108,7 +108,7 @@
                                                     code="menu.user.forgottenPassword.username"/>:</label>
 
                                                 <div class="ui left icon input">
-                                                    <i class="user icon"></i>
+                                                    <i class="${Icon.ATTR.TASK_CREATOR}"></i>
                                                     <input type="text" class="text_" name="forgotten_username"
                                                            id="forgotten_username"/>
                                                 </div>
@@ -125,7 +125,7 @@
                                                     code="menu.user.forgottenUsername.email"/>:</label>
 
                                                 <div class="ui left icon input">
-                                                    <i class="user icon"></i>
+                                                    <i class="envelope icon"></i>
                                                     <input type="text" class="text_" name="forgotten_username_mail"
                                                            id="forgotten_username_mail"/>
                                                 </div>
