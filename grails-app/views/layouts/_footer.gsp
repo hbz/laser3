@@ -152,16 +152,12 @@ main {
     display: flex!important;
     height: 100vh;
 }
-.la-login-left,
-.la-login-right{
 
-}
 img.la-hero-image {
     max-height: 100%;
     min-width: 100%;
     object-fit: cover;
     vertical-align: bottom;
-    border-radius: 1vmin;
 }
 .pushable>.pusher {
     overflow-y: visible!important;

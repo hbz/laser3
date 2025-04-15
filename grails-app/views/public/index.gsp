@@ -31,7 +31,7 @@
             <div class="ui stackable centered grid container la-login middle aligned">
                 <div class="row">
                     <div class="column">
-                        <div class="ui stackable two column grid" style="border: 2px solid #755061;">
+                        <div class="ui stackable two column grid" style="border: 1px solid #755061;">
                             <div class="column" style="padding:0;">
                                 <g:img class="ui large bordered rounded image la-hero-image" dir="images"
                                        file="landingpage/hero.png"/>
@@ -43,12 +43,9 @@
                                         Login bei LAS:eR
                                     </div>
                                 </h1>
-
                                 <div id="login">
                                     <div class="inner">
                                         <ui:messages data="${flash}"/>
-
-
                                         <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form"
                                               autocomplete="off" style="display:block !important;">
                                             <div class="field">
