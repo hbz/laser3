@@ -59,6 +59,8 @@
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
     Einträge mit TARGET_ORG = docContext -> doc -> owner überflüssig?
+
+    Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt <<< gefixt
 </pre>
 
 <p class="ui header small">DocContext @ LICENSE</p>
