@@ -1047,7 +1047,7 @@ class FilterService {
 
                 if (pd.descr == PropertyDefinition.ORG_PROP) {
                     def psq = propertyService.evalFilterQuery(params, '', 'surveyOrg.org', queryParams)
-                    base_qry +=  psq.query.split(' and', 2)[1]
+                    base_qry += ' and ' + psq.query.split(' and', 2)[1]
                     queryParams << psq.queryParams
                 }else {
                     base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
