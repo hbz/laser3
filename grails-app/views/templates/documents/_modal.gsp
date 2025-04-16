@@ -138,7 +138,7 @@
                 if(docctx) {
                     value = docctx.shareConf?.id
                 }
-                Set<RefdataValue> availableConfigs = []
+                List<RefdataValue> availableConfigs = []
                 if(controllerName == 'organisation') {
                     availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
                 }

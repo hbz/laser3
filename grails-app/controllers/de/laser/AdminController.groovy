@@ -517,6 +517,11 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def simpleShareConfCheck() {
+        log.debug('simpleShareConfCheck')
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def simpleDocsCheck() {
         log.debug('simpleDocsCheck')
         String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK

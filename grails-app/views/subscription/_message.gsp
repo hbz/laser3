@@ -9,7 +9,9 @@
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
         <g:if test="${subscription.getSubscriber()}">
-            <span class="ui label"><g:link controller="organisation" action="show" id="${subscription.getSubscriber().id}">${subscription.getSubscriber().getDesignation()}</g:link></span>.
+            <span class="ui label">
+                <ui:customerTypeIcon org="${subscription.getSubscriber()}" /><g:link controller="organisation" action="show" id="${subscription.getSubscriber().id}">${subscription.getSubscriber().getDesignation()}</g:link>
+            </span>.
         </g:if>
     </div>
     <p>
