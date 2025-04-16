@@ -1550,7 +1550,7 @@ class AjaxHtmlController {
             case Subscription.class.simpleName:
                 Subscription subscription = Subscription.get(params.id)
                 result.editable = subscription.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
                 }
@@ -1565,7 +1565,7 @@ class AjaxHtmlController {
             case License.class.simpleName:
                 License license = License.get(params.id)
                 result.editable = license.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.LIC_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.LIC_PROP)
                 }
