@@ -77,6 +77,7 @@
                 <div class="row">
 
                     <div class="eight wide column la-login-left">
+                        <g:link controller="login" action="auth">LOGIN</g:link>
 %{--                        <g:img  class="ui large bordered rounded image la-hero-image" dir="images" file="landingpage/hero.png" />--}%
                     </div>
                     <div class="eight wide column la-login-right">

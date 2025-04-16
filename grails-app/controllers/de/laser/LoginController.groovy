@@ -1,19 +1,15 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.storage.BeanStore
 import de.laser.system.SystemEvent
-import de.laser.utils.CodeUtils
 import de.laser.utils.PasswordUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.core.GrailsApplication
-import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.mapping.UrlMappingInfo
-import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -44,7 +40,7 @@ class LoginController {
             redirect( uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl )
         }
         else {
-            redirect( action: 'auth', params: params )
+            redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl, params: params )
         }
     }
 
@@ -67,7 +63,7 @@ class LoginController {
         if (savedRequest) {
             log.debug '+ Saved original request ..... ' + savedRequest.getRequestURL()
 
-            boolean fuzzyCheck = _fuzzyCheck(savedRequest)
+            boolean fuzzyCheck = SwissKnife.fuzzyCheck(savedRequest)
             if (!fuzzyCheck) {
                 String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
                 log.warn '+ Login failed; invalid url; noted in system events ..... ' + request.getRemoteAddr() + ' - ' + url
@@ -144,14 +140,14 @@ class LoginController {
         }
         else {
             flash.error = msg
-            redirect( action: 'auth', params: params )
+            redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl, params: params )
         }
     }
 
     /**
      * The redirect action for Ajax requests.
      */
-    def authAjax = {
+    def ajaxAuth = {
         response.setHeader( 'Location', SpringSecurityUtils.securityConfig.auth.ajaxLoginFormUrl )
         response.sendError( HttpStatus.SC_UNAUTHORIZED )
 
@@ -192,7 +188,7 @@ class LoginController {
             }
             else flash.error = g.message(code:'menu.user.forgottenPassword.userError') as String
         }
-        redirect( action: 'auth' )
+        redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl )
     }
 
     /**
@@ -213,38 +209,6 @@ class LoginController {
             }
             else flash.error = g.message(code:'menu.user.forgottenUsername.userError') as String
         }
-        redirect( action: 'auth' )
-    }
-
-    /**
-     * Checks if the last requested page before a login warning aims to a valid page
-     * @param savedRequest the request to check
-     * @return true if the saved request call was valid, false otherwise
-     */
-    private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {
-
-        if (!savedRequest) {
-            return true
-        }
-        boolean valid = false
-
-        UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        UrlMappingInfo[] matchedMappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
-
-        if (matchedMappingInfo.length > 0) {
-            UrlMappingInfo mappingInfo = matchedMappingInfo.first()
-            GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
-                    CodeUtils.getAllControllerArtefacts().find {
-                        it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
-                    }
-
-            if (controller && controller.name != 'StatusCode') {
-                boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
-                if (match) {
-                    valid = true
-                }
-            }
-        }
-        valid
+        redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl )
     }
 }

@@ -393,7 +393,7 @@ class PublicController {
     @Secured(['ROLE_USER'])
     def releases() {
         Map<String, Object> result = [
-                history : ['3.2', '3.3', '3.4'] // todo
+                history : ['3.2', '3.3', '3.4', '3.5'] // todo
         ]
 
         String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
