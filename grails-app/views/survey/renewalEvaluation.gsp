@@ -33,9 +33,9 @@
 
 <br />
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'survey.notStarted ')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -203,9 +203,6 @@
                 </div>
             </div>
     </div>
-
-
-    <ui:greySegment>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
@@ -391,7 +388,6 @@
 
         </div>
 
-    </ui:greySegment>
 
     <g:if test="${editable}">
         <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"

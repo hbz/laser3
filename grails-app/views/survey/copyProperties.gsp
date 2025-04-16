@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.finance.CostItem; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" />
 
 <ui:breadcrumbs>
@@ -28,9 +28,9 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'survey.notStarted ')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -111,6 +111,58 @@
     </div>
 </div>--}%
 
+    <g:if test="${params.tab == 'customProperties' && memberProperties}">
+        <div class="ui segment">
+            <h3>${message(code: 'subscription.properties.consortium')}</h3>
+
+                    <div id="member_props_div">
+                        <g:if test="${subscription}">
+                            <g:set var="memberSubs" value="${Subscription.executeQuery('select s from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])}"/>
+                        </g:if>
+                        <table class="ui compact la-js-responsive-table la-table-inCard table">
+                            <tbody>
+                            <g:each in="${memberProperties}" var="propType">
+                                <tr>
+                                    <td>
+                                            <g:link controller="survey" action="$actionName"
+                                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: propType.id]}">
+                                                <g:if test="${propType.getI10n('expl') != null && !propType.getI10n('expl').contains(' °')}">
+                                                    ${propType.getI10n('name')}
+                                                    <g:if test="${propType.getI10n('expl')}">
+                                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${propType.getI10n('expl')}">
+                                                            <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                        </span>
+                                                    </g:if>
+                                                </g:if>
+                                                <g:else>
+                                                    ${propType.getI10n('name')}
+                                                </g:else>
+                                                <g:if test="${propType.mandatory}">
+                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                        <i class="${Icon.PROP.MANDATORY}"></i>
+                                                    </span>
+                                                </g:if>
+                                                <g:if test="${propType.multipleOccurrence}">
+                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                        <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                    </span>
+                                                </g:if>
+                                            </g:link>
+                                    </td>
+                                    <td class="x">
+                                        <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia2')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+                                        <g:if test="${memberSubs}">
+                                            (<span data-content="${message(code:'property.notInherited.info.propertyCount')}"><i class="icon sticky note grey"></i></span> ${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextService.getOrg(), type: propType]).size() ?: 0} / <span data-content="${message(code:'property.notInherited.info.membersCount')}"><i class="${Icon.SUBSCRIPTION} grey"></i></span> ${memberSubs.size() ?: 0})
+                                        </g:if>
+                                    </td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+    </g:if>
+
     <g:if test="${properties}">
         <div class="ui segment">
             <h3>
@@ -166,6 +218,15 @@
         </div>
     </g:if>
 
+    <g:if test="${params.tab == 'customProperties'}">
+        <g:if test="${memberProperties}">
+            <g:set var="selectableProperties" value="${properties + memberProperties}"/>
+        </g:if>
+        <g:else>
+            <g:set var="selectableProperties" value="${properties}"/>
+        </g:else>
+    </g:if>
+
 
     <ui:greySegment>
         <g:if test="${properties}">
@@ -214,7 +275,7 @@
                             <g:form action="copyProperties" method="post"
                                     params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
                                 <ui:select name="selectedProperty"
-                                              from="${properties.sort { it.getI10n('name') }}"
+                                              from="${selectableProperties.sort { it.getI10n('name') }}"
                                               optionKey="id"
                                               optionValue="name"
                                               value="${selectedProperty}"
