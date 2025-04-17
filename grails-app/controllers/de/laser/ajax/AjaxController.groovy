@@ -446,7 +446,7 @@ class AjaxController {
           Map<String, Object> filterParams = [:]
           if(params.filterParams){
               JSON.parse(params.filterParams).each {
-                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers']){
+                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers', 'hasPerpetualAccess']){
                       if(it.value != '[]') {
                           filterParams[it.key] = []
                           it.value = it.value.replace('[','').replace(']','')
@@ -489,13 +489,7 @@ class AjaxController {
                   tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
               }
               switch (params.tab) {
-                  case 'allTipps': tippIDs.each { Long tippID ->
-                      if(newChecked.containsKey(tippID.toString()))
-                          newChecked.remove(tippID.toString())
-                      else newChecked.put(tippID.toString(), 'checked')
-                  }
-                      break
-                  case 'selectableTipps':
+                  case ['allTipps', 'selectableTipps']:
                       Set<Subscription> subscriptions = []
                       if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                           subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
@@ -504,17 +498,16 @@ class AjaxController {
                           subscriptions << result.subscription
                       //}
                       if(subscriptions) {
-                          Set<Long> sourceTIPPs = []
-                          List rows
-                          //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) - does not make sense for bulkcheck???
+                          Set rows
                           if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
+                              rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                           }
                           else {
-                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                              rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                           }
-                          sourceTIPPs.addAll(rows["tipp_id"])
-                          tippIDs = tippIDs.minus(sourceTIPPs)
+                          rows.collate(65000).each { subSet ->
+                              tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
+                          }
                       }
                       tippIDs.each { Long tippID ->
                           if(newChecked.containsKey(tippID.toString()))

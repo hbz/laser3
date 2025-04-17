@@ -1350,8 +1350,8 @@ class CopyElementsService {
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
 
-            if(!(sourceProp.type.id in todoProperties)) {
-                boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+            if(!(sourceProp.type.id in todoProperties) || sourceProp.type.multipleOccurrence) {
+                boolean isAddNewProp = sourceProp.type.multipleOccurrence
                 if ((!targetProp) || isAddNewProp) {
                     targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
                     targetProp = sourceProp.copyInto(targetProp)

@@ -34,6 +34,8 @@ import de.laser.OrgRole
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.remote.Wekb
+import de.laser.survey.SurveyPersonResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.CodeUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
@@ -846,10 +848,16 @@ class AjaxHtmlController {
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextService.getOrg(), surveyConfig)
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        result.surveyInfo = surveyInfo
+        result.surveyConfig = surveyConfig
+        result.noParticipation = noParticipation
+        result.surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+
         boolean allResultHaveValue = true
         List<String> notProcessedMandatoryProperties = []
         //see ERMS-5815
-        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+
         if(!noParticipation) {
             surveyResults.each { SurveyResult surre ->
                 SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
@@ -860,19 +868,34 @@ class AjaxHtmlController {
             }
         }
 
-        result.surveyInfo = surveyInfo
-        result.surveyConfig = surveyConfig
-        result.noParticipation = noParticipation
-        result.surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+        if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+            result.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+        }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
+            result.error = g.message(code: 'surveyResult.finish.surveyContact')
+        }
+        else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+            if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
+                boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                        'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                if (vendorInvoicing && vendorCount == 0) {
+                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                } else if (!vendorInvoicing && vendorCount > 0) {
+                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                }
+            }
+        }else if (notProcessedMandatoryProperties.size() > 0) {
+            result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
 
-        if (notProcessedMandatoryProperties.size() > 0) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-        } else if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (noParticipation || allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (!noParticipation && !allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        if(!result.error) {
+            if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (noParticipation || allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (!noParticipation && !allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+            }
         }
 
 
@@ -1527,7 +1550,7 @@ class AjaxHtmlController {
             case Subscription.class.simpleName:
                 Subscription subscription = Subscription.get(params.id)
                 result.editable = subscription.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
                 }
@@ -1542,7 +1565,7 @@ class AjaxHtmlController {
             case License.class.simpleName:
                 License license = License.get(params.id)
                 result.editable = license.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.LIC_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.LIC_PROP)
                 }

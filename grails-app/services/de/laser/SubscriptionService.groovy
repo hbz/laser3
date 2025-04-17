@@ -1805,13 +1805,19 @@ class SubscriptionService {
                 tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.configMap.identifier))
             }
             if (result.configMap.containsKey('hasPerpetualAccess')) {
-                String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
-                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia()]
-                Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+                String permanentTitleStringQuery = "select tipp.hostPlatformURL from PermanentTitle pt join pt.tipp tipp where pt.owner = :subscriber and tipp.status = :current",
+                permanentTitlesQuery = "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (:currSubPkgs) and tipp.hostPlatformURL in (:subSet) and tipp.status = :current"
+                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia(), current: RDStore.TIPP_STATUS_CURRENT]
+                Set<String> permanentTitleURLs = TitleInstancePackagePlatform.executeQuery(permanentTitleStringQuery, permanentTitleParams)
+                Set<Long> tippIDsPurchasedGlobally = []
+                permanentTitleURLs.collate(65000).each { subSet ->
+                    tippIDsPurchasedGlobally.addAll(TitleInstancePackagePlatform.executeQuery(permanentTitlesQuery, [subSet: subSet, currSubPkgs: result.subscription.packages.pkg, current: RDStore.TIPP_STATUS_CURRENT]))
+                }
                 if (RefdataValue.get(result.configMap.hasPerpetualAccess) == RDStore.YN_YES) {
-                    tippIDs = tippIDs.intersect(permanentTitles)
-                }else{
-                    tippIDs.removeAll(permanentTitles)
+                    tippIDs = tippIDs.intersect(tippIDsPurchasedGlobally)
+                }
+                else {
+                    tippIDs.removeAll(tippIDsPurchasedGlobally)
                 }
             }
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
@@ -1844,17 +1850,16 @@ class SubscriptionService {
                         subscriptions << result.subscription
                     //}
                     if(subscriptions) {
-                        Set<Long> sourceTIPPs = []
-                        List rows
-                        //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) sense?
+                        Set rows
                         if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
+                            rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
                         else {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                            rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
-                        sourceTIPPs.addAll(rows["tipp_id"])
-                        tippIDs = tippIDs.minus(sourceTIPPs)
+                        rows.collate(65000).each { subSet ->
+                            tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
+                        }
                     }
                     if (tippIDs.size() > 0 && tippIDs.size() == result.checkedCount) {
                         result.allChecked = "checked"
