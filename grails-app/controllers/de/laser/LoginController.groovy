@@ -48,16 +48,16 @@ class LoginController {
     * Show the login page.
     */
     def auth = {
-//        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
-        log.debug '+ Attempting login ..... ' + request.session.id
-
         ConfigObject config = SpringSecurityUtils.securityConfig
 
         if (springSecurityService.isLoggedIn()) {
             log.debug '+ Already logged in'
-            redirect( uri: config.successHandler.defaultTargetUrl )
+            forward( uri: config.successHandler.defaultTargetUrl )
             return
         }
+
+        //        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
+        log.debug '+ Attempting login ..... ' + request.session.id
 
         DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
         if (savedRequest) {
@@ -203,7 +203,7 @@ class LoginController {
             List<User> users = User.findAllByEmail(params.forgotten_username_mail)
             if (users.size() > 0) {
                 flash.message = message(code: 'menu.user.forgottenUsername.success') as String
-                users.each {User user ->
+                users.each { User user ->
                     mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgtUsname', [user: user])
                 }
             }

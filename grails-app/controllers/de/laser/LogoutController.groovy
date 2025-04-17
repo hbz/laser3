@@ -21,8 +21,6 @@ class LogoutController {
 		// any pre-logout code here
 		SystemActivityProfiler.removeActiveUser(contextService.getUser())
 
-		// todo: remove grails_remember_me cookie
-
 		redirect( uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl ) // '/j_spring_security_logout'
 	}
 }

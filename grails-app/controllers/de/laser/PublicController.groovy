@@ -10,6 +10,7 @@ import de.laser.wekb.Package
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 
@@ -26,10 +27,16 @@ class PublicController {
     SpringSecurityService springSecurityService
 
     /**
-     * Displays the landing page
+     * Redirects to dashboard or login
      */
     @Secured(['permitAll'])
     def index() {
+        if (springSecurityService.isLoggedIn()) {
+            redirect( uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl )
+        }
+        else {
+            redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl ) // , params: params
+        }
     }
 
    /**
