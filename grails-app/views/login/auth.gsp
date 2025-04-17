@@ -77,14 +77,13 @@
                 <div class="row">
 
                     <div class="eight wide column la-login-left">
-                        <g:link controller="login" action="auth">LOGIN</g:link>
-%{--                        <g:img  class="ui large bordered rounded image la-hero-image" dir="images" file="landingpage/hero.png" />--}%
+                        <g:img class="ui large bordered rounded image la-hero-image" dir="images" file="landingpage/hero.jpg" />
                     </div>
                     <div class="eight wide column la-login-right">
                         <h1 class="ui header">
-                            <div class="content">
+                            <span class="content">
                                 Login bei LAS:eR
-                            </div>
+                            </span>
                         </h1>
                         <div id="login" class="container">
                             <div class="inner">
