@@ -56,25 +56,27 @@ class LoginController {
             return
         }
 
-        //        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
-        log.debug '+ Attempting login ..... ' + request.session.id
-
         DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
         if (savedRequest) {
-            log.debug '+ Saved original request ..... ' + savedRequest.getRequestURL()
+
+            String rh = SwissKnife.getRemoteHash(request)
 
             boolean fuzzyCheck = SwissKnife.fuzzyCheck(savedRequest)
             if (!fuzzyCheck) {
                 String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
-                log.warn '+ Login failed; invalid url; noted in system events ..... ' + request.getRemoteAddr() + ' - ' + url
+                log.warn '+ Login attempt / Invalid url / Noted in system events ..... [' + rh + '] -> ' + url
 
                 SystemEvent.createEvent('LOGIN_WARNING', [
                         url: url,
                         remote: request.getRemoteAddr(),
+                        hash: rh,
                         headers: savedRequest.getHeaderNames().findAll{
                           it in ['host', 'referer', 'cookie', 'user-agent']
                         }.collect{it + ': ' + savedRequest.getHeaderValues( it ).join(', ')}
                 ])
+            }
+            else {
+                log.debug '+ Login attempt / Saved original request  ..... [' + rh + '] -> ' + savedRequest.getRequestURL()
             }
         }
         String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
@@ -133,13 +135,16 @@ class LoginController {
                 msg = g.message(code: 'springSecurity.errors.login.fail')
             }
         }
-        log.warn '+ Login failed ..... ' + request.getRemoteAddr() + ' - ' + msg
+        log.warn '+ Login failed ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + msg
 
         if (springSecurityService.isAjax(request)) {
             render( [error: msg] as JSON )
         }
         else {
             flash.error = msg
+            params.remove('controller')
+            params.remove('action')
+
             redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl, params: params )
         }
     }
