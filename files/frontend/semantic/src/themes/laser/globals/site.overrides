@@ -104,6 +104,19 @@ aside.ui.accordion .title:not(.ui) {
         //height: 50px;
         border-radius:0 !important;
         border: none !important;
+        &.la-local {
+            box-shadow: 0px 6px 0px 0px @yellow;
+        }
+        &.la-dev {
+            box-shadow: 0px 6px 0px 0px @green;
+        }
+        &.la-qa {
+            box-shadow: 0px 6px 0px 0px @red;
+
+        }
+        &.la-test{
+            box-shadow: 0px 6px 0px 0px @blue;
+        }
     }
     .la-fixed-menu {
         //height: 50px;
@@ -126,7 +139,7 @@ aside.ui.accordion .title:not(.ui) {
             h2{
                 color: white!important;
             }
-            background-image: url('../../images/landingpage/hero.jpg') !important;
+            background-image: url('../../images/anbieter-wekb-laser-konsortialstelle-940.png') !important;
             background-repeat: no-repeat !important;
             background-position: top center !important;
             background-color: #447294;

@@ -1,12 +1,14 @@
 package de.laser
 
+import grails.plugin.springsecurity.SpringSecurityUtils
+
 class UrlMappings {
 
     static excludes = [ "/static/**" ]
 
     static mappings = {
 
-        "/"             (controller: 'public', action: 'index')
+        "/"             (uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl)
         "/robots.txt"   (controller: 'public', action: 'robots')
 
         // gasco

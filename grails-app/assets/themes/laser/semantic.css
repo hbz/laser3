@@ -1329,6 +1329,22 @@ aside.ui.accordion .title:not(.ui) {
   border: none !important;
 }
 
+.landingpage .ui.inverted.menu.la-top-menu.la-local {
+  box-shadow: 0px 6px 0px 0px #FBBD08;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-dev {
+  box-shadow: 0px 6px 0px 0px #98B500;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-qa {
+  box-shadow: 0px 6px 0px 0px #BB1600;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-test {
+  box-shadow: 0px 6px 0px 0px #004678;
+}
+
 .landingpage .logo {
   height: 50px;
   width: 144px;
@@ -1345,7 +1361,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.segment.masthead {
-  background-image: url('../../images/landingpage/hero.jpg') !important;
+  background-image: url('../../images/anbieter-wekb-laser-konsortialstelle-940.png') !important;
   background-repeat: no-repeat !important;
   background-position: top center !important;
   background-color: #447294;
