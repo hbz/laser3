@@ -105,6 +105,19 @@ aside.ui.accordion .title:not(.ui) {
         //height: 50px;
         border-radius:0 !important;
         border: none !important;
+        &.la-local {
+            box-shadow: 0px 6px 0px 0px @yellow;
+        }
+        &.la-dev {
+            box-shadow: 0px 6px 0px 0px @green;
+        }
+        &.la-qa {
+            box-shadow: 0px 6px 0px 0px @red;
+
+        }
+        &.la-test{
+            box-shadow: 0px 6px 0px 0px @blue;
+        }
     }
     .la-fixed-menu {
         //height: 50px;

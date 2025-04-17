@@ -1,31 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
-<style>
-        /** inline style here with intention:
-            flex layout helps footer to stick at bottom when main high not high enough
-            but would make a bug when using the sidebars at all the other sides without the footer
-         */
-        .pusher {
-            flex: 1;
-        }
-        body {
-          display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-        }
 
-        main {
-          flex: 1;
-        }
-        .pushable>.pusher {
-            overflow-y: visible!important;
-            overflow-x: visible!important;
-            min-height: auto!important;
-        }
-        .la-js-verticalNavi {
-            display: block!important;
-        }
-
-</style>
 <footer class="ui inverted vertical footer segment la-footer">
     <div class="ui container">
 
@@ -153,3 +127,47 @@
         </div>
     </div>
 </footer>
+<style>
+/** inline style here with intention:
+    flex layout helps footer to stick at bottom when main high not high enough
+    but would make a bug when using the sidebars at all the other sides without the footer
+ */
+.pusher {
+    flex: 1;
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+}
+.la-login {
+    flex: 3!important; /* 3/4 of height of main */
+    display: flex!important;
+    height: 100vh;
+}
+
+img.la-hero-image {
+    max-height: 100%;
+    min-width: 100%;
+    object-fit: cover;
+    vertical-align: bottom;
+}
+.pushable>.pusher {
+    overflow-y: visible!important;
+    overflow-x: visible!important;
+    min-height: auto!important;
+}
+.la-eye-catcher {
+    flex: 1!important; /* 1/4 of height of main */
+}
+.la-js-verticalNavi {
+    display: block!important;
+}
+</style>

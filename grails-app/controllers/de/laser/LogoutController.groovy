@@ -21,6 +21,6 @@ class LogoutController {
 		// any pre-logout code here
 		SystemActivityProfiler.removeActiveUser(contextService.getUser())
 
-		redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl // '/j_spring_security_logout'
+		redirect( uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl ) // '/j_spring_security_logout'
 	}
 }

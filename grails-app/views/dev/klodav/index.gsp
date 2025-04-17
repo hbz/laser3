@@ -168,6 +168,18 @@
 
 <div class="ui fluid card">
     <div class="content">
+        <div class="header"><icon:pointingHand/> SpringSecurityUtils</div>
+    </div>
+    <div class="content">
+        <g:set var="scUrls" value="${SpringSecurityUtils.securityConfig.flatten().findAll{ it.key.toLowerCase().contains('url')}}" />
+<pre>
+<% scUrls.collect{ print it.toString() + '\n' } %>
+</pre>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
         <div class="header"><icon:pointingHand/> RandomUtils / StringUtils</div>
     </div>
     <div class="content">
