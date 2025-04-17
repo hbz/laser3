@@ -1,6 +1,6 @@
 <ui:modal id="surveyFinishModal" modalSize="tiny"
           msgSave="${message(code: 'confirm.dialog.concludeBinding')}"
-          msgClose="${message(code: 'default.button.cancel')}"
+          msgClose="${error ? message(code: 'surveyInfo.backToSurvey') : message(code: 'default.button.cancel')}"
           hideSubmitButton="${error ? true : false}">
 
     <g:form action="surveyInfoFinish" controller="myInstitution" class="ui form" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" method="post">

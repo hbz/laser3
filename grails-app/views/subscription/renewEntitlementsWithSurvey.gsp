@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Org; de.laser.ExportService" %>
+<%@ page import="de.laser.RefdataValue; de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Org; de.laser.ExportService" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" />
 
 <ui:breadcrumbs>
@@ -234,7 +234,7 @@
         </g:if>
 
         <g:if test="${params.tab == 'allTipps' || params.tab == 'selectableTipps'}">
-            <laser:render template="/templates/survey/tippTableSurvey" model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
+            <laser:render template="/templates/survey/tippTableSurvey" model="${[titlesList: titlesList, showPackage: true, showPlattform: true, showBulkCheck: RefdataValue.get(params.hasPerpetualAccess) != RDStore.YN_YES]}"/>
         </g:if>
         <g:else>
             <laser:render template="/templates/survey/entitlementTableSurvey" model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
