@@ -1,5 +1,5 @@
 <%@ page import="de.laser.utils.PasswordUtils; de.laser.utils.RandomUtils; org.apache.commons.codec.binary.StringUtils; de.laser.Org; de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground: Various" />
+<laser:htmlStart text="Playground: Test" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.devDocs" controller="dev" action="index"/>
