@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6478    17.04.2025  rc-3.5  3.5-RC      David   Feature     Landingpage und Login-Form zusammenführen
+
 6483    17.04.2025  rc-3.5  3.5-RC      David   Bug         500er Systemmeldung Startseite / Landing Page QA
 
 6441    14.04.2025  rc-3.5  3.5-RC      Andreas Feature     verschiedene Verbesserungen des Kostenmenüs
