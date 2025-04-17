@@ -292,7 +292,7 @@
                             </g:if>
                             <g:else>
                                 <div class="field">
-                                    ${parentSuccessorSubscription.holdingSelection.getI10n('value')}
+                                    ${parentSuccessorSubscription.holdingSelection?.getI10n('value')}
                                 </div>
                             </g:else>
 
