@@ -1,4 +1,4 @@
-<%@page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Org; de.laser.RefdataValue" %>
+<%@page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.IssueEntitlement; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Org; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -471,7 +471,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem == 'linkTitle'}">
                         <td class="right aligned">
-                            <g:if test="${editable}">
+                            <g:if test="${editable && (!pkgs || IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp.gokbId = :tippID and ie.subscription = :fixedSubscription and ie.status != :removed', [tippID: record.uuid, fixedSubscription: subscription, removed: RDStore.TIPP_STATUS_REMOVED])[0] == 0)}">
                                 <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
                                 <div class="two wide column">
                                     <a id="linkTitleToSubscription_${record.uuid}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: record.uuid, fixedSubscription: subscription.id])}" class="ui icon button ${disabled}"><g:message code="subscription.details.linkTitle.label"/></a>

@@ -2066,9 +2066,7 @@ class SubscriptionControllerService {
                 log.debug("Subscription has no linked packages yet")
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-            if(params.singleTitle)
-                result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
-            else result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
+            result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
             result.putAll(packageService.getWekbPackages(params))
             [result: result, status: STATUS_OK]
         }

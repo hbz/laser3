@@ -1051,11 +1051,38 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to list the potential package candidates for single title linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
     @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
+        Map<String,Object> ctrlResult = subscriptionService.linkTitle(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkTitle() {
         Subscription subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
         if(!subscription)
             subscription = Subscription.get(params.subscription)
