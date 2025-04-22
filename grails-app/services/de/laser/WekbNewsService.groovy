@@ -190,12 +190,6 @@ class WekbNewsService {
                     it.remove('sortname')
                     it.remove('status')
 
-//                    if (key == 'org') {
-//                        Org o = Org.findByGokbId(it.uuid)
-//                        it.id = o?.id
-//                        it.globalUID = o?.globalUID
-//                    }
-//                    else
                     List match = []
 
                     if (key == 'package') {
@@ -224,9 +218,6 @@ class WekbNewsService {
                 result[key].count = result[key].deleted.size() + result[key].created.size() + result[key].countUpdated
             }
         }
-
-//        Map orgMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
-//        process(orgMap as Map, 'org')
 
         Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
         process(packageMap as Map, 'package')
