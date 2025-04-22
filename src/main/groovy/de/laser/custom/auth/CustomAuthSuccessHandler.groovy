@@ -5,9 +5,11 @@ import de.laser.UserService
 import de.laser.auth.User
 import de.laser.helper.Profiler
 import de.laser.cache.SessionCacheWrapper
+import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.gorm.transactions.Transactional
+import groovy.util.logging.Slf4j
 import org.springframework.security.core.Authentication
 
 import javax.servlet.ServletException
@@ -17,6 +19,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Implementation of request success handler
  */
+@Slf4j
 class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandler {
 
     SpringSecurityService springSecurityService
@@ -38,6 +41,8 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
     @Transactional
     void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) throws ServletException, IOException {
+
+        log.debug( '+ Login ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
 
         User user = springSecurityService.getCurrentUser() as User
         user.lastLogin = new Date()

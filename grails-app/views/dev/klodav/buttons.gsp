@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground - New Buttons" />
+<laser:htmlStart text="Playground: New Buttons" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.devDocs" controller="dev" action="index"/>

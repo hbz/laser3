@@ -10,6 +10,8 @@ import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.security.web.savedrequest.DefaultSavedRequest
 
+import javax.servlet.http.HttpServletRequest
+
 /**
  * The "Swiss knife", containing various helper methods for quick reuse
  * which have been copy-pasted all over the code
@@ -135,7 +137,7 @@ class SwissKnife {
         return cloned
     }
 
-    static boolean fuzzyCheck(DefaultSavedRequest savedRequest) {
+    static boolean fuzzyCheck(DefaultSavedRequest savedRequest) {  // TODO - move
 
         if (!savedRequest) {
             return true
@@ -160,5 +162,9 @@ class SwissKnife {
             }
         }
         valid
+    }
+
+    static String getRemoteHash(HttpServletRequest request) {
+        request.getRemoteAddr().md5().take(16)
     }
 }

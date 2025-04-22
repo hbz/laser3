@@ -226,7 +226,6 @@ cost.information.contracts.membership,dbv,"Berufsverbände national/regional (wi
 cost.information.contracts.membership,flat,Pauschale Kosten,TODO ERMS-6310,,
 cost.information.contracts.membership,ifla,"Initiativen international (wie IFLA, etc.)",TODO ERMS-6310,,
 cost.information.contracts.membership,other,Sonstige,TODO ERMS-6310,,
-cost.information.contracts.membership,vdb,VDB,TODO ERMS-6310,,
 cost.information.contracts.membership,working.group,Arbeitsgemeinschaften (wie ASPB etc.),TODO ERMS-6310,,
 cost.information.personnel.infrastructure,editor,Universitätsverlag (Betrieb/ Administration),TODO ERMS-6310,,
 cost.information.personnel.infrastructure,erms,ERM-System (Betrieb/Administration),TODO ERMS-6310,,

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.IconAttr; de.laser.annotations.UIDoc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground - New AttrIcons" />
+<laser:htmlStart text="Playground: New AttrIcons" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.devDocs" controller="dev" action="index"/>

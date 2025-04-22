@@ -1,5 +1,5 @@
 <%@ page import="org.grails.io.support.GrailsResourceUtils; de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground - Markdown" />
+<laser:htmlStart text="Playground: Markdown" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.devDocs" controller="dev" action="index"/>

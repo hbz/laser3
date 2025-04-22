@@ -21,7 +21,7 @@
         </div>
         <div class="content">
             <table class="ui unstackable scrolling compact table">
-                <tbody style="max-height:180px">%{-- count:5 --}%
+                <tbody style="max-height:110px">%{-- count:180=5;110=3 --}%
                     <g:each in="${rttpList}" var="task">
                         <tr>
                             <td colspan="12">
@@ -75,31 +75,32 @@
                         )[0]}</strong> aktive Einrichtungen registriert.
                     </div>
                 </div>
-                <div class="item">
-                    <div class="content">
-                        .. sind <strong>${OrgSetting.executeQuery(
-                                'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',
-                                [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]]
-                        )[0]}</strong> aktive Konsortialmanager registriert.
-                    </div>
-                </div>
+%{--                <div class="item">--}%
+%{--                    <div class="content">--}%
+%{--                        .. sind <strong>${OrgSetting.executeQuery(--}%
+%{--                                'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',--}%
+%{--                                [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]]--}%
+%{--                        )[0]}</strong> aktive Konsortialmanager registriert.--}%
+%{--                    </div>--}%
+%{--                </div>--}%
                 <div class="item">
                     <div class="content">
                         .. sind <strong>${User.executeQuery('select count(*) from User where enabled is true')[0]}</strong> aktive Benutzer registriert.
                     </div>
                 </div>
+%{--                <div class="item">--}%
+%{--                    <div class="content">--}%
+%{--                        .. werden <strong>${Subscription.executeQuery(--}%
+%{--                            'select count(*) from Subscription where status = :current', [current: RDStore.SUBSCRIPTION_CURRENT]--}%
+%{--                        )[0]}</strong> aktive Lizenzen und <strong>${License.executeQuery(--}%
+%{--                        'select count(*) from License where status = :current', [current: RDStore.LICENSE_CURRENT]--}%
+%{--                        )[0]}</strong> aktive Verträge verwaltet.--}%
+%{--                    </div>--}%
+%{--                </div>--}%
                 <div class="item">
                     <div class="content">
-                        .. werden <strong>${Subscription.executeQuery(
-                            'select count(*) from Subscription where status = :current', [current: RDStore.SUBSCRIPTION_CURRENT]
-                        )[0]}</strong> aktive Lizenzen und <strong>${License.executeQuery(
-                        'select count(*) from License where status = :current', [current: RDStore.LICENSE_CURRENT]
-                        )[0]}</strong> aktive Verträge verwaltet.
-                    </div>
-                </div>
-                <div class="item">
-                    <div class="content">
-                        .. sind <strong>${SystemActivityProfiler.getNumberOfActiveUsers()}</strong> Benutzer online.
+                        .. ${SystemActivityProfiler.getNumberOfActiveUsers() == 1 ? 'ist' : 'sind'}
+                        <strong>${SystemActivityProfiler.getNumberOfActiveUsers()}</strong> Benutzer online.
                     </div>
                 </div>
             </div>
