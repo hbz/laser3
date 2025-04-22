@@ -33,13 +33,12 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'survey.notStarted ')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
-    <ui:greySegment>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
 
@@ -99,7 +98,7 @@
                                                                         tmplConfigShow                        : tmplConfigShowList]"/>
         </div>
 
-    </ui:greySegment>
+
 </g:else>
 
 <laser:htmlEnd/>

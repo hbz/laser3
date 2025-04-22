@@ -2612,6 +2612,8 @@ class SurveyService {
                             surveyPersonResult.delete()
                         }
                     }
+                    params.remove('setPreferredBillingPerson')
+                    params.remove('personId')
                 }
 
                 if (params.addressId && params.setAddress) {
@@ -2627,6 +2629,8 @@ class SurveyService {
                         result.surveyOrg.address = null
                     }
                     result.surveyOrg.save()
+                    params.remove('setAddress')
+                    params.remove('addressId')
                 }
 
                 if(params.setEInvoiceValuesFromOrg) {
@@ -2634,6 +2638,7 @@ class SurveyService {
                     result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
                     result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
                     result.surveyOrg.save()
+                    params.remove('setEInvoiceValuesFromOrg')
                 }
 
             }
@@ -2663,6 +2668,9 @@ class SurveyService {
                                 surveyPersonResult.delete()
                             }
                         }
+
+                        params.remove('setPreferredSurveyPerson')
+                        params.remove('personId')
                     }
             }
 

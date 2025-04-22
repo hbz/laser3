@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.system.SystemActivityProfiler
+import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -16,11 +17,11 @@ class LogoutController {
 	 * Index action. Redirects to the Spring security logout uri.
 	 */
 	def index = {
-		log.debug '+ Logout ..... ' + request.session.id
+		log.debug( '+ Logout ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
 
 		// any pre-logout code here
 		SystemActivityProfiler.removeActiveUser(contextService.getUser())
 
-		redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl // '/j_spring_security_logout'
+		redirect( uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl ) // '/j_spring_security_logout'
 	}
 }
