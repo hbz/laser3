@@ -136,6 +136,11 @@ class ControlledListService {
                 filter.holdingSelection = RefdataValue.get(params.holdingSelection)
             }
         }
+        if(params.containsKey('titleToLink')) {
+            queryString += " and not exists (select ie.id from IssueEntitlement ie where ie.subscription = s and ie.tipp.id = :titleToLink and ie.status != :removed)"
+            filter.titleToLink = params.long('titleToLink')
+            filter.removed = RDStore.TIPP_STATUS_REMOVED
+        }
         if(params.propDef) {
             PropertyDefinition filterPropDef = (PropertyDefinition) genericOIDService.resolveOID(params.propDef)
             queryString += " and sp.type = :propDef "
