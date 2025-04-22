@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="copySurveyPackages.transfer" />
 
 <ui:breadcrumbs>
@@ -107,10 +107,11 @@
                         ${message(code: 'default.select.all.label')}
                     </option>
 
-                    <g:each in="${SurveyConfigPackage.findAllBySurveyConfig(surveyConfig)}" var="surveyPackage">
-                        <option <%=(params.list('selectedPackages').contains(surveyPackage.pkg.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${surveyPackage.pkg.id}" title="${surveyPackage.pkg.name}">
-                            ${surveyPackage.pkg.name}
+                    <g:each in="${SurveyPackageResult.findAllBySurveyConfig(surveyConfig).groupBy {it.pkg.id}}" var="pkgMap">
+                        <g:set var="pkg" value="${de.laser.wekb.Package.get(pkgMap.key)}"/>
+                        <option <%=(params.list('selectedPackages').contains(pkg.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${pkg.id}" title="${pkg.name}">
+                            ${pkg.name}
                         </option>
                     </g:each>
 
