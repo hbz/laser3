@@ -18,10 +18,13 @@
 <%
     String cbq = 'select count(*) from DocContext where '
 %>
-
+<style>
+    pre.ok      { padding: 1em; border: 1px dashed green; }
+    pre.todo    { padding: 1em; border: 1px dashed red; }
+</style>
 <p class="ui header small">DocContext @ PROVIDER</p>
 
-<pre>
+<pre class="ok">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'provider != null and shareConf is null')}   <<< OK : AccessService (docContext -> doc -> owner)
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}
     SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}
@@ -35,7 +38,7 @@
 
 <p class="ui header small">DocContext @ VENDOR</p>
 
-<pre>
+<pre class="ok">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'vendor != null and shareConf is null')}   <<< OK : AccessService (docContext -> doc -> owner)
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}
     SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}
@@ -49,22 +52,26 @@
 
 <p class="ui header small">DocContext @ ORG</p>
 
-<pre>
+<pre class="todo">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'org != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< FEHLER
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< FEHLER, nicht auf PROD
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
-    Einträge mit TARGET_ORG = docContext -> doc -> owner überflüssig?
+    Sichtbarkeitseinstellung beim Upload:
+        - Eigene Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+        - Fremde Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG, SHARE_CONF_UPLOADER_AND_TARGET)
+
     Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt   <<< gefixt
+    Einträge mit TARGET_ORG = docContext -> doc -> owner überflüssig?
 </pre>
 
 <p class="ui header small">DocContext @ LICENSE</p>
 
-<pre>
+<pre class="todo">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'license != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
@@ -73,13 +80,17 @@
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
-    Für TN in Einrichtungsvertrag Sichtbarkeitseinstellung beim Upload (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
-    Für Konsortialmanager in Einrichtungsvertrag Sichtbarkeitseinstellung beim Upload (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+    Sichtbarkeitseinstellung beim Upload:
+        - Einrichtungsvertrag:
+            - Konsortialmanager (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+            - TN (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+        - KM-Vertrag:
+            - Konsortialmanager KEINE - Nur "Dokumente teilen"
 </pre>
 
 <p class="ui header small">DocContext @ SUBSCRIPTION</p>
 
-<pre>
+<pre class="todo">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'subscription != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
@@ -88,8 +99,13 @@
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
-    Für TN keine Sichtbarkeitseinstellung beim Upload
-    Für Konsortialmanager in TN bei SHARE_CONF_UPLOADER_AND_TARGET wird TARGET_ORG gesetzt   <<< OK, aber alte Daten müssen migriert werden
+    Sichtbarkeitseinstellung beim Upload:
+        - TN-Lizenz:
+            - Konsortialmanager (SHARE_CONF_UPLOADER_ORG, SHARE_CONF_UPLOADER_AND_TARGET)
+                - Bei SHARE_CONF_UPLOADER_AND_TARGET wird TARGET_ORG gesetzt   <<< OK, aber alte Daten müssen migriert werden
+            - TN KEINE
+        - KM-Lizenz:
+            - Konsortialmanager KEINE - Nur "Dokumente teilen"
 </pre>
 
 <laser:htmlEnd />
