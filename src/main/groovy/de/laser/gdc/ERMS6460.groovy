@@ -12,6 +12,8 @@ class ERMS6460 {
 
     static void go() {
         gdc1()
+        gdc2()
+        gdc3()
     }
 
     static void gdc1() {
@@ -47,6 +49,61 @@ class ERMS6460 {
             SystemEvent.createEvent('GDC_INFO', [
                     server: AppUtils.getCurrentServer(),
                     op: 'ERMS6460 - gdc1',
+                    count: changes.size(),
+                    changes: changes
+            ])
+
+            log.info(changes.toListString())
+        }
+    }
+
+    static void gdc2() {
+        log.info 'ERMS6460 - gdc2'
+
+        List changes = []
+
+        List<DocContext> subList = DocContext.executeQuery(
+                'select dc from DocContext dc where dc.subscription != null and dc.shareConf = :sc and dc.targetOrg = null',
+                [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+        )
+        subList.each { DocContext dc ->
+            if (dc.subscription.getSubscriber()) {
+                dc.targetOrg = dc.subscription.getSubscriber()
+                dc.save()
+                changes << ['SUB', dc.id, dc.targetOrg.id]
+            }
+        }
+
+        if (changes) {
+            SystemEvent.createEvent('GDC_INFO', [
+                    server: AppUtils.getCurrentServer(),
+                    op: 'ERMS6460 - gdc2',
+                    count: changes.size(),
+                    changes: changes
+            ])
+
+            log.info(changes.toListString())
+        }
+    }
+
+    static void gdc3() {
+        log.info 'ERMS6460 - gdc3'
+
+        List changes = []
+        List<DocContext> licList = DocContext.executeQuery(
+                'select dc from DocContext dc where dc.license != null and dc.shareConf = :sc and dc.targetOrg = null',
+                [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+        )
+        licList.each { DocContext dc ->
+            dc.shareConf = RDStore.SHARE_CONF_ALL
+            dc.save()
+            changes << ['LIC', dc.id, 'SHARE_CONF_ALL']
+        }
+
+        if (changes) {
+            SystemEvent.createEvent('GDC_INFO', [
+                    server: AppUtils.getCurrentServer(),
+                    op: 'ERMS6460 - gdc3',
                     count: changes.size(),
                     changes: changes
             ])

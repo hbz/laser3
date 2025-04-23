@@ -546,7 +546,7 @@ class AdminController  {
                     deletedDocs << did
                 }
                 catch (Exception e) {
-                    log.error e.getMessage()
+                    log.error 'Error: ' + e.getMessage()
                 }
             }
             log.info 'removed orphaned docs: ' + deletedDocs.size()
@@ -607,7 +607,7 @@ class AdminController  {
             }
         }
         catch (Exception e) {
-            log.error e.getMessage()
+            log.error 'Error: ' + e.getMessage()
         }
 
         if (params.encryptRawFiles) {
@@ -627,7 +627,7 @@ class AdminController  {
                     }
                 }
                 catch (Exception e) {
-                    log.error e.getMessage()
+                    log.error 'Error: ' + e.getMessage()
                 }
             }
             log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
@@ -652,7 +652,7 @@ class AdminController  {
                     }
                 }
                 catch (Exception e) {
-                    log.error e.getMessage()
+                    log.error 'Error: ' + e.getMessage()
                 }
             }
             log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
