@@ -5,7 +5,7 @@
     <g:form class="ui form" controller="survey" action="addSurveyUrl" params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]" method="post">
         <div class="field">
             <label for="url">${message(code: 'surveyconfig.url.label', args: [index])}</label>
-            <input type="text" name="url" id="url"/>
+            <input type="url" name="url" id="url" pattern="https?://.+"/>
         </div><!-- .field -->
 
         <div class="field">
