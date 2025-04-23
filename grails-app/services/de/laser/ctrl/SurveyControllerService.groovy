@@ -3946,8 +3946,20 @@ class SurveyControllerService {
         result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if (!subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)) {
+            if('all' in params.list('selectedPackages') && params.list('selectedPackages').size() > 1){
+                List selectedPackages = []
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        selectedPackages << it
+                    }
+                }
+                params.selectedPackages = selectedPackages
+            }else {
+                params.selectedPackages = params.selectedPackages ?: 'all'
+            }
+
             List packages = []
-            if(params.list('selectedPackages')){
+            if(!('all' in params.list('selectedPackages')) && params.list('selectedPackages')){
                 params.list('selectedPackages').each {
                     if(it != 'all'){
                         packages << Package.get(Long.valueOf(it))
