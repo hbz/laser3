@@ -21,6 +21,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.GlobalRecordSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -1872,6 +1873,9 @@ class AjaxController {
                             } else {
                                 // delete existing date
                                 target_object."${params.name}" = null
+                                //exception: globalRecordSource's haveUpTo
+                                if(target_object instanceof GlobalRecordSource && params.name == 'haveUpTo')
+                                    target_object.haveUpTo = DateUtils.getSDF_yyyyMMdd().parse('1970-01-01')
                             }
                             target_object.save(failOnError: true)
                         }
