@@ -26,8 +26,8 @@
 
 <pre class="ok">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'provider != null and shareConf is null')}   <<< OK : AccessService (docContext -> doc -> owner)
-    SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}
+    SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}     <<< OK : gdc > set SHARE_CONF = null
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}     <<< OK : gdc > set SHARE_CONF = null
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'provider != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_ALL])}
 
     SHARE_CONF & TARGET_ORG         ${DocContext.executeQuery(cbq + 'provider != null and shareConf != null and targetOrg != null')}   <<< 0 = OK
@@ -40,8 +40,8 @@
 
 <pre class="ok">
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'vendor != null and shareConf is null')}   <<< OK : AccessService (docContext -> doc -> owner)
-    SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}
+    SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])}    <<< OK : gdc > set SHARE_CONF = null
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}    <<< OK : gdc > set SHARE_CONF = null
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'vendor != null and shareConf = :sc', [sc: RDStore.SHARE_CONF_ALL])}
 
     SHARE_CONF & TARGET_ORG         ${DocContext.executeQuery(cbq + 'vendor != null and shareConf != null and targetOrg != null')}   <<< 0 = OK
@@ -56,16 +56,17 @@
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'org != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< FEHLER, nicht auf PROD
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< FEHLER, aber nicht auf PROD
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
     Sichtbarkeitseinstellung beim Upload:
-        - Eigene Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
-        - Fremde Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG, SHARE_CONF_UPLOADER_AND_TARGET)
+        - Eigene Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)                                 -> TARGET_ORG wird NICHT gesetzt
+        - Fremde Einrichtung (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG, SHARE_CONF_UPLOADER_AND_TARGET) -> TARGET_ORG wird gesetzt
 
-    Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt   <<< gefixt
+    Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt   <<< OK : gefixt
+
     Einträge mit TARGET_ORG = docContext -> doc -> owner überflüssig?
 </pre>
 
@@ -75,15 +76,15 @@
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'license != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< OK : gdc > set shareConf = SHARE_CONF_ALL
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
     Sichtbarkeitseinstellung beim Upload:
         - Einrichtungsvertrag:
-            - Konsortialmanager (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
-            - TN (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+            - Konsortialmanager (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG) -> TARGET_ORG wird NICHT gesetzt
+            - TN (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)                -> TARGET_ORG wird NICHT gesetzt
         - KM-Vertrag:
             - Konsortialmanager KEINE - Nur "Dokumente teilen"
 </pre>
@@ -94,7 +95,7 @@
     SHARE_CONF = null               ${DocContext.executeQuery(cbq + 'subscription != null and shareConf is null')}
     SHARE_CONF_UPLOADER_ORG         ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_ORG])} + TARGET_ORG
-    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null
+    SHARE_CONF_UPLOADER_AND_TARGET  ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} TARGET_ORG = null   <<< OK : gdc > set TARGET_ORG = dc.subscription.subscriber
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
@@ -102,10 +103,19 @@
     Sichtbarkeitseinstellung beim Upload:
         - TN-Lizenz:
             - Konsortialmanager (SHARE_CONF_UPLOADER_ORG, SHARE_CONF_UPLOADER_AND_TARGET)
-                - Bei SHARE_CONF_UPLOADER_AND_TARGET wird TARGET_ORG gesetzt   <<< OK, aber alte Daten müssen migriert werden
+                - SHARE_CONF_UPLOADER_ORG         -> TARGET_ORG wird NICHT gesetzt
+                - SHARE_CONF_UPLOADER_AND_TARGET  -> TARGET_ORG wird gesetzt   <<< OK, nach gdc
             - TN KEINE
         - KM-Lizenz:
             - Konsortialmanager KEINE - Nur "Dokumente teilen"
+</pre>
+
+<p class="ui header small">TODO</p>
+
+<pre>
+    Subscription . SHARE_CONF_UPLOADER_AND_TARGET -> SHARE_CONF_ALL ?
+
+    X . SHARE_CONF_UPLOADER_ORG -> shareConf = null ?
 </pre>
 
 <laser:htmlEnd />

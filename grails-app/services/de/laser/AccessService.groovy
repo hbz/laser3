@@ -57,7 +57,7 @@ class AccessService {
                 // .. if (doc.owner.id == ctxOrg.id)
             }
             else if (dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET) {
-                // .. if (doc.owner.id == ctxOrg.id)
+                // .. if (doc.owner.id == ctxOrg.id) or ..
                 if (dctx.targetOrg.id == ctxOrg.id) {
                     if (perm == READ) {
                         check = true
@@ -67,7 +67,23 @@ class AccessService {
             else if (dctx.shareConf == RDStore.SHARE_CONF_ALL) {
                 // .. context based restrictions must be applied // todo --> problem?
                 if (perm == READ) {
-                    check = true
+                    if (dctx.license) {
+                        dctx.license.orgRelations.each {
+                            if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
+                                check = true
+                            }
+                        }
+                    }
+                    else if (dctx.subscription) {
+                        dctx.subscription.orgRelations.each {
+                            if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) { // HIDDEN ?
+                                check = true
+                            }
+                        }
+                    }
+                    else {
+                        check = true
+                    }
                 }
             }
         }
@@ -83,7 +99,7 @@ class AccessService {
             }
             else if (dctx.subscription) {
                 dctx.subscription.orgRelations.each {
-                    if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
+                    if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) { // HIDDEN ?
                         if (perm == READ) {
                             check = true
                         }
@@ -132,7 +148,7 @@ class AccessService {
             }
             else if (dctx.subscription) {
                 dctx.subscription.orgRelations.each {
-                    if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
+                    if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) { // HIDDEN ?
                         if (perm == READ) {
                             check = true
                         }
