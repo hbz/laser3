@@ -84,7 +84,7 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.PLATFORM_STATISTICS_FREQUENCY, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if (suffix in ['counterCertified', 'counterR3Supported', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported']) {
+        else if (suffix in ['counterCertified', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported']) {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }

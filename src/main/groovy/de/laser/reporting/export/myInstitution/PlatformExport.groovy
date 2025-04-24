@@ -44,14 +44,15 @@ class PlatformExport extends BaseDetailsExport {
                                     'statisticsFormat'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'statisticsUpdate'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterCertified'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR3Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR4Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR4SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'x-property'                    : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
 
-                                    'accessPlatform'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessPlatform'                    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementAvailable'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementUrl'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'accessAudio'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'accessVideo'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'accessPdf'                     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -61,8 +62,6 @@ class PlatformExport extends BaseDetailsExport {
                                     'playerForVideo'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'viewerForPdf'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'viewerForEpub'                 : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'accessibilityStatementAvailable'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'accessibilityStatementUrl'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ]
                             ]
                     ]
             ]
@@ -74,7 +73,7 @@ class PlatformExport extends BaseDetailsExport {
             'altname',
             'ipAuthentication', 'shibbolethAuthentication', 'passwordAuthentication', 'otherProxies',
             'statisticsFormat', 'statisticsUpdate', 'counterCertified',
-            'counterR3Supported', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported',
+            'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported',
             'lastUpdatedDisplay'
     ]
 

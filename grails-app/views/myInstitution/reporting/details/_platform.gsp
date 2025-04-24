@@ -152,16 +152,6 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
-
-                        <g:if test="${useLocalFields}">
-                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R3_REPORTS.id}" />
-                        </g:if>
-                        <g:else>
-                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
-                        </g:else>
-                    </uiReporting:detailsTableTD>
-
                     <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR4Supported">
 
                         <g:if test="${useLocalFields}">
@@ -200,6 +190,18 @@
                         <g:else>
                             <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />
                         </g:else>
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="accessPlatform">
+
+                        ${plt.accessPlatform?.getI10n('value')}
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="accessibilityStatementUrl">
+
+                        <g:if test="${plt.accessibilityStatementUrl}">
+                            <a href="${plt.accessibilityStatementUrl}" target="_blank">${plt.accessibilityStatementUrl}</a>
+                        </g:if>
                     </uiReporting:detailsTableTD>
 
                     <g:if test="${dtConfig.containsKey('_dtField_?_propertyLocal')}">
