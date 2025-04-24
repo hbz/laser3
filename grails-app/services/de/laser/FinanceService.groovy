@@ -317,8 +317,14 @@ class FinanceService {
                             if(ci.taxKey)
                                 taxRate = ci.taxKey.taxRate
 
-                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
-                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            if(ci.costInBillingCurrency != null)
+                                ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            if(ci.costInLocalCurrency != null)
+                                ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
 
                             if (ci.billingSumRounding) {
                                 ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)

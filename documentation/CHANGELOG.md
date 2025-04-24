@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6491    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler in der Tabellenüberschrift behoben
+
+6490    24.04.2025  rc-3.5  3.5-RC      Andreas Feature     Anpassung der Upload-Templates für Lizenzen und Kosten
+
 6489    24.04.2025  rc-3.5  3.5-RC      David   Feature     Reporting: neue Felder für Platform
 
 6478    17.04.2025  rc-3.5  3.5-RC      David   Feature     Landingpage und Login-Form zusammenführen
