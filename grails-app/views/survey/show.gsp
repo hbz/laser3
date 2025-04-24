@@ -284,7 +284,7 @@
                                                 ${message(code: 'surveyconfig.url.label', args: [i + 1])}
                                             </dt>
                                             <dd>
-                                                <ui:xEditable owner="${surveyUrl}" field="url" type="text"/>
+                                                <ui:xEditable owner="${surveyUrl}" field="url" type="url"/>
                                                 <g:if test="${surveyUrl.url}">
                                                     <ui:linkWithIcon href="${surveyUrl.url}"/>
                                                 </g:if>
