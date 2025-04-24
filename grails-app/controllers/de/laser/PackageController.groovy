@@ -81,8 +81,11 @@ class PackageController {
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [
-            ['q', 'provider', 'pkgStatus'],
-            ['ddc', 'automaticUpdates', 'curatoryGroup', 'curatoryGroupType']
+            ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+        ]
+        //continue with implementing the header translation key and the missing filter config fields
+        Map<String, Set<Set<String>>> filterAccordionConfig = [
+            'package.filter.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
         ]
         Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
         if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
@@ -90,6 +93,7 @@ class PackageController {
         }
         result.currentPackageIdSet = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]).toSet()
         result.filterConfig = filterConfig
+        result.filterAccordionConfig = filterAccordionConfig
         result.tableConfig = tableConfig
         result
     }
