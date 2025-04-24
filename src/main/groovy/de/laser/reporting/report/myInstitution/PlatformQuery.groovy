@@ -88,7 +88,10 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['serviceProvider', 'softwareProvider', 'status']) {
+        else if ( suffix in [
+                'accessAudio', 'accessDatabase', 'accessEPub', 'accessPdf', 'accessPlatform', 'accessVideo', 'accessibilityStatementAvailable',
+                'playerForAudio', 'playerForVideo', 'serviceProvider', 'softwareProvider', 'status', 'viewerForEpub', 'viewerForPdf'
+        ]) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }

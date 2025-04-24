@@ -49,7 +49,20 @@ class PlatformExport extends BaseDetailsExport {
                                     'counterR4SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-property'                    : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'x-property'                    : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
+
+                                    'accessPlatform'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessAudio'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessVideo'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessPdf'                     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessEPub'                    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessDatabase'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'playerForAudio'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'playerForVideo'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'viewerForPdf'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'viewerForEpub'                 : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementAvailable'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementUrl'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ]
                             ]
                     ]
             ]
@@ -57,12 +70,12 @@ class PlatformExport extends BaseDetailsExport {
 
     static List<String> ES_SOURCE_FIELDS = [
 
-            "uuid", "providerUuid",
-            "altname",
-            "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "otherProxies",
-            "statisticsFormat", "statisticsUpdate", "counterCertified",
-            "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
-            "lastUpdatedDisplay"
+            'uuid', 'providerUuid',
+            'altname',
+            'ipAuthentication', 'shibbolethAuthentication', 'passwordAuthentication', 'otherProxies',
+            'statisticsFormat', 'statisticsUpdate', 'counterCertified',
+            'counterR3Supported', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported',
+            'lastUpdatedDisplay'
     ]
 
     /**
