@@ -217,6 +217,67 @@
                     </g:if>
                 </div>
             </div>
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header">
+                        <g:message code="platform.accessibility.header"/>
+                    </h2>
+                    <h3>
+                        <g:message code="platform.accessibility.link.header"/>
+                        <g:link url="https://accessible-eu-centre.ec.europa.eu/content-corner/digital-library/en-3015492021-accessibility-requirements-ict-products-and-services_en"
+                                target="_blank">
+                            EN 301549
+                        </g:link>
+                    </h3>
+                    <g:each in="['accessPlatform','viewerForPdf','viewerForEpub','playerForAudio','playerForVideo']" var="platformAccessiblityField">
+                        <g:if test="${platformInstance[platformAccessiblityField]}">
+                            <dl>
+                                <dt><g:message code="platform.accessibility.${platformAccessiblityField}"/></dt>
+                                <dd>${platformInstance[platformAccessiblityField].getI10n('value')}</dd>
+                            </dl>
+                        </g:if>
+                    </g:each>
+                </div>
+            </div>
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header"><g:message code="platform.accessibility.accessibilityStatement.header"/></h2>
+                    <g:if test="${platformInstance.accessibilityStatementAvailable}">
+                        <dl>
+                            <dt><g:message code="platform.accessibility.accessibilityStatementAvailable"/></dt>
+                            <dd>${platformInstance.accessibilityStatementAvailable.getI10n('value')}</dd>
+                        </dl>
+                    </g:if>
+                    <g:if test="${platformInstance.accessibilityStatementUrl}">
+                        <dl>
+                            <dt><g:message code="platform.accessibility.accessibilityStatement.link"/></dt>
+                            <dd>
+                                ${platformInstance.accessibilityStatementUrl} <ui:linkWithIcon href="${platformInstance.accessibilityStatementUrl}"/>
+                            </dd>
+                        </dl>
+                    </g:if>
+                </div>
+            </div>
+            <div class="ui card">
+                <div class="content">
+                    <h2 class="ui header"><g:message code="platform.accessibility.content.header"/></h2>
+                    <h3>
+                        <g:message code="platform.accessibility.link.header"/>
+                        <g:link url="https://accessible-eu-centre.ec.europa.eu/content-corner/digital-library/en-3015492021-accessibility-requirements-ict-products-and-services_en"
+                                target="_blank">
+                            EN 301549
+                        </g:link>
+                    </h3>
+                    <g:each in="['accessEPub', 'accessPdf', 'accessAudio', 'accessVideo', 'accessDatabase']" var="contentAccessibilityField">
+                        <g:if test="${platformInstance[contentAccessibilityField]}">
+                            <dl>
+                                <dt><g:message code="platform.accessibility.${contentAccessibilityField}"/></dt>
+                                <dd>${platformInstance[contentAccessibilityField].getI10n('value')}</dd>
+                            </dl>
+                        </g:if>
+                    </g:each>
+                </div>
+            </div>
             <div id="new-dynamic-properties-block">
                 <laser:render template="properties" model="${[ platform: platformInstance ]}"/>
             </div><!-- #new-dynamic-properties-block -->

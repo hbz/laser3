@@ -1744,6 +1744,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                platform.accessPlatform = platformRecord.accessPlatform ? RefdataValue.getByValueAndCategory(platformRecord.accessPlatform, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.viewerForPdf = platformRecord.viewerForPdf ? RefdataValue.getByValueAndCategory(platformRecord.viewerForPdf, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.viewerForEpub = platformRecord.viewerForEpub ? RefdataValue.getByValueAndCategory(platformRecord.viewerForEpub, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.playerForAudio = platformRecord.playerForAudio ? RefdataValue.getByValueAndCategory(platformRecord.playerForAudio, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.playerForVideo = platformRecord.playerForVideo ? RefdataValue.getByValueAndCategory(platformRecord.playerForVideo, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessEPub = platformRecord.accessEPub ? RefdataValue.getByValueAndCategory(platformRecord.accessEPub, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                //currently no input at we:kb
+                platform.onixMetadata = platformRecord.onixMetadata ? RefdataValue.getByValueAndCategory(platformRecord.onixMetadata, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessPdf = platformRecord.accessPdf ? RefdataValue.getByValueAndCategory(platformRecord.accessPdf, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessAudio = platformRecord.accessAudio ? RefdataValue.getByValueAndCategory(platformRecord.accessAudio, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessVideo = platformRecord.accessVideo ? RefdataValue.getByValueAndCategory(platformRecord.accessVideo, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessDatabase = platformRecord.accessDatabase ? RefdataValue.getByValueAndCategory(platformRecord.accessDatabase, RDConstants.ACCESSIBILITY_COMPLIANCE) : null
+                platform.accessibilityStatementAvailable = platformRecord.accessibilityStatementAvailable ? RefdataValue.getByValueAndCategory(platformRecord.accessibilityStatementAvailable, RDConstants.Y_N) : null
+                platform.accessibilityStatementUrl = platformRecord.accessibilityStatementUrl
                 if(platformRecord.providerUuid) {
                     Provider provider = Provider.findByGokbId(platformRecord.providerUuid)
                     if(!provider) {
