@@ -313,11 +313,11 @@
                                         <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                         <td class="right aligned">
                                             <g:if test="${isAdmin}">
-                                                <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
+                                                <span class="la-popup-tooltip" data-content="${message(code:'provider.linking.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
                                                             data-confirm-term-how="unlink"
-                                                            action="unlinkProviderVendor" params="[id: provider.id, combo: row.id]"
+                                                            action="unlink" params="[id: provider.id, providerLink: row.id]"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                                         <i class="${Icon.CMD.UNLINK}"></i>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6492    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Kopie von Vertragsmerkmalen lief in Fehler
+
 6491    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler in der Tabellenüberschrift behoben
 
 6490    24.04.2025  rc-3.5  3.5-RC      Andreas Feature     Anpassung der Upload-Templates für Lizenzen und Kosten
