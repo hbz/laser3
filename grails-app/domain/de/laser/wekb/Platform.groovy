@@ -49,40 +49,40 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   Date counter4LastRun
   Date counter5LastRun
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessPlatform')
   RefdataValue accessPlatform
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.viewerForPdf')
   RefdataValue viewerForPdf
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.viewerForEpub')
   RefdataValue viewerForEpub
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.playerForAudio')
   RefdataValue playerForAudio
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.playerForVideo')
   RefdataValue playerForVideo
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessEPub')
   RefdataValue accessEPub
 
   @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
   RefdataValue onixMetadata //no input at we:kb
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessPdf')
   RefdataValue accessPdf
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessAudio')
   RefdataValue accessAudio
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessVideo')
   RefdataValue accessVideo
 
-  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessDatabase')
   RefdataValue accessDatabase
 
-  @RefdataInfo(cat = RDConstants.Y_N)
+  @RefdataInfo(cat = RDConstants.Y_N, i18n = 'platform.accessibility.accessibilityStatementAvailable')
   RefdataValue accessibilityStatementAvailable
 
   String accessibilityStatementUrl
