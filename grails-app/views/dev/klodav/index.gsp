@@ -105,6 +105,14 @@
             <div class="content"> &lt;icon:pathFile/> </div>
         </div>
         <div class="item">
+            <icon:codePackage/>
+            <div class="content"> &lt;icon:codePackage/> </div>
+        </div>
+        <div class="item">
+            <icon:codeClass/>
+            <div class="content"> &lt;icon:codeClass/> </div>
+        </div>
+        <div class="item">
             <icon:universalAccess/>
             <div class="content"> &lt;icon:universalAccess/> </div>
         </div>

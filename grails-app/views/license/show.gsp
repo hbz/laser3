@@ -10,6 +10,7 @@
                 <p>lic.licensingConsortium: ${license.licensingConsortium}</p>
                 <p>lic.licensor: ${license.licensor}</p>
                 <p>lic.licensee: ${license.licensee}</p>
+                <p>lic.getAllLicensee(): ${license.getAllLicensee()}</p>
 
                 <p>lic.instanceOf: <g:if test="${license.instanceOf}">
                     <g:link action="show" id="${license.instanceOf.id}">${license.instanceOf.reference}</g:link>

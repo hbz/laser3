@@ -21,6 +21,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.GlobalRecordSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -253,15 +254,28 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    executorService.execute({
-                                        String threadName = 'PackageUnlink_'+sub.id
-                                        Thread.currentThread().setName(threadName)
-                                        sub.packages.each { SubscriptionPackage sp ->
-                                            if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
-                                                log.error('error on clearing issue entitlements when changing package holding selection')
+                                    if(subChildIDs) {
+                                        executorService.execute({
+                                            String threadName = 'PackageUnlink_'+sub.id
+                                            Thread.currentThread().setName(threadName)
+                                            sub.packages.each { SubscriptionPackage sp ->
+                                                if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
+                                                    log.error('error on clearing issue entitlements when changing package holding selection')
+                                                }
                                             }
+                                        })
+                                    }
+                                    sub.packages.each { SubscriptionPackage sp ->
+                                        Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if(missingTipps.size() > 0) {
+                                            log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
+                                            executorService.execute({
+                                                String threadName = 'PackageUnlink_' + sub.id
+                                                Thread.currentThread().setName(threadName)
+                                                subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
+                                            })
                                         }
-                                    })
+                                    }
                                 }
                             }
                         }
@@ -1872,6 +1886,9 @@ class AjaxController {
                             } else {
                                 // delete existing date
                                 target_object."${params.name}" = null
+                                //exception: globalRecordSource's haveUpTo
+                                if(target_object instanceof GlobalRecordSource && params.name == 'haveUpTo')
+                                    target_object.haveUpTo = DateUtils.getSDF_yyyyMMdd().parse('1970-01-01')
                             }
                             target_object.save(failOnError: true)
                         }

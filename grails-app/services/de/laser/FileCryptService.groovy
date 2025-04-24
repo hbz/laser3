@@ -127,10 +127,10 @@ class FileCryptService {
             log.error e.toString()
 
             if (cipherMode == Cipher.DECRYPT_MODE) {
-                SystemEvent.createEvent('CRYPTO_DECRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16)])
+                SystemEvent.createEvent('CRYPTO_DECRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16) + '..'])
             }
             if (cipherMode == Cipher.ENCRYPT_MODE) {
-                SystemEvent.createEvent('CRYPTO_ENCRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16)])
+                SystemEvent.createEvent('CRYPTO_ENCRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16) + '..'])
             }
         }
     }

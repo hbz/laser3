@@ -8,15 +8,15 @@
 <laser:serviceInjection/>
 <ui:modal id="linkTitleModal" message="subscription.details.linkTitle.label" msgSave="${message(code: 'default.button.link.label')}">
 
-    <g:form class="ui form" id="linkTitleForm" url="[controller: 'subscription', action: 'linkTitle']">
+    <g:form class="ui form" id="linkTitleForm" url="[controller: 'subscription', action: 'processLinkTitle']">
         <input type="hidden" name="tippID" value="${tipp.id}"/>
-        <div class="field">
-            <label>${message(code: 'package.label')}</label>
-            ${tipp.pkg.name}
-        </div>
         <div class="field">
             <label>${message(code: 'tipp.label')}</label>
             ${tipp.name}
+        </div>
+        <div class="field">
+            <label>${message(code: 'package.label')}</label>
+            ${tipp.pkg.name}
         </div>
         <g:if test="${fixedSubscription}">
             <input type="hidden" name="subscription" value="${fixedSubscription.id}"/>
@@ -50,7 +50,7 @@
                     }
                     $("#subscription").dropdown({
                         apiSettings: {
-                            url: "<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&holdingSelection=notEntire&restrictLevel=true"+providerFilter,
+                            url: "<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&holdingSelection=notEntire&titleToLink=${tipp.id}&restrictLevel=true"+providerFilter,
                         cache: false
                     },
                     clearable: true,

@@ -23,10 +23,6 @@ class SymbolTagLib {
         out << '<i class="hand point right icon"></i>'
     }
 
-    @UIDoc(usage = 'Generic symbol for: Bug')
-    def bug = { attrs, body ->
-        out << '<i class="bug icon"></i>'
-    }
     @UIDoc(usage = 'Generic symbol for: File (Path)')
     def pathFile = { attrs, body ->
         out << '<i class="file outline icon"></i>'
@@ -35,10 +31,23 @@ class SymbolTagLib {
     def pathFolder = { attrs, body ->
         out << '<i class="folder icon"></i>'
     }
+    @UIDoc(usage = 'Generic symbol for: Class (Code)')
+    def codeClass = { attrs, body ->
+        out << '<i class="file outline icon"></i>'
+    }
+    @UIDoc(usage = 'Generic symbol for: Package (Code)')
+    def codePackage = { attrs, body ->
+        out << '<i class="boxes icon"></i>'
+    }
     @UIDoc(usage = 'Generic symbol for: Data/Database')
     def database = { attrs, body ->
         out << '<i class="database icon"></i>'
     }
+    @UIDoc(usage = 'Generic symbol for: Bug')
+    def bug = { attrs, body ->
+        out << '<i class="bug icon"></i>'
+    }
+
 
     @UIDoc(usage = 'Generic symbol for: Universal access')
     def universalAccess = { attrs, body ->
