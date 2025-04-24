@@ -92,7 +92,7 @@
                     </h5>
 
                     <laser:render template="/subscription/licPropGroup" model="${[
-                            propList: derivedPropDefGroups.orphanedProperties,
+                            propList: filteredOrphanedProperties,
                             ownObj: license
                     ]}"/>
                 </div>
