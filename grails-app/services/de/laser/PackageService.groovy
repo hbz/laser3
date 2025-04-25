@@ -124,7 +124,7 @@ class PackageService {
             queryParams.status = params.list('pkgStatus')
         }
         else if(!params.pkgStatus) {
-            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
+            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value] //, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value //as of ERMS-6370, comments from April 24th and 25th, '25
             queryParams.status = params.pkgStatus
         }
 

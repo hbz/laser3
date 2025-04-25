@@ -1089,6 +1089,8 @@ class SubscriptionController {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg
+            subscription.holdingSelection = RDStore.SUBSCRIPTION_HOLDING_PARTIAL //in case it was null before
+            subscription.save()
             subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
             redirect action: 'index', id: subscription.id
         }

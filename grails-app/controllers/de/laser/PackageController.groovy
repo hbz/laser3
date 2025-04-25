@@ -77,7 +77,7 @@ class PackageController {
         result.user = contextService.getUser()
 
         SwissKnife.setPaginationParams(result, params, result.user)
-        result.putAll(packageService.getWekbPackages(params.clone()))
+        result.putAll(packageService.getWekbPackages(params))
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [
