@@ -4471,6 +4471,7 @@ class SubscriptionService {
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
             result.subscriber = result.subscription.getSubscriberRespConsortia()
+            result.editable = surveyService.isEditableSurvey(contextService.getOrg(), result.surveyInfo)
             Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
             if (rtParams.tab)    { params.tab = rtParams.tab }
             if (rtParams.subTab) { params.subTab = rtParams.subTab }
