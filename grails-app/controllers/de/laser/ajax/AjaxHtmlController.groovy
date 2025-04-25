@@ -395,23 +395,17 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupProviders() {
-        Map<String, Object> model = [:], result = controlledListService.getProviders(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
         model.providerList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
-            }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currProvLinks = Provider.executeQuery('select new map(pvr.provider.id as provId, pvr.isShared as isShared) from ProviderRole pvr, OrgRole oo where pvr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currProvLinks) {
-            model.currProviders = currProvLinks.provId.toSet()
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'subscription')) {
+            Subscription s = genericOIDService.resolveOID(params.subscription)
+            Set currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription', [subscription: s])
+            model.currProviders = currProvLinks
             model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currProvSharedLinks = currProvLinks.collectEntries { row -> [row.provId, row.isShared] }
+            if(s.instanceOf) {
+                model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription and pvr.isShared = true', [subscription: s.instanceOf])
+            }
             else model.currProvSharedLinks = [:]
         }
         else {
@@ -430,30 +424,22 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupVendors() {
-        Map<String, Object> model = [:], result = controlledListService.getVendors(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
         model.vendorList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
-            }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currVenLinks = Vendor.executeQuery('select new map(vr.vendor.id as venId, vr.isShared as isShared) from VendorRole vr, OrgRole oo where vr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currVenLinks) {
-            model.currVendors = currVenLinks.venId.toSet()
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'subscription')) {
+            Subscription s = genericOIDService.resolveOID(params.subscription)
+            Set currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription', [subscription: s])
+            model.currVendors = currVenLinks
             model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currVenSharedLinks = currVenLinks.collectEntries { row -> [row.venId, row.isShared] }
+            if(s.instanceOf)
+                model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription and vr.isShared = true', [subscription: s.instanceOf])
             else model.currVenSharedLinks = [:]
         }
         else {
             model.currVendors = []
             model.currVenSharedLinks = [:]
         }
-        model.currVenLinks = currVenLinks
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'

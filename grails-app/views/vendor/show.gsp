@@ -431,22 +431,24 @@
                                         }
                                     %>
                                     <g:if test="${pair != null}">
-                                        <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                        <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                        <td class="right aligned">
-                                            <g:if test="${isAdmin}">
-                                                <span class="la-popup-tooltip" data-content="${message(code:'vendor.linking.unlink')}">
-                                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
-                                                            data-confirm-term-how="unlink"
-                                                            action="unlink" params="[id: vendor.id, vendorLink: row.id]"
-                                                            role="button"
-                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icon.CMD.UNLINK}"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
-                                        </td>
+                                        <tr>
+                                            <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
+                                            <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
+                                            <td class="right aligned">
+                                                <g:if test="${isAdmin}">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'vendor.linking.unlink')}">
+                                                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
+                                                                data-confirm-term-how="unlink"
+                                                                action="unlink" params="[id: vendor.id, vendorLink: row.id]"
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                            <i class="${Icon.CMD.UNLINK}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:if>
+                                            </td>
+                                        </tr>
                                     </g:if>
                                 </g:each>
                             </table>
