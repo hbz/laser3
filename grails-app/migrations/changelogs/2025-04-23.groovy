@@ -127,4 +127,75 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1745397625037-25") {
         addForeignKeyConstraint(baseColumnNames: "plat_accessibility_statement_available_fk_rv", baseTableName: "platform", constraintName: "FKrug4gk33b5e9857dvfjiopaic", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", validate: "true")
     }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-26") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'creator.type')")
+                String info = 'RDV(owner=creator.type) deleted: ' + sql.getUpdateCount()
+
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'creator.type'")
+                info = info + ', RDC deleted: ' + sql.getUpdateCount()
+
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-27") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'package.fixed')")
+                String info = 'RDV(owner=package.fixed) deleted: ' + sql.getUpdateCount()
+
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'package.fixed'")
+                info = info + ', RDC deleted: ' + sql.getUpdateCount()
+
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-28") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'tipp.payment.type')")
+                String info = 'RDV(owner=tipp.payment.type) deleted: ' + sql.getUpdateCount()
+
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'tipp.payment.type'")
+                info = info + ', RDC deleted: ' + sql.getUpdateCount()
+
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-29") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'license.remote.access2'")
+                String info = 'RDC(license.remote.access2) deleted: ' + sql.getUpdateCount()
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-30") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'license.type')")
+                String info = 'RDV(owner=license.type) deleted: ' + sql.getUpdateCount()
+
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'license.type'")
+                info = info + ', RDC deleted: ' + sql.getUpdateCount()
+
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
 }
