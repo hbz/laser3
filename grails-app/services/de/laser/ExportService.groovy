@@ -1871,36 +1871,38 @@ class ExportService {
 		}
 		else if(revision == AbstractReport.COUNTER_5) {
 			reportItem["Item_ID"].each { idData ->
-				switch (idData.getKey().toLowerCase()) {
-					case 'isbn': identifierMap.isbn = idData.Value
-						break
-					case 'online_issn':
-					case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
-						break
-					case 'print_isbn':
-					case 'print_issn': identifierMap.printIdentifier = idData.Value
-						break
-					case 'doi': identifierMap.doi = idData.Value
-						break
-					case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
-						break
-					case 'type':
-						switch (idData.Type.toLowerCase()) {
-							case 'isbn': identifierMap.isbn = idData.Value
-								break
-							case 'online_issn':
-							case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
-								break
-							case 'print_isbn':
-							case 'print_issn': identifierMap.printIdentifier = idData.Value
-								break
-							case 'doi': identifierMap.doi = idData.Value
-								break
-							case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
-								break
-						}
-						break
+				if(idData.getMetaClass().respondsTo(idData, 'getKey')) {
+					switch (idData.getKey().toLowerCase()) {
+						case 'isbn': identifierMap.isbn = idData.Value
+							break
+						case 'online_issn':
+						case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
+							break
+						case 'print_isbn':
+						case 'print_issn': identifierMap.printIdentifier = idData.Value
+							break
+						case 'doi': identifierMap.doi = idData.Value
+							break
+						case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
+							break
 					}
+				}
+				else {
+					switch (idData.Type.toLowerCase()) {
+						case 'isbn': identifierMap.isbn = idData.Value
+							break
+						case 'online_issn':
+						case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
+							break
+						case 'print_isbn':
+						case 'print_issn': identifierMap.printIdentifier = idData.Value
+							break
+						case 'doi': identifierMap.doi = idData.Value
+							break
+						case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
+							break
+					}
+				}
 			}
 		}
 		identifierMap

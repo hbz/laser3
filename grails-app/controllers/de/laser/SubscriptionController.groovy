@@ -1699,7 +1699,7 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def tippSelectForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         MultipartFile kbartPreselect = request.getFile('kbartPreselect')
         //we may presume that package linking is given and checked at this place
         Set<Package> subPkgs = result.subscription.packages.pkg
@@ -1723,7 +1723,7 @@ class SubscriptionController {
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
-            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.toList(), contextService.getOrg())
+            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
             String customerIdentifier = "", notInPackageRows = ""
             if(customerIdentifierSet)
                 customerIdentifier = customerIdentifierSet.join(',')
