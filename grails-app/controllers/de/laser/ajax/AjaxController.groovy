@@ -533,9 +533,9 @@ class AjaxController {
                       Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                       List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                       rows.each { GroovyRowResult row ->
-                          if(newChecked.containsKey(row['ie_id']))
-                              newChecked.remove(row['ie_id'])
-                          else newChecked.put(row['ie_id'], 'checked')
+                          if(newChecked.containsKey(row['ie_id'].toString()))
+                              newChecked.remove(row['ie_id'].toString())
+                          else newChecked.put(row['ie_id'].toString(), 'checked')
                       }
                       break
               }
