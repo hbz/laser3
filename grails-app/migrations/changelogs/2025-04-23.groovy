@@ -198,4 +198,31 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-31") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'access.method.ip')")
+                String info = 'RDV(owner=access.method.ip) deleted: ' + sql.getUpdateCount()
+
+                sql.executeUpdate("delete from refdata_category where rdc_description = 'access.method.ip'")
+                info = info + ', RDC deleted: ' + sql.getUpdateCount()
+
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1745397625037-32") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from refdata_value where rdv_value = 'Institution' and rdv_owner = (select rdc_id from refdata_category where rdc_description = 'combo.type')")
+                String info = 'RDV(combo.type/Institution) deleted: ' + sql.getUpdateCount()
+                confirm(info)
+                changeSet.setComments(info)
+            }
+        }
+    }
+
 }
