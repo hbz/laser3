@@ -49,6 +49,44 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   Date counter4LastRun
   Date counter5LastRun
 
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessPlatform')
+  RefdataValue accessPlatform
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.viewerForPdf')
+  RefdataValue viewerForPdf
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.viewerForEpub')
+  RefdataValue viewerForEpub
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.playerForAudio')
+  RefdataValue playerForAudio
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.playerForVideo')
+  RefdataValue playerForVideo
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessEPub')
+  RefdataValue accessEPub
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE)
+  RefdataValue onixMetadata //no input at we:kb
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessPdf')
+  RefdataValue accessPdf
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessAudio')
+  RefdataValue accessAudio
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessVideo')
+  RefdataValue accessVideo
+
+  @RefdataInfo(cat = RDConstants.ACCESSIBILITY_COMPLIANCE, i18n = 'platform.accessibility.accessDatabase')
+  RefdataValue accessDatabase
+
+  @RefdataInfo(cat = RDConstants.Y_N, i18n = 'platform.accessibility.accessibilityStatementAvailable')
+  RefdataValue accessibilityStatementAvailable
+
+  String accessibilityStatementUrl
+
   @Deprecated
   Org org
   Provider provider
@@ -81,6 +119,19 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
+    accessPlatform column:'plat_access_platform_rv_fk'
+    viewerForPdf column: 'plat_viewer_for_pdf_rv_fk'
+    viewerForEpub column: 'plat_viewer_for_epub_rv_fk'
+    playerForAudio column: 'plat_player_for_audio_rv_fk'
+    playerForVideo column: 'plat_player_for_video_rv_fk'
+    accessEPub column: 'plat_access_epub_rv_fk'
+    onixMetadata column: 'plat_onix_metadata_rv_fk'
+    accessPdf column: 'plat_access_pdf_rv_fk'
+    accessAudio column: 'plat_access_audio_rv_fk'
+    accessVideo column: 'plat_access_video_rv_fk'
+    accessDatabase column: 'plat_access_database_rv_fk'
+    accessibilityStatementAvailable column: 'plat_accessibility_statement_available_fk_rv'
+    accessibilityStatementUrl column: 'plat_accessibility_statement_url', type: 'text'
                org column:'plat_org_fk', index: 'plat_org_idx'
           provider column:'plat_provider_fk', index: 'plat_provider_idx'
              dateCreated column: 'plat_date_created'
@@ -103,6 +154,19 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
+    accessPlatform (nullable: true)
+    viewerForPdf (nullable: true)
+    viewerForEpub (nullable: true)
+    playerForAudio (nullable: true)
+    playerForVideo (nullable: true)
+    accessEPub (nullable: true)
+    onixMetadata (nullable: true)
+    accessPdf (nullable: true)
+    accessAudio (nullable: true)
+    accessVideo (nullable: true)
+    accessDatabase (nullable: true)
+    accessibilityStatementAvailable (nullable: true)
+    accessibilityStatementUrl (nullable: true, blank: false)
     org             (nullable:true)
     provider        (nullable:true)
     lastUpdatedCascading (nullable: true)

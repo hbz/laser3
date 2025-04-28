@@ -467,12 +467,16 @@ class LinksGenerationService {
     }
 
     /**
-     * Disjoins the given link between two organisatons
+     * Disjoins the given link between two providers or vendors
      * @param params the parameter map containing the combo to unlink
      * @return true if the deletion was successful, false otherwise
      */
     boolean unlinkProviderVendor(GrailsParameterMap params) {
-        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        int del = 0
+        if(params.containsKey('providerLink'))
+            del = ProviderLink.executeUpdate('delete from ProviderLink pl where pl.id = :id',[id: params.long("providerLink")])
+        else if(params.containsKey('vendorLink'))
+            del = VendorLink.executeUpdate('delete from VendorLink vl where vl.id = :id',[id: params.long("vendorLink")])
         return del > 0
     }
 }

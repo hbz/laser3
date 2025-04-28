@@ -63,11 +63,11 @@ class PackageExport extends BaseDetailsExport {
 
     static List<String> ES_SOURCE_FIELDS = [
 
-            "uuid",
-            "openAccess", "paymentType", "scope",
-            "altname", "description", "descriptionURL",
-            "curatoryGroups.*", "packageArchivingAgencies.*", "ddcs.*", "identifiers.*", "nationalRanges.*", "regionalRanges.*",
-            "lastUpdatedDisplay"
+            'uuid',
+            'openAccess', 'paymentType', 'scope',
+            'altname', 'description', 'descriptionURL',
+            'curatoryGroups.*', 'packageArchivingAgencies.*', 'ddcs.*', 'identifiers.*', 'nationalRanges.*', 'regionalRanges.*',
+            'lastUpdatedDisplay'
     ]
 
     /**

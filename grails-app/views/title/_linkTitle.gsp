@@ -6,7 +6,7 @@
   Time: 09:05
 --%>
 <laser:serviceInjection/>
-<ui:modal id="linkTitleModal" message="subscription.details.linkTitle.label" msgSave="${message(code: 'default.button.link.label')}">
+<ui:modal id="linkTitleModal" message="${header}" msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkTitleForm" url="[controller: 'subscription', action: 'processLinkTitle']">
         <input type="hidden" name="tippID" value="${tipp.id}"/>
@@ -74,7 +74,7 @@
         </g:else>
         <g:if test="${isConsortium}">
             <div class="field">
-                <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkTitle.label"/></label>
+                <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkTitle.label.subscription"/></label>
                 <div class="ui linkToChildren checkbox toggle">
                     <g:checkBox name="linkToChildren"/>
                 </div>
