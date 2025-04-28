@@ -46,3 +46,21 @@ WHERE
         ci_owner NOT IN (
             SELECT org_id FROM org WHERE org_is_beta_tester = true
         );
+
+UPDATE doc SET
+    doc_content = (SELECT (ARRAY [
+            'Aller guten Dinge sind drei',
+            'Besser spät als nie',
+            'Der Ton macht die Musik',
+            'Es ist nicht alles Gold, was glänzt',
+            'Gut Ding will Weile haben',
+            'In der Ruhe liegt die Kraft',
+            'Lange Rede, kurzer Sinn',
+            'Not macht erfinderisch',
+            'Ordnung ist das halbe Leben'
+        ])[FLOOR(RANDOM() * 9 + 1)] || ' (' || to_char(doc_date_created, 'DD.MM.YYYY') || ')'
+    )
+    WHERE doc_content_type = 0 AND
+        doc_owner_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
