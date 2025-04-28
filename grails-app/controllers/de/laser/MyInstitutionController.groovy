@@ -2022,8 +2022,20 @@ class MyInstitutionController  {
             result.curatoryGroups = remote.curatoryGroups
             result.curatoryGroupTypes = remote.curatoryGroupTypes
             result.automaticUpdates = remote.automaticUpdates
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
             result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             Set tmp = []
             packageSubscriptionList.eachWithIndex { entry, int i ->
                 String key = 'package_' + entry[0]
@@ -2063,7 +2075,7 @@ class MyInstitutionController  {
                 Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
                 if(wekbRec)
                     definiteRec.putAll(wekbRec)
-                else if(!params.containsKey('curatoryGroup') && !params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                else if(params.keySet().intersect(FilterService.PACKAGE_FILTER_GENERIC_FIELDS.keySet()).size() == 0) {
                     definiteRec.put('uuid', entry[0])
                 }
                 if(definiteRec.size() > 0)

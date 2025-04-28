@@ -157,6 +157,42 @@ class PackageService {
             queryParams.ddc = selDDC
         }
 
+        if (params.archivingAgency) {
+            result.filterSet = true
+            Set<String> selArchivingAgency = []
+            params.list("archivingAgency").each { String key ->
+                selArchivingAgency << RefdataValue.get(key).value
+            }
+            queryParams.archivingAgency = selArchivingAgency
+        }
+
+        if (params.contentType) {
+            result.filterSet = true
+            Set<String> selContentType = []
+            params.list("contentType").each { String key ->
+                selContentType << RefdataValue.get(key).value
+            }
+            queryParams.contentType = selContentType
+        }
+
+        if (params.paymentType) {
+            result.filterSet = true
+            Set<String> selPaymentType = []
+            params.list("paymentType").each { String key ->
+                selPaymentType << RefdataValue.get(key).value
+            }
+            queryParams.paymentType = selPaymentType
+        }
+
+        if (params.openAccess) {
+            result.filterSet = true
+            Set<String> selOpenAccess = []
+            params.list("openAccess").each { String key ->
+                selOpenAccess << RefdataValue.get(key).value
+            }
+            queryParams.openAccess = selOpenAccess
+        }
+
         if(params.stubOnly)
             queryParams.stubOnly = params.stubOnly
         if(params.uuids)
