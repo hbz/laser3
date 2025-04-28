@@ -34,6 +34,8 @@ import de.laser.OrgRole
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.remote.Wekb
+import de.laser.survey.SurveyPersonResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.CodeUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
@@ -393,23 +395,17 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupProviders() {
-        Map<String, Object> model = [:], result = controlledListService.getProviders(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
         model.providerList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
-            }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currProvLinks = Provider.executeQuery('select new map(pvr.provider.id as provId, pvr.isShared as isShared) from ProviderRole pvr, OrgRole oo where pvr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currProvLinks) {
-            model.currProviders = currProvLinks.provId.toSet()
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'subscription')) {
+            Subscription s = genericOIDService.resolveOID(params.subscription)
+            Set currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription', [subscription: s])
+            model.currProviders = currProvLinks
             model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currProvSharedLinks = currProvLinks.collectEntries { row -> [row.provId, row.isShared] }
+            if(s.instanceOf) {
+                model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription and pvr.isShared = true', [subscription: s.instanceOf])
+            }
             else model.currProvSharedLinks = [:]
         }
         else {
@@ -428,30 +424,22 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupVendors() {
-        Map<String, Object> model = [:], result = controlledListService.getVendors(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
         model.vendorList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
-            }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currVenLinks = Vendor.executeQuery('select new map(vr.vendor.id as venId, vr.isShared as isShared) from VendorRole vr, OrgRole oo where vr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currVenLinks) {
-            model.currVendors = currVenLinks.venId.toSet()
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'subscription')) {
+            Subscription s = genericOIDService.resolveOID(params.subscription)
+            Set currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription', [subscription: s])
+            model.currVendors = currVenLinks
             model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currVenSharedLinks = currVenLinks.collectEntries { row -> [row.venId, row.isShared] }
+            if(s.instanceOf)
+                model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription and vr.isShared = true', [subscription: s.instanceOf])
             else model.currVenSharedLinks = [:]
         }
         else {
             model.currVendors = []
             model.currVenSharedLinks = [:]
         }
-        model.currVenLinks = currVenLinks
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'
@@ -826,7 +814,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def linkTitleModal() {
         log.debug('ajaxHtmlController.linkTitleModal ' + params)
-        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium()]
+        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium(), header: message(code: params.headerToken)]
         result.tipp = TitleInstancePackagePlatform.findByGokbId(params.tippID)
         if(params.containsKey('fixedSubscription'))
             result.fixedSubscription = Subscription.get(params.fixedSubscription)
@@ -846,10 +834,16 @@ class AjaxHtmlController {
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextService.getOrg(), surveyConfig)
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        result.surveyInfo = surveyInfo
+        result.surveyConfig = surveyConfig
+        result.noParticipation = noParticipation
+        result.surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+
         boolean allResultHaveValue = true
         List<String> notProcessedMandatoryProperties = []
         //see ERMS-5815
-        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+
         if(!noParticipation) {
             surveyResults.each { SurveyResult surre ->
                 SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
@@ -860,19 +854,34 @@ class AjaxHtmlController {
             }
         }
 
-        result.surveyInfo = surveyInfo
-        result.surveyConfig = surveyConfig
-        result.noParticipation = noParticipation
-        result.surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+        if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+            result.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+        }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
+            result.error = g.message(code: 'surveyResult.finish.surveyContact')
+        }
+        else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+            if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
+                boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                        'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                if (vendorInvoicing && vendorCount == 0) {
+                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                } else if (!vendorInvoicing && vendorCount > 0) {
+                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                }
+            }
+        }else if (notProcessedMandatoryProperties.size() > 0) {
+            result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
 
-        if (notProcessedMandatoryProperties.size() > 0) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-        } else if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (noParticipation || allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (!noParticipation && !allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        if(!result.error) {
+            if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (noParticipation || allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (!noParticipation && !allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+            }
         }
 
 
@@ -1527,7 +1536,7 @@ class AjaxHtmlController {
             case Subscription.class.simpleName:
                 Subscription subscription = Subscription.get(params.id)
                 result.editable = subscription.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
                 }
@@ -1542,7 +1551,7 @@ class AjaxHtmlController {
             case License.class.simpleName:
                 License license = License.get(params.id)
                 result.editable = license.isEditableBy(user)
-                if(result.editable && params.onlyPrivateProperties == 'false') {
+                if((result.editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.LIC_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.LIC_PROP)
                 }

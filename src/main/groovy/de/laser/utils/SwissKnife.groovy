@@ -2,9 +2,15 @@ package de.laser.utils
 
 import de.laser.auth.User
 import de.laser.storage.BeanStore
+import grails.core.GrailsClass
+import grails.web.mapping.UrlMappingInfo
+import grails.web.mapping.UrlMappingsHolder
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
+import org.springframework.security.web.savedrequest.DefaultSavedRequest
+
+import javax.servlet.http.HttpServletRequest
 
 /**
  * The "Swiss knife", containing various helper methods for quick reuse
@@ -129,5 +135,36 @@ class SwissKnife {
             }
         }
         return cloned
+    }
+
+    static boolean fuzzyCheck(DefaultSavedRequest savedRequest) {  // TODO - move
+
+        if (!savedRequest) {
+            return true
+        }
+        boolean valid = false
+
+        UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
+        UrlMappingInfo[] matchedMappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
+
+        if (matchedMappingInfo.length > 0) {
+            UrlMappingInfo mappingInfo = matchedMappingInfo.first()
+            GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
+                    CodeUtils.getAllControllerArtefacts().find {
+                        it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
+                    }
+
+            if (controller && controller.name != 'StatusCode') {
+                boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
+                if (match) {
+                    valid = true
+                }
+            }
+        }
+        valid
+    }
+
+    static String getRemoteHash(HttpServletRequest request) {
+        request.getRemoteAddr().md5().take(16)
     }
 }

@@ -124,7 +124,7 @@ class PackageService {
             queryParams.status = params.list('pkgStatus')
         }
         else if(!params.pkgStatus) {
-            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
+            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value] //, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value //as of ERMS-6370, comments from April 24th and 25th, '25
             queryParams.status = params.pkgStatus
         }
 
@@ -150,11 +150,27 @@ class PackageService {
 
         if (params.ddc) {
             result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
+            queryParams.ddc = Params.getRefdataList(params, 'ddc').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.archivingAgency) {
+            result.filterSet = true
+            queryParams.archivingAgency = Params.getRefdataList(params, 'archivingAgency').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.contentType) {
+            result.filterSet = true
+            queryParams.contentType = Params.getRefdataList(params, 'contentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.paymentType) {
+            result.filterSet = true
+            queryParams.paymentType = Params.getRefdataList(params, 'paymentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.openAccess) {
+            result.filterSet = true
+            queryParams.openAccess = Params.getRefdataList(params, 'openAccess').collect { RefdataValue rv -> rv.value }
         }
 
         if(params.stubOnly)

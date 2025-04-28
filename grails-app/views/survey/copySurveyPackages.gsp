@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="copySurveyPackages.transfer" />
 
 <ui:breadcrumbs>
@@ -28,9 +28,9 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'survey.notStarted ')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -107,10 +107,11 @@
                         ${message(code: 'default.select.all.label')}
                     </option>
 
-                    <g:each in="${SurveyConfigPackage.findAllBySurveyConfig(surveyConfig)}" var="surveyPackage">
-                        <option <%=(params.list('selectedPackages').contains(surveyPackage.pkg.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${surveyPackage.pkg.id}" title="${surveyPackage.pkg.name}">
-                            ${surveyPackage.pkg.name}
+                    <g:each in="${SurveyPackageResult.findAllBySurveyConfig(surveyConfig).groupBy {it.pkg.id}}" var="pkgMap">
+                        <g:set var="pkg" value="${de.laser.wekb.Package.get(pkgMap.key)}"/>
+                        <option <%=(params.list('selectedPackages').contains(pkg.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${pkg.id}" title="${pkg.name}">
+                            ${pkg.name}
                         </option>
                     </g:each>
 
@@ -292,7 +293,7 @@
                             </g:if>
                             <g:else>
                                 <div class="field">
-                                    ${parentSuccessorSubscription.holdingSelection.getI10n('value')}
+                                    ${parentSuccessorSubscription.holdingSelection?.getI10n('value')}
                                 </div>
                             </g:else>
 

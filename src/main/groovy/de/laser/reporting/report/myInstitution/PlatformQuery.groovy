@@ -84,11 +84,14 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.PLATFORM_STATISTICS_FREQUENCY, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if (suffix in ['counterCertified', 'counterR3Supported', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported']) {
+        else if (suffix in ['counterCertified', 'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported']) {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if ( suffix in ['serviceProvider', 'softwareProvider', 'status']) {
+        else if ( suffix in [
+                'accessAudio', 'accessDatabase', 'accessEPub', 'accessPdf', 'accessPlatform', 'accessVideo', 'accessibilityStatementAvailable',
+                'playerForAudio', 'playerForVideo', 'serviceProvider', 'softwareProvider', 'status', 'viewerForEpub', 'viewerForPdf'
+        ]) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }

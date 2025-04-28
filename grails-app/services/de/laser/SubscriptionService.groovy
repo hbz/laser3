@@ -73,6 +73,7 @@ class SubscriptionService {
     IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
+    PackageService packageService
     PropertyService propertyService
     ProviderService providerService
     RefdataService refdataService
@@ -871,6 +872,52 @@ class SubscriptionService {
             }
         }else {
             return []
+        }
+    }
+
+    /**
+     * Queries the we:kb ElasticSearch index and returns a (filtered) list of packages which may be linked to the
+     * given subscription
+     * @param params the request parameter map, containing also filter parameters to limit the package results
+     * @return a filtered list of packages
+     * @see de.laser.remote.Wekb
+     * @see Package
+     */
+    Map<String,Object> linkTitle(GrailsParameterMap params) {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
+        else {
+            if(checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[getCachedPackageName('PackageTransfer_'+result.subscription.id)] as Object[], LocaleUtils.getCurrentLocale())
+                result.bulkProcessRunning = true
+            }
+            if (result.subscription.packages) {
+                result.pkgs = []
+                result.subscription.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
+                    result.pkgs.add(sp.pkg.gokbId)
+                }
+            } else {
+                log.debug("Subscription has no linked packages yet")
+            }
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
+            result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
+            if(params.containsKey('search'))
+                result.putAll(packageService.getWekbPackages(params))
+            [result: result, status: SubscriptionControllerService.STATUS_OK]
         }
     }
 
@@ -1702,6 +1749,18 @@ class SubscriptionService {
             sql.withTransaction {
                 sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
                 Set<Map<String, Object>> ieDirectMapSet = []//, coverageDirectMapSet = [], priceItemDirectSet = []
+                List<GroovyRowResult> existingEntitlements = sql.rows('select tipp_gokb_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk != :removed', [subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                if(existingEntitlements) {
+                    selectedTitles.removeAll(existingEntitlements['tipp_gokb_id'])
+                }
+                ieDirectMapSet.addAll(selectedTitles.collect { String wekbId ->
+                    Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                    if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                        configMap.perpetualAccessBySub = sub.id
+                    }
+                    configMap
+                })
+                /*
                 selectedTitles.each { String wekbId ->
                     //log.debug "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk != :removed and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_REMOVED.id, key: wekbId])
@@ -1711,21 +1770,20 @@ class SubscriptionService {
                             configMap.perpetualAccessBySub = sub.id
                         }
                         ieDirectMapSet << configMap
-                        /*
                         coverageDirectMapSet << coverageMap
                         priceItemDirectSet << priceMap
-                        */
                     }
                 }
-                ieDirectMapSet.each { Map<String, Object> configMap ->
-                    sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                */
+                ieDirectMapSet.eachWithIndex { Map<String, Object> configMap, int i ->
+                    sql.withBatch(5000, "insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
                             "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                         stmt.addBatch([wekbId: configMap.wekbId])
                     }
                 }
                 if(ieGroup) {
-                    ieDirectMapSet.each { Map<String, Object> configMap ->
-                        sql.withBatch("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
+                    ieDirectMapSet.eachWithIndex { Map<String, Object> configMap, int i ->
+                        sql.withBatch(5000, "insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
                                 "select 0, now(), now(), ie_id, ${ieGroup.id} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { stmt ->
                             stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
                         }
@@ -1733,8 +1791,8 @@ class SubscriptionService {
                 }
                 if(sub.hasPerpetualAccess) {
                     Long ownerId = sub.getSubscriberRespConsortia().id
-                    ieDirectMapSet.each { Map<String, Object> configMap ->
-                        sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                    ieDirectMapSet.eachWithIndex { Map<String, Object> configMap, int i ->
+                        sql.withBatch(5000, "insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
                                 "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
                             stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
                         }
@@ -1805,13 +1863,19 @@ class SubscriptionService {
                 tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.configMap.identifier))
             }
             if (result.configMap.containsKey('hasPerpetualAccess')) {
-                String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
-                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia()]
-                Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+                String permanentTitleStringQuery = "select tipp.hostPlatformURL from PermanentTitle pt join pt.tipp tipp where pt.owner = :subscriber and tipp.status = :current",
+                permanentTitlesQuery = "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (:currSubPkgs) and tipp.hostPlatformURL in (:subSet) and tipp.status = :current"
+                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia(), current: RDStore.TIPP_STATUS_CURRENT]
+                Set<String> permanentTitleURLs = TitleInstancePackagePlatform.executeQuery(permanentTitleStringQuery, permanentTitleParams)
+                Set<Long> tippIDsPurchasedGlobally = []
+                permanentTitleURLs.collate(65000).each { subSet ->
+                    tippIDsPurchasedGlobally.addAll(TitleInstancePackagePlatform.executeQuery(permanentTitlesQuery, [subSet: subSet, currSubPkgs: result.subscription.packages.pkg, current: RDStore.TIPP_STATUS_CURRENT]))
+                }
                 if (RefdataValue.get(result.configMap.hasPerpetualAccess) == RDStore.YN_YES) {
-                    tippIDs = tippIDs.intersect(permanentTitles)
-                }else{
-                    tippIDs.removeAll(permanentTitles)
+                    tippIDs = tippIDs.intersect(tippIDsPurchasedGlobally)
+                }
+                else {
+                    tippIDs.removeAll(tippIDsPurchasedGlobally)
                 }
             }
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
@@ -1844,17 +1908,16 @@ class SubscriptionService {
                         subscriptions << result.subscription
                     //}
                     if(subscriptions) {
-                        Set<Long> sourceTIPPs = []
-                        List rows
-                        //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) sense?
+                        Set rows
                         if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
+                            rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
                         else {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                            rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
-                        sourceTIPPs.addAll(rows["tipp_id"])
-                        tippIDs = tippIDs.minus(sourceTIPPs)
+                        rows.collate(65000).each { subSet ->
+                            tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
+                        }
                     }
                     if (tippIDs.size() > 0 && tippIDs.size() == result.checkedCount) {
                         result.allChecked = "checked"
@@ -4420,6 +4483,7 @@ class SubscriptionService {
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
             result.subscriber = result.subscription.getSubscriberRespConsortia()
+            result.editable = surveyService.isEditableSurvey(contextService.getOrg(), result.surveyInfo)
             Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
             if (rtParams.tab)    { params.tab = rtParams.tab }
             if (rtParams.subTab) { params.subTab = rtParams.subTab }

@@ -77,6 +77,7 @@
             <g:if test="${editable}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
+                <ui:actionsDropdownItem controller="subscription" action="linkTitle" params="${[id:params.id]}" message="subscription.details.linkTitle.label.subscription" />
                 <g:if test="${subscription.packages}">
                     <g:if test="${titleManipulation}">
                         <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />

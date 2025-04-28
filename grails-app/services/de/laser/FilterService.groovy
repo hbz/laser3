@@ -64,6 +64,13 @@ class FilterService {
                                                                     'accessDatabase': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessDatabase']]
     static Map<String, Map> PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS = ['individualDesignLogo': [rdcat: RDConstants.Y_N, label: 'platform.additional.individualDesignLogo'],
                                                                          'fullTextSearch': [rdcat: RDConstants.Y_N, label: 'platform.additional.fullTextSearch']]
+    static Map<String, Map> PACKAGE_FILTER_GENERIC_FIELDS = ['curatoryGroup' : [label: 'package.curatoryGroup.label'],
+                                                             'automaticUpdates': [label: 'package.source.automaticUpdates'],
+                                                             'paymentType': [label: 'package.paymentType.label'],
+                                                             'contentType': [label: 'package.content.type.label'],
+                                                             'openAccess': [label: 'package.openAccess.label'],
+                                                             'ddc': [label: 'package.ddc.label'],
+                                                             'archivingAgency': [label: 'package.archivingAgency.label']]
 
     /**
      * Subclass for generic parameter containing:
@@ -1033,12 +1040,27 @@ class FilterService {
             base_qry += " and surveyOrg.finishDate is not null"
         }
 
+        if (params.discoverySystemsFrontend) {
+            base_qry += "and exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = surveyOrg.org.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
+        }
+        if (params.discoverySystemsIndex) {
+            base_qry += "and exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = surveyOrg.org.id and dsi.index.id in (:indices))"
+            queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
+        }
+
         if (params.filterPropDef) {
                 PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
-                base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
-                queryParams.put('propDef', pd)
-                if (params.filterProp) {
-                    if (pd.isRefdataValueType()) {
+
+                if (pd.descr == PropertyDefinition.ORG_PROP) {
+                    def psq = propertyService.evalFilterQuery(params, '', 'surveyOrg.org', queryParams)
+                    base_qry += ' and ' + psq.query.split(' and', 2)[1]
+                    queryParams << psq.queryParams
+                }else {
+                    base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
+                    queryParams.put('propDef', pd)
+                    if (params.filterProp) {
+                        if (pd.isRefdataValueType()) {
                             List<String> selFilterProps = params.filterProp.split(',')
                             List filterProp = []
                             selFilterProps.each { String sel ->
@@ -1056,49 +1078,45 @@ class FilterService {
                                 base_qry += " surResult.refValue in (:prop) "
                                 queryParams.put('prop', filterProp)
                             }
-                    }
-                    else if (pd.isLongType()) {
+                        } else if (pd.isLongType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.longValue = null "
                             } else {
                                 base_qry += " and surResult.longValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isStringType()) {
+                        } else if (pd.isStringType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.stringValue = null "
                             } else {
                                 base_qry += " and lower(surResult.stringValue) like lower(:prop) "
                                 queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                             }
-                    }
-                    else if (pd.isBigDecimalType()) {
+                        } else if (pd.isBigDecimalType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.decValue = null "
                             } else {
                                 base_qry += " and surResult.decValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isDateType()) {
+                        } else if (pd.isDateType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.dateValue = null "
                             } else {
                                 base_qry += " and surResult.dateValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isURLType()) {
+                        } else if (pd.isURLType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.urlValue = null "
                             } else {
                                 base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
+                        }
                     }
+                    base_qry += ')'
                 }
-                base_qry += ')'
         }
 
         if(params.chartFilter){
@@ -1183,7 +1201,7 @@ class FilterService {
                 subQuery = subQuery + " not"
             }
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
             base_qry += subQuery
         }
@@ -1191,7 +1209,7 @@ class FilterService {
         if (params.sub && (params.subRunTimeMultiYear || params.subRunTime)) {
             String subQuery = " and "
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub "
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub "
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
             if (params.subRunTimeMultiYear && !params.subRunTime) {
                 subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
@@ -1207,7 +1225,7 @@ class FilterService {
         if (params.sub && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
             String subQuery = " and "
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
 
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
             base_qry += subQuery

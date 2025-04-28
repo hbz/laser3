@@ -1051,17 +1051,46 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to list the potential package candidates for single title linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
     @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
+        Map<String,Object> ctrlResult = subscriptionService.linkTitle(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkTitle() {
         Subscription subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
         if(!subscription)
             subscription = Subscription.get(params.subscription)
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg
+            subscription.holdingSelection = RDStore.SUBSCRIPTION_HOLDING_PARTIAL //in case it was null before
+            subscription.save()
             subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
             redirect action: 'index', id: subscription.id
         }
@@ -1672,7 +1701,7 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def tippSelectForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         MultipartFile kbartPreselect = request.getFile('kbartPreselect')
         //we may presume that package linking is given and checked at this place
         Set<Package> subPkgs = result.subscription.packages.pkg
@@ -1696,7 +1725,7 @@ class SubscriptionController {
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
-            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.toList(), contextService.getOrg())
+            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
             String customerIdentifier = "", notInPackageRows = ""
             if(customerIdentifierSet)
                 customerIdentifier = customerIdentifierSet.join(',')

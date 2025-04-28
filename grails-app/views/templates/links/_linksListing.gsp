@@ -229,15 +229,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <g:if test="${license}"></g:if>
-                            <g:else>
-                                <g:if test="${pair.propertySet && pair instanceof License}">
-                                    <div class="ui fluid segment content">
-                                        <laser:render template="/subscription/licProp"
-                                                      model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextService.getOrg()), linkId: link.id]"/>
-                                    </div>
-                                </g:if>
-                            </g:else>
+                            <g:if test="${pair.propertySet && pair instanceof License}">
+                                <div class="ui fluid segment content">
+                                    <laser:render template="/subscription/licProp"
+                                                  model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextService.getOrg()), linkId: link.id]"/>
+                                </div>
+                            </g:if>
                         </div>
 
                     </g:each>

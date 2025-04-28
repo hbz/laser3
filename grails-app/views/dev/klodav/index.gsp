@@ -105,6 +105,14 @@
             <div class="content"> &lt;icon:pathFile/> </div>
         </div>
         <div class="item">
+            <icon:codePackage/>
+            <div class="content"> &lt;icon:codePackage/> </div>
+        </div>
+        <div class="item">
+            <icon:codeClass/>
+            <div class="content"> &lt;icon:codeClass/> </div>
+        </div>
+        <div class="item">
             <icon:universalAccess/>
             <div class="content"> &lt;icon:universalAccess/> </div>
         </div>
@@ -163,6 +171,18 @@
                 <div class="content"> functional link</div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header"><icon:pointingHand/> SpringSecurityUtils</div>
+    </div>
+    <div class="content">
+        <g:set var="scUrls" value="${SpringSecurityUtils.securityConfig.flatten().findAll{ it.key.toLowerCase().contains('url')}}" />
+<pre>
+<% scUrls.collect{ print it.toString() + '\n' } %>
+</pre>
     </div>
 </div>
 

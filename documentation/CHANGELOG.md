@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6495    25.04.2025  rc-3.5  3.5-RC      David   Feature     Refdata aufräumen
+
+6492    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Kopie von Vertragsmerkmalen lief in Fehler
+
+6491    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler in der Tabellenüberschrift behoben
+
+6490    24.04.2025  rc-3.5  3.5-RC      Andreas Feature     Anpassung der Upload-Templates für Lizenzen und Kosten
+
+6489    24.04.2025  rc-3.5  3.5-RC      David   Feature     Reporting: neue Felder für Platform
+
+6478    17.04.2025  rc-3.5  3.5-RC      David   Feature     Landingpage und Login-Form zusammenführen
+
+6483    17.04.2025  rc-3.5  3.5-RC      David   Bug         500er Systemmeldung Startseite / Landing Page QA
+
 6441    14.04.2025  rc-3.5  3.5-RC      Andreas Feature     verschiedene Verbesserungen des Kostenmenüs
 
 6466    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsche Anzeige der Merkmale in Vertrags-Kurzübersicht

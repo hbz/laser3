@@ -29,7 +29,7 @@
 </g:if>
 <g:else>
     <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
-            ['q', 'singleTitle', 'pkgStatus'],
+            ['q', 'pkgStatus'],
             ['provider', 'vendor', 'ddc', 'curatoryGroup'],
             ['curatoryGroupType', 'automaticUpdates']
     ]]"/>

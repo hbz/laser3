@@ -2022,8 +2022,20 @@ class MyInstitutionController  {
             result.curatoryGroups = remote.curatoryGroups
             result.curatoryGroupTypes = remote.curatoryGroupTypes
             result.automaticUpdates = remote.automaticUpdates
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
             result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             Set tmp = []
             packageSubscriptionList.eachWithIndex { entry, int i ->
                 String key = 'package_' + entry[0]
@@ -2063,7 +2075,7 @@ class MyInstitutionController  {
                 Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
                 if(wekbRec)
                     definiteRec.putAll(wekbRec)
-                else if(!params.containsKey('curatoryGroup') && !params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                else if(params.keySet().intersect(FilterService.PACKAGE_FILTER_GENERIC_FIELDS.keySet()).size() == 0) {
                     definiteRec.put('uuid', entry[0])
                 }
                 if(definiteRec.size() > 0)
@@ -2511,15 +2523,17 @@ class MyInstitutionController  {
                     flash.error = g.message(code: 'surveyResult.finish.surveyContact')
                 }
                 else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
-                    boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
-                    int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
-                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
-                    if (vendorInvoicing && vendorCount == 0) {
-                        allResultHaveValue = false
-                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
-                    }else if(!vendorInvoicing && vendorCount > 0){
-                        allResultHaveValue = false
-                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                    if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
+                        boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                        int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                                'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                        if (vendorInvoicing && vendorCount == 0) {
+                            allResultHaveValue = false
+                            flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                        } else if (!vendorInvoicing && vendorCount > 0) {
+                            allResultHaveValue = false
+                            flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                        }
                     }
                 }
 
@@ -2533,14 +2547,6 @@ class MyInstitutionController  {
                 }
             }
             */
-
-            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
-                SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
-                surveyResult.comment = params.surveyResultComment
-                surveyResult.save()
-            }
-
-
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
@@ -2560,6 +2566,12 @@ class MyInstitutionController  {
                     flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
                     sendSurveyFinishMail = true
                 }
+            }
+
+            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+                surveyResult.comment = params.surveyResultComment
+                surveyResult.save()
             }
 
             if (sendSurveyFinishMail) {

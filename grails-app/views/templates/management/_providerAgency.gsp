@@ -23,7 +23,7 @@
 
                             <div class="ui la-vertical buttons">
                                 <laser:render template="/templates/links/providerLinksSimpleModal"
-                                          model="${[linkType      : subscription.class.name,
+                                          model="${[linkType      : Subscription.class.name,
                                                     parent        : genericOIDService.getOID(subscription),
                                                     recip_prop    : 'subscription',
                                                     tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
@@ -33,7 +33,7 @@
                                                     editmode      : editable
                                           ]}"/>
                                 <laser:render template="/templates/links/vendorLinksSimpleModal"
-                                              model="${[linkType      : subscription.class.name,
+                                              model="${[linkType      : Subscription.class.name,
                                                         parent        : genericOIDService.getOID(subscription),
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),

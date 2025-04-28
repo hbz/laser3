@@ -246,6 +246,8 @@ class SurveyControllerService {
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
+            result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
             result.editable = (result.surveyInfo && result.surveyInfo.status.id != RDStore.SURVEY_IN_PROCESSING.id) ? false : result.editable
 
             result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
@@ -362,7 +364,22 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
+
+
 
             result.countCostItems = CostItem.executeQuery('select count(*) from CostItem ct where ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null and ct.costItemElement = :costItemElement', [costItemElement: RefdataValue.get(result.selectedCostItemElementID), status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])[0]
 
@@ -450,7 +467,20 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : SurveyConfigPackage.executeQuery('select scp.pkg.id from SurveyConfigPackage scp where scp.surveyConfig = :surConfig order by scp.pkg.name', [surConfig: result.surveyConfig])[0]
 
@@ -574,6 +604,11 @@ class SurveyControllerService {
                 params.remove("removeUUID")
             }else if(params.selectedPkgs || params.pkgListToggler) {
 
+                if(params.processOption == 'unlinkPackages') {
+                    List uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+                    params.uuids = uuidPkgs
+                }
+
                 result.putAll(packageService.getWekbPackages(params))
 
                 List selectedPkgs = []
@@ -618,6 +653,7 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         else {
 
+            result.propList = PropertyDefinition.findAllPublicAndPrivateVendorProp(contextService.getOrg())
 
             if(params.initial){
                 params.isMyX = ['wekb_exclusive']
@@ -816,8 +852,6 @@ class SurveyControllerService {
 
             if (selectedMembers) {
 
-                RefdataValue selectedCostItemElement = params.bulkSelectedCostItemElementID ? (RefdataValue.get(Long.valueOf(params.bulkSelectedCostItemElementID))) : null
-
                 RefdataValue billing_currency = null
                 if (params.long('newCostCurrency')) //GBP,etc
                 {
@@ -884,6 +918,8 @@ class SurveyControllerService {
                     }
 
                 }
+
+                RefdataValue selectedCostItemElement = params.bulkSelectedCostItemElementID ? (RefdataValue.get(Long.valueOf(params.bulkSelectedCostItemElementID))) : null
 
                 boolean costItemsForSurveyPackage = params.selectPkg == "true" ? true : false
 
@@ -3496,73 +3532,58 @@ class SurveyControllerService {
 
                 List surveyOrgsDo = []
 
+                List surveyOrgs = []
+
                 if (params.surveyOrg) {
+                    surveyOrgs << params.surveyOrg
+
+                }
+
+                if (params.get('surveyOrgs')) {
+                    surveyOrgs = (params.get('surveyOrgs').split(',').collect {
+                        String.valueOf(it.replaceAll("\\s", ""))
+                    }).toList()
+                }
+
+                surveyOrgs.each {
                     try {
-                        SurveyOrg surveyOrg = genericOIDService.resolveOID(params.surveyOrg)
-                        if (costItemsForSurveyPackage) {
-                            if (pkg) {
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
-                                        surveyOrgsDo << surveyOrg
+
+                        SurveyOrg surveyOrg = genericOIDService.resolveOID(it)
+                        if(surveyOrg) {
+                            if (params.oldCostItem) {
+                                CostItem costItem = genericOIDService.resolveOID(params.oldCostItem)
+                                if (costItem.surveyOrg == surveyOrg) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            }else{
+                                if (costItemsForSurveyPackage) {
+                                    if (pkg) {
+                                        if (cost_item_element) {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                                surveyOrgsDo << surveyOrg
+                                            }
+                                        } else {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                                surveyOrgsDo << surveyOrg
+                                            }
+                                        }
                                     }
                                 } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
-                                        surveyOrgsDo << surveyOrg
+                                    if (cost_item_element) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                            surveyOrgsDo << surveyOrg
+                                        }
+                                    } else {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                            surveyOrgsDo << surveyOrg
+                                        }
                                     }
-                                }
-                            }
-                        } else {
-                            if (cost_item_element) {
-                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                    surveyOrgsDo << surveyOrg
-                                }
-                            } else {
-                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                    surveyOrgsDo << surveyOrg
                                 }
                             }
                         }
 
                     } catch (Exception e) {
                         log.error("Non-valid surveyOrg sent ${it}", e)
-                    }
-                }
-
-                if (params.get('surveyOrgs')) {
-                    List surveyOrgs = (params.get('surveyOrgs').split(',').collect {
-                        String.valueOf(it.replaceAll("\\s", ""))
-                    }).toList()
-                    surveyOrgs.each {
-                        try {
-
-                            SurveyOrg surveyOrg = genericOIDService.resolveOID(it)
-                            if (costItemsForSurveyPackage) {
-                                if(pkg) {
-                                    if (cost_item_element) {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
-                                            surveyOrgsDo << surveyOrg
-                                        }
-                                    } else {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
-                                            surveyOrgsDo << surveyOrg
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                        surveyOrgsDo << surveyOrg
-                                    }
-                                } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                        surveyOrgsDo << surveyOrg
-                                    }
-                                }
-                            }
-
-                        } catch (Exception e) {
-                            log.error("Non-valid surveyOrg sent ${it}", e)
-                        }
                     }
                 }
 
@@ -3925,8 +3946,20 @@ class SurveyControllerService {
         result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if (!subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)) {
+            if('all' in params.list('selectedPackages') && params.list('selectedPackages').size() > 1){
+                List selectedPackages = []
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        selectedPackages << it
+                    }
+                }
+                params.selectedPackages = selectedPackages
+            }else {
+                params.selectedPackages = params.selectedPackages ?: 'all'
+            }
+
             List packages = []
-            if(params.list('selectedPackages')){
+            if(!('all' in params.list('selectedPackages')) && params.list('selectedPackages')){
                 params.list('selectedPackages').each {
                     if(it != 'all'){
                         packages << Package.get(Long.valueOf(it))
@@ -4039,7 +4072,20 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4086,7 +4132,20 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID): RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4316,7 +4375,20 @@ class SurveyControllerService {
 
             result.participantsList = []
 
-            result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+            if(params.selectedCostItemElementID){
+                result.selectedCostItemElementID = Long.valueOf(params.selectedCostItemElementID)
+            }else {
+                List<RefdataValue> costItemElementsIds = CostItem.executeQuery('select ct.costItemElement.id from CostItem ct where ct.pkg is null and ct.costItemStatus != :status and ct.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ct.costItemElement is not null group by ct.costItemElement.id order by ct.costItemElement.id', [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig])
+                if(costItemElementsIds.size() > 0){
+                    if(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id in costItemElementsIds){
+                        result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                    }else {
+                        result.selectedCostItemElementID = costItemElementsIds[0]
+                    }
+                }else {
+                    result.selectedCostItemElementID = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id
+                }
+            }
 
             result.selectedCostItemElement = RefdataValue.get(result.selectedCostItemElementID)
 
@@ -4456,6 +4528,15 @@ class SurveyControllerService {
 
             if (params.tab == 'privateProperties') {
                 result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id }.type
+            }
+
+            List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
+                result.memberProperties = memberProperties
             }
 
             if (result.properties) {

@@ -58,10 +58,10 @@
     </thead>
     <tbody>
     <g:each in="${providerList}" var="provider" status="i">
-        <tr <g:if test="${tmplShowCheckbox && currProvSharedLinks.get(provider.id) == true}">class="disabled"</g:if>>
+        <tr <g:if test="${tmplShowCheckbox && provider.id in currProviders && !unlink}">class="disabled"</g:if>>
         <g:if test="${tmplShowCheckbox}">
             <td>
-                <g:if test="${currProvSharedLinks.get(provider.id) == true}">
+                <g:if test="${provider.id in currProvSharedLinks}">
                     <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                 </g:if>
                 <g:else>

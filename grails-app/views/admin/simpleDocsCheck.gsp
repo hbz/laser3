@@ -12,6 +12,7 @@
 <nav class="ui secondary menu">
     <g:link controller="admin" action="simpleFilesCheck" class="item">Dateisystem</g:link>
     <g:link controller="admin" action="simpleDocsCheck" class="item active">Datenbank</g:link>
+    <g:link controller="admin" action="simpleShareConfCheck" class="item">Sichtbarkeit</g:link>
 </nav>
 
 <div class="ui fluid card">
@@ -24,10 +25,10 @@
                 <div class="content"><icon:pathFolder/> Pfad: <strong>${dsPath}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="arrow circle right icon"></i> DOC-Einträge: <strong>${Doc.executeQuery('select count(*) from Doc where contentType = 3')[0]}</strong></div>
+                <div class="content"><i class="arrow circle right icon"></i> Doc-Einträge: <strong>${Doc.executeQuery('select count(*) from Doc where contentType = 3')[0]}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.NO} red"></i> DOC ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.NO} red"></i> Doc ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -35,7 +36,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">DOC ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
+        <div class="header">Doc ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
     </div>
     <div class="content">
         <table class="ui table very compact">
@@ -75,7 +76,7 @@
             <br/>
             <g:link controller="admin" action="simpleDocsCheck" params="${[deleteOrphanedDocs: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
-                    data-confirm-tokenMsg="Ungültige DOC-Einträge aus der Datenbank löschen?"
+                    data-confirm-tokenMsg="Ungültige Doc-Einträge aus der Datenbank löschen?"
                     data-confirm-term-how="ok">Aufräumen</g:link>
         </g:if>
     </div>

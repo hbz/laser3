@@ -21,6 +21,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.GlobalRecordSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -253,12 +254,25 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                    if(subChildIDs) {
+                                        executorService.execute({
+                                            String threadName = 'PackageUnlink_'+sub.id
+                                            Thread.currentThread().setName(threadName)
+                                            sub.packages.each { SubscriptionPackage sp ->
+                                                if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
+                                                    log.error('error on clearing issue entitlements when changing package holding selection')
+                                                }
+                                            }
+                                        })
+                                    }
                                     executorService.execute({
-                                        String threadName = 'PackageUnlink_'+sub.id
-                                        Thread.currentThread().setName(threadName)
                                         sub.packages.each { SubscriptionPackage sp ->
-                                            if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
-                                                log.error('error on clearing issue entitlements when changing package holding selection')
+                                            Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if(missingTipps.size() > 0) {
+                                                log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
+                                                    String threadName = 'PackageUnlink_' + sub.id
+                                                    Thread.currentThread().setName(threadName)
+                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
                                             }
                                         }
                                     })
@@ -446,7 +460,7 @@ class AjaxController {
           Map<String, Object> filterParams = [:]
           if(params.filterParams){
               JSON.parse(params.filterParams).each {
-                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers']){
+                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers', 'hasPerpetualAccess']){
                       if(it.value != '[]') {
                           filterParams[it.key] = []
                           it.value = it.value.replace('[','').replace(']','')
@@ -489,13 +503,7 @@ class AjaxController {
                   tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
               }
               switch (params.tab) {
-                  case 'allTipps': tippIDs.each { Long tippID ->
-                      if(newChecked.containsKey(tippID.toString()))
-                          newChecked.remove(tippID.toString())
-                      else newChecked.put(tippID.toString(), 'checked')
-                  }
-                      break
-                  case 'selectableTipps':
+                  case ['allTipps', 'selectableTipps']:
                       Set<Subscription> subscriptions = []
                       if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                           subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
@@ -504,17 +512,16 @@ class AjaxController {
                           subscriptions << result.subscription
                       //}
                       if(subscriptions) {
-                          Set<Long> sourceTIPPs = []
-                          List rows
-                          //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) - does not make sense for bulkcheck???
+                          Set rows
                           if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
+                              rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                           }
                           else {
-                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                              rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                           }
-                          sourceTIPPs.addAll(rows["tipp_id"])
-                          tippIDs = tippIDs.minus(sourceTIPPs)
+                          rows.collate(65000).each { subSet ->
+                              tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
+                          }
                       }
                       tippIDs.each { Long tippID ->
                           if(newChecked.containsKey(tippID.toString()))
@@ -526,9 +533,9 @@ class AjaxController {
                       Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                       List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                       rows.each { GroovyRowResult row ->
-                          if(newChecked.containsKey(row['ie_id']))
-                              newChecked.remove(row['ie_id'])
-                          else newChecked.put(row['ie_id'], 'checked')
+                          if(newChecked.containsKey(row['ie_id'].toString()))
+                              newChecked.remove(row['ie_id'].toString())
+                          else newChecked.put(row['ie_id'].toString(), 'checked')
                       }
                       break
               }
@@ -1879,6 +1886,9 @@ class AjaxController {
                             } else {
                                 // delete existing date
                                 target_object."${params.name}" = null
+                                //exception: globalRecordSource's haveUpTo
+                                if(target_object instanceof GlobalRecordSource && params.name == 'haveUpTo')
+                                    target_object.haveUpTo = DateUtils.getSDF_yyyyMMdd().parse('1970-01-01')
                             }
                             target_object.save(failOnError: true)
                         }

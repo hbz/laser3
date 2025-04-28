@@ -13,32 +13,59 @@
 <div class="ui grid">
     <div class="sixteen wide column">
         <div class="la-inline-lists">
-            <p>
+            <div>
                 <g:message code="myinst.subscriptionImport.manual.p1"/>
-            </p>
-            <p>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"><img class="ui small image" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/></a>
+            </div>
+            <div>
                 <g:message code="myinst.subscriptionImport.manual.p2"/>
-            <ol>
-                <li><g:message code="myinst.subscriptionImport.manual.li1"/></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li2"/></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li3"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_01_03.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_03.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_01_03.png')}"/></a></p></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li4"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_01_04.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_04.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_01_04.png')}"/></a></p></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li5"/></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li6"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_06.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_06.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_06.png')}"/></a></p></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li7"/></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li8"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_08.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_08.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_08.png')}"/></a></p></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li9"/></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li10"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_10.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_10.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_10.png')}"/></a></p></li>
-            </ol>
-        </p>
-            <p>
+                <ul>
+                    <li><g:message code="myinst.subscriptionImport.manual.li1"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li2"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li3"/></li>
+                </ul>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"><img class="ui small image" alt="financeupload_1.png" src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"/></a>
+            </div>
+            <hr/>
+            <div>
+                <ul>
+                    <li><g:message code="myinst.subscriptionImport.manual.li4"/></li>
+                </ul>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"><img class="ui small image" alt="financeupload_2.png" src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"/></a>
+            </div>
+            <hr/>
+            <div>
+                <ol>
+                    <li><g:message code="myinst.subscriptionImport.manual.li5"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li6"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li7"/></li>
+                </ol>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_06.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_06.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_06.png')}"/></a>
+                <ol>
+                    <li><g:message code="myinst.subscriptionImport.manual.li8"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li9"/></li>
+                </ol>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_08.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_08.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_08.png')}"/></a>
+                <ol>
+                    <li><g:message code="myinst.subscriptionImport.manual.li10"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li11"/></li>
+                </ol>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_10.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_10.png" src="${resource(dir: 'media', file: 'subscription/Abbildung_Punkt_01_10.png')}"/></a>
+            </div>
+            <hr/>
+            <div>
                 <g:message code="myinst.subscriptionImport.manual.p3"/>
-            <ol>
-                <li><g:message code="myinst.subscriptionImport.manual.li11"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_01.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"/></a></p></li>
-                <li><g:message code="myinst.subscriptionImport.manual.li12"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_02a.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"/></a></p></li>
-            </ol>
-            <g:message code="myinst.subscriptionImport.manual.p4"/>
-        </p>
+                <ol>
+                    <li><g:message code="myinst.subscriptionImport.manual.li12"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li13"/></li>
+                </ol>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"><img class="ui small image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/></a>
+                <ul>
+                    <li><g:message code="myinst.subscriptionImport.manual.li14"/></li>
+                </ul>
+                <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"><img class="ui small image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/></a>
+                <g:message code="myinst.subscriptionImport.manual.p4"/>
+            </div>
             <%
                 String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
                 if(contextService.getOrg().isCustomerType_Consortium()) {

@@ -110,7 +110,8 @@ class HelpService {
 
             'url_wekb'          : Wekb.getURL(), // ConfigMapper.getWekbServerURL(), // TODO
 
-            'link_org_readerNumber_id' : g.createLink(controller: 'organisation', action: 'readerNumber', id: contextService.getOrg().id, absolute: true)
+            'link_org_readerNumber_id' : contextService.getOrg() ? g.createLink(controller: 'organisation', action: 'readerNumber', id: contextService.getOrg().id, absolute: true) : 'NUR_NACH_ANMELDUNG' // TODO
+
         ] as Map<String, String>
     }
 

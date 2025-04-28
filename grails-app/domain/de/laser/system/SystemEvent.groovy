@@ -61,6 +61,7 @@ class SystemEvent {
             'FT_INDEX_CLEANUP_ERROR'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'GD_SYNC_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'GD_SYNC_JOB_COMPLETE'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'GDC_INFO'                      : [category: CATEGORY.OTHER,  relevance: RELEVANCE.INFO],
             'GSSS_JSON_START'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_JSON_COMPLETE'            : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_JSON_ERROR'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
