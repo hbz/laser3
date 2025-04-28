@@ -21,7 +21,7 @@
 
             <h3 class="ui header">JVM/Runtime</h3>
 
-            <div class="ui horizontal statistics">
+            <div class="ui horizontal small statistics">
                 <div class="statistic">
                     <div class="value">${((rt.freeMemory() / mb) as float).round(2)}</div>
                     <div class="label">MB &middot; free</div>
@@ -46,7 +46,7 @@
 
             <h3 class="ui header">${docStore.folderPath}</h3>
 
-            <div class="ui horizontal statistics">
+            <div class="ui horizontal small statistics">
                 <div class="statistic">
                     <div class="value">${docStore.filesCount}</div>
                     <div class="label">Files</div>
