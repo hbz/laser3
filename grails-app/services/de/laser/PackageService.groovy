@@ -150,47 +150,27 @@ class PackageService {
 
         if (params.ddc) {
             result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
+            queryParams.ddc = Params.getRefdataList(params, 'ddc').collect { RefdataValue rv -> rv.value }
         }
 
         if (params.archivingAgency) {
             result.filterSet = true
-            Set<String> selArchivingAgency = []
-            params.list("archivingAgency").each { String key ->
-                selArchivingAgency << RefdataValue.get(key).value
-            }
-            queryParams.archivingAgency = selArchivingAgency
+            queryParams.archivingAgency = Params.getRefdataList(params, 'archivingAgency').collect { RefdataValue rv -> rv.value }
         }
 
         if (params.contentType) {
             result.filterSet = true
-            Set<String> selContentType = []
-            params.list("contentType").each { String key ->
-                selContentType << RefdataValue.get(key).value
-            }
-            queryParams.contentType = selContentType
+            queryParams.contentType = Params.getRefdataList(params, 'contentType').collect { RefdataValue rv -> rv.value }
         }
 
         if (params.paymentType) {
             result.filterSet = true
-            Set<String> selPaymentType = []
-            params.list("paymentType").each { String key ->
-                selPaymentType << RefdataValue.get(key).value
-            }
-            queryParams.paymentType = selPaymentType
+            queryParams.paymentType = Params.getRefdataList(params, 'paymentType').collect { RefdataValue rv -> rv.value }
         }
 
         if (params.openAccess) {
             result.filterSet = true
-            Set<String> selOpenAccess = []
-            params.list("openAccess").each { String key ->
-                selOpenAccess << RefdataValue.get(key).value
-            }
-            queryParams.openAccess = selOpenAccess
+            queryParams.openAccess = Params.getRefdataList(params, 'openAccess').collect { RefdataValue rv -> rv.value }
         }
 
         if(params.stubOnly)
