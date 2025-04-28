@@ -94,6 +94,62 @@
                 </div>
             </div>
         </g:if>
+        <g:if test="${field == 'archivingAgency'}">
+            <div class="field">
+                <label for="archivingAgency">${message(code: 'package.archivingAgency.label')}</label>
+                <select name="archivingAgency" id="archivingAgency" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${archivingAgencies}" var="archivingAgency">
+                        <option <%=Params.getLongList(params, 'archivingAgency').contains(archivingAgency.id) ? 'selected="selected"' : ''%>
+                                value="${archivingAgency.id}">
+                            ${archivingAgency.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </g:if>
+        <g:if test="${field == 'paymentType'}">
+            <div class="field">
+                <label for="paymentType">${message(code: 'package.paymentType.label')}</label>
+                <select name="paymentType" id="paymentType" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${paymentTypes}" var="paymentType">
+                        <option <%=Params.getLongList(params, 'paymentType').contains(paymentType.id) ? 'selected="selected"' : ''%>
+                                value="${paymentType.id}">
+                            ${paymentType.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </g:if>
+        <g:if test="${field == 'openAccess'}">
+            <div class="field">
+                <label for="openAccess">${message(code: 'package.openAccess.label')}</label>
+                <select name="openAccess" id="openAccess" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${openAccessTypes}" var="openAccess">
+                        <option <%=Params.getLongList(params, 'openAccess').contains(openAccess.id) ? 'selected="selected"' : ''%>
+                                value="${openAccess.id}">
+                            ${openAccess.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </g:if>
+        <g:if test="${field == 'contentType'}">
+            <div class="field">
+                <label for="contentType">${message(code: 'package.contentType.label')}</label>
+                <select name="contentType" id="contentType" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${contentTypes}" var="contentType">
+                        <option <%=Params.getLongList(params, 'contentType').contains(contentType.id) ? 'selected="selected"' : ''%>
+                                value="${contentType.id}">
+                            ${contentType.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </g:if>
         <g:if test="${field == 'ddc'}">
             <div class="field">
                 <label for="ddc">${message(code: 'package.ddc.label')}</label>

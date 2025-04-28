@@ -28,11 +28,7 @@
     <ui:msg class="error" noClose="true" text="${error}"/>
 </g:if>
 <g:else>
-    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
-            ['singleTitle', 'pkgStatus'],
-            ['provider', 'vendor', 'ddc', 'curatoryGroup'],
-            ['curatoryGroupType', 'automaticUpdates']
-    ]]"/>
+    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: filterConfig]"/>
 </g:else>
 
 <ui:messages data="${flash}"/>
