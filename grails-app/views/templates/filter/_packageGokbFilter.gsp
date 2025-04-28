@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.FilterService; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -21,7 +21,7 @@
                 <div class="title">
                     <i class="icon dropdown"></i>
                     <g:message code="${accordion.getKey()}"/>
-                    <%-- TODO <g:if test="${params.keySet().intersect(FilterService.PLATFORM_FILTER_AUTH_FIELDS.keySet()).size()}"><span class="ui circular label yellow">${params.keySet().intersect(FilterService.PLATFORM_FILTER_AUTH_FIELDS.keySet()).size()}</span></g:if>--%>
+                    <g:if test="${params.keySet().intersect(FilterService.PACKAGE_FILTER_GENERIC_FIELDS.keySet()+['pkgStatus']).size() > 0}"><span class="ui circular label violet">${params.keySet().intersect(FilterService.PACKAGE_FILTER_GENERIC_FIELDS.keySet()+['pkgStatus']).size()}</span></g:if>
                 </div>
                 <div class="content">
                     <laser:render template="/templates/filter/packageGokbFilterFields" model="[
