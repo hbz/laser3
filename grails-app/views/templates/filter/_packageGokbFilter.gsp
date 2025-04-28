@@ -65,8 +65,7 @@
                             <option value="">${message(code: 'default.select.choose.label')}</option>
                             <g:set var="excludes" value="${[RDStore.PACKAGE_STATUS_REMOVED]}"/>
                             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)-excludes}" var="pkgStatus">
-                                <option <%=(params.list('pkgStatus')?.contains(pkgStatus.value)) ? 'selected="selected"' : ''%>
-                                        value="${pkgStatus.value}">
+                                <option <%=(params.list('pkgStatus').contains(pkgStatus.value)) ? 'selected="selected"' : ''%> value="${pkgStatus.value}">
                                     ${pkgStatus.getI10n("value")}
                                 </option>
                             </g:each>

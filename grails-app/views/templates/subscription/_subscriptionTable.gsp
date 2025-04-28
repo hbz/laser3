@@ -169,7 +169,7 @@
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
                                         <g:message code="myinst.currentSubscriptions.no_links_title" />
                                         <g:link controller="subscription" action="linkTitle"
-                                                id="${s.id}">${message(code: 'subscription.details.linkTitle.label')}</g:link>
+                                                id="${s.id}">${message(code: 'subscription.details.linkTitle.label.subscription')}</g:link>
                                     </g:if>
                                     <g:else>
                                         <g:message code="myinst.currentSubscriptions.no_links_basic" />
