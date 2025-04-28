@@ -150,11 +150,27 @@ class PackageService {
 
         if (params.ddc) {
             result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
+            queryParams.ddc = Params.getRefdataList(params, 'ddc').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.archivingAgency) {
+            result.filterSet = true
+            queryParams.archivingAgency = Params.getRefdataList(params, 'archivingAgency').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.contentType) {
+            result.filterSet = true
+            queryParams.contentType = Params.getRefdataList(params, 'contentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.paymentType) {
+            result.filterSet = true
+            queryParams.paymentType = Params.getRefdataList(params, 'paymentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.openAccess) {
+            result.filterSet = true
+            queryParams.openAccess = Params.getRefdataList(params, 'openAccess').collect { RefdataValue rv -> rv.value }
         }
 
         if(params.stubOnly)
