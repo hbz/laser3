@@ -116,6 +116,8 @@
     Subscription . SHARE_CONF_UPLOADER_AND_TARGET -> SHARE_CONF_ALL ?
 
     X . SHARE_CONF_UPLOADER_ORG -> shareConf = null ?
+
+    Org.shareConf > Dokumente   !=   License.shareConf > Geteilte Dokumente    !=   Subscription.shareConf > Dokumente
 </pre>
 
 <laser:htmlEnd />

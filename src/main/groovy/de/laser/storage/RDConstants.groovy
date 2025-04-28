@@ -44,7 +44,6 @@ class RDConstants {
     public static final String COST_ITEM_STATUS       = 'cost.item.status'
     public static final String COUNTRY                = 'country'
     public static final String COVERAGE_DEPTH         = 'coverage.depth'
-    public static final String CREATOR_TYPE           = 'creator.type'
     public static final String CURATORY_GROUP_TYPE    = 'curatory.group.type'
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE = 'customer.identifier.type'
@@ -87,7 +86,6 @@ class RDConstants {
     public static final String LICENSE_CATEGORY       = 'license.category'
     public static final String LICENSE_REMOTE_ACCESS  = 'license.remote.access'
     public static final String LICENSE_STATUS         = 'license.status'
-    public static final String LICENSE_TYPE           = 'license.type'
     public static final String LINK_TYPE              = 'link.type'
 
     public static final String LICENSE_ARC_ARCHIVAL_COPY_CONTENT                = 'license.arc.archival.copy.content'
@@ -106,7 +104,6 @@ class RDConstants {
     public static final String LICENSE_OA_RECEIVING_MODALITIES    = 'license.oa.receiving.modalities'
     public static final String LICENSE_OA_REPOSITORY              = 'license.oa.repository'
     public static final String LICENSE_OA_TYPE                    = 'license.oa.type'
-    public static final String LICENSE_REMOTE_ACCESS2             = 'license.remote.access2'
     public static final String LICENSE_STATISTICS_DELIVERY        = 'license.statistics.delivery'
     public static final String LICENSE_STATISTICS_FORMAT          = 'license.statistics.format'
     public static final String LICENSE_STATISTICS_FREQUENCY       = 'license.statistics.frequency'

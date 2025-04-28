@@ -265,17 +265,17 @@ class AjaxController {
                                             }
                                         })
                                     }
-                                    sub.packages.each { SubscriptionPackage sp ->
-                                        Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if(missingTipps.size() > 0) {
-                                            log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
-                                            executorService.execute({
-                                                String threadName = 'PackageUnlink_' + sub.id
-                                                Thread.currentThread().setName(threadName)
-                                                subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
-                                            })
+                                    executorService.execute({
+                                        sub.packages.each { SubscriptionPackage sp ->
+                                            Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if(missingTipps.size() > 0) {
+                                                log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
+                                                    String threadName = 'PackageUnlink_' + sub.id
+                                                    Thread.currentThread().setName(threadName)
+                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
+                                            }
                                         }
-                                    }
+                                    })
                                 }
                             }
                         }
@@ -533,9 +533,9 @@ class AjaxController {
                       Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                       List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                       rows.each { GroovyRowResult row ->
-                          if(newChecked.containsKey(row['ie_id']))
-                              newChecked.remove(row['ie_id'])
-                          else newChecked.put(row['ie_id'], 'checked')
+                          if(newChecked.containsKey(row['ie_id'].toString()))
+                              newChecked.remove(row['ie_id'].toString())
+                          else newChecked.put(row['ie_id'].toString(), 'checked')
                       }
                       break
               }

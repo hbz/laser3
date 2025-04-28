@@ -474,7 +474,7 @@
                             <g:if test="${editable && (!pkgs || IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp.gokbId = :tippID and ie.subscription = :fixedSubscription and ie.status != :removed', [tippID: record.uuid, fixedSubscription: subscription, removed: RDStore.TIPP_STATUS_REMOVED])[0] == 0)}">
                                 <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
                                 <div class="two wide column">
-                                    <a id="linkTitleToSubscription_${record.uuid}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: record.uuid, fixedSubscription: subscription.id])}" class="ui icon button ${disabled}"><g:message code="subscription.details.linkTitle.label"/></a>
+                                    <a id="linkTitleToSubscription_${record.uuid}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: record.uuid, fixedSubscription: subscription.id, headerToken: "subscription.details.linkTitle.heading.subscription"])}" class="ui icon button ${disabled}"><g:message code="subscription.details.linkTitle.label.subscription"/></a>
                                 </div>
 
                                 <laser:script file="${this.getGroovyPageFileName()}">

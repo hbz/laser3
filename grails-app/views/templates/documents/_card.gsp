@@ -117,7 +117,7 @@
                                     <i class="${Icon.CMD.EDIT}"></i>
                                 </button>
                             </g:if>
-                            <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
+                            <g:elseif test="${docctx.shareConf in [RDStore.SHARE_CONF_ALL, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]}">
                                 <%-- 1 --%>
                                 <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
@@ -163,7 +163,7 @@
                                     <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
-                            <g:elseif test="${docctx.shareConf != RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
+                            <g:elseif test="${!(docctx.shareConf in [RDStore.SHARE_CONF_ALL, RDStore.SHARE_CONF_UPLOADER_AND_TARGET])}">
                                 <div class="${Btn.ICON.SIMPLE} la-hidden">
                                     <icon:placeholder /><%-- Hidden Fake Button --%>
                                 </div>

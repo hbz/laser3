@@ -28,12 +28,12 @@
 <p>
     <g:message code="myinst.financeImport.manual.p3"/>
 <ol>
-    <li><g:message code="myinst.financeImport.manual.li11"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_01.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"/></a></p></li>
+    <li><g:message code="myinst.financeImport.manual.li12"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_01.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_01.png')}"/></a></p></li>
     %{--<li><g:message code="myinst.financeImport.manual.li12"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_02_02.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_02_02.png"/></a></p></li>
     <li><g:message code="myinst.financeImport.manual.li13"/></li>
     <li><g:message code="myinst.financeImport.manual.li14"/></li>
     <li><g:message code="myinst.financeImport.manual.li15"/></li>--}%
-    <li><g:message code="myinst.financeImport.manual.li16"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_02a.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"/></a></p></li>
+    <li><g:message code="myinst.financeImport.manual.li17"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_02a.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Punkt_02_02a.png')}"/></a></p></li>
 </ol>
 <g:message code="myinst.financeImport.manual.p4"/>
 </p>

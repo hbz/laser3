@@ -8,6 +8,7 @@ import de.laser.finance.PriceItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.helper.FactoryResult
+import de.laser.properties.LicenseProperty
 import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
@@ -1382,8 +1383,15 @@ class CopyElementsService {
 
 
         todoAuditProperties.each { Map todoAuditPro ->
-            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
-            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            AbstractPropertyWithCalculatedLastUpdated sourceProp
+            if(targetObject instanceof Subscription) {
+                sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+                targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            }
+            else if(targetObject instanceof License) {
+                sourceProp = LicenseProperty.get(todoAuditPro.sourcePropId)
+                targetProp = LicenseProperty.get(todoAuditPro.targetPropId)
+            }
             if(sourceProp && targetProp) {
                 targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
                     member = member.refresh()
@@ -1419,8 +1427,15 @@ class CopyElementsService {
         }
 
         todoAuditProperties.each { Map todoAuditPro ->
-            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
-            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            AbstractPropertyWithCalculatedLastUpdated sourceProp
+            if(targetObject instanceof Subscription) {
+                sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+                targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            }
+            else if(targetObject instanceof License) {
+                sourceProp = LicenseProperty.get(todoAuditPro.sourcePropId)
+                targetProp = LicenseProperty.get(todoAuditPro.targetPropId)
+            }
             if(sourceProp && targetProp) {
                 def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
                 auditConfigs.each {
