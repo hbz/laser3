@@ -1,4 +1,4 @@
-### Wo kann ich das Handbuch, Anleitungen und die FAQ finden?
+### Wo kann ich Anleitungen oder die FAQ finden?
 
 Diese Informationen finden Sie hier: [https://service-wiki.hbz-nrw.de/display/LAS/Startseite](https://service-wiki.hbz-nrw.de/display/LAS/Startseite)
 

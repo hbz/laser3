@@ -36,10 +36,6 @@ import de.laser.wekb.Vendor
 class PersonRole implements Comparable<PersonRole>{
     public static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
-    public static final String TYPE_FUNCTION        = 'functionType'
-    public static final String TYPE_POSITION        = 'positionType'
-    public static final String TYPE_RESPONSIBILITY  = 'responsibilityType'
-
     /**
      * The person has a certain position at the given organisation. Is exclusive with other types
      */

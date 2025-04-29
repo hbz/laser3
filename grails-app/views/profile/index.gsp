@@ -24,11 +24,11 @@
         <div class="la-inline-lists">
 
             <div class="ui card">
-                <div class="ui content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.bc.profile')}
-                    </h2>
+                <div class="ui top attached label">
+                    ${message(code: 'profile.bc.profile')}
+                </div>
 
+                <div class="ui content">
                     <ui:form controller="profile" action="updateProfile" class="updateProfile" hideWrapper="true">
                         <div class="field">
                             <label for="profile_username">${message(code: 'profile.username')}</label>
@@ -47,17 +47,16 @@
                             <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.update.button')}</button>
                         </div>
                     </ui:form><!-- updateProfile -->
-
                 </div><!-- .content -->
             </div><!-- .card -->
 
             <g:if test="${contextService.getOrg()}">
             <div class="ui card">
-                <div class="content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.notification.label')}
-                    </h2>
+                <div class="ui top attached label">
+                    ${message(code: 'profile.notification.label')}
+                </div>
 
+                <div class="content">
                     <ui:form controller="profile" action="updateNotificationSettings" class="updateNotificationSettings" hideWrapper="true">
                         <div class="inline field">
                             <div class="ui checkbox">
@@ -76,7 +75,7 @@
                             <input type="text" id="notificationCCEmailaddress" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                         </div>
 
-                        <table class="ui celled la-js-responsive-table la-table compact table">
+                        <table class="ui la-js-responsive-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -130,11 +129,11 @@
 
             <g:if test="${contextService.getOrg()}">
             <div class="ui card">
-                <div class="ui content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.reminder.label')}
-                    </h2>
+                <div class="ui top attached label">
+                    ${message(code: 'profile.reminder.label')}
+                </div>
 
+                <div class="ui content">
                     <ui:form controller="profile" action="updateReminderSettings" class="updateReminderSettings" hideWrapper="true">
 
                         <div class="inline field">
@@ -154,7 +153,7 @@
                             <input type="text" id="remindCCEmailaddress" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                         </div>
 
-                        <table class="ui celled la-js-responsive-table la-table compact table">
+                        <table class="ui la-js-responsive-table compact table">
                             <g:set var="defaultRemindPeriod" value="${UserSetting.DEFAULT_REMINDER_PERIOD}" />
                             <thead>
                             <tr>
@@ -328,11 +327,10 @@
         <div class="la-inline-lists">
 
             <div class="ui card la-js-changePassword">
+                <div class="ui top attached label">
+                    ${message(code: 'profile.password.label')}
+                </div>
                 <div class="content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.password.label')}
-                    </h2>
-
                     <g:if test="${user.isYoda()}">
                         <div id="profile-image">
                             <g:if test="${user.image}">
@@ -398,9 +396,10 @@
                     <div class="column wide sixteen">
                         <div class="la-inline-lists">
                             <div class="ui card la-full-width">
+                                <div class="ui top attached label">
+                                    ${message(code: 'profile.membership.existing')}
+                                </div>
                                 <div class="content">
-                                    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
-
                                     <ui:msg class="info" showIcon="true" hideClose="true" text="Diese Funktion ist nur für Administratoren verfügbar." />
 
                                     <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
@@ -439,61 +438,80 @@
             </g:else>
 
             <g:if test="${contextService.getOrg()}">
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui dividing header">
-                        ${message(code: 'profile.preferences')}
-                    </h2>
+                <div class="ui card">
+                    <div class="ui top attached label">
+                        ${message(code: 'profile.preferences.global')}
+                    </div>
+                    <div class="content">
+                        <div class="ui form">
+                            <div class="field">
+                                <label>${message(code: 'profile.theme')}</label>
+                                <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
+                                <ui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.language')}</label>
+                                <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
+                                <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" validation="notEmpty"/>
+                                &nbsp;
+                                <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.emailLanguage')}</label>
+                                <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
+                                <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" validation="notEmpty"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.extendedFilter')}</label>
+                                <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
+                                <ui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.pagesize')}</label>
+                                <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
+                            </div>
+                        </div><!-- .form -->
+                    </div><!-- .content -->
+                </div><!-- .card -->
 
-                    <div class="ui form">
-                        <div class="field">
-                            <label>${message(code: 'profile.theme')}</label>
-                            <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
-                            <ui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
-                        </div>
-                        <div class="field">
-                            <label>${message(code: 'profile.dashboardTab')}</label>
-                            <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
-                            <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
-                        </div>
-                        <div class="field">
-                            <label>${message(code: 'profile.language')}</label>
-                            <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
-                            <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" validation="notEmpty"/>
-                            &nbsp;
-                            <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>
-                        </div>
-                        <div class="field">
-                            <label>${message(code: 'profile.emailLanguage')}</label>
-                            <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
-                            <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" validation="notEmpty"/>
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'profile.extendedFilter')}</label>
-                            <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
-                            <ui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'profile.itemsTimeWindow')}</label>
-                            <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'profile.pagesize')}</label>
-                            <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
-                        </div>
-
-                    </div><!-- .form -->
-                </div><!-- .content -->
-            </div><!-- .card -->
+                <div class="ui card">
+                    <div class="ui top attached label">
+                        ${message(code: 'profile.preferences.dashboard')}
+                    </div>
+                    <div class="content">
+                        <div class="ui form">
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboardShowTopmenu')}</label>
+                                <g:set var="US_DASHBOARD_SHOW_TOPMENU" value="${user.getSetting(KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES)}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" config="${US_DASHBOARD_SHOW_TOPMENU.key.rdc}" validation="notEmpty"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboardShowCharts')}</label>
+                                <g:set var="US_DASHBOARD_SHOW_CHARTS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES)}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" validation="notEmpty"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboardTab')}</label>
+                                <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboardTimeWindow')}</label>
+                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
+                            </div>
+                        </div><!-- .form -->
+                    </div><!-- .content -->
+                </div><!-- .card -->
             </g:if>
 
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
 
 </div><!-- .grid -->
+
+<style>
+    .card form { margin-bottom: 0; }
+</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

@@ -98,7 +98,6 @@
                                 </g:if>
                             </td>
                         </tr>
-                        <g:if test="${false}">
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">
@@ -141,8 +140,6 @@
                                 </g:if>
                             </td>
                         </tr>
-                        </g:if>
-                        <g:if test="${false}">
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="package,all">
@@ -185,7 +182,6 @@
                                 </g:if>
                             </td>
                         </tr>
-                        </g:if>
                         <tr style="border-bottom: none">
                         </tr>
                         </tbody>
