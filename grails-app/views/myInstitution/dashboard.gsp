@@ -15,7 +15,9 @@
         <ui:messages data="${flash}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="/myInstitution/dashboard/dataviz_inst" />
+            <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES).value == RDStore.YN_YES}">
+                <laser:render template="/myInstitution/dashboard/dataviz_inst" />
+            </g:if>
             <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
         </g:if>
 
@@ -177,7 +179,7 @@
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
+%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.dashboardTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
                         </ui:msg>
                     </g:if>
 
