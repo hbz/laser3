@@ -12,7 +12,7 @@
     <div class="landingpage">
     <!--Page Contents-->
 
-        <nav class="ui inverted mobile only stackable menu  la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
+        <nav class="ui inverted stackable menu  la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
@@ -38,6 +38,11 @@
                             </div>
 
                             <div class="column" style="padding:4rem;">
+                                <h1 class="ui header" style="font-size: 2.8rem; padding-bottom: 1rem">
+                                    <div class="content">
+                                        ${message(code: 'landingpage.hero.h1')}
+                                    </div>
+                                </h1>
                                 <div id="login">
                                         <ui:messages data="${flash}"/>
                                         <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form"
