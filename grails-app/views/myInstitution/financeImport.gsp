@@ -1,13 +1,18 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Subscription; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<laser:htmlStart message="myinst.financeImport.pageTitle" />
+<laser:htmlStart message="${pageTitle}" />
 
   <ui:breadcrumbs>
-      <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
-    <ui:crumb message="menu.institutions.financeImport" class="active"/>
+      <g:if test="${params.id}">
+          <ui:crumb controller="sub" action="show" id="${params.id}" text="${Subscription.get(params.id).name}"/>
+      </g:if>
+      <g:else>
+          <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
+      </g:else>
+      <ui:crumb message="${pageTitle}" class="active"/>
   </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" type="finance" />
+    <ui:h1HeaderWithIcon message="${pageTitle}" type="finance" />
 
     <ui:messages data="${flash}" />
 
