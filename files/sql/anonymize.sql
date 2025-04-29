@@ -131,7 +131,6 @@ UPDATE wf_checklist SET
     ),
     wfcl_description    = '',
     wfcl_comment        = ''
-
 WHERE wfcl_owner_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
