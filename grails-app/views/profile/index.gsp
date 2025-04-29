@@ -481,14 +481,19 @@
                     <div class="content">
                         <div class="ui form">
                             <div class="field">
-                                <label>${message(code: 'profile.dashboardTab')}</label>
-                                <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
-                                <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
+                                <label>${message(code: 'profile.dashboardShowTopmenu')}</label>
+                                <g:set var="US_DASHBOARD_SHOW_TOPMENU" value="${user.getSetting(KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES)}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" config="${US_DASHBOARD_SHOW_TOPMENU.key.rdc}" validation="notEmpty"/>
                             </div>
                             <div class="field">
                                 <label>${message(code: 'profile.dashboardShowCharts')}</label>
                                 <g:set var="US_DASHBOARD_SHOW_CHARTS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES)}" />
-                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" validation="notEmpty"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboardTab')}</label>
+                                <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
+                                <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
                             </div>
                             <div class="field">
                                 <label>${message(code: 'profile.dashboardTimeWindow')}</label>

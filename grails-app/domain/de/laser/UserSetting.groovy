@@ -26,6 +26,7 @@ class UserSetting {
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
+        DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
         LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),

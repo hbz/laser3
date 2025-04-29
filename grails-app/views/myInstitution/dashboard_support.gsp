@@ -10,7 +10,9 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/dashboard/topmenu" />
+        <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES).value == RDStore.YN_YES}">
+            <laser:render template="/myInstitution/dashboard/topmenu" />
+        </g:if>
 
         <ui:messages data="${flash}" />
 
