@@ -12,7 +12,7 @@
     <div class="landingpage">
     <!--Page Contents-->
 
-        <nav class="ui inverted menu stackable la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
+        <nav class="ui inverted mobile only stackable menu  la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
@@ -31,20 +31,14 @@
             <div class="ui stackable centered grid container la-login middle aligned">
                 <div class="row">
                     <div class="column">
-                        <div class="ui stackable two column grid" style="border: 1px solid #755061;">
+                        <div class="ui middle aligned stackable two column grid" style="border: 1px solid #004678;border-radius: .28571429rem;">
                             <div class="column" style="padding:0;">
-                                <g:img class="ui large bordered rounded image la-hero-image" dir="images"
+                                <g:img class="ui large image la-hero-image" dir="images"
                                        file="landingpage/hero.png"/>
                             </div>
 
                             <div class="column" style="padding:4rem;">
-                                <h1 class="ui header" style="color: #755061;font-size: 2.8rem; padding-bottom: 1rem">
-                                    <div class="content">
-                                        Login bei LAS:eR
-                                    </div>
-                                </h1>
                                 <div id="login">
-                                    <div class="inner">
                                         <ui:messages data="${flash}"/>
                                         <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form"
                                               autocomplete="off" style="display:block !important;">
@@ -130,8 +124,6 @@
                                                 </div>
                                             </g:form>
                                         </ui:modal>
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -172,6 +164,27 @@
                 <g:link controller="home" action="index" class="ui huge blue button">
                     ${message(code: 'landingpage.login')} <icon:arrow />
                 </g:link>
+            </div>--}%
+        <!-- CLAIM -->
+%{--            <div class="ui segment la-eye-catcher">
+                <div class="ui container">
+                    <div class="ui labeled button" tabindex="0" >
+                        <div class="ui blue button la-eye-catcher-header">
+                            <h1>${message(code: 'landingpage.hero.h2')}</h1>
+                        </div>
+
+                        <div class="ui basic blue left pointing label la-eye-catcher-txt">
+
+
+                                <div>
+
+                                    ${message(code: 'landingpage.hero.h1')}
+                                </div>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>--}%
         </main>
 
