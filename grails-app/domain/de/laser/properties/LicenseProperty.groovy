@@ -4,6 +4,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.interfaces.CalculatedType
 import de.laser.storage.BeanStore
 import grails.plugins.orm.auditable.Auditable
 
@@ -145,5 +146,17 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     String getParagraphNumber() {
         paragraphNumber ?: '0'
+    }
+
+    @Override
+    boolean isVisibleExternally() {
+        Org contextOrg = BeanStore.getContextService().getOrg()
+        boolean result = contextOrg == tenant //default
+        if(!result) {
+            if(isPublic)
+                result = (owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && contextOrg == owner.getLicensingConsortium()) || instanceOf != null
+            else result = instanceOf != null
+        }
+        result
     }
 }
