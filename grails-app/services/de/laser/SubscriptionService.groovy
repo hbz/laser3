@@ -901,7 +901,19 @@ class SubscriptionService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
             if(params.containsKey('search'))
                 result.putAll(packageService.getWekbPackages(params))
@@ -3561,8 +3573,14 @@ class SubscriptionService {
             }
             else if (!allowedToSelect) {
                 externalTitleData.put('found_in_package', RDStore.YN_YES.value)
-                externalTitleData.put('already_purchased_at', "${participantPerpetualAccessToTitle.subscription.name} (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})")
+                String subHeaderString = participantPerpetualAccessToTitle.subscription.name
+                if(participantPerpetualAccessToTitle.subscription.startDate)
+                    subHeaderString += " (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-"
+                if(participantPerpetualAccessToTitle.subscription.endDate)
+                    subHeaderString += "${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})"
+                externalTitleData.put('already_purchased_at', subHeaderString)
                 result.notAddedTitles << externalTitleData
+                perpetuallyPurchasedCount++
             }
             userCache.put('progress', 50+i*pointsPerIteration)
         }

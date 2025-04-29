@@ -67,8 +67,8 @@
                                             Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: contextService.getOrg()])
                                             if(showConsortiaFunctions) {
                                                 if(subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                                    unlinkDisabled = 'disabled'
-                                                    unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
+                                                    unlinkTitlesDisabled = 'disabled'
+                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
                                                 }
                                                 else if (blockingCostItems) {
                                                     unlinkDisabled = 'disabled'

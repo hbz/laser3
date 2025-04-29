@@ -77,12 +77,18 @@ class PackageController {
         result.user = contextService.getUser()
 
         SwissKnife.setPaginationParams(result, params, result.user)
-        result.putAll(packageService.getWekbPackages(params.clone()))
+        result.putAll(packageService.getWekbPackages(params))
+        result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+        result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+        result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+        result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [
-            ['q', 'provider', 'pkgStatus'],
-            ['ddc', 'automaticUpdates', 'curatoryGroup', 'curatoryGroupType']
+            ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+        ]
+        Map<String, Set<Set<String>>> filterAccordionConfig = [
+            'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
         ]
         Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
         if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
@@ -90,6 +96,7 @@ class PackageController {
         }
         result.currentPackageIdSet = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]).toSet()
         result.filterConfig = filterConfig
+        result.filterAccordionConfig = filterAccordionConfig
         result.tableConfig = tableConfig
         result
     }

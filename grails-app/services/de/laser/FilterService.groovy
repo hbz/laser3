@@ -64,6 +64,13 @@ class FilterService {
                                                                     'accessDatabase': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessDatabase']]
     static Map<String, Map> PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS = ['individualDesignLogo': [rdcat: RDConstants.Y_N, label: 'platform.additional.individualDesignLogo'],
                                                                          'fullTextSearch': [rdcat: RDConstants.Y_N, label: 'platform.additional.fullTextSearch']]
+    static Map<String, Map> PACKAGE_FILTER_GENERIC_FIELDS = ['curatoryGroup' : [label: 'package.curatoryGroup.label'],
+                                                             'automaticUpdates': [label: 'package.source.automaticUpdates'],
+                                                             'paymentType': [label: 'package.paymentType.label'],
+                                                             'contentType': [label: 'package.content.type.label'],
+                                                             'openAccess': [label: 'package.openAccess.label'],
+                                                             'ddc': [label: 'package.ddc.label'],
+                                                             'archivingAgency': [label: 'package.archivingAgency.label']]
 
     /**
      * Subclass for generic parameter containing:

@@ -2065,7 +2065,19 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
             result.putAll(packageService.getWekbPackages(params))
             [result: result, status: STATUS_OK]
@@ -2105,12 +2117,13 @@ class SubscriptionControllerService {
                     holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
                 }
                 result.holdingSelection = holdingSelection
+                subscriptionService.switchPackageHoldingInheritance([sub: result.subscription, value: holdingSelection])
                 if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     createEntitlements = true
-                    if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                    //if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
                         linkToChildren = true
                         createEntitlementsForChildren = false
-                    }
+                    //}
                 }
                 GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " + source.getUri())
@@ -2183,10 +2196,14 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         boolean unlinkPkg
-        //double-check because action may be called after AJAX change of subscription holding and before page reload
-        if(params.confirmed && result.subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
+        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
+                //double-check because action may be called after AJAX change of subscription holding and before page reload
+                if(result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && params.option in ['onlyIE', 'childOnlyIE']) {
+                    result.error = messageSource.getMessage('subscriptionsManagement.unlinkInfo.blockingHoldingEntire',null,locale)
+                    [result:result,status:STATUS_ERROR]
+                }
                 subList << result.subscription
                 if(params.option in ['childWithIE', 'childOnlyIE'])
                     subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
@@ -2213,10 +2230,6 @@ class SubscriptionControllerService {
                 }
             })
             [result:result,status:STATUS_OK]
-        }
-        else if(result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-            result.error = messageSource.getMessage('subscriptionsManagement.unlinkInfo.blockingHoldingEntire',null,locale)
-            [result:result,status:STATUS_ERROR]
         }
         else {
             String query = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "

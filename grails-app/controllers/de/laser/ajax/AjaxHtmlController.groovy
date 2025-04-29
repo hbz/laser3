@@ -814,7 +814,7 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def linkTitleModal() {
         log.debug('ajaxHtmlController.linkTitleModal ' + params)
-        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium()]
+        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium(), header: message(code: params.headerToken)]
         result.tipp = TitleInstancePackagePlatform.findByGokbId(params.tippID)
         if(params.containsKey('fixedSubscription'))
             result.fixedSubscription = Subscription.get(params.fixedSubscription)

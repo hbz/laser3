@@ -1089,6 +1089,8 @@ class SubscriptionController {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg
+            subscription.holdingSelection = RDStore.SUBSCRIPTION_HOLDING_PARTIAL //in case it was null before
+            subscription.save()
             subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
             redirect action: 'index', id: subscription.id
         }
@@ -1381,15 +1383,18 @@ class SubscriptionController {
                         [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
                 result.mailTo = mailTo
                 Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
-                String customerIdentifier = "", notInPackageRows = ""
+                String customerIdentifier = "", notInPackageRows = "", productIDString = ""
                 if(customerIdentifierSet)
-                    customerIdentifier = customerIdentifierSet.join(',')
+                    customerIdentifier = customerIdentifierSet.value.join(',')
                 if(result.notInPackage) {
                     result.notInPackage.each { Map<String, Object> row ->
                         notInPackageRows << "${row.values().join('\t')}\n"
                     }
                 }
-                result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
+                Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
+                if(productIDs)
+                    productIDString = productIDs.join('/')
+                result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), productIDString, notInPackageRows])
                 String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -1665,7 +1670,7 @@ class SubscriptionController {
             Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
             String customerIdentifier = "", notInPackageRows = "", productIDString = ""
             if(customerIdentifierSet)
-                customerIdentifier = customerIdentifierSet.join(',')
+                customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
                 notInPackageRows += "\n"
                 result.notInPackage.each { Map<String, Object> row ->
@@ -1719,14 +1724,15 @@ class SubscriptionController {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
             String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
             File f = new File(dir+'/'+filename)
-            result.titleRow.addAll(['found_in_package','already_purchased_at'])
+            if(!params.containsKey('withIDOnly'))
+                result.titleRow.addAll(['found_in_package','already_purchased_at'])
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
             Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
-            String customerIdentifier = "", notInPackageRows = ""
+            String customerIdentifier = "", notInPackageRows = "", productIDString = ""
             if(customerIdentifierSet)
-                customerIdentifier = customerIdentifierSet.join(',')
+                customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
                 notInPackageRows << "<ul>"
                 result.notInPackage.each { Map<String, Object> row ->
@@ -1734,7 +1740,10 @@ class SubscriptionController {
                 }
                 notInPackageRows << "</ul>"
             }
-            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
+            Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
+            if(productIDs)
+                productIDString = productIDs.join('/')
+            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), productIDString, notInPackageRows])
             String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->
