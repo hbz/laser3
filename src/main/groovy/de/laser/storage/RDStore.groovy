@@ -289,7 +289,7 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
-    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS   = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     public final static RefdataValue VENDOR_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.VENDOR_STATUS)

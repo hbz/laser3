@@ -49,9 +49,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     @Deprecated
     String gokbId
-    String comment
-    String ipRange
-    String scope
 
     Org createdBy
     Org legallyObligedBy
@@ -147,10 +144,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                url          column:'org_url'
             urlGov          column:'org_url_gov'
       linkResolverBaseURL   column:'org_link_resolver_base_url', type: 'text'
-           comment          column:'org_comment'
-           ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
-             scope          column:'org_scope'
         categoryId          column:'org_cat'
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
@@ -193,10 +187,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
               urlGov(nullable:true, blank:true, maxSize:512)
  linkResolverBaseURL(nullable:true, blank:false)
          archiveDate(nullable:true)
-             comment(nullable:true, blank:true, maxSize:2048)
-             ipRange(nullable:true, blank:true, maxSize:1024)
            shortcode(nullable:true, blank:true, maxSize:128)
-               scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
              country(nullable:true)
               region(nullable:true)

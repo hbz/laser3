@@ -10,7 +10,9 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/dashboard/topmenu" />
+        <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES).value == RDStore.YN_YES}">
+            <laser:render template="/myInstitution/dashboard/topmenu" />
+        </g:if>
 
         <ui:messages data="${flash}" />
 
@@ -114,7 +116,7 @@
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
+%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.dashboardTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
                         </ui:msg>
                     </g:if>
 

@@ -2070,6 +2070,14 @@ class SubscriptionControllerService {
             result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
             result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
             result.putAll(packageService.getWekbPackages(params))
             [result: result, status: STATUS_OK]
@@ -2109,12 +2117,13 @@ class SubscriptionControllerService {
                     holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
                 }
                 result.holdingSelection = holdingSelection
+                subscriptionService.switchPackageHoldingInheritance([sub: result.subscription, value: holdingSelection])
                 if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     createEntitlements = true
-                    if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                    //if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
                         linkToChildren = true
                         createEntitlementsForChildren = false
-                    }
+                    //}
                 }
                 GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " + source.getUri())
