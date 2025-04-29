@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6485    29.04.2025  rc-3.5  3.5-RC      David   Feature     Dashboard: Aufgaben etc. weiter oben positionieren
+
 6495    25.04.2025  rc-3.5  3.5-RC      David   Feature     Refdata aufräumen
 
 6492    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Kopie von Vertragsmerkmalen lief in Fehler

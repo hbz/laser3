@@ -2154,6 +2154,10 @@ class MyInstitutionController  {
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        if(params.id)
+            result.pageTitle = "menu.institutions.subFinanceImport"
+        else
+            result.pageTitle = "menu.institutions.financeImport"
         result.mappingCols = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
                               "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"/*,"institution"*/]
         result

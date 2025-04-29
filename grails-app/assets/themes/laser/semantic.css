@@ -1317,16 +1317,16 @@ aside.ui.accordion .title:not(.ui) {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background-color: #f1ebe5;
 }
 
-.landingpage .hidden.menu {
-  display: none;
+.landingpage .ui.grid {
+  margin: 0;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu {
   border-radius: 0 !important;
   border: none !important;
+  margin: 0!important;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-local {
@@ -1346,7 +1346,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .logo {
-  height: 50px;
+  height: auto;
   width: 144px;
   padding-right: 2rem;
 }
@@ -1412,10 +1412,6 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 @media only screen and (max-width: 700px) {
-  .landingpage .ui.fixed.menu {
-    display: none !important;
-  }
-
   .landingpage .masthead.segment {
     min-height: 350px;
   }
@@ -1432,6 +1428,12 @@ aside.ui.accordion .title:not(.ui) {
 
   .landingpage .masthead .ui.ui.ui.ui.massive.button {
     font-size: 1.3rem;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .landingpage {
+    min-height: auto;
   }
 }
 
