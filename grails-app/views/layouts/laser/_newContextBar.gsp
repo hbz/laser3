@@ -162,7 +162,7 @@
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
-                <g:if test="${linkifyMap || subscription.instanceOf}">
+                <g:if test="${linkifyMap || (subscription.instanceOf && subscription.getConsortium().id == contextService.getOrg().id)}">
                     <div class="item la-cb-action-ext">
                         <div class="ui simple dropdown clearable button icon">
                             <i class="${Icon.SYM.LINKED_OBJECTS}"></i>

@@ -28,11 +28,11 @@
     <ui:msg class="error" noClose="true" text="${error}"/>
 </g:if>
 <g:else>
-    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
-            ['q', 'pkgStatus'],
-            ['provider', 'vendor', 'ddc', 'curatoryGroup'],
-            ['curatoryGroupType', 'automaticUpdates']
-    ]]"/>
+    <laser:render template="/templates/filter/packageGokbFilter" model="[
+            tmplConfigShow: filterConfig,
+            curatoryGroupTypes: curatoryGroupTypes,
+            automaticUpdates: automaticUpdates,
+    ]"/>
 </g:else>
 
 <ui:messages data="${flash}"/>
@@ -96,6 +96,7 @@
                     <ui:select class="ui dropdown clearable search selection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                                optionKey="id" optionValue="value" value="${subscription.holdingSelection?.id}" noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
+                <%--
                 <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
@@ -117,6 +118,7 @@
                         </g:else>
                     </div>
                 </g:if>
+                --%>
             </g:else>
             <div class="field">
                     <div class="ui createEntitlements checkbox toggle">
