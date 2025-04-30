@@ -128,6 +128,24 @@ class CustomMigrationCallbacks {
 		}
 	}
 
+//	static void _localChangelogMigration_2025_05() {
+//		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
+//
+//		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2024-%'")).size()
+//
+//		if (count) {
+//			sql.withTransaction {
+//				println VX
+//				println V1 + 'Cleanup database migration table'
+//				println V2 + 'changelogs/2024-%'
+//				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2024-%'")
+//
+//				sql.commit()
+//				println VX
+//			}
+//		}
+//	}
+
 	void beforeStartMigration(Database database) {
 	}
 
@@ -206,7 +224,7 @@ class CustomMigrationCallbacks {
 		if (isStorage) {
 //			_localChangelogMigration_2024_06_storage()
 		} else {
-//			_localChangelogMigration_2024_06()
+//			_localChangelogMigration_2025_05()
 		}
 	}
 
