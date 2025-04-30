@@ -349,14 +349,17 @@ class ControlledListService {
         else if(params.ctx && params.ctx.contains(Subscription.class.name)) {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
-        switch(ctx?._getCalculatedType()) {
-            case [ CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
-                licFilter += " and l.instanceOf = null "
-                break
-            case CalculatedType.TYPE_PARTICIPATION:
-                licFilter += " and l.instanceOf != null "
-                break
+        if(org.isCustomerType_Consortium()) {
+            switch(ctx?._getCalculatedType()) {
+                case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
+                    licFilter += " and l.instanceOf = null "
+                    break
+                case CalculatedType.TYPE_PARTICIPATION:
+                    licFilter += " and l.instanceOf != null "
+                    break
+            }
         }
+        else licFilter += " and l.instanceOf = null "
         if(params.providerFilter) {
             licFilter += " and exists (select pvr from ProviderRole pvr where pvr.license = l and pvr.provider = :filterProvider) "
             filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
