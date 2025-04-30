@@ -4544,7 +4544,7 @@ join sub.orgRelations or_sub where
                     }
                 }
                 break
-            case 'delete': flash.message = _deletePrivatePropertyDefinition(params)
+            case 'delete': flash.message = propertyService.deletePrivatePropertyDefinition(params)
                 break
         }
 
@@ -4625,45 +4625,6 @@ join sub.orgRelations or_sub where
         }
         else
             render view: 'managePropertyDefinitions', model: result
-    }
-
-    /**
-     * Deletes the given private property definition for this institution
-     * @param params the parameter map containing the property definition parameters
-     * @return success or error messages
-     */
-    private _deletePrivatePropertyDefinition(GrailsParameterMap params) {
-        PropertyDefinition.withTransaction {
-            log.debug("delete private property definition for institution: " + params)
-
-            String messages = ""
-            Org tenant = contextService.getOrg()
-
-            Params.getLongList(params, 'deleteIds').each { id ->
-                PropertyDefinition privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
-                if (privatePropDef) {
-
-                    try {
-                        if (privatePropDef.mandatory) {
-                            privatePropDef.mandatory = false
-                            privatePropDef.save()
-
-                            // delete inbetween created mandatories
-                            Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { prop ->
-                                prop.delete()
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error(e.toString())
-                    }
-
-                    String oldPropertyName = privatePropDef.getI10n('name')
-                    privatePropDef.delete()
-                    messages += message(code: 'default.deleted.message', args: [message(code: "propertyDefinition.${privatePropDef.descr}.create.label"), oldPropertyName])
-                }
-            }
-            messages
-        }
     }
 
     /**

@@ -211,8 +211,8 @@ class ManagementService {
                 Map qry_params
 
                 if (contextService.getOrg().isCustomerType_Inst_Pro()) {
-                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-                    qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( o.roleType = :roleType1 AND o.org = :lic_org ) ) )"
+                    qry_params = [roleType1:RDStore.OR_LICENSEE, lic_org:result.institution]
                 }
                 else if (contextService.getOrg().isCustomerType_Consortium()) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
