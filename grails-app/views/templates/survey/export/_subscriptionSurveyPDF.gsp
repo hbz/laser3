@@ -434,68 +434,51 @@
                         (${refdataValues.join('/')})
                     </g:if>
                 </td>
-                <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant)}"/>
-
-                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
-                    <td>
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-
-                    </td>
-                </g:if>
-                <g:else>
-                    <td>
-                        <g:if test="${surveyResult.type.isLongType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="longValue"/>
+                <td>
+                    <g:if test="${surveyResult.type.isLongType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="longValue"/>
+                    </g:if>
+                    <g:elseif test="${surveyResult.type.isStringType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="stringValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isBigDecimalType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="decValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isDateType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
+                                      field="dateValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isURLType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
+                                      field="urlValue"
+                                      class="la-overflow la-ellipsis"/>
+                        <g:if test="${surveyResult.urlValue}">
+                            <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                         </g:if>
-                        <g:elseif test="${surveyResult.type.isStringType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isDateType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
-                                             field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isURLType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
-                                             field="urlValue"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${surveyResult.urlValue}">
-                                <ui:linkWithIcon href="${surveyResult.urlValue}"/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isRefdataValueType()}">
-                            <ui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                                    field="refValue"
-                                                    config="${surveyResult.type.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
-                    <td>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isRefdataValueType()}">
+                        <ui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                             field="refValue"
+                                             config="${surveyResult.type.refdataCategory}"/>
+                    </g:elseif>
+                </td>
+                <td>
+                    <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                                  field="comment"/>
+                </td>
+                <td>
+                    <g:if test="${ownerView}">
                         <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                         field="comment"/>
-                    </td>
-                    <td>
-                        <g:if test="${ownerView}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                             field="ownerComment"/>
-                        </g:if>
-                        <g:else>
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                             field="participantComment"/>
-                        </g:else>
-                    </td>
-                </g:else>
-
+                                      field="ownerComment"/>
+                    </g:if>
+                    <g:else>
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                                      field="participantComment"/>
+                    </g:else>
+                </td>
             </tr>
         </g:each>
     </table>

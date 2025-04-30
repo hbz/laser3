@@ -2511,10 +2511,11 @@ class MyInstitutionController  {
              */
             boolean noParticipation = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO
             List<PropertyDefinition> notProcessedMandatoryProperties = []
+            boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
             if(!noParticipation) {
                 surveyResults.each { SurveyResult surre ->
                     SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !existsMultiYearTerm) {
                         allResultHaveValue = false
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
@@ -2646,18 +2647,9 @@ class MyInstitutionController  {
         if (org && surveyLink && result.editable) {
 
             SurveyOrg.withTransaction { TransactionStatus ts ->
-                    boolean existsMultiYearTerm = false
-                    Subscription sub = surveyConfig.subscription
-                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                boolean selectable = surveyService.selectableDespiteMultiYearTerm(surveyConfig, org)
 
-                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
-                            existsMultiYearTerm = true
-                        }
-
-                    }
-
-                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && selectable) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org,

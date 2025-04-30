@@ -1,17 +1,4 @@
 <%@ page import="de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
-<g:if test="${surResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
-
-    <g:message code="surveyOrg.perennialTerm.available"/>
-
-    <g:if test="${surResult.comment}">
-        <span class="la-long-tooltip la-popup-tooltip"
-              data-position="right center"
-              data-content="${surResult.comment}">
-            <i class="${Icon.TOOLTIP.HELP}"></i>
-        </span>
-    </g:if>
-</g:if>
-<g:else>
 
     <g:if test="${surResult.type.isLongType()}">
         <ui:xEditable owner="${surResult}" type="text" field="longValue"/>
@@ -61,5 +48,3 @@
             <i class="minus circle big red icon"></i>
         </span>
     </g:if>
-
-</g:else>

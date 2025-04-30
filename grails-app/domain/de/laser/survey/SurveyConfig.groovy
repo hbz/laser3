@@ -274,10 +274,6 @@ class SurveyConfig {
      */
     def checkResultsEditByOrg(Org org) {
 
-        if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org).existsMultiYearTerm()) {
-            return ALL_RESULTS_PROCESSED_BY_ORG
-        } else {
-
             int countFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
                     "(sr.longValue != null or sr.stringValue != null or sr.decValue != null or sr.urlValue != null or sr.refValue != null or sr.dateValue != null)", [surConf: this, org: org])[0]
             int countNotFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
@@ -300,7 +296,6 @@ class SurveyConfig {
                 } else {
                     return ALL_RESULTS_NOT_PROCESSED_BY_ORG
                 }
-        }
 
 
     }
@@ -321,9 +316,7 @@ class SurveyConfig {
 
         if (surveyOrg?.finishDate){
             return true
-        }else if (this.subSurveyUseForTransfer && surveyOrg?.existsMultiYearTerm()) {
-            return true
-        } else {
+        }else {
            return false
         }
 
@@ -485,7 +478,7 @@ class SurveyConfig {
 
             Integer subMembersWithMultiYear = 0
             subChilds.each {
-                if(it.isCurrentMultiYearSubscriptionToParentSub())
+                if(BeanStore.getSurveyService().existsCurrentMultiYearTermBySurveyUseForTransfer(this, it.getSubscriber()))
                 {
                     subMembersWithMultiYear++
                 }
