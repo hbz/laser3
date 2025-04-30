@@ -3,6 +3,7 @@ package de.laser.custom
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
+import de.laser.utils.AppUtils
 import grails.core.GrailsApplication
 import liquibase.Liquibase
 import liquibase.changelog.ChangeSet
@@ -19,6 +20,11 @@ class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
 
+	static final String VX = '--------------------------------------------------------------------------------'
+	static final String V1 = '-     '
+	static final String V2 = '-        '
+	static final String V3 = '-           '
+
 	static void _localChangelogMigration_2022_04() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
@@ -28,20 +34,20 @@ class CustomMigrationCallbacks {
 
 		if (count1 || count2 || count3) {
 			sql.withTransaction {
-				println '--------------------------------------------------------------------------------'
-				println '-     Cleanup database migration table'
-				println '-        done/pre% -> ' + count1
-				println '-           updating pre1.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre1.0/', 'legacy/') where filename like 'done/pre1.0/%'")
-				println '-           updating pre2.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre2.0/', 'legacy/') where filename like 'done/pre2.0/%'")
+				println VX
+				println V1 + 'Cleanup database migration table'
+				println V2 + 'done/pre% -> ' + count1
+				println V3 + 'updating pre1.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre1.0/', 'legacy/') where filename like 'done/pre1.0/%'")
+				println V3 + 'updating pre2.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre2.0/', 'legacy/') where filename like 'done/pre2.0/%'")
 
-				println '-        changelog-2021-% -> ' + count2
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'legacy/changelog-') where filename like 'changelog-2021-%'")
+				println V2 + 'changelog-2021-% -> ' + count2
+				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'legacy/changelog-') where filename like 'changelog-2021-%'")
 
-				println '-        changelog-2022-% -> ' + count3
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'changelogs/') where filename like 'changelog-2022-%'")
+				println V2 + 'changelog-2022-% -> ' + count3
+				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'changelogs/') where filename like 'changelog-2022-%'")
 
 				sql.commit()
-				println '--------------------------------------------------------------------------------'
+				println VX
 			}
 		}
 
@@ -49,12 +55,12 @@ class CustomMigrationCallbacks {
 
 		if (count4) {
 			sql.withTransaction {
-				println '--------------------------------------------------------------------------------'
-				println '-     Cleanup database migration table'
-				println '-        updating: ' + sql.executeUpdate("update databasechangelog set id = 'laser' where id = 'changelog' and filename = 'changelog.groovy'")
+				println VX
+				println V1 + 'Cleanup database migration table'
+				println V2 + 'updating: ' + sql.executeUpdate("update databasechangelog set id = 'laser' where id = 'changelog' and filename = 'changelog.groovy'")
 
 				sql.commit()
-				println '--------------------------------------------------------------------------------'
+				println VX
 			}
 		}
 	}
@@ -72,16 +78,16 @@ class CustomMigrationCallbacks {
 
 		if (count.sum()) {
 			sql.withTransaction {
-				println '--------------------------------------------------------------------------------'
-				println '-     Cleanup database migration table'
+				println VX
+				println V1 + 'Cleanup database migration table'
 				ranges.each { r ->
-					println '-        ' + r
+					println V2 + '' + r
 					String query = "update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like '${r}'"
-					println '-           updating: ' + sql.executeUpdate(query)
+					println V3 + 'updating: ' + sql.executeUpdate(query)
 				}
 
 				sql.commit()
-				println '--------------------------------------------------------------------------------'
+				println VX
 			}
 		}
 	}
@@ -93,13 +99,13 @@ class CustomMigrationCallbacks {
 
 		if (count) {
 			sql.withTransaction {
-				println '--------------------------------------------------------------------------------'
-				println '-     Cleanup database migration table'
-				println '-        changelogs/2023-%'
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
+				println VX
+				println V1 + 'Cleanup database migration table'
+				println V2 + 'changelogs/2023-%'
+				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
 
 				sql.commit()
-				println '--------------------------------------------------------------------------------'
+				println VX
 			}
 		}
 	}
@@ -111,13 +117,13 @@ class CustomMigrationCallbacks {
 
 		if (count) {
 			sql.withTransaction {
-				println '--------------------------------------------------------------------------------'
-				println '-     Cleanup storage migration table'
-				println '-        changelogs/2023-%'
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
+				println VX
+				println V1 + 'Cleanup storage migration table'
+				println V2 + 'changelogs/2023-%'
+				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
 
 				sql.commit()
-				println '--------------------------------------------------------------------------------'
+				println VX
 			}
 		}
 	}
@@ -133,14 +139,23 @@ class CustomMigrationCallbacks {
 	 * @param changelogName unused
 	 */
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
-
 		boolean isStorage = (database.connection.getURL() == ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String))
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }
 		List diff   = allIds.minus(ranIds)
 
-		if (! diff.empty) {
+		if (AppUtils.getCurrentServer() == AppUtils.DEV) {
+			if (! diff.empty) {
+				println VX
+				println V1 + 'Database migration'
+				println V2 + diff.size() + ' relevant changeset/s found ..'
+				println V2 + 'dump ignored, because server ' + AppUtils.getCurrentServer() + ' ..'
+				println V2 + 'done ..'
+				println VX
+			}
+		}
+		else if (! diff.empty) {
 			Map dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT, Map) as Map
 			String fileName = 'laser-backup'
 
@@ -149,10 +164,10 @@ class CustomMigrationCallbacks {
 				fileName = 'laser-storage-backup'
 			}
 
-			println '--------------------------------------------------------------------------------'
-			println '-     Database migration'
-			println '-        ' + diff.size() + ' relevant changeset/s found ..'
-			println '-        dumping current database ..'
+			println VX
+			println V1 + 'Database migration'
+			println V2 + diff.size() + ' relevant changeset/s found ..'
+			println V2 + 'dumping current database ..'
 
 			URI uri = new URI(dataSource.url.substring(5))
 
@@ -166,9 +181,9 @@ class CustomMigrationCallbacks {
 			]
 			String pgDump = ConfigMapper.getPgDumpPath()
 
-			println '-           pg_dump : ' + pgDump
-			println '-            source : ' + database
-			println '-            target : ' + backupFile
+			println V3 + 'pg_dump : ' + pgDump
+			println V3 + ' source : ' + database
+			println V3 + ' target : ' + backupFile
 
 			try {
 				if ( pgDump ) {
@@ -176,22 +191,22 @@ class CustomMigrationCallbacks {
 					cmd.execute().waitForProcessOutput(System.out, System.err)
 				}
 				else {
-					println '-           Backup ignored, because no config for pg_dump'
+					println V3 + 'Backup ignored, because no config for pg_dump'
 				}
 
 			} catch (Exception e) {
-				println '-           error: ' + e.getMessage()
+				println V3 + 'error: ' + e.getMessage()
 				e.printStackTrace()
 			}
 
-			println '-        done ..'
-			println '--------------------------------------------------------------------------------'
+			println V2 + 'done ..'
+			println VX
 		}
 
 		if (isStorage) {
-			_localChangelogMigration_2024_06_storage()
+//			_localChangelogMigration_2024_06_storage()
 		} else {
-			_localChangelogMigration_2024_06()
+//			_localChangelogMigration_2024_06()
 		}
 	}
 
