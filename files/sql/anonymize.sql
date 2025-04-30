@@ -9,6 +9,28 @@ WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7
 
 -- for ALL:
 
+CREATE FUNCTION pg_temp.laser_rnd_text() RETURNS TEXT AS $$
+    (SELECT (ARRAY [
+        'Aller guten Dinge sind drei',
+        'Besser spät als nie',
+        'Der Ton macht die Musik',
+        'Es ist nicht alles Gold, was glänzt',
+        'Gut Ding will Weile haben',
+        'In der Ruhe liegt die Kraft',
+        'Kommt Zeit, kommt Rat',
+        'Lange Rede, kurzer Sinn',
+        'Not macht erfinderisch',
+        'Ordnung ist das halbe Leben',
+        'Von nichts kommt nichts',
+        'Wer die Wahl hat, hat die Qual',
+        'Zahlen lügen nicht'
+        ])[floor(random() * 13 + 1)])
+$$ LANGUAGE SQL;
+
+CREATE FUNCTION pg_temp.laser_rnd_xval() RETURNS TEXT AS $$
+    (SELECT concat('X', substr(md5(random()::text), 1, 8)))
+$$ LANGUAGE SQL;
+
 -- User
 
 UPDATE "user" SET
@@ -42,16 +64,16 @@ WHERE us_string_value != '' AND
 -- Org
 
 UPDATE org_setting SET
-    os_string_value = concat('X', substr(md5(random()::text), 1, 8))
+    os_string_value     = pg_temp.laser_rnd_xval()
 WHERE os_key_enum IN ('API_PASSWORD', 'NATSTAT_SERVER_API_KEY', 'NATSTAT_SERVER_REQUESTOR_ID', 'LASERSTAT_SERVER_KEY') AND
     os_org_fk NOT IN (
         SELECT org_id FROM org WHERE org_is_beta_tester = true
     );
 
 UPDATE customer_identifier SET
-    cid_value           = concat('X', substr(md5(random()::text), 1, 8)),
-    cid_requestor_key   = concat('X', substr(md5(random()::text), 1, 8)),
-    cid_note            = concat('(', cid_customer_fk, ', ', cid_owner_fk, ', ', cid_is_public, ')')
+    cid_value           = pg_temp.laser_rnd_xval(),
+    cid_requestor_key   = pg_temp.laser_rnd_xval(),
+    cid_note            = concat(pg_temp.laser_rnd_text(), ' (', cid_customer_fk, ', ', cid_owner_fk, ', ', cid_is_public, ')')
 WHERE cid_customer_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
@@ -79,36 +101,14 @@ WHERE
 -- Various
 
 UPDATE doc SET
-    doc_content = (SELECT (ARRAY [
-            'Aller guten Dinge sind drei',
-            'Besser spät als nie',
-            'Der Ton macht die Musik',
-            'Es ist nicht alles Gold, was glänzt',
-            'Gut Ding will Weile haben',
-            'In der Ruhe liegt die Kraft',
-            'Lange Rede, kurzer Sinn',
-            'Not macht erfinderisch',
-            'Ordnung ist das halbe Leben'
-        ])[floor(random() * 9 + 1)] || ' (' || to_char(doc_date_created, 'DD.MM.YYYY') || ')'
-    )
+    doc_content     = concat(pg_temp.laser_rnd_text(), ' (', to_char(doc_date_created, 'DD.MM.YYYY'), ')')
 WHERE doc_content_type = 0 AND
     doc_owner_fk NOT IN (
         SELECT org_id FROM org WHERE org_is_beta_tester = true
     );
 
 UPDATE task SET
-    tsk_title = (SELECT (ARRAY [
-            'Aller guten Dinge sind drei',
-            'Besser spät als nie',
-            'Der Ton macht die Musik',
-            'Es ist nicht alles Gold, was glänzt',
-            'Gut Ding will Weile haben',
-            'In der Ruhe liegt die Kraft',
-            'Lange Rede, kurzer Sinn',
-            'Not macht erfinderisch',
-            'Ordnung ist das halbe Leben'
-        ])[floor(random() * 9 + 1)] || ' (' || to_char(tsk_date_created, 'DD.MM.YYYY') || ')'
-    ),
+    tsk_title       = concat(pg_temp.laser_rnd_text(), ' (', to_char(tsk_date_created, 'DD.MM.YYYY'), ')'),
     tsk_description = ''
 WHERE tsk_creator_fk NOT IN (
     SELECT usr_id FROM "user" WHERE usr_formal_org_fk IN (
@@ -117,18 +117,7 @@ WHERE tsk_creator_fk NOT IN (
 );
 
 UPDATE wf_checklist SET
-    wfcl_title          = (SELECT (ARRAY [
-            'Aller guten Dinge sind drei',
-            'Besser spät als nie',
-            'Der Ton macht die Musik',
-            'Es ist nicht alles Gold, was glänzt',
-            'Gut Ding will Weile haben',
-            'In der Ruhe liegt die Kraft',
-            'Lange Rede, kurzer Sinn',
-            'Not macht erfinderisch',
-            'Ordnung ist das halbe Leben'
-        ])[floor(random() * 9 + 1)] || ' (' || to_char(wfcl_date_created, 'DD.MM.YYYY') || ')'
-    ),
+    wfcl_title          = concat(pg_temp.laser_rnd_text(), ' (', to_char(wfcl_date_created, 'DD.MM.YYYY'), ')'),
     wfcl_description    = '',
     wfcl_comment        = ''
 WHERE wfcl_owner_fk NOT IN (
