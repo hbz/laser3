@@ -35,7 +35,7 @@
     <tbody>
         <g:each in="${propDefGroupItems}" var="prop">
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextService.getOrg().id && editable) || (!prop.tenant && editable)}"/>
-            <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+            <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">

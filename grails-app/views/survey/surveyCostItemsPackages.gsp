@@ -112,7 +112,7 @@
 
                         <div class="ui basic segment">
 
-                            <laser:render template="costItemInputSurvey"/>
+                            <laser:render template="costItemInputSurvey" model="[bulkCostItems: true]"/>
 
                                 <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 

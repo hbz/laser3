@@ -128,7 +128,7 @@
 
                 <div class="ui basic segment">
 
-                    <laser:render template="costItemInputSurvey"/>
+                    <laser:render template="costItemInputSurvey" model="[bulkCostItems: true]"/>
 
                     <g:if test="${surveyConfig.subscription}">
                         <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>

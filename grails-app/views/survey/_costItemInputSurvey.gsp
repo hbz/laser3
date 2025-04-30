@@ -203,9 +203,14 @@
         ciec: $("#ciec_${idSuffix}"),
         costElems: $("#newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
-        percentOnOldPrice: $("#percentOnOldPrice"),
-        percentOnSurveyPrice: $("#percentOnSurveyPrice"),
-        processSurveyCostItemsBulk_del_btn: $("#processSurveyCostItemsBulk_del_btn"),
+        <%
+            if(bulkCostItems){
+                println 'percentOnOldPrice: $("#percentOnOldPrice"),'
+                println        'percentOnSurveyPrice: $("#percentOnSurveyPrice"),'
+                println   'processSurveyCostItemsBulk_del_btn: $("#processSurveyCostItemsBulk_del_btn"),'
+            }
+        %>
+
         elementChangeable: false,
         costItemElementConfigurations: {
         <%
@@ -318,16 +323,16 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
+                if(JSPC.app.finance${idSuffix}.percentOnOldPrice && JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
-                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() != 0) {
+                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice && JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() >= 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
-                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
+                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn && JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else {
