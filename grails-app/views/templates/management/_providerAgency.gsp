@@ -18,7 +18,7 @@
                                                     roleObject   : subscription,
                                                     roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
-                                                    showPersons  : true
+                                                    showPersons  : false
                                           ]}"/>
 
                             <div class="ui la-vertical buttons">

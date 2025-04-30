@@ -82,7 +82,7 @@
         <%-- custom properties --%>
 
             <g:if test="${derivedPropDefGroups.orphanedProperties}">
-                <g:set var="filteredOrphanedProperties" value="${derivedPropDefGroups.orphanedProperties.findAll { prop -> (prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}}"/>
+                <g:set var="filteredOrphanedProperties" value="${derivedPropDefGroups.orphanedProperties.findAll { prop -> (prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}}"/>
             </g:if>
             <g:if test="${filteredOrphanedProperties}">
                 <div>
