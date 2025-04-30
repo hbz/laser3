@@ -443,11 +443,10 @@
                                 <dd>
                                     <g:if test="${showConsortiaFunctions}">
                                         <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
-                                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
                                                              data_confirm_term_how="ok"
                                                              class="js-open-confirm-modal-xEditableRefData"
-                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
-                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}"
+                                                             overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
                                     </g:if>
                                     <g:else>
                                         <ui:xEditableRefData owner="${subscription}" field="holdingSelection"
@@ -470,7 +469,31 @@
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown').dropdown({
-                                            clearable: true
+                                            clearable: true,
+                                            onChange: function(value, text, $selectedItem) {
+
+                                            if ( value =="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}" ) {
+                                                console.log("alle");
+                                                $('#holdingSelection').attr( "data_confirm_value", "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}" )
+                                                                        .attr( "data_confirm_tokenMsg", "alle" );
+                                                                        r2d2.initDynamicUiStuff('#holdingSelection');
+                                            }
+                                            else if ( value == "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}" ) {
+                                                console.log("Einel");
+                                                $('#holdingSelection').attr( "data_confirm_value", "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}" )
+                                                                        .attr( "data_confirm_tokenMsg", "einzel" );
+                                                                        r2d2.initDynamicUiStuff('#holdingSelection');
+                                            }
+                                    r2d2.initDynamicUiStuff('#holdingSelection');
+
+
+%{--                                                if(value == ${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}){
+                                                    console.log("Einzel")
+                                                }
+                                                if(value == ${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}) {
+                                                    console.log("Alle")
+                                                }--}%
+                                            }
                                         });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
