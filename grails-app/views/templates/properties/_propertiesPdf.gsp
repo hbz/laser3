@@ -104,7 +104,7 @@
                         </g:elseif>
                     </g:elseif>
                     <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
-                        <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+                        <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                             <tr>
                                 <td>
                                     <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -212,7 +212,7 @@
             </thead>
             <tbody>
                 <g:each in="${allPropDefGroups.orphanedProperties.sort{a, b -> a.type.getI10n('name') <=> b.type.getI10n('name') ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
-                    <g:if test="${(prop.tenant?.id == institution.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+                    <g:if test="${(prop.tenant?.id == institution.id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                         <g:if test="${prop.type.descr == prop_desc}">
                             <tr>
                                 <td>

@@ -5667,7 +5667,7 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    String query = "select prop from SubscriptionProperty prop where prop.owner = :sub and prop.type.id in (:propertyDefs) and (prop.isPublic = true or prop.instanceOf != null or prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery(query,[sub:subscription, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(subscriptionProperties){
                         List<String> values = [], notes = []
@@ -5871,24 +5871,26 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
-                    List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    String query = "select prop from LicenseProperty prop where prop.owner = :lic and prop.type.id = :propertyDef and (prop.instanceOf != null or prop.isPublic = true or prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDef: id, contextOrg: contextService.getOrg()])
                     if(licenseProperties){
                         List<String> values = [], notes = [], paragraphs = []
                         licenseProperties.each { LicenseProperty lp ->
-                            //ternary operator / elvis delivers strange results ...
-                            if(lp.getValueInI10n() != null) {
-                                values << lp.getValueInI10n()
+                            if(lp.isVisibleExternally()) {
+                                //ternary operator / elvis delivers strange results ...
+                                if(lp.getValueInI10n() != null) {
+                                    values << lp.getValueInI10n()
+                                }
+                                else values << ' '
+                                if(lp.note != null) {
+                                    notes << lp.note
+                                }
+                                else notes << ' '
+                                if(lp.paragraph != null) {
+                                    paragraphs << lp.paragraph
+                                }
+                                else paragraphs << ' '
                             }
-                            else values << ' '
-                            if(lp.note != null) {
-                                notes << lp.note
-                            }
-                            else notes << ' '
-                            if(lp.paragraph != null) {
-                                paragraphs << lp.paragraph
-                            }
-                            else paragraphs << ' '
                         }
                         row.add(createTableCell(format, values.join('; ')))
                         row.add(createTableCell(format, notes.join('; ')))
