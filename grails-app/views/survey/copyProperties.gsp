@@ -221,6 +221,7 @@
     <g:if test="${params.tab == 'customProperties'}">
         <g:if test="${memberProperties}">
             <g:set var="selectableProperties" value="${properties + memberProperties}"/>
+            <g:set var="selectableProperties" value="${selectableProperties.unique()}"/>
         </g:if>
         <g:else>
             <g:set var="selectableProperties" value="${properties}"/>

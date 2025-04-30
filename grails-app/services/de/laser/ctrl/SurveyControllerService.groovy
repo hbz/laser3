@@ -5154,12 +5154,15 @@ class SurveyControllerService {
             }
             if (result.surveyConfig.surveyUrls.size() >= 10) {
                 result.error = messageSource.getMessage('surveyconfig.url.fail.max10', null, result.locale)
-            } else {
-                if (params.url) {
+            }
+            else {
+                if (params.url && (params.url.startsWith('http://') || params.url.startsWith('https://'))) {
                         SurveyUrl surveyUrl = new SurveyUrl(url: params.url, urlComment: params.urlComment, surveyConfig: result.surveyConfig)
                         if (!surveyUrl.save()) {
                             result.error = messageSource.getMessage('survey.change.fail', null, result.locale)
                         }
+                }else {
+                    result.error = messageSource.getMessage('xEditable.validation.url', null, result.locale)
                 }
             }
         }
