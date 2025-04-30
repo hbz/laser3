@@ -484,6 +484,11 @@
                                                                         .attr( "data_confirm_tokenMsg", "einzel" );
                                                                         r2d2.initDynamicUiStuff('#holdingSelection');
                                             }
+                                    r2d2.initDynamicUiStuff('#holdingSelection');
+
+
+
+                                            }
                                         });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
