@@ -484,16 +484,6 @@
                                                                         .attr( "data_confirm_tokenMsg", "einzel" );
                                                                         r2d2.initDynamicUiStuff('#holdingSelection');
                                             }
-                                    r2d2.initDynamicUiStuff('#holdingSelection');
-
-
-%{--                                                if(value == ${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}){
-                                                    console.log("Einzel")
-                                                }
-                                                if(value == ${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}) {
-                                                    console.log("Alle")
-                                                }--}%
-                                            }
                                         });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
