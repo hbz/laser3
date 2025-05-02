@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6524    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         CSV-Kostenausgabe schlug fehl
+
 6519    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlerhafter Seitenaufruf nach Löschen einer Einrichtungslizenz
 
 6518    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler im Formular behoben
