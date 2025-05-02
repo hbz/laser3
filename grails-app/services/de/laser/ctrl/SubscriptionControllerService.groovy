@@ -3580,10 +3580,6 @@ class SubscriptionControllerService {
                             newOrgRole.save()
                         }
                     }
-                    VendorRole.findAllBySubscription(result.sourceObject).each { VendorRole vr ->
-                        VendorRole newVendorRole = new VendorRole(subscription: result.targetObject, vendor: vr.vendor)
-                        newVendorRole.save()
-                    }
                 }
             }
             [result:result,status:STATUS_OK]
