@@ -164,7 +164,7 @@
 @trackBorderRadius: 0;
 
 @thumbBorderRadius: 5px;
-@thumbBackground: rgba(0, 0, 0, 0.25);
+@thumbBackground: rgba(0, 0, 0, 0.8);
 @thumbTransition: color 0.2s ease;
 
 @thumbInactiveBackground: rgba(0, 0, 0, 0.15);
@@ -1546,4 +1546,6 @@
 @la-contextBarZIndex: 101;      // gray context bar
 @mainMenueZIndex: 102;          // Main Menue
 @debugInfoZIndex: 103;                //System buttons and information label at right bottom
+
+
 
