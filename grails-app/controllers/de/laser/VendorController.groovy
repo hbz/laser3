@@ -237,7 +237,7 @@ class VendorController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            Set<Package> allPackages = vendor.packages?.pkg
+            Set<Package> allPackages = vendor.packages?.pkg.sort { Package pkg -> pkg.name }
             Set<Package> allMyPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp, OrgRole oo join oo.sub s where sp.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             Set<Package> myPackages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr where pkg in (:myPkgs) and vr.subscription in (select s from OrgRole oo join oo.sub s where s.status = :current and oo.org = :context '+subscriptionConsortiumFilter+') order by pkg.name', [myPkgs: allMyPackages, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
             result.allPackages = allPackages
