@@ -3,6 +3,7 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostInformationDefinition
+import de.laser.helper.Params
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
@@ -210,7 +211,7 @@ class PropertyService {
                     tenant      : tenant.globalUID]
 
             CostInformationDefinition privateCIDef = CostInformationDefinition.construct(map)
-            Object[] args = [messageSource.getMessage("costInformationDefinition.label", null, locale), privateCIDef.getI10n('name')]
+            Object[] args = [messageSource.getMessage("costInformationDefinition.create.label", null, locale), privateCIDef.getI10n('name')]
             if (privateCIDef.save()) {
                 return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
             }
@@ -270,6 +271,54 @@ class PropertyService {
             }
         }
         else return ['error', messageSource.getMessage('propertyDefinition.descr.missing',null,locale)]
+    }
+
+    /**
+     * Deletes the given private property or cost information definition for this institution
+     * @param params the parameter map containing the property definition parameters
+     * @return success or error messages
+     */
+    String deletePrivatePropertyDefinition(GrailsParameterMap params) {
+        log.debug("delete private property or cost information definition for institution: " + params)
+
+        String messages = ""
+        Org tenant = contextService.getOrg()
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        Params.getLongList(params, 'deleteIds').each { Long id ->
+            if(params.instanceType == PropertyDefinition.class.name) {
+                PropertyDefinition privatePropDef = PropertyDefinition.findByIdAndTenant(id, tenant)
+                if (privatePropDef) {
+
+                    try {
+                        if (privatePropDef.mandatory) {
+                            privatePropDef.mandatory = false
+                            privatePropDef.save()
+
+                            // delete inbetween created mandatories
+                            Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { prop ->
+                                prop.delete()
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error(e.toString())
+                    }
+
+                    String oldPropertyName = privatePropDef.getI10n('name')
+                    privatePropDef.delete()
+                    messages += messageSource.getMessage('default.deleted.message', [messageSource.getMessage("propertyDefinition.${privatePropDef.descr}.create.label", null, locale), oldPropertyName] as Object[], locale)
+                }
+            }
+            else if(params.instanceType == CostInformationDefinition.class.name) {
+                CostInformationDefinition costInformationDefinition = CostInformationDefinition.findByIdAndTenant(id, tenant)
+                if (costInformationDefinition) {
+                    String oldPropertyName = costInformationDefinition.getI10n('name')
+                    costInformationDefinition.delete()
+                    messages += messageSource.getMessage('default.deleted.message', [messageSource.getMessage("costInformationDefinition.create.label", null, locale), oldPropertyName] as Object[], locale)
+                }
+            }
+        }
+        messages
     }
 
     /**

@@ -83,7 +83,7 @@
                                                 <g:if test="${editable}">
                                                     <g:if test="${cif.countUsages()==0}">
                                                         <g:link action="managePrivatePropertyDefinitions"
-                                                                params="[cmd:'delete', deleteIds: cif?.id]"
+                                                                params="[cmd:'delete', deleteIds: cif?.id, instanceType: CostInformationDefinition.class.name]"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: cif, field: "name_de")])}"
                                                                 data-confirm-term-how="delete"
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -241,7 +241,7 @@
                                                 </g:if>
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
-                                                            params="[cmd:'delete', deleteIds: pd?.id]"
+                                                            params="[cmd:'delete', deleteIds: pd?.id, instanceType: PropertyDefinition.class.name]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
                                                             class="${Btn.MODERN.NEGATIVE_CONFIRM}"

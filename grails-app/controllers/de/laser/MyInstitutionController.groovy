@@ -2511,10 +2511,11 @@ class MyInstitutionController  {
              */
             boolean noParticipation = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO
             List<PropertyDefinition> notProcessedMandatoryProperties = []
+            boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
             if(!noParticipation) {
                 surveyResults.each { SurveyResult surre ->
                     SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !existsMultiYearTerm) {
                         allResultHaveValue = false
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
@@ -2646,18 +2647,9 @@ class MyInstitutionController  {
         if (org && surveyLink && result.editable) {
 
             SurveyOrg.withTransaction { TransactionStatus ts ->
-                    boolean existsMultiYearTerm = false
-                    Subscription sub = surveyConfig.subscription
-                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                boolean selectable = surveyService.selectableDespiteMultiYearTerm(surveyConfig, org)
 
-                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
-                            existsMultiYearTerm = true
-                        }
-
-                    }
-
-                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && selectable) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org,
@@ -4544,7 +4536,7 @@ join sub.orgRelations or_sub where
                     }
                 }
                 break
-            case 'delete': flash.message = _deletePrivatePropertyDefinition(params)
+            case 'delete': flash.message = propertyService.deletePrivatePropertyDefinition(params)
                 break
         }
 
@@ -4625,45 +4617,6 @@ join sub.orgRelations or_sub where
         }
         else
             render view: 'managePropertyDefinitions', model: result
-    }
-
-    /**
-     * Deletes the given private property definition for this institution
-     * @param params the parameter map containing the property definition parameters
-     * @return success or error messages
-     */
-    private _deletePrivatePropertyDefinition(GrailsParameterMap params) {
-        PropertyDefinition.withTransaction {
-            log.debug("delete private property definition for institution: " + params)
-
-            String messages = ""
-            Org tenant = contextService.getOrg()
-
-            Params.getLongList(params, 'deleteIds').each { id ->
-                PropertyDefinition privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
-                if (privatePropDef) {
-
-                    try {
-                        if (privatePropDef.mandatory) {
-                            privatePropDef.mandatory = false
-                            privatePropDef.save()
-
-                            // delete inbetween created mandatories
-                            Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { prop ->
-                                prop.delete()
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error(e.toString())
-                    }
-
-                    String oldPropertyName = privatePropDef.getI10n('name')
-                    privatePropDef.delete()
-                    messages += message(code: 'default.deleted.message', args: [message(code: "propertyDefinition.${privatePropDef.descr}.create.label"), oldPropertyName])
-                }
-            }
-            messages
-        }
     }
 
     /**

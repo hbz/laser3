@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller manages the survey-related calls
@@ -352,6 +353,11 @@ class SurveyController {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
+        String consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextService.getOrg()])
+        result.referenceYears = availableReferenceYears
+
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         def date_restriction
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -376,42 +382,73 @@ class SurveyController {
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
-
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
-        //,[max: result.max, offset: result.offset]
+        List<Subscription> subscriptions
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
 
-        if (params.sort && params.sort.indexOf("§") >= 0) {
-            switch (params.sort) {
-                case "orgRole§provider":
-                    subscriptions.sort { x, y ->
-                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
-                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-                        a.compareToIgnoreCase b
+        if(params.sort == "provider") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
                     }
-                    if (params.order.equals("desc"))
-                        subscriptions.reverse(true)
-                    break
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                cmp
             }
         }
+        else if(params.sort == "vendor") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                }
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                }
+                cmp
+            }
+        }
+        result.allSubscriptions = subscriptions
+
+        result.date_restriction = date_restriction
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
-        result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions ,RDStore.LINKTYPE_LICENSE)
-        allLinkedLicenses.each { Links li ->
-            Subscription s = li.destinationSubscription
-            License l = li.sourceLicense
-            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
-            if(!linkedLicenses)
-                linkedLicenses = []
-            linkedLicenses << l
-            result.allLinkedLicenses.put(s,linkedLicenses)
-        }
+        if(subscriptions)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
 
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         result
 
     }
