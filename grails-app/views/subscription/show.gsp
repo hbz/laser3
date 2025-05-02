@@ -474,17 +474,20 @@
 
                                             if ( value =="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}" ) {
                                                 console.log("alle");
-                                                $('#holdingSelection').attr( "data_confirm_value", "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}" )
-                                                                        .attr( "data_confirm_tokenMsg", "alle" );
-                                                                        r2d2.initDynamicUiStuff('#holdingSelection');
+                                                $('#holdingSelection').attr( "data-confirm-tokenmsg", "alle" )
+                                                                        .attr( "data-confirm-value",  "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}" );
+
                                             }
                                             else if ( value == "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}" ) {
-                                                console.log("Einel");
-                                                $('#holdingSelection').attr( "data_confirm_value", "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}" )
-                                                                        .attr( "data_confirm_tokenMsg", "einzel" );
-                                                                        r2d2.initDynamicUiStuff('#holdingSelection');
+                                                console.log("Einzel");
+                                                $('#holdingSelection').attr( "data-confirm-tokenmsg", "einzel" )
+                                                                        .attr( "data-confirm-value",  "${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}" );
+
                                             }
-                                    r2d2.initDynamicUiStuff('#holdingSelection');
+                                    r2d2.initGlobalUiStuff('body');
+                                    r2d2.initGlobalXEditableStuff('body');
+                                    r2d2.initDynamicXEditableStuff('body');
+                                    r2d2.initDynamicUiStuff('body');
 
 
 
