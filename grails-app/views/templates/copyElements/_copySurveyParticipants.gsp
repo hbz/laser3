@@ -50,25 +50,29 @@
 
                                         <g:if test="${sourceObject.subscription}">
                                             <g:set var="existSubforOrg"
-                                                   value="${Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                                                           [parentSub  : sourceObject.subscription,
-                                                            participant: surveyOrg.org
-                                                           ])}"/>
+                                                   value="${Subscription.executeQuery("select sub" +
+                                                           " from Subscription sub " +
+                                                           " join sub.orgRelations orgR " +
+                                                           " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                                                           " and sub.instanceOf = :instanceOfSub",
+                                                           [org          : surveyOrg.org,
+                                                            roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                                                            instanceOfSub: sourceObject.subscription])}"/>
                                             <g:if test="${existSubforOrg}">
 
                                                 <br /><br />
-                                                <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
+                                                <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionToParentSub()}">
+                                                    <g:message code="surveyOrg.perennialTerm.current"/>
+                                                    <br />
+                                                </g:if>
+                                                <g:elseif test="${existSubforOrg[0].isMultiYearSubscription()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                                                    </g:link>
-                                                </g:if>
-                                                <g:else>
-                                                    <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                                                    </g:link>
-                                                </g:else>
+                                                </g:elseif>
+
+                                                <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
+                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                                </g:link>
                                             </g:if>
                                         </g:if>
                                     </td>
@@ -121,31 +125,29 @@
 
                                         <g:if test="${targetObject.subscription}">
                                             <g:set var="existSubforOrg"
-                                                   value="${Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                                                           [parentSub  : targetObject.subscription,
-                                                            participant: surveyOrg.org
-                                                           ])}"/>
-
-                                            <g:set var="existSubforOrg"
-                                                   value="${Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                                                           [parentSub  : sourceObject,
-                                                            participant: surveyOrg.org
-                                                           ])}"/>
+                                                   value="${Subscription.executeQuery("select sub" +
+                                                           " from Subscription sub " +
+                                                           " join sub.orgRelations orgR " +
+                                                           " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                                                           " and sub.instanceOf = :instanceOfSub",
+                                                           [org          : surveyOrg.org,
+                                                            roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                                                            instanceOfSub: targetObject.subscription])}"/>
                                             <g:if test="${existSubforOrg}">
 
                                                 <br /><br />
-                                                <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
+                                                <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionToParentSub()}">
+                                                    <g:message code="surveyOrg.perennialTerm.current"/>
+                                                    <br />
+                                                </g:if>
+                                                <g:elseif test="${existSubforOrg[0].isMultiYearSubscription()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                                                    </g:link>
-                                                </g:if>
-                                                <g:else>
-                                                    <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
-                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                                                    </g:link>
-                                                </g:else>
+                                                </g:elseif>
+
+                                                <g:link controller="subscription" action="show" class="${Btn.ICON.SIMPLE}" id="${existSubforOrg[0].id}">
+                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                                </g:link>
                                             </g:if>
                                         </g:if>
 

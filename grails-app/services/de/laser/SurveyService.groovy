@@ -1145,19 +1145,9 @@ class SurveyService {
         currentMembersSubs.each { Subscription subChild ->
                 Org org = subChild.getSubscriberRespConsortia()
 
-                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+            boolean selectable = selectableDespiteMultiYearTerm(surveyConfig, org)
 
-                    boolean existsMultiYearTerm = false
-
-                    if (!surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-
-
-                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
-                            existsMultiYearTerm = true
-                        }
-
-                    }
-                    if (!existsMultiYearTerm) {
+            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && selectable) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org
@@ -1205,7 +1195,6 @@ class SurveyService {
                                 }
                             }
                         }
-                    }
                 }
             }
 
@@ -1222,13 +1211,7 @@ class SurveyService {
 
             if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 
-                boolean existsMultiYearTerm = false
-
-
-                if (subChild.isCurrentMultiYearSubscriptionNew()) {
-                    existsMultiYearTerm = true
-                }
-
+                boolean existsMultiYearTerm = existsMultiYearTermBySurveyUseForTransfer(surveyConfig, org)
 
                 if (existsMultiYearTerm) {
                     SurveyOrg surveyOrg = new SurveyOrg(
@@ -3025,6 +3008,81 @@ class SurveyService {
         result.totalRows = totalRows
         result.afterEnrichment = true
         result
+    }
+
+    boolean existsMultiYearTermBySurveyUseForTransfer(SurveyConfig surveyConfig, Org org) {
+        boolean existsMultiYearTerm = false
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - NOW())) > 366)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                return true
+            }
+        }
+
+        return existsMultiYearTerm
+    }
+
+    /**
+     * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the parent subscription
+     * @return true if we are within the given multi-year range, false otherwise
+     */
+
+
+    boolean existsCurrentMultiYearTermBySurveyUseForTransfer(SurveyConfig surveyConfig, Org org) {
+        boolean existsMultiYearTerm = false
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - sub.instanceOf.startDate)) > 366)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                return true
+            }
+        }
+
+        return existsMultiYearTerm
+    }
+
+    boolean selectableDespiteMultiYearTerm(SurveyConfig surveyConfig, Org org) {
+        boolean selectable = true
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - sub.instanceOf.startDate)) > 549)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                selectable = false
+            }
+        }
+
+        return selectable
     }
 
 }

@@ -684,10 +684,14 @@
                 <td>
                     <g:if test="${orgSub}">
 
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                            <g:message code="surveyOrg.perennialTerm.current"/>
                             <br />
                         </g:if>
+                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br />
+                        </g:elseif>
 
                         <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
 
@@ -699,10 +703,14 @@
                 <td class="center aligned" style="${(orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br/>
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                            <g:message code="surveyOrg.perennialTerm.current"/>
+                            <br />
                         </g:if>
+                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br />
+                        </g:elseif>
 
                         <g:link controller="subscription" action="show" id="${orgSub.id}">
                             <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br/>
@@ -717,10 +725,14 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
                 <td>
                     <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                            <g:message code="surveyOrg.perennialTerm.current"/>
                             <br />
                         </g:if>
+                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br />
+                        </g:elseif>
 
                         <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
                     </g:if>
@@ -732,10 +744,14 @@
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
                 <g:if test="${orgSub}">
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub.isCurrentMultiYearSubscriptionNew()}">
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                    </g:if>
-                    <g:else>
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                            <g:message code="surveyOrg.perennialTerm.current"/>
+                            <br />
+                        </g:if>
+                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br />
+                        </g:elseif>
                         <table class="ui very basic compact table">
                             <tbody>
                             <g:if test="${selectedCostItemElementID}">
@@ -772,7 +788,6 @@
                             </g:if>
                             </tbody>
                         </table>
-                    </g:else>
                 </g:if>
 
                 </td>
@@ -780,10 +795,14 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <td class="center aligned">
 
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
-                        <g:message code="surveyOrg.perennialTerm.available"/>
+                    <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                        <g:message code="surveyOrg.perennialTerm.current"/>
+                        <br />
                     </g:if>
-                    <g:else>
+                    <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                        <g:message code="surveyOrg.perennialTerm.available"/>
+                        <br />
+                    </g:elseif>
 
                         <g:set var="costItems" scope="request"
                                value="${selectedCostItemElementID ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID))) : null}"/>
@@ -872,8 +891,6 @@
                                 </button>
                             </g:if>
                         </g:else>
-
-                    </g:else>
                 </td>
             </g:if>
 
