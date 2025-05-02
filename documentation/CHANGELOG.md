@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6519    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlerhafter Seitenaufruf nach Löschen einer Einrichtungslizenz
+
 6513    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Eigene Kostenmerkmale waren nicht löschbar
 
 6502    30.04.2025  rc-3.5  3.5-RC      Andreas Feature     neue Referenzwerte für Discovery-Systeme
