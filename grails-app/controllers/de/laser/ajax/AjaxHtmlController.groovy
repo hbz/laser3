@@ -844,10 +844,11 @@ class AjaxHtmlController {
         List<String> notProcessedMandatoryProperties = []
         //see ERMS-5815
 
+        boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
         if(!noParticipation) {
             surveyResults.each { SurveyResult surre ->
                 SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !existsMultiYearTerm) {
                     allResultHaveValue = false
                     notProcessedMandatoryProperties << surre.type.getI10n('name')
                 }

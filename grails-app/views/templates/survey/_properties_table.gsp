@@ -254,78 +254,61 @@
                             </span>
                         </g:if>
                     </td>
-                    <g:set var="surveyOrg"
-                           value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, contextService.getOrg())}"/>
-
-                    <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
-                        <td>
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                        </td>
-                        <td>
-
-                        </td>
-                        <td>
-
-                        </td>
-                    </g:if>
-                    <g:else>
-                        <td>
-                            <g:if test="${surveyResult.type.isLongType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="longValue"/>
+                    <td>
+                        <g:if test="${surveyResult.type.isLongType()}">
+                            <ui:xEditable owner="${surveyResult}" type="text" field="longValue"/>
+                        </g:if>
+                        <g:elseif test="${surveyResult.type.isStringType()}">
+                            <ui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
+                        </g:elseif>
+                        <g:elseif test="${surveyResult.type.isBigDecimalType()}">
+                            <ui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
+                        </g:elseif>
+                        <g:elseif test="${surveyResult.type.isDateType()}">
+                            <ui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
+                        </g:elseif>
+                        <g:elseif test="${surveyResult.type.isURLType()}">
+                            <ui:xEditable owner="${surveyResult}" type="url" field="urlValue"
+                                          overwriteEditable="${overwriteEditable}"
+                                          class="la-overflow la-ellipsis"/>
+                            <g:if test="${surveyResult.urlValue}">
+                                <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                             </g:if>
-                            <g:elseif test="${surveyResult.type.isStringType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isDateType()}">
-                                <ui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isURLType()}">
-                                <ui:xEditable owner="${surveyResult}" type="url" field="urlValue"
-                                              overwriteEditable="${overwriteEditable}"
-                                              class="la-overflow la-ellipsis"/>
-                                <g:if test="${surveyResult.urlValue}">
-                                    <ui:linkWithIcon href="${surveyResult.urlValue}"/>
-                                </g:if>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isRefdataValueType()}">
+                        </g:elseif>
+                        <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
-                                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
-                                    <ui:xEditableRefData
-                                            data_confirm_tokenMsg="${surveyOrg.orgInsertedItself ? message(code: 'survey.participationProperty.confirmation2') : message(code: 'survey.participationProperty.confirmation')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditableRefData"
-                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
-                                            owner="${surveyResult}"
-                                            field="refValue" type="text"
-                                            id="participation"
-                                            config="${surveyResult.type.refdataCategory}"/>
-                                </g:if>
-                                <g:elseif test="${surveyResult.type == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
-                                    <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue" constraint="removeValues_invoiceProcessing"
-                                                         config="${surveyResult.type.refdataCategory}"/>
-                                </g:elseif>
-                                <g:else>
-                                    <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
-                                                         config="${surveyResult.type.refdataCategory}"/>
-                                </g:else>
-                            </g:elseif>
-                        </td>
-                        <td>
-                            <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
-                        </td>
-                        <td>
-                            <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
-                                <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                            <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
+                                <ui:xEditableRefData
+                                        data_confirm_tokenMsg="${surveyOrg.orgInsertedItself ? message(code: 'survey.participationProperty.confirmation2') : message(code: 'survey.participationProperty.confirmation')}"
+                                        data_confirm_term_how="ok"
+                                        class="js-open-confirm-modal-xEditableRefData"
+                                        data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
+                                        owner="${surveyResult}"
+                                        field="refValue" type="text"
+                                        id="participation"
+                                        config="${surveyResult.type.refdataCategory}"/>
                             </g:if>
+                            <g:elseif test="${surveyResult.type == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
+                                <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue" constraint="removeValues_invoiceProcessing"
+                                                     config="${surveyResult.type.refdataCategory}"/>
+                            </g:elseif>
                             <g:else>
-                                <ui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                                <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
+                                                     config="${surveyResult.type.refdataCategory}"/>
                             </g:else>
-                        </td>
-                    </g:else>
-
+                        </g:elseif>
+                    </td>
+                    <td>
+                        <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
+                    </td>
+                    <td>
+                        <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                        </g:if>
+                        <g:else>
+                            <ui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                        </g:else>
+                    </td>
                 </tr>
             </g:each>
         </table>
