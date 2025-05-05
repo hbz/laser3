@@ -1388,7 +1388,7 @@ class SubscriptionController {
                     customerIdentifier = customerIdentifierSet.value.join(',')
                 if(result.notInPackage) {
                     result.notInPackage.each { Map<String, Object> row ->
-                        notInPackageRows << "${row.values().join('\t')}\n"
+                        notInPackageRows += "${row.values().join('\t')}\n"
                     }
                 }
                 Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
@@ -1672,11 +1672,9 @@ class SubscriptionController {
             if(customerIdentifierSet)
                 customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
-                notInPackageRows += "\n"
                 result.notInPackage.each { Map<String, Object> row ->
                     notInPackageRows += "${row.values().join('\t')}\n"
                 }
-                notInPackageRows += "\n"
             }
             Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
             if(productIDs)
@@ -1734,11 +1732,9 @@ class SubscriptionController {
             if(customerIdentifierSet)
                 customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
-                notInPackageRows << "<ul>"
                 result.notInPackage.each { Map<String, Object> row ->
-                    notInPackageRows << "<li>${row.values().join('\t')}</li>"
+                    notInPackageRows += "${row.values().join('\t')}\n"
                 }
-                notInPackageRows << "</ul>"
             }
             Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
             if(productIDs)
