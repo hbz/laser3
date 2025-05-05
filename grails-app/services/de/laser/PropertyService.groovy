@@ -3,6 +3,7 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
 import de.laser.helper.Params
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -313,6 +314,8 @@ class PropertyService {
                 CostInformationDefinition costInformationDefinition = CostInformationDefinition.findByIdAndTenant(id, tenant)
                 if (costInformationDefinition) {
                     String oldPropertyName = costInformationDefinition.getI10n('name')
+                    CostInformationDefinitionGroup cidg = CostInformationDefinitionGroup.findByCostInformationDefinition(costInformationDefinition)
+                    cidg.delete()
                     costInformationDefinition.delete()
                     messages += messageSource.getMessage('default.deleted.message', [messageSource.getMessage("costInformationDefinition.create.label", null, locale), oldPropertyName] as Object[], locale)
                 }
