@@ -1971,7 +1971,7 @@ class FilterService {
         String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
         result.query = query+" ${clauses.arguments} "
         if(!params.containsKey('noSort'))
-            result.query += "order by ${params.sort} ${params.order}"
+            result.query += "order by ${params.sort} ${params.order}, tipp.dateFirstOnline, tipp.dateFirstInPrint"
         result.queryParams = clauses.queryParams
         result
     }
