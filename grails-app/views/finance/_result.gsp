@@ -165,13 +165,13 @@
                 JSPC.app.isClicked = false;
 
                 $("[data-tab='" + JSPC.app.tab + "']").addClass("active");
-                $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + JSPC.app.tab);
+                $(".exportCSV").attr("href", JSPC.app.rawHref); // + "&showView=" + JSPC.app.tab
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
-                        $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + tabPath);
+                        $(".exportCSV").attr("href", JSPC.app.rawHref); //  + "&showView=" + tabPath
                         $("#showView").val(tabPath);
                     }
                 });
@@ -193,6 +193,7 @@
                             data: {
                                 sub: "${fixedSubscription?.id}",
                                 showView: "${showView}",
+                                offset: ${params.offset ?: 0},
                                 preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
                             }
                         }).done(function (data) {

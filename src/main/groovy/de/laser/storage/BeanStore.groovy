@@ -26,6 +26,7 @@ import de.laser.ProviderService
 import de.laser.ShareService
 import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
+import de.laser.SurveyService
 import de.laser.SystemService
 import de.laser.UserService
 import de.laser.VendorService
@@ -317,6 +318,13 @@ class BeanStore {
      */
     static SubscriptionsQueryService getSubscriptionsQueryService() {
         Holders.grailsApplication.mainContext.getBean('subscriptionsQueryService') as SubscriptionsQueryService
+    }
+
+    /**
+     * @return the currently holding {@link SurveyService}
+     */
+    static SurveyService getSurveyService() {
+        Holders.grailsApplication.mainContext.getBean('surveyService') as SurveyService
     }
 
     /**

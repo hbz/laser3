@@ -1706,7 +1706,7 @@ class SurveyControllerService {
             List orgsWithMultiYearTermOrgsID = []
             List orgsLateCommersOrgsID = []
             result.parentSubChilds.each { Subscription sub ->
-                if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
+                if (surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(result.surveyConfig, sub.getSubscriber())) {
                     result.orgsWithMultiYearTermSub << sub
                     orgsWithMultiYearTermOrgsID << sub.getSubscriberRespConsortia().id
 
@@ -2755,18 +2755,9 @@ class SurveyControllerService {
                     }
 
                     members.each { Org org ->
-                            boolean existsMultiYearTerm = false
-                            Subscription sub = result.surveyConfig.subscription
-                            if (sub && !result.surveyConfig.pickAndChoose && result.surveyConfig.subSurveyUseForTransfer) {
-                                Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                            boolean selectable = surveyService.selectableDespiteMultiYearTerm(result.surveyConfig, org)
 
-                                if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
-                                    existsMultiYearTerm = true
-                                }
-
-                            }
-
-                            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(result.surveyConfig, org)) && !existsMultiYearTerm) {
+                            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(result.surveyConfig, org)) && selectable) {
                                 SurveyOrg surveyOrg = new SurveyOrg(
                                         surveyConfig: result.surveyConfig,
                                         org: org
@@ -3599,7 +3590,8 @@ class SurveyControllerService {
              }*/
                     surveyOrgsDo.each { surveyOrg ->
 
-                        if (!surveyOrg.existsMultiYearTerm()) {
+                        boolean selectableDespiteMultiYearTerm = surveyService.selectableDespiteMultiYearTerm(surveyOrg.surveyConfig, surveyOrg.org)
+                        if (selectableDespiteMultiYearTerm) {
 
                             if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
                                 newCostItem = genericOIDService.resolveOID(params.oldCostItem)
@@ -4971,7 +4963,7 @@ class SurveyControllerService {
 
             //MultiYearTerm Subs
             result.parentSubChilds.each { sub ->
-                if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
+                if (surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(result.surveyConfig, sub.getSubscriber())) {
                     Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
                         Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)

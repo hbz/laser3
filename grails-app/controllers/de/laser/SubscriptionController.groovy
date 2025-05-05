@@ -8,6 +8,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.FilterLogic
+import de.laser.helper.Profiler
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -1061,20 +1062,31 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
-        Map<String,Object> ctrlResult = subscriptionService.linkTitle(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
+        log.debug("linkTitle : ${params}")
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(result) {
+            Profiler prf = new Profiler()
+            prf.setBenchmark('init')
+            Map<String, Object> configMap = [:]
+            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
+            if (ttParams.status) { params.status = ttParams.status }
+            if (ttParams.tab)    { params.tab = ttParams.tab }
+            SwissKnife.setPaginationParams(result, params, contextService.getUser())
+            if(params.containsKey('filterSet')) {
+                configMap.putAll(params)
+                prf.setBenchmark('getting keys')
+                Set<Long> keys = titleService.getKeys(configMap)
+                prf.setBenchmark('get title list')
+                result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+                result.num_tipp_rows = keys.size()
+                result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
             }
-            else {
-                flash.error = ctrlResult.result.error
-                ctrlResult.result
-            }
+            result.benchMark = prf.stopBenchmark()
+            result
         }
         else {
-            flash.message = ctrlResult.result.message
-            ctrlResult.result
+            response.sendError(401)
+            return
         }
     }
 

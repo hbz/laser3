@@ -78,45 +78,6 @@ class SurveyOrg {
         BeanStore.getDeletionService().deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
-    /**
-     * Checks if the participant has for a given subscription survey's subscription a multi-year term running; this is an essential criteria for renewal surveys
-     * @return true if the participant institution has subscribed perennially the subscription being focus of this survey, false otherwise
-     * @see Subscription
-     * @see SurveyConfig
-     * @see Org
-     */
-    boolean existsMultiYearTerm() {
-        boolean existsMultiYearTerm = false
-        Subscription sub = surveyConfig.subscription
-
-        if (this.surveyConfig.subSurveyUseForTransfer && sub) {
-            Subscription subMuliYear = Subscription.executeQuery("select sub" +
-                    " from Subscription sub " +
-                    " join sub.orgRelations orgR " +
-                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
-                    " and sub.instanceOf = :instanceOfSub" +
-                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - NOW())) > 366)",
-                    [org          : org,
-                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
-                     instanceOfSub: sub])[0]
-
-            if (subMuliYear) {
-                return true
-            }
-        }
-
-
- /*       if (sub) {
-            def subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
-
-            if (subChild?.isCurrentMultiYearSubscriptionNew()) {
-                existsMultiYearTerm = true
-                return existsMultiYearTerm
-            }
-        }*/
-        return existsMultiYearTerm
-    }
-
     @Deprecated
     boolean hasOrgSubscription() {
         boolean hasOrgSubscription = false
