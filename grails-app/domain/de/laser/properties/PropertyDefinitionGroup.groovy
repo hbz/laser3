@@ -115,7 +115,7 @@ class PropertyDefinitionGroup {
         List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Class propertyClass = getOwnerClass(currentObject)
-        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and (prop.tenant = :tenant or prop.isPublic = true) order by pd.${localizedName}"
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and (prop.tenant = :tenant or prop.isPublic = true or prop.instanceOf != null) order by pd.${localizedName}"
         result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds, tenant: tenant]))
         result
     }
