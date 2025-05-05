@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PermanentTitle" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 <g:set var="counter" value="${(offset ?: 0) + 1}"/>
 <laser:serviceInjection/>
 
@@ -9,10 +9,16 @@
         <div class="content">
             <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                 <g:each in="${tipps}" var="tipp">
+                    <%
+                        boolean isLinked = false
+                        if(fixedSubscription) {
+                            isLinked = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(fixedSubscription, tipp, RDStore.TIPP_STATUS_REMOVED) != null
+                        }
+                    %>
                     <div class="ui raised segments la-accordion-segments">
 
                         <g:render template="/templates/titles/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null, showPackageLinking: showPackageLinking, fixedSubscription: fixedSubscription]"/>
+                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null, showPackageLinking: showPackageLinking, fixedSubscription: fixedSubscription, isLinked: isLinked]"/>
 
                         <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>
