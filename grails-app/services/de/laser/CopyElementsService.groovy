@@ -933,7 +933,8 @@ class CopyElementsService {
             */
 
             //log.debug(params.toMapString())
-            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
+            boolean optionsChecked = params.subscription?.keySet()?.intersect(['deletePackageIds', 'takePackageIds', 'takeTitleGroups', 'deleteTitleGroups'])?.size() > 0
+            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit && optionsChecked) {
                 flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                 executorService.execute({
                     try {
@@ -958,9 +959,11 @@ class CopyElementsService {
                             List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                             deleteIssueEntitlementGroupItem(deleteTitleGroups)
                         }
+                        /*
                         if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                             globalService.notifyBackgroundProcessFinish(userId, "PackageTransfer_${targetObject.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [targetObject.name] as Object[], LocaleUtils.getCurrentLocale()))
                         }
+                        */
                     }
                     catch (Exception e) {
                         e.printStackTrace()
@@ -1641,8 +1644,15 @@ class CopyElementsService {
      */
     boolean copyProviderRelations(List<ProviderRole> toCopyProviderRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        List<ProviderRole> sourceRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: sourceObject.id]),
-        targetRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: targetObject.id])
+        List<ProviderRole> sourceRelations = [], targetRelations = []
+        if(sourceObject instanceof Subscription) {
+            sourceRelations = ProviderRole.findAllBySubscription(sourceObject)
+            targetRelations = ProviderRole.findAllBySubscription(targetObject)
+        }
+        else if(sourceObject instanceof License) {
+            sourceRelations = ProviderRole.findAllByLicense(sourceObject)
+            targetRelations = ProviderRole.findAllByLicense(targetObject)
+        }
         sourceRelations.each { ProviderRole pvrA ->
             if (pvrA in toCopyProviderRelations) {
                 if (targetRelations.find { ProviderRole pvrB -> pvrB.providerId == pvrA.providerId }) {
@@ -1678,9 +1688,16 @@ class CopyElementsService {
      */
     boolean copyVendorRelations(List<VendorRole> toCopyVendorRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        List<VendorRole> sourceRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: sourceObject.id]),
-                         targetRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: targetObject.id])
-        sourceRelations?.each { VendorRole vrA ->
+        List<VendorRole> sourceRelations = [], targetRelations = []
+        if(sourceObject instanceof Subscription) {
+            sourceRelations = VendorRole.findAllBySubscription(sourceObject)
+            targetRelations = VendorRole.findAllBySubscription(targetObject)
+        }
+        else if(sourceObject instanceof License) {
+            sourceRelations = VendorRole.findAllByLicense(sourceObject)
+            targetRelations = VendorRole.findAllByLicense(targetObject)
+        }
+        sourceRelations.each { VendorRole vrA ->
             if (vrA in toCopyVendorRelations) {
                 if (targetRelations.find { VendorRole vrB -> vrA.vendorId == vrB.vendorId }) {
                     Object[] args = [vrA.vendor.name]
