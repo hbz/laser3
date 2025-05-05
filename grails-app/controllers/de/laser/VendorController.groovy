@@ -237,11 +237,13 @@ class VendorController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            Set<Package> allPackages = vendor.packages?.pkg
+            Set<Package> allPackages = vendor.packages?.pkg.sort { Package pkg -> pkg.name }
+            Set<Package> allMyPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp, OrgRole oo join oo.sub s where sp.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
+            Set<Package> myPackages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr where pkg in (:myPkgs) and vr.subscription in (select s from OrgRole oo join oo.sub s where s.status = :current and oo.org = :context '+subscriptionConsortiumFilter+') order by pkg.name', [myPkgs: allMyPackages, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
             result.allPackages = allPackages
+            result.packages = myPackages
             result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.name', [allPackages: allPackages]).toSet()
-            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context order by pkg.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
-            result.platforms = Platform.executeQuery('select plat from PackageVendor pv join pv.pkg pkg join pkg.nominalPlatform plat, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context order by plat.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
+            result.myProviders = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:myPkgs) order by p.name', [myPkgs: myPackages]).toSet()
             result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, vendor)
             result.links = VendorLink.executeQuery('select vl from VendorLink vl where vl.from = :vendor or vl.to = :vendor', [vendor: vendor])
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]

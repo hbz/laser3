@@ -15,6 +15,8 @@
 
 6517    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         doppelte Library Supplier-Übertragung behoben
 
+6504    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         diverse darstellerische Fehler bei Library Supplier behoben
+
 6513    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Eigene Kostenmerkmale waren nicht löschbar
 
 6502    30.04.2025  rc-3.5  3.5-RC      Andreas Feature     neue Referenzwerte für Discovery-Systeme

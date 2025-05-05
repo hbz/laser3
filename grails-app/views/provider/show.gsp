@@ -362,28 +362,16 @@
                                 <i class="dropdown icon la-dropdown-accordion"></i>
                                 <div class="ui horizontal relaxed list">
                                     <div class="item">
-                                        <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
-                                    </div>
-                                    <div class="item">
                                         <strong><g:message code="platform.plural" /></strong>
                                         &nbsp;<ui:bubble count="${allPlatforms.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
                                     </div>
                                 </div>
                             </div>
                             <div class="content">
-                                <p class="ui header"><g:message code="package.plural" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${allPackages}" var="pkg">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-
                                 <p class="ui header"><g:message code="platform.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -391,6 +379,18 @@
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header"><g:message code="package.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${allPackages}" var="pkg">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                             </div>
                                         </div>
                                     </g:each>
