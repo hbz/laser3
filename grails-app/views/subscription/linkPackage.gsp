@@ -29,7 +29,7 @@
 </g:if>
 <g:else>
     <laser:render template="/templates/filter/packageGokbFilter" model="[
-            tmplConfigShow: filterConfig,
+            filterConfig: filterConfig,
             curatoryGroupTypes: curatoryGroupTypes,
             automaticUpdates: automaticUpdates,
     ]"/>
