@@ -102,7 +102,7 @@
                             <div class="grouped fields">
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}s" value="no">
+                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}" value="no">
                                         <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                                     </div>
                                 </div>
