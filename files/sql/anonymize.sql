@@ -9,6 +9,7 @@ WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7
 
 -- for ALL:
 
+-- TODO: add NULL values
 CREATE FUNCTION pg_temp.laser_rnd_text() RETURNS TEXT AS $$
     (SELECT (ARRAY [
         'Aller guten Dinge sind drei',
@@ -27,6 +28,7 @@ CREATE FUNCTION pg_temp.laser_rnd_text() RETURNS TEXT AS $$
         ])[floor(random() * 13 + 1)])
 $$ LANGUAGE SQL;
 
+-- TODO: add NULL values
 CREATE FUNCTION pg_temp.laser_rnd_xval() RETURNS TEXT AS $$
     (SELECT concat('X', substr(md5(random()::text), 1, 8)))
 $$ LANGUAGE SQL;
