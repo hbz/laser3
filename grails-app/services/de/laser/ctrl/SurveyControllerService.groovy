@@ -252,11 +252,12 @@ class SurveyControllerService {
 
             result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
 
-            if(params.sub){
-                params.sub = Subscription.get(params.long('sub'))
+            if(params.subs){
+                params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
             }else{
-                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
-                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))
+                {
+                    params.subs = params.subs ? Params.getLongList(params, 'subs').collect {Subscription.get(it)} : [result.subscription]
                 }
             }
 
@@ -279,11 +280,13 @@ class SurveyControllerService {
 
             params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
             params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-            if(params.sub){
-                params.sub = Subscription.get(params.long('sub'))
+
+            if(params.subs){
+                params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
             }else{
-                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
-                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))
+                {
+                    params.subs = params.subs ? Params.getLongList(params, 'subs').collect {Subscription.get(it)} : [result.subscription]
                 }
             }
 
@@ -352,11 +355,12 @@ class SurveyControllerService {
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
-            if(params.sub){
-                params.sub = Subscription.get(params.long('sub'))
+            if(params.subs){
+                params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
             }else{
-                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
-                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))
+                {
+                    params.subs = params.subs ? Params.getLongList(params, 'subs').collect {Subscription.get(it)} : [result.subscription]
                 }
             }
 
@@ -455,11 +459,12 @@ class SurveyControllerService {
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
-            if(params.sub){
-                params.sub = Subscription.get(params.long('sub'))
+            if(params.subs){
+                params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
             }else{
-                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
-                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))
+                {
+                    params.subs = params.subs ? Params.getLongList(params, 'subs').collect {Subscription.get(it)} : [result.subscription]
                 }
             }
 
