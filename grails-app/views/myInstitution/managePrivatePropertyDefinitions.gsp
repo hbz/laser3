@@ -225,20 +225,39 @@
                                                         <i class="${Icon.PROP.MANDATORY.replaceAll('yellow', '')}"></i>
                                                     </g:link>
                                                 </g:else>
-                                                <g:if test="${!multiplePdList?.contains(pd.id)}">
-                                                    <g:if test="${pd.multipleOccurrence}">
+                                                <g:if test="${pd.multipleOccurrence}">
+                                                    <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
                                                                 params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                             <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                            <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>
-                                                        </g:link>
+                                                        <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                            <icon:placeholder /><%-- Hidden Fake Button --%>
+                                                        </div>
                                                     </g:else>
                                                 </g:if>
+                                                <g:else>
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"
+                                                            params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                        <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>
+                                                    </g:link>
+                                                </g:else>
+%{--                                                <g:if test="${!multiplePdList?.contains(pd.id)}">--}%
+%{--                                                    <g:if test="${pd.multipleOccurrence}">--}%
+%{--                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"--}%
+%{--                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">--}%
+%{--                                                            <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>--}%
+%{--                                                        </g:link>--}%
+%{--                                                    </g:if>--}%
+%{--                                                    <g:else>--}%
+%{--                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"--}%
+%{--                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">--}%
+%{--                                                            <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>--}%
+%{--                                                        </g:link>--}%
+%{--                                                    </g:else>--}%
+%{--                                                </g:if>--}%
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
                                                             params="[cmd:'delete', deleteIds: pd?.id]"
