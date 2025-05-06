@@ -229,6 +229,13 @@
                 <td>
                     <%-- filter by model.restrictToOrg --%>
                     <div class="ui divided middle aligned list la-flex-list">
+                    <g:each in="${pRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
+                        <g:if test="${role.positionType}">
+                            <div class="ui item">
+                                ${role.positionType.getI10n('value')}
+                            </div>
+                        </g:if>
+                    </g:each>
                         <g:each in="${pProvRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.positionType}">
                                     <div class="ui item">
