@@ -5079,7 +5079,7 @@ class SurveyControllerService {
             }
 
             if (params.provider) {
-                Org provider = genericOIDService.resolveOID(params.provider)
+                Provider provider = genericOIDService.resolveOID(params.provider)
                 result.surveyInfo.provider = provider ?: result.surveyInfo.provider
 
                 if (!result.surveyInfo.save()) {
