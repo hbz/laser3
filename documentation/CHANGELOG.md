@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6544    06.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbenennung und Bereinigung von Positionstypen
+
 6540    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Schleife nachgereicht
 
 6532    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         Informationsbudgets wurden im Export nur nach Gruppierung vorgeschlagen
