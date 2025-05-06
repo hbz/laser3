@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6532    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         Informationsbudgets wurden im Export nur nach Gruppierung vorgeschlagen
+
 6523    05.05.2025  rc-3.5  3.5-RC      David   Bug         Mehrfach vergebene eigene Merkmale werden als "nicht zulässig" definiert
 
 6524    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         CSV-Kostenausgabe schlug fehl

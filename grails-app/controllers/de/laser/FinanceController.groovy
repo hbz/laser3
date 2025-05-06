@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.BudgetCode
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
@@ -248,21 +249,16 @@ class FinanceController  {
                            message(code: 'default.status.label'), message(code: 'default.currency.label'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
-                titles.addAll(message(code: 'financials.taxRate'), [message(code:'default.currency.label'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
+                titles.addAll(message(code: 'financials.taxRate'), message(code:'default.currency.label'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax'))
             titles.addAll([message(code: 'financials.costItemElement'), message(code: 'default.description.label'),
                            message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
+            Set<CostInformationDefinition> costItemDefinitions = CostItem.executeQuery('select ci.costInformationDefinition from CostItem ci where ci.owner = :ctx', [ctx: contextService.getOrg()])
+            titles.addAll(costItemDefinitions.getAt(LocaleUtils.getLocalizedAttributeName('name')))
             SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-            LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
-                List<Org> orgs = subscribers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                subscribers.put(it.sub,orgs)
+            Map<CostItem, BudgetCode> costItemGroups = CostItem.executeQuery('select cig.costItem, cig.budgetCode from CostItemGroup cig join cig.budgetCode bc where bc.owner = :ctx', [ctx: contextService.getOrg()]).collectEntries { row ->
+                [row[0], row[1]]
             }
-            CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
                 csv {
                     response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}_${viewMode}.csv\"")
@@ -430,6 +426,15 @@ class FinanceController  {
                                 //order number
                                 cellnum++
                                 row.add(ci.order ? ci.order.orderNumber : "")
+                                costItemDefinitions.each { CostInformationDefinition costInformationDefinition ->
+                                    cellnum++
+                                    if(ci.costInformationDefinition == costInformationDefinition) {
+                                        if(ci.costInformationDefinition.type == RefdataValue.class.name)
+                                            row.add(ci.costInformationRefValue.getI10n('value'))
+                                        else row.add(ci.costInformationStringValue)
+                                    }
+                                    else row.add("")
+                                }
                                 //rownum++
                                 rowData.add(row)
                             }
