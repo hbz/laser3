@@ -2015,6 +2015,8 @@ class ExportClickMeService {
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
 
+        exportFields.put("surveyPropertyComments", [field: null, label: "${messageSource.getMessage('propertyDefinition.plural', null, locale)+' - '+messageSource.getMessage('surveyResult.participantComment', null, locale)+' + '+messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}", defaultChecked: 'true'])
+
         if(!(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surveyConfig.surveyProperties.surveyProperty.id)){
             exportFields.remove('survey.period')
             exportFields.remove('survey.periodComment')
@@ -2100,6 +2102,9 @@ class ExportClickMeService {
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
+
+        fields.survey.fields << ["surveyPropertyComments": [field: null, label: "${messageSource.getMessage('propertyDefinition.plural', null, locale)+' - '+messageSource.getMessage('surveyResult.participantComment', null, locale)+' + '+messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}", defaultChecked: 'true']]
+
 
         if(!(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surveyConfig.surveyProperties.surveyProperty.id)){
             fields.survey.fields.remove('survey.period')
@@ -3552,6 +3557,9 @@ class ExportClickMeService {
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
 
+        exportFields.put("surveyPropertyComments", [field: null, label: "${messageSource.getMessage('propertyDefinition.plural', null, locale)+' - '+messageSource.getMessage('surveyResult.participantComment', null, locale)+' + '+messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}", defaultChecked: 'true'])
+
+
         if(surveyConfig.pickAndChoose){
             exportFields.put("pickAndChoose", [field: null, label: "${messageSource.getMessage('surveyEvaluation.titles.label', null, locale)}", defaultChecked: 'true'])
         }
@@ -3636,6 +3644,9 @@ class ExportClickMeService {
         surveyConfig.surveyProperties.sort { it.surveyProperty."${localizedName}" }.each {SurveyConfigProperties surveyConfigProperties ->
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
+
+        fields.survey.fields << ["surveyPropertyComments": [field: null, label: "${messageSource.getMessage('propertyDefinition.plural', null, locale)+' - '+messageSource.getMessage('surveyResult.participantComment', null, locale)+' + '+messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}", defaultChecked: 'true']]
+
 
         if(surveyConfig.pickAndChoose){
             fields.survey.fields << ["pickAndChoose": [field: null, label: "${messageSource.getMessage('surveyEvaluation.titles.label', null, locale)}", defaultChecked: 'true']]
@@ -5217,16 +5228,20 @@ class ExportClickMeService {
                 if (fieldKey.startsWith('surveyProperty.')) {
                     if (onlySubscription) {
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
+                        if('surveyPropertyComments' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                            row.add(createTableCell(format, ' '))
+                        }
                     } else {
                         Long id = Long.parseLong(fieldKey.split("\\.")[1])
                         SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
                         String resultStr = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " ", ownerComment = participantResultProperty.ownerComment ?: " "
 
                         row.add(createTableCell(format, resultStr))
-                        row.add(createTableCell(format, comment))
-                        row.add(createTableCell(format, ownerComment))
+                        if('surveyPropertyComments' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, comment))
+                            row.add(createTableCell(format, ownerComment))
+                        }
                     }
                 } else if (fieldKey == 'survey.period') {
                     String period = ""
@@ -5492,8 +5507,10 @@ class ExportClickMeService {
                         }
 
                     } else {
-                        def fieldValue = _getFieldValue(participantResult, field, sdf)
-                        row.add(createTableCell(format, fieldValue))
+                        if(fieldKey != 'surveyPropertyComments') {
+                            def fieldValue = _getFieldValue(participantResult, field, sdf)
+                            row.add(createTableCell(format, fieldValue))
+                        }
                     }
                 }
             }
@@ -6344,12 +6361,16 @@ class ExportClickMeService {
                         String result = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " ", ownerComment = participantResultProperty.ownerComment ?: " "
 
                         row.add(createTableCell(format, result))
-                        row.add(createTableCell(format, comment))
-                        row.add(createTableCell(format, ownerComment))
+                        if('surveyPropertyComments' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, comment))
+                            row.add(createTableCell(format, ownerComment))
+                        }
                     }else{
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
+                        if('surveyPropertyComments' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                            row.add(createTableCell(format, ' '))
+                        }
                     }
                 }
                 else if (fieldKey.contains('Contact.')) {
@@ -6571,8 +6592,10 @@ class ExportClickMeService {
                     row.add(createTableCell(format, priceBudgets.join(';')))
                     row.add(createTableCell(format, priceDiffs.join(';')))
                 }else {
+                    if(fieldKey != 'surveyPropertyComments') {
                         def fieldValue = _getFieldValue(participantResult, field, sdf)
                         row.add(createTableCell(format, fieldValue))
+                    }
                 }
             }
         }
@@ -7738,8 +7761,10 @@ class ExportClickMeService {
                     if(label)
                         titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
-                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
-                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        if('surveyPropertyComments' in selectedExportFields) {
+                            titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                            titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        }
                     }else if (fieldKey.contains('Property')) {
                         titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                     }
