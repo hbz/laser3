@@ -57,9 +57,11 @@
                                          text="${message(code: 'surveyInfo.renewal') + ' ' + surveyConfig.getConfigNameShort()}"/>
 
                 </g:if>
-                <ui:menuDropdownItem controller="survey" action="surveyTransfer"
+                <g:else>
+                    <ui:menuDropdownItem controller="survey" action="surveyTransfer"
                                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                          text="${surveyConfig.getConfigNameShort()}"/>
+                </g:else>
 
             </g:each>
         </ui:menuDropdownItems>
@@ -150,9 +152,11 @@
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${renewalEvaluationCount}"
                            message="surveyInfo.renewal"/>
         </g:if>
-        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTransfer"
+        <g:else>
+            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTransfer"
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                            message="surveyTransfer.label"/>
+        </g:else>
 
 
         <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
