@@ -54,13 +54,17 @@ class TitleController  {
         if (ttParams.tab)    { params.tab = ttParams.tab }
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
         if(params.containsKey('filterSet')) {
-            configMap.putAll(params)
+            params.each { key, value ->
+                if(value)
+                    configMap.put(key, value)
+            }
+            log.debug("index : ${configMap}")
             prf.setBenchmark('getting keys')
             Set<Long> keys = titleService.getKeys(configMap)
             //prf.setBenchmark('getting counts')
             //result.putAll(titleService.getCounts(keys))
             prf.setBenchmark('get title list')
-            result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+            result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: ['sortname', 'dateFirstOnline', 'dateFirstInPrint'], order: params.order]) : []
             result.num_tipp_rows = keys.size()
             result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }

@@ -2801,7 +2801,7 @@ class ExportClickMeService {
                 exportFields.put(it.key, it.value)
             }
         }
-        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
 
         cifList.each { CostInformationDefinition costInformationDefinition ->
             exportFields.put("costInformation." + costInformationDefinition.id, [field: null, label: costInformationDefinition."${localizedName}", privateProperty: (costInformationDefinition.tenant?.id == contextOrg.id)])
@@ -2868,7 +2868,7 @@ class ExportClickMeService {
         fields.costInformation.fields.clear()
         fields.myCostInformation.fields.clear()
 
-        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
 
         cifList.each { CostInformationDefinition costInformationDefinition ->
             //the proxies again ...

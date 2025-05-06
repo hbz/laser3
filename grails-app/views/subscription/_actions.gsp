@@ -36,7 +36,7 @@
                 </g:else>
             </g:elseif>
             <ui:exportDropdownItem>
-                <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
+                <g:link class="item kbartExport  js-no-wait-wheel" params="${params + [exportKBart: true]}">KBART Export</g:link>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
 </g:elseif>
