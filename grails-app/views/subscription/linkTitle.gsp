@@ -18,7 +18,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/tipp_ieFilter"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: true]"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>

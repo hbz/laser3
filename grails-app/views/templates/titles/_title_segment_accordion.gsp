@@ -89,7 +89,13 @@
 
         <div class="two wide column">
             <g:if test="${showPackageLinking && editable && !isLinked}">
-                <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId, fixedSubscription: fixedSubscription.id, headerToken: "subscription.details.linkTitle.heading.title"])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label.title"/></a>
+                <g:if test="${fixedSubscription}">
+                    <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId, fixedSubscription: fixedSubscription.id, headerToken: "subscription.details.linkTitle.heading.title"])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label.title"/></a>
+                </g:if>
+                <g:else>
+                    <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId, headerToken: "subscription.details.linkTitle.heading.title"])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label.title"/></a>
+                </g:else>
+
 
 
                 <laser:script file="${this.getGroovyPageFileName()}">

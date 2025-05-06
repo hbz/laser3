@@ -54,7 +54,11 @@ class TitleController  {
         if (ttParams.tab)    { params.tab = ttParams.tab }
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
         if(params.containsKey('filterSet')) {
-            configMap.putAll(params)
+            params.each { key, value ->
+                if(value)
+                    configMap.put(key, value)
+            }
+            log.debug("index : ${configMap}")
             prf.setBenchmark('getting keys')
             Set<Long> keys = titleService.getKeys(configMap)
             //prf.setBenchmark('getting counts')
