@@ -4513,27 +4513,32 @@ class SurveyControllerService {
             result.selectedProperty
             result.properties
             if (params.tab == 'surveyProperties') {
-                result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll { it.tenant == null }
+                result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty
                 result.properties -= PropertyStore.SURVEY_PROPERTY_PARTICIPATION
-                result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
-                result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
             }
 
             if (params.tab == 'customProperties') {
-                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic)) }.type
+                //result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic)) }.type
+                List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
+                if(childSubs) {
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.type.tenant is null and (sp.tenant = :context or (sp.tenant != :context and sp.isPublic = true)) and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+                    result.properties = memberProperties
+                }
             }
 
             if (params.tab == 'privateProperties') {
-                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id }.type
-            }
+                //result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id }.type
 
-            List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
-            if(childSubs) {
-                String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+                List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
+                if(childSubs) {
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.type.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
 
-                result.memberProperties = memberProperties
+                    result.properties = memberProperties
+                }
             }
 
             if (result.properties) {
@@ -4557,15 +4562,27 @@ class SurveyControllerService {
                     if (params.tab == 'surveyProperties') {
                         PropertyDefinition surProp = PropertyDefinition.get(result.selectedProperty)
                         newMap.surveyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surProp, org)
-                        PropertyDefinition propDef = surProp ? PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP) : null
+                        newMap.propDef
+                        if (surProp) {
+                            if (surProp.tenant) {
+                                newMap.propDef = PropertyDefinition.getByNameAndDescrAndTenant(surProp.name, PropertyDefinition.SUB_PROP, surProp.tenant)
+                                newMap.newProperty = (sub && newMap.propDef) ? sub.propertySet.find {
+                                    it.type.id == newMap.propDef.id && it.type.tenant?.id == contextService.getOrg().id
+                                } : null
+                                newMap.oldProperty = (newMap.oldSub && newMap.propDef) ? newMap.oldSub.propertySet.find {
+                                    it.type.id == newMap.propDef.id && it.type.tenant?.id == contextService.getOrg().id
+                                } : null
+                            } else {
+                                newMap.propDef = PropertyDefinition.getByNameAndDescr(surProp.name, PropertyDefinition.SUB_PROP)
+                                newMap.newProperty = (sub && newMap.propDef) ? sub.propertySet.find {
+                                    it.type.id == newMap.propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
+                                } : null
+                                newMap.oldProperty = (newMap.oldSub && newMap.propDef) ? newMap.oldSub.propertySet.find {
+                                    it.type.id == newMap.propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
+                                } : null
+                            }
+                        }
 
-
-                        newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
-                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
-                        } : null
-                        newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
-                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
-                        } : null
                     }
                     if (params.tab == 'customProperties') {
                         newMap.newCustomProperty = (sub) ? sub.propertySet.find {
@@ -4621,13 +4638,18 @@ class SurveyControllerService {
                     result.selectedProperty = params.selectedProperty ?: null
 
                     surveyProperty = params.copyProperty ? PropertyDefinition.get(params.long('copyProperty')) : null
-
-                    propDef = surveyProperty ? PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP) : null
+                    if (surveyProperty) {
+                        if (surveyProperty.tenant) {
+                            propDef = PropertyDefinition.getByNameAndDescrAndTenant(surveyProperty.name, PropertyDefinition.SUB_PROP, surveyProperty.tenant)
+                        }else {
+                            propDef = PropertyDefinition.getByNameAndDescr(surveyProperty.name, PropertyDefinition.SUB_PROP)
+                        }
+                    }
                     if (!propDef && surveyProperty) {
 
                         Map<String, Object> map = [
                                 token   : surveyProperty.name,
-                                category: 'Subscription Property',
+                                category: PropertyDefinition.SUB_PROP,
                                 type    : surveyProperty.type,
                                 rdc     : (surveyProperty.isRefdataValueType()) ? surveyProperty.refdataCategory : null,
                                 i10n    : [
@@ -4637,6 +4659,10 @@ class SurveyControllerService {
                                         expl_en: surveyProperty.getI10n('expl', 'en')
                                 ]
                         ]
+
+                        if(surveyProperty.tenant){
+                            map.tenant = surveyProperty.tenant.globalUID
+                        }
                         propDef = PropertyDefinition.construct(map)
                     }
 
