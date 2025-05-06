@@ -147,7 +147,7 @@
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="compareMembersOfTwoSubs"
                            class="${actionName in ['copyProperties', 'copySurveyCostItems', 'copySurveyPackages', 'copySurveyCostItemPackage', 'copySurveyVendors'] ? 'active' : ''}"
-                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${renewalEvaluationCount}"
                            message="surveyInfo.renewal"/>
         </g:if>
         <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTransfer"

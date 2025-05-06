@@ -5210,7 +5210,18 @@ class SurveyControllerService {
         result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
         result.surveyVendorsCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
         result.evaluationCount = SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig and finishDate is not null", [surveyConfig: result.surveyConfig])[0] + '/' + SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])[0]
+        if(result.surveyConfig.subSurveyUseForTransfer) {
+            Subscription successorSub  = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+            result.renewalEvaluationCount = (successorSub ? Subscription.executeQuery("select count (*)" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org in (:orgs) and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub",
+                    [orgs          : SurveyOrg.executeQuery("select surOrg.org from SurveyOrg surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.finishDate is not null and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surOrg.surveyConfig and surResult.participant = surOrg.org and surResult.type = :type and surResult.refValue = :refValue)", [surveyConfig: result.surveyConfig, type: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, refValue: RDStore.YN_YES]),
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: successorSub])[0] : 0) + '/' + SurveyOrg.executeQuery("select count (*) from SurveyOrg surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.finishDate is not null and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surOrg.surveyConfig and surResult.participant = surOrg.org and surResult.type = :type and surResult.refValue = :refValue)", [surveyConfig: result.surveyConfig, type: PropertyStore.SURVEY_PROPERTY_PARTICIPATION, refValue: RDStore.YN_YES])[0]
 
+        }
         result.subscription = result.surveyConfig.subscription ?: null
 
         result
