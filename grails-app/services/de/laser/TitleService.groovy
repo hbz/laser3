@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class TitleService {
 
+    ContextService contextService
     FilterService filterService
 
     Map<String, Object> getCounts(Set<Long> tippIDs) {
@@ -49,24 +50,44 @@ class TitleService {
         if(configMap.identifier) {
             tippIDs = tippIDs.intersect(getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
+        if(configMap.hasPerpetualAccess) {
+            Set<Long> currentPTs = PermanentTitle.executeQuery('select pt.tipp.id from PermanentTitle pt where pt.owner = :ctx', [ctx: contextService.getOrg()])
+            if(Long.parseLong(configMap.hasPerpetualAccess) == RDStore.YN_YES.id)
+                tippIDs = tippIDs.intersect(currentPTs)
+            else {
+                tippIDs.removeAll(currentPTs)
+            }
+        }
         tippIDs
     }
 
     Set<Long> getTippsByIdentifier(Map identifierConfigMap, String identifier) {
         identifierConfigMap.identifier = "%${identifier.toLowerCase()}%"
-        TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS) and id.ns.nsType = :titleObj', identifierConfigMap)
+        String pkgFilter = ""
+        if(identifierConfigMap.containsKey('packages')) {
+            pkgFilter = "and tipp.pkg in (:packages)"
+        }
+        TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where lower(id.value) like :identifier '+pkgFilter+' and id.ns.ns in (:titleNS) and id.ns.nsType = :titleObj', identifierConfigMap)
     }
 
     Map<String, Object> getParameterGenerics(configMap) {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'
-        Map<String, Object> titleConfigMap = [filter: configMap.filter, packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
+        Map<String, Object> titleConfigMap = [filter: configMap.filter, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
                                               first_author: configMap.first_author, first_editor: configMap.first_editor,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom, openAccess: configMap.openAccess,
                                               dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers, provider: configMap.provider,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
-                            identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE] //, sort: sort, order: order
+                            identifierConfigMap = [identifier: configMap.identifier, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE] //, sort: sort, order: order
+        if(configMap.containsKey('packages')) {
+            titleConfigMap.packages = configMap.packages
+            identifierConfigMap.packages = configMap.packages
+        }
+        else if(configMap.containsKey('pkgfilter')) {
+            titleConfigMap.packages = de.laser.wekb.Package.get(configMap.pkgfilter)
+            identifierConfigMap.packages = de.laser.wekb.Package.get(configMap.pkgfilter)
+        }
         [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap]
     }
 }
