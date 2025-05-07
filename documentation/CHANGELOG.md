@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6548    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter nach Kontakt-Position nachgereicht
+
 6546    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         irrtümliche Entknüpfung von Titel behoben
 
 6545    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     bessere Darstellung des Hinweistextes

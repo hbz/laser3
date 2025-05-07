@@ -1256,7 +1256,7 @@ class AjaxJsonController {
                 List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
 
                 if (selectedRoleTypes) {
-                    query += "and pr.functionType in (:selectedRoleTypes) "
+                    query += "and (pr.functionType in (:selectedRoleTypes) or pr.positionType in (:selectedRoleTypes)) "
                     queryParams << [selectedRoleTypes: selectedRoleTypes]
                 }
             }
