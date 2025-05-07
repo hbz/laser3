@@ -752,15 +752,8 @@
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
-                            <g:message code="surveyOrg.perennialTerm.current"/>
-                            <br />
-                        </g:if>
-                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:elseif>
+                <g:if test="${orgSubs}">
+                    <g:each in="${orgSubs}" var="orgSub">
                         <table class="ui very basic compact table">
                             <tbody>
                             <g:if test="${selectedCostItemElementID}">
@@ -797,6 +790,7 @@
                             </g:if>
                             </tbody>
                         </table>
+                    </g:each>
                 </g:if>
 
                 </td>
