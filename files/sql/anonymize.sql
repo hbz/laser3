@@ -1,9 +1,9 @@
 
 --
--- Pseudonymization (requirements and tests)
+-- Pseudonymization (A: requirements and tests)
 --
 
--- Anon functions - base
+-- Anon base functions
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_gen_rnd_lorem(length INT DEFAULT 1) RETURNS TEXT AS $$
 DECLARE
@@ -103,31 +103,43 @@ DECLARE
     data_ln TEXT[];
 BEGIN
     data_mn = ARRAY [
-        'Achim', 'Adam', 'Anton',
-        'Balduin', 'Bert', 'Björn',
-        'Carsten', 'Christoph', 'Cuno',
-        'Dagobert', 'Didi', 'Dorian',
+        'Achim', 'Adam', 'Alexander', 'Alfred', 'Anton',
+        'Balduin', 'Bernd', 'Björn', 'Boris',
+        'Carsten', 'Christoph', 'Cem', 'Claus',
+        'Dagobert', 'Daniel', 'Didi', 'Dorian',
         'Eckard', 'Erich', 'Erwin',
-        'Felix', 'Florian', 'Franz',
-        'Gerd', 'Gisbert', 'Günther'
+        'Falko', 'Felix', 'Florian', 'Franz',
+        'Georg', 'Gerd', 'Gisbert', 'Günther',
+        'Hannes', 'Hans', 'Helmut', 'Herbert', 'Horst',
+        'Ian', 'Igor', 'Ingolf', 'Ivan',
+        'Jakob', 'Jens', 'Jochen', 'Jörg', 'Jürgen',
+        'Karl', 'Kevin', 'Kim', 'Klaus', 'Knut'
         ];
     data_fn = ARRAY [
-        'Ada', 'Antonia', 'Astrid',
-        'Barbara', 'Berta', 'Birgit',
-        'Carolin', 'Christine', 'Cuna',
-        'Dagmar', 'Diane', 'Doris',
+        'Agathe', 'Alina', 'Andrea', 'Anja', 'Astrid',
+        'Barbara', 'Berta', 'Bettina', 'Birgit',
+        'Carolin', 'Celine', 'Christine', 'Claudia',
+        'Dagmar', 'Diane', 'Doris', 'Dörthe',
         'Edda', 'Elke', 'Emma',
-        'Fenja', 'Flora', 'Frauke',
-        'Gabi', 'Gerda', 'Greta'
+        'Fenja', 'Flora', 'Frauke', 'Friederike',
+        'Gabi', 'Gerda', 'Greta', 'Gudrun',
+        'Hanna', 'Heidi', 'Heike', 'Helene', 'Hildegard',
+        'Ilka', 'Inge', 'Iris', 'Isabel',
+        'Jana', 'Jennifer', 'Jessica', 'Judy', 'Julia',
+        'Karin', 'Karla', 'Katja', 'Kim', 'Kristina'
         ];
     data_ln = ARRAY [
-        'Aberle', 'Acker', 'Althaus', 'Andersen', 'Auerbach',
+        'Aberle', 'Ackermann', 'Althaus', 'Andersen', 'Auerbach',
         'Bachmeier', 'Birken', 'Beckmann', 'Bluhme', 'Böhmer',
         'Calmund', 'Conrad', 'Claasen', 'Cremer', 'Czajkowski',
         'Dahlberg', 'Daubner', 'Diemert', 'Dörfler', 'Dyck',
         'Ebertz', 'Edinger', 'Erdmann', 'Eschke', 'Eulert',
         'Faber', 'Fechtheim', 'Feldkamp', 'Förster', 'Fuchs',
-        'Gabel', 'Geppert', 'Giesen', 'Goller', 'Gottschalk'
+        'Gabel', 'Geppert', 'Giesen', 'Goller', 'Gottschalk',
+        'Hagedorn', 'Herschmann', 'Höfer', 'Hummel', 'Huppertz',
+        'Ickert', 'Imbusch', 'Ingholt', 'Itzinger', 'Iwanowski',
+        'Jacobs', 'Jenke', 'Johmann', 'Junker', 'Jürgensen',
+        'Kaiser', 'Kemper', 'Kluge', 'Krause', 'Kurz'
         ];
 
     IF gender = 'male' THEN
@@ -140,7 +152,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- Anon functions - for use
+-- Anon functions for use
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_lorem(oldValue TEXT, length INT DEFAULT 1) RETURNS TEXT AS $$
 BEGIN
@@ -236,7 +248,7 @@ $$ LANGUAGE PLPGSQL;
 SELECT pg_temp.anon_test();
 
 --
--- Pseudonymization (data manipulation)
+-- Pseudonymization (B: data manipulation)
 --
 
 -- for LOCAL only:
@@ -313,6 +325,14 @@ WHERE
         );
 
 -- Properties
+
+UPDATE org_property SET
+    op_note             = pg_temp.anon_lorem(op_note),
+    op_string_value     = pg_temp.anon_phrase(op_string_value, concat(to_char(op_date_created, 'DD.MM.YYYY'), ', ', op_is_public)),
+    op_url_value        = pg_temp.anon_url(op_url_value)
+WHERE op_tenant_fk NOT IN (
+    SELECT org_id FROM org WHERE org_is_beta_tester = true
+);
 
 UPDATE person_property SET
     pp_note             = pg_temp.anon_lorem(pp_note),
