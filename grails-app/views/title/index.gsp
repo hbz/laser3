@@ -30,7 +30,7 @@
     <div class="ui grid">
         <div class="row">
             <div class="column">
-                <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackageLinking: true, disableStatus: true]"/>
+                <laser:render template="/templates/tipps/title_list" model="[tmplConfigShow: tmplConfigShow, tipps: titlesList]"/>
             </div>
         </div>
     </div>

@@ -35,7 +35,7 @@
     <div class="ui grid">
         <div class="row">
             <div class="column">
-                <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, fixedSubscription: subscription, showPackageLinking: true, disableStatus: true]"/>
+                <laser:render template="/templates/tipps/title_list" model="[tmplConfigShow: tmplConfigShow, tipps: titlesList, fixedSubscription: subscription]"/>
             </div>
         </div>
     </div>
@@ -46,3 +46,47 @@
 </g:else>
 
 <laser:htmlEnd />
+
+<%--
+
+        <div class="two wide column">
+            <g:if test="${showPackageLinking && editable && !isLinked}">
+                <g:if test="${fixedSubscription}">
+                    <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId, fixedSubscription: fixedSubscription.id, headerToken: "subscription.details.linkTitle.heading.title"])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label.title"/></a>
+                </g:if>
+                <g:else>
+                    <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId, headerToken: "subscription.details.linkTitle.heading.title"])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label.title"/></a>
+                </g:else>
+
+
+
+                <laser:script file="${this.getGroovyPageFileName()}">
+                    $('#linkTitleToSubscription_${tipp.gokbId}').on('click', function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr('href')
+                        }).done( function (data) {
+                            $('.ui.dimmer.modals > #linkTitleModal').remove();
+                            $('#dynamicModalContainer').empty().html(data);
+
+                            $('#dynamicModalContainer .ui.modal').modal({
+                               onShow: function () {
+                                    r2d2.initDynamicUiStuff('#linkTitleModal');
+                                    r2d2.initDynamicXEditableStuff('#linkTitleModal');
+                                    $("html").css("cursor", "auto");
+                                },
+                                detachable: true,
+                                autofocus: false,
+                                closable: false,
+                                transition: 'scale',
+                                onApprove : function() {
+                                    $(this).find('.ui.form').submit();
+                                    return false;
+                                }
+                            }).modal('show');
+                        })
+                    });
+                </laser:script>
+            </g:if>
+        </div>--%>
