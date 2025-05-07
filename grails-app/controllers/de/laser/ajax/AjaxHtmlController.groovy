@@ -427,14 +427,25 @@ class AjaxHtmlController {
         Map<String, Object> model = [:], result = controlledListService.getVendors(params)
         model.vendorList = result.results
         model.unlink = params.containsKey('unlink')
-        if(GlobalService.isset(params, 'subscription')) {
-            Subscription s = genericOIDService.resolveOID(params.subscription)
-            Set currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription', [subscription: s])
-            model.currVendors = currVenLinks
-            model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
-            if(s.instanceOf)
-                model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription and vr.isShared = true', [subscription: s.instanceOf])
-            else model.currVenSharedLinks = [:]
+        if(GlobalService.isset(params, 'parent')) {
+            Object s = genericOIDService.resolveOID(params.parent)
+            Set currVenLinks
+            if(s instanceof Subscription) {
+                currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription', [subscription: s])
+                model.currVendors = currVenLinks
+                model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
+                if (s.instanceOf)
+                    model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription and vr.isShared = true', [subscription: s.instanceOf])
+                else model.currVenSharedLinks = [:]
+            }
+            if(s instanceof License) {
+                currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.license = :license', [license: s])
+                model.currVendors = currVenLinks
+                model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
+                if (s.instanceOf)
+                    model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.license = :license and vr.isShared = true', [license: s.instanceOf])
+                else model.currVenSharedLinks = [:]
+            }
         }
         else {
             model.currVendors = []
