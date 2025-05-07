@@ -9,6 +9,8 @@
 
 6546    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         irrtümliche Entknüpfung von Titel behoben
 
+6545    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     bessere Darstellung des Hinweistextes
+
 6530    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     Übernahme der Tabelle aus "Alle Pakete"
 
 6544    06.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbenennung und Bereinigung von Positionstypen

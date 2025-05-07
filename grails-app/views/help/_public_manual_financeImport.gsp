@@ -11,9 +11,7 @@
     <h1 class="ui header">
         <g:message code="myinst.financeImport.headline"/>
     </h1>
-    <h2>
-        <g:message code="myinst.financeImport.mandatory"/>
-    </h2>
+    <ui:msg class="warning" message="myinst.financeImport.mandatory" hideClose="true" showIcon="true"/>
     <div class="content">
         <table class="ui la-ignore-fixed compact table">
             <thead>
