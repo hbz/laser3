@@ -70,7 +70,8 @@
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
-                                                        tmplConfigShow   : tmplConfigShowList]"/>
+                                                        tmplConfigShow   : tmplConfigShowList,
+                                                        showIcons: params.tab == 'participantsView']"/>
 </div>
 
 

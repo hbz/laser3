@@ -102,7 +102,8 @@
                                                                         showCheckboxForParticipantsHasNoAccess: editable,
                                                                         showTransferFields                    : editable,
                                                                         processAction                         : 'processTransferParticipants',
-                                                                        tmplConfigShow                        : tmplConfigShowList]"/>
+                                                                        tmplConfigShow                        : tmplConfigShowList,
+                                                                        showIcons: params.tab == 'participantsView']"/>
         </div>
 
 
