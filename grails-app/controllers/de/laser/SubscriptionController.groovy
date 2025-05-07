@@ -1083,6 +1083,7 @@ class SubscriptionController {
                 result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
                 result.num_tipp_rows = keys.size()
                 result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+                result.tmplConfigShow = ['lineNumber', 'name', 'status', 'package', 'provider', 'platform', 'lastUpdatedDisplay', 'linkTitle']
             }
             result.benchMark = prf.stopBenchmark()
             result
