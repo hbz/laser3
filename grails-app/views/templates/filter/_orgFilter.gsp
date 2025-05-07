@@ -449,7 +449,7 @@
 
                         <div class="field">
                             <label for="subs">${message(code: 'subscription.label')}</label>
-                            <select id="subs" name="sub" class="ui fluid search selection dropdown">
+                            <select id="subs" name="subs" class="ui fluid search selection dropdown multiple" multiple="multiple">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
                             </select>
                         </div>
