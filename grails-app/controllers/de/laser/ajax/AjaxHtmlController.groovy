@@ -398,15 +398,25 @@ class AjaxHtmlController {
         Map<String, Object> model = [:], result = controlledListService.getProviders(params)
         model.providerList = result.results
         model.unlink = params.containsKey('unlink')
-        if(GlobalService.isset(params, 'subscription')) {
-            Subscription s = genericOIDService.resolveOID(params.subscription)
-            Set currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription', [subscription: s])
-            model.currProviders = currProvLinks
-            model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
-            if(s.instanceOf) {
-                model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription and pvr.isShared = true', [subscription: s.instanceOf])
+        if(GlobalService.isset(params, 'parent')) {
+            Object s = genericOIDService.resolveOID(params.parent)
+            Set currProvLinks
+            if(s instanceof Subscription) {
+                currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription', [subscription: s])
+                model.currProviders = currProvLinks
+                model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
+                if (s.instanceOf) {
+                    model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription and pvr.isShared = true', [subscription: s.instanceOf])
+                } else model.currProvSharedLinks = [:]
             }
-            else model.currProvSharedLinks = [:]
+            if(s instanceof License) {
+                currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.license = :license', [license: s])
+                model.currProviders = currProvLinks
+                model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
+                if (s.instanceOf) {
+                    model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.license = :license and pvr.isShared = true', [license: s.instanceOf])
+                } else model.currProvSharedLinks = [:]
+            }
         }
         else {
             model.currProviders = []
