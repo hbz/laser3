@@ -152,12 +152,47 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
+CREATE OR REPLACE FUNCTION pg_temp.anon_gen_url() RETURNS TEXT AS $$
+DECLARE
+    part1 TEXT[];
+    part2 TEXT[];
+BEGIN
+    part1 = ARRAY ['abc.', 'bibo.', 'data.', 'help.', 'www.', ''];
+    part2 = ARRAY ['anon.', 'bit.', 'test.'];
+
+    RETURN 'https://' ||
+           part1[floor(random() *  cardinality(part1) + 1)] ||
+           part2[floor(random() *  cardinality(part2) + 1)] ||
+           'example';
+END;
+$$ LANGUAGE PLPGSQL;
+
 -- Anon functions for use
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_lorem(oldValue TEXT, length INT DEFAULT 1) RETURNS TEXT AS $$
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
         RETURN pg_temp.anon_gen_rnd_lorem(length);
+    ELSE
+        RETURN oldValue;
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_bigint(oldValue INT) RETURNS INT AS $$
+BEGIN
+    IF oldValue IS NOT NULL THEN
+        RETURN round(oldValue * random() * 3);
+    ELSE
+        RETURN oldValue;
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_numeric(oldValue NUMERIC) RETURNS NUMERIC AS $$
+BEGIN
+    IF oldValue IS NOT NULL THEN
+        RETURN (oldValue * random() * 3)::numeric(19, 2);
     ELSE
         RETURN oldValue;
     END IF;
@@ -178,6 +213,16 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
+CREATE OR REPLACE FUNCTION pg_temp.anon_url(oldValue TEXT) RETURNS TEXT AS $$
+BEGIN
+    IF trim(coalesce(oldValue, '')) != '' THEN
+        RETURN pg_temp.anon_gen_url();
+    ELSE
+        RETURN oldValue;
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
 CREATE OR REPLACE FUNCTION pg_temp.anon_xval(oldValue TEXT, debugInfo TEXT DEFAULT '') RETURNS TEXT AS $$
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
@@ -192,32 +237,13 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_url(oldValue TEXT) RETURNS TEXT AS $$
-DECLARE
-    part1 TEXT[];
-    part2 TEXT[];
-BEGIN
-    part1 = ARRAY ['abc.', 'bibo.', 'data.', 'help.', 'www.', ''];
-    part2 = ARRAY ['anon.', 'bit.', 'test.'];
-
-    IF trim(coalesce(oldValue, '')) != '' THEN
-        RETURN 'https://' ||
-               part1[floor(random() *  cardinality(part1) + 1)] ||
-               part2[floor(random() *  cardinality(part2) + 1)] ||
-               'example';
-    ELSE
-        RETURN oldValue;
-    END IF;
-END;
-$$ LANGUAGE PLPGSQL;
-
 -- Anon function tests
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_test() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> running tests';
 
-    RAISE NOTICE 'ANON ---> anon_lorem()';
+    RAISE NOTICE 'ANON ---> anon_lorem';
     ASSERT length( pg_temp.anon_lorem('old') ) > 0,   'anon_lorem 1 failed';
     ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,   'anon_lorem 2 failed';
     ASSERT length( pg_temp.anon_lorem('') ) = 0,   'anon_lorem 3 failed';
@@ -225,7 +251,16 @@ BEGIN
     ASSERT         pg_temp.anon_lorem(null) IS null,   'anon_lorem 5 failed';
     ASSERT         pg_temp.anon_lorem(null, 1) IS null,   'anon_lorem 6 failed';
 
-    RAISE NOTICE 'ANON ---> anon_phrase()';
+    RAISE NOTICE 'ANON ---> anon_bigint';
+    ASSERT         pg_temp.anon_bigint(5) > 0,   'anon_bigint 1 failed';
+    ASSERT         pg_temp.anon_bigint(null) IS NULL,   'anon_bigint 2 failed';
+
+    RAISE NOTICE 'ANON ---> anon_numeric';
+    ASSERT         pg_temp.anon_numeric(5) > 0,   'anon_numeric 1 failed';
+    ASSERT         pg_temp.anon_numeric(33.33) > 0,   'anon_numeric 2 failed';
+    ASSERT         pg_temp.anon_numeric(null) IS NULL,   'anon_numeric 3 failed';
+
+    RAISE NOTICE 'ANON ---> anon_phrase';
     ASSERT length( pg_temp.anon_phrase('old') ) > 0,   'anon_phrase 1 failed';
     ASSERT length( pg_temp.anon_phrase('old', 'debug') ) > 0,   'anon_phrase 2 failed';
     ASSERT length( pg_temp.anon_phrase('') ) = 0,   'anon_phrase 3 failed';
@@ -233,7 +268,13 @@ BEGIN
     ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,   'anon_phrase 5 failed';
     ASSERT         pg_temp.anon_phrase(null, null) IS null,   'anon_phrase 6 failed';
 
-    RAISE NOTICE 'ANON ---> anon_xval()';
+    RAISE NOTICE 'ANON ---> anon_url';
+    ASSERT length( pg_temp.anon_url('old') ) > 0,   'anon_url 1 failed';
+    ASSERT         pg_temp.anon_url('') = '',   'anon_url 2 failed';
+    ASSERT         pg_temp.anon_url('   ') = '   ',   'anon_url 3 failed';
+    ASSERT         pg_temp.anon_url(null) IS NULL,   'anon_url 4 failed';
+
+    RAISE NOTICE 'ANON ---> anon_xval';
     ASSERT length( pg_temp.anon_xval('old') ) > 0,   'anon_xval 1 failed';
     ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,   'anon_xval 2 failed';
     ASSERT length( pg_temp.anon_xval('') ) = 0,   'anon_xval 3 failed';
@@ -307,7 +348,7 @@ WHERE cid_customer_fk NOT IN (
 -- Finance
 
 UPDATE cost_item SET
-    ci_cost_in_billing_currency = round(cast(random() * 5 * ci_cost_in_billing_currency AS NUMERIC), 2)
+    ci_cost_in_billing_currency = pg_temp.anon_numeric(ci_cost_in_billing_currency::numeric)
 WHERE
     ci_cost_in_billing_currency IS NOT NULL AND
     ci_currency_rate IS NOT NULL AND
@@ -329,7 +370,9 @@ WHERE
 UPDATE org_property SET
     op_note             = pg_temp.anon_lorem(op_note),
     op_string_value     = pg_temp.anon_phrase(op_string_value, concat(to_char(op_date_created, 'DD.MM.YYYY'), ', ', op_is_public)),
-    op_url_value        = pg_temp.anon_url(op_url_value)
+    op_url_value        = pg_temp.anon_url(op_url_value),
+    op_long_value       = pg_temp.anon_bigint(op_long_value),
+    op_dec_value        = pg_temp.anon_numeric(op_dec_value)
 WHERE op_tenant_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
@@ -337,7 +380,9 @@ WHERE op_tenant_fk NOT IN (
 UPDATE person_property SET
     pp_note             = pg_temp.anon_lorem(pp_note),
     pp_string_value     = pg_temp.anon_phrase(pp_string_value, concat(to_char(pp_date_created, 'DD.MM.YYYY'), ', ', pp_is_public)),
-    pp_url_value        = pg_temp.anon_url(pp_url_value)
+    pp_url_value        = pg_temp.anon_url(pp_url_value),
+    pp_long_value       = pg_temp.anon_bigint(pp_long_value),
+    pp_dec_value        = pg_temp.anon_numeric(pp_dec_value)
 WHERE pp_tenant_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
@@ -345,7 +390,9 @@ WHERE pp_tenant_fk NOT IN (
 UPDATE platform_property SET
     plp_note            = pg_temp.anon_lorem(plp_note),
     plp_string_value    = pg_temp.anon_phrase(plp_string_value, concat(to_char(plp_date_created, 'DD.MM.YYYY'), ', ', plp_is_public)),
-    plp_url_value       = pg_temp.anon_url(plp_url_value)
+    plp_url_value       = pg_temp.anon_url(plp_url_value),
+    plp_long_value      = pg_temp.anon_bigint(plp_long_value),
+    plp_dec_value       = pg_temp.anon_numeric(plp_dec_value)
 WHERE plp_tenant_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
@@ -353,7 +400,9 @@ WHERE plp_tenant_fk NOT IN (
 UPDATE provider_property SET
     prp_note            = pg_temp.anon_lorem(prp_note),
     prp_string_value    = pg_temp.anon_phrase(prp_string_value, concat(to_char(prp_date_created, 'DD.MM.YYYY'), ', ', prp_is_public)),
-    prp_url_value       = pg_temp.anon_url(prp_url_value)
+    prp_url_value       = pg_temp.anon_url(prp_url_value),
+    prp_long_value      = pg_temp.anon_bigint(prp_long_value),
+    prp_dec_value       = pg_temp.anon_numeric(prp_dec_value)
 WHERE prp_tenant_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
@@ -361,7 +410,9 @@ WHERE prp_tenant_fk NOT IN (
 UPDATE vendor_property SET
     vp_note             = pg_temp.anon_lorem(vp_note),
     vp_string_value     = pg_temp.anon_phrase(vp_string_value, concat(to_char(vp_date_created, 'DD.MM.YYYY'), ', ', vp_is_public)),
-    vp_url_value        = pg_temp.anon_url(vp_url_value)
+    vp_url_value        = pg_temp.anon_url(vp_url_value),
+    vp_long_value       = pg_temp.anon_bigint(vp_long_value),
+    vp_dec_value        = pg_temp.anon_numeric(vp_dec_value)
 WHERE vp_tenant_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
