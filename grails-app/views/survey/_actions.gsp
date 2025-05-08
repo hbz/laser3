@@ -221,19 +221,19 @@
                                                 tooltip="${message(code: "survey.copyEmailaddresses.NoParticipants.info")}"/>
             </g:else>
 
-            <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
-                <div class="ui divider"></div>
 
-                <g:link class="item js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig.getSurveyName()])}"
-                        data-confirm-term-how="delete"
-                        controller="survey" action="deleteSurveyInfo"
-                        id="${surveyInfo.id}"
-                        role="button"
-                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icon.CMD.DELETE}"></i> ${message(code: 'deletion.survey')}
-                </g:link>
-            </g:if>
+            <div class="ui divider"></div>
+
+            <g:link class="item js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.survey", args: [surveyConfig.getSurveyName()])}"
+                    data-confirm-term-how="delete"
+                    controller="survey" action="deleteSurveyInfo"
+                    id="${surveyInfo.id}"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                <i class="${Icon.CMD.DELETE}"></i> ${message(code: 'deletion.survey')}
+            </g:link>
+
         </g:else>
     </ui:actionsDropdown>
 

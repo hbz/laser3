@@ -1854,7 +1854,7 @@ class OrganisationController  {
     })
     @Check404(domain=Org)
     def mailInfos() {
-        Map<String, Object> result = organisationControllerService.mailInfos(this, params)
+        Map<String, Object> result = organisationControllerService.mailInfos(params)
         if (! result) {
             response.sendError(401)
             return
