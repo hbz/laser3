@@ -771,8 +771,8 @@ class ControlledListService {
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
         if (query) {
-            nameFilter += " and ${fieldName} like :query "
-            queryParams.query = "%${query.toLowerCase()}%"
+            nameFilter += " and lower(${fieldName}) like :query "
+            queryParams.query = "%${query.trim().toLowerCase()}%"
         }
         Set<Map> result = TitleInstancePackagePlatform.executeQuery("select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg = :pkg and status = :status "+nameFilter+" group by ${fieldName} order by ${fieldName}", queryParams)
 
@@ -798,7 +798,7 @@ class ControlledListService {
             String nameFilter = "", statusFilter = " and status = :status "
             if (query) {
                 nameFilter += " and lower(${fieldName}) like :query "
-                queryParams.query = "%${query.toLowerCase()}%"
+                queryParams.query = "%${query.trim().toLowerCase()}%"
             }
             if(forTitles && forTitles == 'allIEs') {
                 statusFilter = " and status != :status "
@@ -835,8 +835,8 @@ class ControlledListService {
            }
 
            if (params.query) {
-               query += " and tipp.${params.fieldName} like :query "
-               queryMap.query = "%${params.query}%"
+               query += " and lower(tipp.${params.fieldName}) like :query "
+               queryMap.query = "%${params.query.trim().toLowerCase()}%"
            }
 
            query += " group by tipp.${params.fieldName} order by tipp.${params.fieldName}"
