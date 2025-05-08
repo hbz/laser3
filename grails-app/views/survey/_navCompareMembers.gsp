@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.AuditConfig; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <div class="ui tablet stackable steps">
 
     <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
@@ -30,7 +30,7 @@
 
     </div>
 
-    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+    <g:if test="${surveyConfig.subSurveyUseForTransfer && !(AuditConfig.getConfig(parentSuccessorSubscription, 'holdingSelection') && parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)}">
         <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
 
             <div class="content">
