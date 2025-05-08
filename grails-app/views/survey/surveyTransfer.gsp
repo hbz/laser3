@@ -25,7 +25,14 @@
                        href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
-<laser:render template="nav"/>
+<g:if test="${!surveyConfig.subSurveyUseForTransfer}">
+    <laser:render template="nav"/>
+</g:if>
+<g:else>
+    <h2 class="ui header">
+    <g:message code="surveyTransfer.action"/>:
+    </h2>
+</g:else>
 
 <ui:objectStatus object="${surveyInfo}"/>
 
@@ -95,7 +102,8 @@
                                                                         showCheckboxForParticipantsHasNoAccess: editable,
                                                                         showTransferFields                    : editable,
                                                                         processAction                         : 'processTransferParticipants',
-                                                                        tmplConfigShow                        : tmplConfigShowList]"/>
+                                                                        tmplConfigShow                        : tmplConfigShowList,
+                                                                        showIcons: params.tab == 'participantsView']"/>
         </div>
 
 

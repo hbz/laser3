@@ -320,33 +320,35 @@
                             </g:link>
 
 
-                            <g:if test="${surveyConfig.surveyProperties}">
-                                <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                            <g:if test="${showIcons}">
+                                <g:if test="${surveyConfig.surveyProperties}">
+                                    <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                                        <span data-position="top right" class="la-popup-tooltip"
+                                              data-content="${message(code: 'surveyResult.processedOrg')}">
+                                            <i class="${Icon.ATTR.SURVEY_RESULTS_PROCESSED}"></i>
+                                        </span>
+                                    </g:if>
+                                    <g:else>
+                                        <span data-position="top right" class="la-popup-tooltip"
+                                              data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                                            <i class="${Icon.ATTR.SURVEY_RESULTS_NOT_PROCESSED}"></i>
+                                        </span>
+                                    </g:else>
+                                </g:if>
+
+                                <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                                     <span data-position="top right" class="la-popup-tooltip"
-                                          data-content="${message(code: 'surveyResult.processedOrg')}">
-                                        <i class="${Icon.ATTR.SURVEY_RESULTS_PROCESSED}"></i>
+                                          data-content="${message(code: 'surveyResult.finishOrg')}">
+                                        <i class="${Icon.SYM.YES} green"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span data-position="top right" class="la-popup-tooltip"
-                                          data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                        <i class="${Icon.ATTR.SURVEY_RESULTS_NOT_PROCESSED}"></i>
+                                          data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                                        <i class="${Icon.SYM.NO} red"></i>
                                     </span>
                                 </g:else>
                             </g:if>
-
-                            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip"
-                                      data-content="${message(code: 'surveyResult.finishOrg')}">
-                                    <i class="${Icon.SYM.YES} green"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
-                                <span data-position="top right" class="la-popup-tooltip"
-                                      data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                    <i class="${Icon.SYM.NO} red"></i>
-                                </span>
-                            </g:else>
 
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip"

@@ -2760,9 +2760,9 @@ class SurveyControllerService {
                     }
 
                     members.each { Org org ->
-                            boolean selectable = surveyService.selectableDespiteMultiYearTerm(result.surveyConfig, org)
+                            //boolean selectable = surveyService.selectableDespiteMultiYearTerm(result.surveyConfig, org)
 
-                            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(result.surveyConfig, org)) && selectable) {
+                            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(result.surveyConfig, org))) {
                                 SurveyOrg surveyOrg = new SurveyOrg(
                                         surveyConfig: result.surveyConfig,
                                         org: org
@@ -3595,7 +3595,7 @@ class SurveyControllerService {
              }*/
                     surveyOrgsDo.each { surveyOrg ->
 
-                        boolean selectableDespiteMultiYearTerm = surveyService.selectableDespiteMultiYearTerm(surveyOrg.surveyConfig, surveyOrg.org)
+                        boolean selectableDespiteMultiYearTerm = true //surveyService.selectableDespiteMultiYearTerm(surveyOrg.surveyConfig, surveyOrg.org)
                         if (selectableDespiteMultiYearTerm) {
 
                             if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
@@ -5439,6 +5439,12 @@ class SurveyControllerService {
                         AuditConfig ac = AuditConfig.getConfig(id)
                         if (ac) {
                             Identifier.constructWithFactoryResult([value: id.value, parent: id, reference: memberSub, namespace: id.ns])
+                        }
+                    }
+
+                    if(AuditConfig.getConfig(newParentSub, 'holdingSelection') && newParentSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE){
+                        newParentSub.packages.each { SubscriptionPackage subscriptionPackage ->
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, subscriptionPackage.pkg, false)
                         }
                     }
 
