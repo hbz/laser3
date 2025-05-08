@@ -28,6 +28,7 @@ import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.survey.SurveyPersonResult
+import de.laser.survey.SurveyTransfer
 import de.laser.utils.RandomUtils
 import de.laser.wekb.Package
 import de.laser.PackageService
@@ -2348,6 +2349,10 @@ class SurveyControllerService {
                     Subscription memberSub = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.targetSubscription, org, startDate, endDate, false, result.targetSubscription.status, inheritedAttributes, null, true, true, null, null)
 
                     if(memberSub) {
+
+                        SurveyTransfer surveyTransfer = new SurveyTransfer(org: org, subscription: memberSub, surveyConfig: result.surveyConfig)
+                        surveyTransfer.save()
+
                         result.newSubs << memberSub
                     }
                 }
@@ -4920,6 +4925,10 @@ class SurveyControllerService {
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
+
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            surveyTransfer.save()
+
                             countNewSubs++
                             result.newSubs.addAll(subscription)
                         }
@@ -4935,6 +4944,10 @@ class SurveyControllerService {
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
+
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            surveyTransfer.save()
+
                             countNewSubs++
                             result.newSubs.addAll(subscription)
                         }
@@ -4950,6 +4963,10 @@ class SurveyControllerService {
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
+
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            surveyTransfer.save()
+
                             countNewSubs++
                             result.newSubs.addAll(subscription)
                         }
@@ -4966,6 +4983,10 @@ class SurveyControllerService {
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
+
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            surveyTransfer.save()
+
                             countNewSubs++
                             result.newSubs.addAll(subscription)
                         }
@@ -4983,6 +5004,10 @@ class SurveyControllerService {
                             }
                             Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                             if(subscription){
+
+                                SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                                surveyTransfer.save()
+
                                 countNewSubs++
                                 result.newSubs.addAll(subscription)
                             }
@@ -4999,6 +5024,10 @@ class SurveyControllerService {
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
                         Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
+
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: org, subscription: subscription, surveyConfig: result.surveyConfig)
+                            surveyTransfer.save()
+
                             countNewSubs++
                             result.newSubs.addAll(subscription)
                         }

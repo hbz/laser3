@@ -350,6 +350,13 @@
                                 </g:else>
                             </g:if>
 
+                            <g:if test="${surveyConfig.checkOrgTransferred(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip"
+                                      data-content="${message(code: 'surveyTransfer.transferred')}: ${surveyConfig.getSubscriptionWhereOrgTransferred(participant).collect {it.getLabel()}.join(', ')}">
+                                    <i class="${Icon.ATTR.SURVEY_ORG_TRANSFERRED}"></i>
+                                </span>
+                            </g:if>
+
                             <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">

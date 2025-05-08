@@ -816,5 +816,13 @@ class SurveyConfig {
         return type in [SURVEY_CONFIG_TYPE_SUBSCRIPTION, SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]
     }
 
+    List<Subscription> getSubscriptionWhereOrgTransferred(Org org) {
+        return SurveyTransfer.executeQuery("select st.subscription from SurveyTransfer st where st.org = :org and st.surveyConfig = :surveyConfig", [org: org, surveyConfig: this])
+    }
+
+    boolean checkOrgTransferred(Org org) {
+        return SurveyTransfer.executeQuery("select count(*) from SurveyTransfer st where st.org = :org and st.surveyConfig = :surveyConfig", [org: org, surveyConfig: this])[0] > 0 ? true : false
+    }
+
 
 }
