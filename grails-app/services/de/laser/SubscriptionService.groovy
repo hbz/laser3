@@ -4322,8 +4322,8 @@ class SubscriptionService {
         return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND ((sp.tenant = :contextOrg OR sp.tenant is null) OR (sp.tenant != :contextOrg AND sp.isPublic = true)) AND sp.type.tenant is null', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
     }
 
-    int countPrivateSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription) {
-        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0]
+    int countPrivateSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription, PropertyDefinition propertyDefinition){
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
     }
 
     Map selectSubMembersWithImport(InputStream stream) {

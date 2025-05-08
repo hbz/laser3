@@ -192,6 +192,13 @@
             </g:if>
             <div class="ui divider"></div>
 
+            <g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+                <ui:actionsDropdownItem controller="survey"  action="surveyTransfer"
+                                        params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                        message="surveyTransfer.action"/>
+                <div class="ui divider"></div>
+            </g:if>
+
             <ui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
                                     message="survey.SurveyProp.all"/>
 

@@ -254,28 +254,30 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    if(subChildIDs) {
+                                    if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id)) {
                                         executorService.execute({
-                                            String threadName = 'PackageUnlink_'+sub.id
+                                            Set<Package> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                            String threadName = 'PackageUnlink_' + sub.id
                                             Thread.currentThread().setName(threadName)
-                                            sub.packages.each { SubscriptionPackage sp ->
-                                                if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
-                                                    log.error('error on clearing issue entitlements when changing package holding selection')
+                                            if(subChildIDs) {
+                                                subPackages.each { SubscriptionPackage sp ->
+                                                    if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
+                                                        log.error('error on clearing issue entitlements when changing package holding selection')
+                                                    }
+                                                }
+                                            }
+                                            subPackages.each { SubscriptionPackage sp ->
+                                                Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
+                                                if(missingTipps.size() > 0) {
+                                                    log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
+                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
                                                 }
                                             }
                                         })
                                     }
-                                    executorService.execute({
-                                        sub.packages.each { SubscriptionPackage sp ->
-                                            Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
-                                            if(missingTipps.size() > 0) {
-                                                log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
-                                                    String threadName = 'PackageUnlink_' + sub.id
-                                                    Thread.currentThread().setName(threadName)
-                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
-                                            }
-                                        }
-                                    })
+                                    else {
+                                        log.info("process running for ${sub.id}, not starting again")
+                                    }
                                 }
                             }
                         }

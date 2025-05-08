@@ -198,7 +198,6 @@ class RDStore {
     public final static RefdataValue PRS_POS_DIREKTION      = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_DIREKTION_ASS  = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_EA             = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_EL             = getRefdataValue('Erwerbungsleitung', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_FACHREFERAT    = getRefdataValue('Fachreferat', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_HEAD           = getRefdataValue('Head Access Services', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_LD             = getRefdataValue('Library Director', RDConstants.PERSON_POSITION)

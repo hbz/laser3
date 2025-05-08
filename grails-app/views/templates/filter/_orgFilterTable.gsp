@@ -254,8 +254,8 @@
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
-            <g:set var="orgSub" value="${(surveyConfig.subscription || params.sub instanceof Subscription) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf = :sub',
-                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], sub: (params.sub instanceof Subscription ? params.sub : surveyConfig.subscription)])[0] : null}"/>
+            <g:set var="orgSubs" value="${(surveyConfig.subscription || params.subs) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf in (:subs)',
+                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subs: (params.subs ?: [surveyConfig.subscription])]) : null}"/>
 
         </g:if>
 
@@ -682,24 +682,29 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfo')}">
                 <td>
-                    <g:if test="${orgSub}">
+                    <g:if test="${orgSubs}">
+                        <g:each in="${orgSubs}" var="orgSub">
+                            <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                                <g:message code="surveyOrg.perennialTerm.current"/>
+                                <br/>
+                            </g:if>
+                            <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+                                <br/>
+                            </g:elseif>
 
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
-                            <g:message code="surveyOrg.perennialTerm.current"/>
-                            <br />
-                        </g:if>
-                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:elseif>
+                            <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
 
-                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
-
-                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                            <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment"
+                                                type="textarea" overwriteEditable="${false}"/>
+                            <br>
+                            <br>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
+                    <g:set var="orgSub" value="${orgSubs ? orgSubs[0] : null}"/>
                 <td class="center aligned" style="${(orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${orgSub}">
@@ -724,17 +729,21 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
                 <td>
-                    <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
-                            <g:message code="surveyOrg.perennialTerm.current"/>
-                            <br />
-                        </g:if>
-                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:elseif>
+                    <g:if test="${orgSubs}">
+                        <g:each in="${orgSubs}" var="orgSub">
+                            <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                                <g:message code="surveyOrg.perennialTerm.current"/>
+                                <br />
+                            </g:if>
+                            <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+                                <br />
+                            </g:elseif>
 
-                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
+                            <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
+                            <br>
+                            <br>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>
@@ -743,15 +752,8 @@
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
-                            <g:message code="surveyOrg.perennialTerm.current"/>
-                            <br />
-                        </g:if>
-                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:elseif>
+                <g:if test="${orgSubs}">
+                    <g:each in="${orgSubs}" var="orgSub">
                         <table class="ui very basic compact table">
                             <tbody>
                             <g:if test="${selectedCostItemElementID}">
@@ -788,21 +790,13 @@
                             </g:if>
                             </tbody>
                         </table>
+                    </g:each>
                 </g:if>
 
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <td class="center aligned">
-
-                    <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
-                        <g:message code="surveyOrg.perennialTerm.current"/>
-                        <br />
-                    </g:if>
-                    <g:elseif test="${orgSub.isMultiYearSubscription()}">
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                        <br />
-                    </g:elseif>
 
                         <g:set var="costItems" scope="request"
                                value="${selectedCostItemElementID ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID))) : null}"/>

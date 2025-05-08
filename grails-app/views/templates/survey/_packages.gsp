@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn" %>
 
 <g:if test="${!error}">
-    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
+    <laser:render template="/templates/filter/packageGokbFilter" model="[filterConfig: [
             ['q', 'pkgStatus'],
             ['provider', 'ddc', 'curatoryGroup'],
             ['curatoryGroupType', 'automaticUpdates']

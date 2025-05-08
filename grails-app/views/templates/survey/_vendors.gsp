@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn" %>
 
 <ui:filter>
-    <g:form controller="${processController}" action="${processAction}" id="${surveyInfo.id}"
+    <g:form controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
             params="${params}" method="get" class="ui form">
         <g:if test="${params.viewTab}">
             <g:hiddenField name="viewTab" value="${params.viewTab}"/>

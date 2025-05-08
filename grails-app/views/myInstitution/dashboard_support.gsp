@@ -106,7 +106,7 @@
         </div>
 
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
-            <div id="wfFlyout" class="ui eight wide flyout"></div>
+            <div id="wfFlyout" class="ui very wide flyout"></div>
 
             <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 

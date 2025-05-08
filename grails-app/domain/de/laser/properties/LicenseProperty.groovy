@@ -20,8 +20,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -43,7 +41,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         id          column: 'lp_id'
         version     column: 'lp_version'
         stringValue column: 'lp_string_value', type: 'text'
-        intValue    column: 'lp_int_value'
         longValue   column: 'lp_long_value'
         decValue    column: 'lp_dec_value'
         refValue    column: 'lp_ref_value_rv_fk', index: 'lp_ref_value_idx'
@@ -64,7 +61,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

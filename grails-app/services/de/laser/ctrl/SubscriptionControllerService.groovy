@@ -2196,7 +2196,7 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         boolean unlinkPkg
-        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
+        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id+'_'+result.package.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
                 //double-check because action may be called after AJAX change of subscription holding and before page reload
@@ -2215,7 +2215,7 @@ class SubscriptionControllerService {
                 subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
             }
             executorService.execute({
-                String threadName = 'PackageUnlink_'+result.subscription.id
+                String threadName = 'PackageUnlink_'+result.subscription.id+'_'+result.package.id
                 Thread.currentThread().setName(threadName)
                 //long start = System.currentTimeSeconds()
                 if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
