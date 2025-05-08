@@ -15,7 +15,7 @@
                 <i class="icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemConfiguration">${message(code:'menu.yoda.systemConfiguration')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</ui:link>
@@ -40,6 +40,7 @@
             </div>
         </div>
 
+        <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -109,7 +110,6 @@
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.yoda.stats.fetch')}</ui:link>--%>
             </div>
         </div>
-
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -118,10 +118,10 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="sendMail">${message(code:'menu.yoda.sendMail')}</ui:link>
             </div>
         </div>
-
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -133,18 +133,6 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
             </div>
         </div>
-
-        <div class="divider"></div>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                ${message(code:'menu.admin.bulkOps')} <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="yoda" action="retriggerInheritance">Paketzuschnittvererbung auslösen</ui:link>
-            </div>
-        </div>
-
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -187,6 +175,7 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="surveyCheck">Update Survey Status</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="freezeSubscriptionHoldings">${message(code:'menu.admin.freezeSubscriptionHoldings')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="retriggerInheritance">Paketzuschnittvererbung auslösen</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</ui:link>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</ui:link>
                 <ui:link addItemAttributes="true" class="item role="menuitem" js-open-confirm-modal"

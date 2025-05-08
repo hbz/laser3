@@ -31,4 +31,35 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "klober (generated)", id: "1746534094963-3") {
+        dropColumn(columnName: "lp_int_value", tableName: "license_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-4") {
+        dropColumn(columnName: "op_int_value", tableName: "org_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-5") {
+        dropColumn(columnName: "plp_int_value", tableName: "platform_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-6") {
+        dropColumn(columnName: "pp_int_value", tableName: "person_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-7") {
+        dropColumn(columnName: "prp_int_value", tableName: "provider_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-8") {
+        dropColumn(columnName: "sp_int_value", tableName: "subscription_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-9") {
+        dropColumn(columnName: "surre_int_value", tableName: "survey_result")
+    }
+
+    changeSet(author: "klober (generated)", id: "1746534094963-10") {
+        dropColumn(columnName: "vp_int_value", tableName: "vendor_property")
+    }
 }
