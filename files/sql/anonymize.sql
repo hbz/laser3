@@ -1,9 +1,19 @@
 
 --
--- Pseudonymization (A: requirements and tests)
+-- Pseudonymization (A: requirements, examples, tests)
 --
 
 -- Anon base functions
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_sample(data TEXT[] DEFAULT NULL) RETURNS TEXT AS $$
+BEGIN
+    IF data IS NOT NULL THEN
+        RETURN data[floor(random() * cardinality(data) + 1)];
+    ELSE
+        RETURN data;
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_gen_rnd_lorem(length INT DEFAULT 1) RETURNS TEXT AS $$
 DECLARE
@@ -77,22 +87,7 @@ BEGIN
         'Wer die Wahl hat, hat die Qual',
         'Zahlen lügen nicht'
         ];
-    RETURN data[floor(random() *  cardinality(data) + 1)];
-END;
-$$ LANGUAGE PLPGSQL;
-
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_contact(type TEXT) RETURNS TEXT AS $$
-DECLARE
-BEGIN
-    IF type = 'email' THEN
-        RETURN 'to@do.invalid';
-    ELSEIF type = 'phone' THEN
-        RETURN '01234 - 56 78 90';
-    ELSEIF type = 'url' THEN
-        RETURN 'https://to.do.invalid';
-    ELSE
-        RETURN null;
-    END IF;
+    RETURN pg_temp.anon_sample(data);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -139,15 +134,34 @@ BEGIN
         'Hagedorn', 'Herschmann', 'Höfer', 'Hummel', 'Huppertz',
         'Ickert', 'Imbusch', 'Ingholt', 'Itzinger', 'Iwanowski',
         'Jacobs', 'Jenke', 'Johmann', 'Junker', 'Jürgensen',
-        'Kaiser', 'Kemper', 'Kluge', 'Krause', 'Kurz'
+        'Kaiser', 'Kemper', 'Kluge', 'Krause', 'Kurz',
+        'Lambertz', 'Lehmann', 'Leppert', 'Lorenz', 'Lücke',
+        'Maier', 'Mertens', 'Mielke', 'Morgenstern', 'Müller',
+        'Nagel', 'Neuberger', 'Nitsche', 'Nordmeyer', 'Nuschke',
+        'Oberhuber', 'Ohlig', 'Orlowski', 'Ostwald', 'Overkamp'
         ];
 
-    IF gender = 'male' THEN
-        RETURN (SELECT ARRAY[data_mn[floor(random() *  cardinality(data_mn) + 1)], data_ln[floor(random() *  cardinality(data_ln) + 1)]]);
-    ELSEIF gender = 'female' THEN
-        RETURN (SELECT ARRAY[data_fn[floor(random() *  cardinality(data_fn) + 1)], data_ln[floor(random() *  cardinality(data_ln) + 1)]]);
+    IF lower(gender) = 'male' THEN
+        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_mn), pg_temp.anon_sample(data_ln)]);
+    ELSEIF lower(gender) = 'female' THEN
+        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_fn), pg_temp.anon_sample(data_ln)]);
     ELSE
         RETURN (SELECT ARRAY[null, null]);
+    END IF;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_gen_contact(type TEXT, person TEXT[] DEFAULT ARRAY['Max', 'Mustermann']) RETURNS TEXT AS $$
+DECLARE
+BEGIN
+    IF array_position(ARRAY['email', 'e-mail', 'mail'], lower(type)) > 0 THEN
+        RETURN concat(lower(person[1]), '.', lower(person[2]), '@anon.example');
+    ELSEIF array_position(ARRAY['fax', 'phone'], lower(type)) > 0  THEN
+        RETURN concat('01234 - ', round(random() * 1000), round(random() * 1000), '0');
+    ELSEIF array_position(ARRAY['url'], lower(type)) > 0 THEN
+        RETURN pg_temp.anon_gen_url();
+    ELSE
+        RETURN null;
     END IF;
 END;
 $$ LANGUAGE PLPGSQL;
@@ -160,12 +174,37 @@ BEGIN
     part1 = ARRAY ['abc.', 'bibo.', 'data.', 'help.', 'www.', ''];
     part2 = ARRAY ['anon.', 'bit.', 'test.'];
 
-    RETURN 'https://' ||
-           part1[floor(random() *  cardinality(part1) + 1)] ||
-           part2[floor(random() *  cardinality(part2) + 1)] ||
-           'example';
+    RETURN concat('https://', pg_temp.anon_sample(part1), pg_temp.anon_sample(part2), 'example');
 END;
 $$ LANGUAGE PLPGSQL;
+
+-- Anon base functions (examples)
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_examples() RETURNS VOID AS $$
+BEGIN
+    RAISE NOTICE 'ANON -> examples';
+
+    RAISE NOTICE 'anon_sample([a, b, c) > %', (SELECT pg_temp.anon_sample(ARRAY['a', 'b', 'c']));
+
+    RAISE NOTICE 'anon_gen_rnd_lorem() > %', (SELECT pg_temp.anon_gen_rnd_lorem());
+    RAISE NOTICE 'anon_gen_rnd_lorem(3) > %', (SELECT pg_temp.anon_gen_rnd_lorem(3));
+
+    RAISE NOTICE 'anon_gen_rnd_phrase() > %', (SELECT pg_temp.anon_gen_rnd_phrase());
+
+    RAISE NOTICE 'anon_gen_person(male) > %', (SELECT pg_temp.anon_gen_person('male'));
+    RAISE NOTICE 'anon_gen_person(female) > %', (SELECT pg_temp.anon_gen_person('female'));
+
+    RAISE NOTICE 'anon_gen_contact(mail, anon_gen_person(male)) > %', (SELECT pg_temp.anon_gen_contact('mail', pg_temp.anon_gen_person('male')));
+    RAISE NOTICE 'anon_gen_contact(mail, anon_gen_person(female)) > %', (SELECT pg_temp.anon_gen_contact('mail', pg_temp.anon_gen_person('female')));
+
+    RAISE NOTICE 'anon_gen_contact(phone) > %', (SELECT pg_temp.anon_gen_contact('phone'));
+    RAISE NOTICE 'anon_gen_contact(url) > %', (SELECT pg_temp.anon_gen_contact('url'));
+
+    RAISE NOTICE 'anon_gen_url(url) > %', (SELECT pg_temp.anon_gen_url());
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT pg_temp.anon_examples();
 
 -- Anon functions for use
 
@@ -237,11 +276,16 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- Anon function tests
+-- Anon functions for use (tests)
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_test() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> running tests';
+
+    RAISE NOTICE 'ANON ---> anon_sample';
+    ASSERT length( pg_temp.anon_sample(ARRAY['a', 'b', 'c'])) = 1,   'anon_sample 1 failed';
+    ASSERT length( pg_temp.anon_sample(ARRAY[]::text[])) IS NULL,   'anon_sample 2 failed';
+    ASSERT length( pg_temp.anon_sample() ) IS NULL,   'anon_sample 3 failed';
 
     RAISE NOTICE 'ANON ---> anon_lorem';
     ASSERT length( pg_temp.anon_lorem('old') ) > 0,   'anon_lorem 1 failed';
