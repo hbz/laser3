@@ -82,7 +82,7 @@
                     <div class="field">
                         <dt><g:message code="myinst.subscriptionImport.upload"/></dt>
                         <dd>
-                            <input type="file" name="tsvFile"/>
+                            <input type="file" name="tsvFile" id="tsvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"/>
                         </dd>
                     </div>
                     <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
