@@ -32,7 +32,7 @@
         </g:each>
     </ui:card>
 
-    <div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0;overflow:scroll"></div>
+    <div id="wfFlyout" class="ui very wide flyout" style="padding:50px 0;overflow:scroll"></div>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">

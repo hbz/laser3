@@ -211,7 +211,7 @@
         </tbody>
     </table>
 
-    <div id="gascoFlyout" class="ui eight wide flyout">
+    <div id="gascoFlyout" class="ui very wide flyout">
         <div class="ui header">
             <i class="${Icon.UI.INFO}"></i>
             <div class="content"></div>
