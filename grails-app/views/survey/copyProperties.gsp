@@ -111,62 +111,15 @@
     </div>
 </div>--}%
 
-    <g:if test="${params.tab == 'customProperties' && memberProperties}">
-        <div class="ui segment">
-            <h3>${message(code: 'subscription.properties.consortium')}</h3>
-
-                    <div id="member_props_div">
-                        <g:if test="${subscription}">
-                            <g:set var="memberSubs" value="${Subscription.executeQuery('select s from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])}"/>
-                        </g:if>
-                        <table class="ui compact la-js-responsive-table la-table-inCard table">
-                            <tbody>
-                            <g:each in="${memberProperties}" var="propType">
-                                <tr>
-                                    <td>
-                                            <g:link controller="survey" action="$actionName"
-                                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: propType.id]}">
-                                                <g:if test="${propType.getI10n('expl') != null && !propType.getI10n('expl').contains(' °')}">
-                                                    ${propType.getI10n('name')}
-                                                    <g:if test="${propType.getI10n('expl')}">
-                                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${propType.getI10n('expl')}">
-                                                            <i class="${Icon.TOOLTIP.HELP}"></i>
-                                                        </span>
-                                                    </g:if>
-                                                </g:if>
-                                                <g:else>
-                                                    ${propType.getI10n('name')}
-                                                </g:else>
-                                                <g:if test="${propType.mandatory}">
-                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
-                                                        <i class="${Icon.PROP.MANDATORY}"></i>
-                                                    </span>
-                                                </g:if>
-                                                <g:if test="${propType.multipleOccurrence}">
-                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                        <i class="${Icon.PROP.MULTIPLE}"></i>
-                                                    </span>
-                                                </g:if>
-                                            </g:link>
-                                    </td>
-                                    <td class="x">
-                                        <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia2')}" data-position="top right"><i class="large icon cart arrow down grey"></i></span>
-                                        <g:if test="${memberSubs}">
-                                            (<span data-content="${message(code:'property.notInherited.info.propertyCount')}"><i class="icon sticky note grey"></i></span> ${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null and sp.type = :type', [subscriptionSet: memberSubs, context: contextService.getOrg(), type: propType]).size() ?: 0} / <span data-content="${message(code:'property.notInherited.info.membersCount')}"><i class="${Icon.SUBSCRIPTION} grey"></i></span> ${memberSubs.size() ?: 0})
-                                        </g:if>
-                                    </td>
-                                </tr>
-                            </g:each>
-                            </tbody>
-                        </table>
-                    </div>
-            </div>
-    </g:if>
-
     <g:if test="${properties}">
         <div class="ui segment">
             <h3>
-                <g:message code="propertyDefinition.plural"/>
+                <g:if test="${params.tab == 'surveyProperties'}">
+                    <g:message code="propertyDefinition.plural"/>
+                </g:if>
+                <g:else>
+                    <g:message code="subscription.properties.consortium"/>
+                </g:else>
             </h3>
             <table class="ui sortable celled la-js-responsive-table la-table table">
                 <thead>
@@ -205,29 +158,138 @@
                     <tr>
                         <td>${i + 1}</td>
                         <td><g:link controller="survey" action="$actionName"
-                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)}</td>
+                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link>
+
+                            <g:if test="${property.getI10n('expl') != null && !property.getI10n('expl').contains(' °')}">
+                                <g:if test="${property.getI10n('expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${property.getI10n('expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </g:if>
+                            </g:if>
+                            <g:if test="${property.mandatory}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code: 'default.mandatory.tooltip')}">
+                                    <i class="${Icon.PROP.MANDATORY}"></i>
+                                </span>
+                            </g:if>
+                            <g:if test="${property.multipleOccurrence}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
+                                    <i class="${Icon.PROP.MULTIPLE}"></i>
+                                </span>
+                            </g:if>
+                        </td>
+                        <td>
+
+                            <g:if test="${params.tab == 'surveyProperties'}">
+                                <%
+                                    PropertyDefinition propDef
+                                    int count = 0
+                                    if(property) {
+                                        if (property.tenant) {
+                                            propDef = PropertyDefinition.getByNameAndDescrAndTenant(property.name, PropertyDefinition.SUB_PROP, property.tenant)
+                                            count = propDef ? subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSubscription, propDef) : 0
+                                        } else {
+                                            propDef = PropertyDefinition.getByNameAndDescr(property.name, PropertyDefinition.SUB_PROP)
+                                            count = propDef ? subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, propDef) : 0
+                                        }
+                                    }
+                                %>
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${count} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'customProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'privateProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                        </td>
                         <g:if test="${params.tab == 'surveyProperties'}">
                             <td>${participantsList ? surveyService.countSurveyPropertyWithValueByMembers(surveyConfig, property, participantsList.org) : 0}</td>
                         </g:if>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)}</td>
+                        <td>
+
+                            <g:if test="${params.tab == 'surveyProperties'}">
+                                <%
+                                    PropertyDefinition propDef
+                                    int count = 0
+                                    if(property) {
+                                        if (property.tenant) {
+                                            propDef = PropertyDefinition.getByNameAndDescrAndTenant(property.name, PropertyDefinition.SUB_PROP, property.tenant)
+                                            count = propDef ? subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, propDef) : 0
+                                        } else {
+                                            propDef = PropertyDefinition.getByNameAndDescr(property.name, PropertyDefinition.SUB_PROP)
+                                            count = propDef ? subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, propDef) : 0
+                                        }
+                                    }
+                                %>
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${count} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'customProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'privateProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+                        </td>
                     </tr>
                 </g:each>
                 </tbody>
             </table>
         </div>
     </g:if>
-
-    <g:if test="${params.tab == 'customProperties'}">
-        <g:if test="${memberProperties}">
-            <g:set var="selectableProperties" value="${properties + memberProperties}"/>
-            <g:set var="selectableProperties" value="${selectableProperties.unique()}"/>
-        </g:if>
-        <g:else>
-            <g:set var="selectableProperties" value="${properties}"/>
-        </g:else>
-    </g:if>
-
 
     <ui:greySegment>
         <g:if test="${properties}">
@@ -276,7 +338,7 @@
                             <g:form action="copyProperties" method="post"
                                     params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
                                 <ui:select name="selectedProperty"
-                                              from="${selectableProperties.sort { it.getI10n('name') }}"
+                                              from="${properties.sort { it.getI10n('name') }}"
                                               optionKey="id"
                                               optionValue="name"
                                               value="${selectedProperty}"
@@ -308,7 +370,7 @@
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
+                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newProperty && participant.surveyProperty) || (participant.newProperty && participant.newProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
@@ -340,7 +402,7 @@
                             </td>
 
                             <td>
-                                <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
+                                <g:if test="${params.tab == 'customProperties'}">
                                     <g:if test="${!participant.oldSub}">
                                         ${message(code: 'copyProperties.copyProperties.noSubscription')}
                                     </g:if>
@@ -454,6 +516,72 @@
                                 </g:else>
                                 </g:if>
 
+                                <g:if test="${params.tab == 'surveyProperties'}">
+                                    <g:if test="${!participant.oldSub}">
+                                        ${message(code: 'copyProperties.copyProperties.noSubscription')}
+                                    </g:if>
+                                    <g:elseif test="${participant.oldSub && participant.oldProperty}">
+
+                                        <g:if test="${participant.oldProperty.type.isLongType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="number"
+                                                          overwriteEditable="${false}"
+                                                          field="longValue"/>
+                                        </g:if>
+                                        <g:elseif test="${participant.oldProperty.type.isStringType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="stringValue"/>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.oldProperty.type.isBigDecimalType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="decValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.oldProperty.type.isDateType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="date"
+                                                          overwriteEditable="${false}"
+                                                          field="dateValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.oldProperty.type.isURLType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="url"
+                                                          field="urlValue"
+                                                          overwriteEditable="${false}"
+
+                                                          class="la-overflow la-ellipsis"/>
+                                            <g:if test="${participant.oldProperty.value}">
+                                                <ui:linkWithIcon href="${participant.oldProperty.value}"/>
+                                            </g:if>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.oldProperty.type.isRefdataValueType()}">
+                                            <ui:xEditableRefData owner="${participant.oldProperty}" type="text"
+                                                                 overwriteEditable="${false}"
+                                                                 field="refValue"
+                                                                 config="${participant.oldProperty.type.refdataCategory}"/>
+                                        </g:elseif>
+
+                                        <g:if test="${participant.oldProperty.hasProperty('instanceOf') && participant.oldProperty.instanceOf && AuditConfig.getConfig(participant.oldProperty.instanceOf)}">
+                                            <g:if test="${participant.oldSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
+                                            </g:if>
+                                            <g:else>
+                                                <ui:auditIcon type="default" />
+                                            </g:else>
+                                        </g:if>
+
+                                    </g:elseif><g:else>
+
+                                    <g:if test="${!participant.propDef || participant.propDef.tenant}">
+                                        ${message(code: 'subscriptionsManagement.noPrivateProperty')}
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code: 'subscriptionsManagement.noCustomProperty')}
+                                    </g:else>
+
+                                </g:else>
+                                </g:if>
+
                             </td>
 
                             <g:if test="${params.tab == 'surveyProperties'}">
@@ -505,7 +633,7 @@
                                 </td>
                             </g:if>
                             <td>
-                                <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
+                                <g:if test="${params.tab == 'customProperties'}">
                                     <g:if test="${participant.newCustomProperty}">
 
                                         <g:if test="${participant.newCustomProperty.type.isLongType()}">
@@ -609,6 +737,69 @@
                                     </g:if><g:else>
 
                                     ${message(code: 'subscriptionsManagement.noPrivateProperty')}
+
+                                </g:else>
+                                </g:if>
+
+                                <g:if test="${params.tab == 'surveyProperties'}">
+                                    <g:if test="${participant.newProperty}">
+
+                                        <g:if test="${participant.newProperty.type.isLongType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="number"
+                                                          overwriteEditable="${false}"
+                                                          field="longValue"/>
+                                        </g:if>
+                                        <g:elseif test="${participant.newProperty.type.isStringType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="stringValue"/>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.newProperty.type.isBigDecimalType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="decValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.newProperty.type.isDateType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="date"
+                                                          overwriteEditable="${false}"
+                                                          field="dateValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.newProperty.type.isURLType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="url"
+                                                          field="urlValue"
+                                                          overwriteEditable="${false}"
+
+                                                          class="la-overflow la-ellipsis"/>
+                                            <g:if test="${participant.newProperty.value}">
+                                                <ui:linkWithIcon href="${participant.newProperty.value}"/>
+                                            </g:if>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.newProperty.type.isRefdataValueType()}">
+                                            <ui:xEditableRefData owner="${participant.newProperty}" type="text"
+                                                                 overwriteEditable="${false}"
+                                                                 field="refValue"
+                                                                 config="${participant.newProperty.type.refdataCategory}"/>
+                                        </g:elseif>
+
+                                        <g:if test="${participant.newProperty.hasProperty('instanceOf') && participant.newProperty.instanceOf && AuditConfig.getConfig(participant.newProperty.instanceOf)}">
+                                            <g:if test="${participant.newSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
+                                            </g:if>
+                                            <g:else>
+                                                <ui:auditIcon type="default" />
+                                            </g:else>
+                                        </g:if>
+
+                                    </g:if><g:else>
+
+                                    <g:if test="${!participant.propDef || participant.propDef.tenant}">
+                                        ${message(code: 'subscriptionsManagement.noPrivateProperty')}
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code: 'subscriptionsManagement.noCustomProperty')}
+                                    </g:else>
 
                                 </g:else>
                                 </g:if>

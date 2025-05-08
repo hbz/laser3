@@ -298,12 +298,12 @@
 %{-- help flyout --}%
 
 <g:if test="${helpMatch == HelpService.GSP}">
-    <div class="ui wide flyout" id="help-content">
+    <div class="ui very wide flyout" id="help-content">
         <g:render template="${'/help/' + helpService.getMapping()}" />
     </div>
 </g:if>
 <g:elseif test="${helpMatch in [HelpService.MD, HelpService.BOTH]}">
-    <div class="ui wide la-markdown flyout" id="help-content">
+    <div class="ui very wide la-markdown flyout" id="help-content">
         <div class="scrolling content">
             <ui:renderMarkdown help="${helpService.getMapping()}" />
 

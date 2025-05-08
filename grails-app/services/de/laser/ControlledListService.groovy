@@ -771,8 +771,8 @@ class ControlledListService {
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
         if (query) {
-            nameFilter += " and ${fieldName} like :query "
-            queryParams.query = "%${query.toLowerCase()}%"
+            nameFilter += " and lower(${fieldName}) like :query "
+            queryParams.query = "%${query.trim().toLowerCase()}%"
         }
         Set<Map> result = TitleInstancePackagePlatform.executeQuery("select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg = :pkg and status = :status "+nameFilter+" group by ${fieldName} order by ${fieldName}", queryParams)
 
@@ -797,15 +797,16 @@ class ControlledListService {
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
             String nameFilter = "", statusFilter = " and status = :status "
             if (query) {
-                nameFilter += " and ${fieldName} like :query "
-                queryParams.query = "%${query.toLowerCase()}%"
+                nameFilter += " and lower(${fieldName}) like :query "
+                queryParams.query = "%${query.trim().toLowerCase()}%"
             }
             if(forTitles && forTitles == 'allIEs') {
                 statusFilter = " and status != :status "
                 queryParams.status = RDStore.TIPP_STATUS_REMOVED
             }
             //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
-            result = TitleInstancePackagePlatform.executeQuery("select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by ${fieldName} order by ${fieldName}", queryParams)
+            String queryString = "select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by ${fieldName} order by ${fieldName}"
+            result = TitleInstancePackagePlatform.executeQuery(queryString, queryParams)
         }
         if(result.size() == 0){
             result << [name: messageSource.getMessage("titleInstance.no${StringUtils.capitalize(fieldName)}.label", null, LocaleUtils.getCurrentLocale()), value: null]
@@ -834,8 +835,8 @@ class ControlledListService {
            }
 
            if (params.query) {
-               query += " and tipp.${params.fieldName} like :query "
-               queryMap.query = "%${params.query}%"
+               query += " and lower(tipp.${params.fieldName}) like :query "
+               queryMap.query = "%${params.query.trim().toLowerCase()}%"
            }
 
            query += " group by tipp.${params.fieldName} order by tipp.${params.fieldName}"
@@ -1295,7 +1296,7 @@ class ControlledListService {
                 query += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.sortname, :query) = true) "
                 queryMap.query = params.query
             }
-            query += " order by prov.sortname, prov.name"
+            query += " order by prov.name"
             providers.addAll(TitleInstancePackagePlatform.executeQuery(query, queryMap))
         }
         providers

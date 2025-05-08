@@ -1,5 +1,5 @@
 
-<div id="infoFlyout" class="ui eight wide flyout"></div>
+<div id="infoFlyout" class="ui very wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.infoFlyout-trigger').on ('click', function(e) {

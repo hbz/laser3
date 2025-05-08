@@ -85,11 +85,11 @@ class BatchQueryService {
             Map queryParams = [pkg_id: configMap.pkg_id,
                     sub: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.sub as Object[]),
                     removed: RDStore.TIPP_STATUS_REMOVED.id]
-            int offset = 0, step = 1000, total = sql.rows('select count(*) as count from issue_entitlement join subscription_package on ie_subscription_fk = sp_sub_fk where ie_subscription_fk = any(:sub) and sp_pkg_fk = :pkg_id and ie_status_rv_fk != :removed', queryParams)[0]['count']
+            int offset = 0, step = 1000, total = sql.rows('select count(*) as count from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = any(:sub) and tipp_pkg_fk = :pkg_id and ie_status_rv_fk != :removed', queryParams)[0]['count']
             sql.execute('create temp table ie_to_deleted_'+configMap.sub[0]+' as ' +
                     'select row_number() over(order by(ie_id)) row_id, ie_id ' +
-                    'from issue_entitlement join subscription_package on sp_sub_fk = ie_subscription_fk ' +
-                    'where ie_subscription_fk = any(:sub) and sp_pkg_fk = :pkg_id and ie_status_rv_fk != :removed', queryParams)
+                    'from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+                    'where ie_subscription_fk = any(:sub) and tipp_pkg_fk = :pkg_id and ie_status_rv_fk != :removed', queryParams)
             sql.execute('create index on ie_to_deleted_'+configMap.sub[0]+'(row_id)')
             for(offset; offset < total; offset+=step) {
                 int nextstep = offset+step

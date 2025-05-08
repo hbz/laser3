@@ -449,7 +449,7 @@
 
                         <div class="field">
                             <label for="subs">${message(code: 'subscription.label')}</label>
-                            <select id="subs" name="sub" class="ui fluid search selection dropdown">
+                            <select id="subs" name="subs" class="ui fluid search selection dropdown multiple" multiple="multiple">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
                             </select>
                         </div>
@@ -504,6 +504,14 @@
         if (status) {
             url = url + '&' + status
         }
+    var selectedSubIds = [];
+    <g:if test="${params.subs}">
+        <g:each in="${params.list('subs')}" var="sub">
+            <g:if test="${sub instanceof Subscription}">
+                selectedSubIds.push(${sub.id});
+            </g:if>
+        </g:each>
+    </g:if>
 
     var dropdownSelectedObjects = $('#subs');
 
@@ -514,9 +522,9 @@
             url: url,
             success: function (data) {
                 $.each(data, function (key, entry) {
-                <g:if test="${params.sub}">
-                    if(entry.value === ${params.sub.id}){
-                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                <g:if test="${params.subs}">
+                    if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
+                       dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
                     }else{
                         dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
                     }

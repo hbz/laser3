@@ -21,17 +21,6 @@
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                <i class="${Icon.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
-                <ui:link addItemAttributes="true" controller="admin" action="sendMail">${message(code:'menu.admin.sendMail')}</ui:link>
-            </div>
-        </div>
-
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -52,11 +41,22 @@
         <ui:link addItemAttributes="true" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
-
         <div class="divider"></div>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="${Icon.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="sendMail">${message(code:'menu.admin.sendMail')}</ui:link>
+            </div>
+        </div>
+        <div class="divider"></div>
+
         <ui:link addItemAttributes="true" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
-
         <div class="divider"></div>
+
         <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="packageLaserVsWekb">${message(code:'menu.admin.packageLaserVsWekb')}</ui:link>
     </div>

@@ -365,6 +365,43 @@ class FilterService {
             query << subQuery
         }
 
+        if(params.subs && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+            String subQuery = ""
+
+            if(params.hasNotSubscription) {
+                subQuery = " not"
+            }
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            query << subQuery
+        }
+
+        if (params.subs && (params.subRunTimeMultiYear || params.subRunTime)) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs) "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', true)
+
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', false)
+            }
+            query << subQuery + ' )'
+        }
+
+        if (params.subs && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
+
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            query << subQuery
+        }
+
         if (params.filterPvd) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select pvr from ProviderRole pvr where pvr.subscription = sub and pvr.provider.id in (:filterPvd)) "
             queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
@@ -1194,23 +1231,23 @@ class FilterService {
         }
 
 
-        if(params.sub && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+        if(params.subs && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
             String subQuery = " and "
 
             if(params.hasNotSubscription) {
                 subQuery = subQuery + " not"
             }
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in :subs)"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
             base_qry += subQuery
         }
 
-        if (params.sub && (params.subRunTimeMultiYear || params.subRunTime)) {
+        if (params.subs && (params.subRunTimeMultiYear || params.subRunTime)) {
             String subQuery = " and "
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs) "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
             if (params.subRunTimeMultiYear && !params.subRunTime) {
                 subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
                 queryParams.put('subRunTimeMultiYear', true)
@@ -1222,12 +1259,12 @@ class FilterService {
             base_qry += subQuery + ' )'
         }
 
-        if (params.sub && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
+        if (params.subs && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
             String subQuery = " and "
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
 
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
             base_qry += subQuery
         }
 
@@ -1971,7 +2008,7 @@ class FilterService {
         String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
         result.query = query+" ${clauses.arguments} "
         if(!params.containsKey('noSort'))
-            result.query += "order by ${params.sort} ${params.order}"
+            result.query += "order by ${params.sort} ${params.order}, tipp.dateFirstOnline, tipp.dateFirstInPrint"
         result.queryParams = clauses.queryParams
         result
     }
@@ -2003,7 +2040,7 @@ class FilterService {
             //deactivated because of performance reasons; query would take 11 seconds instead of millis
             //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
             queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
-            queryParams.filter = "%${params.filter.toLowerCase()}%"
+            queryParams.filter = "%${params.filter.trim().toLowerCase()}%"
         }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         //ERMS-5972
@@ -2084,7 +2121,7 @@ class FilterService {
 
         if (params.provider) {
             queryArgs << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
-            queryParams.provider = Params.getLongList(params, 'provider')
+            queryParams.provider = Params.getLongList_forCommaSeparatedString(params, 'provider')
         }
 
         if (params.publishers) {

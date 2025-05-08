@@ -1073,13 +1073,17 @@ class SubscriptionController {
             if (ttParams.tab)    { params.tab = ttParams.tab }
             SwissKnife.setPaginationParams(result, params, contextService.getUser())
             if(params.containsKey('filterSet')) {
-                configMap.putAll(params)
+                params.each { key, value ->
+                    if(value)
+                        configMap.put(key, value)
+                }
                 prf.setBenchmark('getting keys')
                 Set<Long> keys = titleService.getKeys(configMap)
                 prf.setBenchmark('get title list')
                 result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
                 result.num_tipp_rows = keys.size()
                 result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+                result.tmplConfigShow = ['lineNumber', 'name', 'status', 'package', 'provider', 'platform', 'lastUpdatedDisplay', 'linkTitle']
             }
             result.benchMark = prf.stopBenchmark()
             result

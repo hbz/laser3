@@ -161,7 +161,7 @@
 <ui:paginate action="currentWorkflows" controller="myInstitution" max="${max}" offset="${offset}" total="${total}" />
 
 <div id="wfModal" class="ui modal"></div>
-<div id="wfFlyout" class="ui eight wide flyout"></div>
+<div id="wfFlyout" class="ui very wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {

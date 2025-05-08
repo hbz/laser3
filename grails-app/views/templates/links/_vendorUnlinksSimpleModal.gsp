@@ -48,7 +48,7 @@
             searchTimer = setTimeout(function() {
                 $.ajax({
                     <g:if test="${parent}">
-                        url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&unlink=true&subscription=${parent}&query="+searchVal,
+                        url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&unlink=true&parent=${parent}&query="+searchVal,
                     </g:if>
                     <g:else>
                         url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&unlink=true&query="+searchVal,

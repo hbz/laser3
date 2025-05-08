@@ -21,7 +21,7 @@
             instanceType = message(code:"license")
             break
         case 'provider':
-            lookupName = "lookupProvidersAgencies"
+            lookupName = "lookupProviders"
             instanceType = message(code:"provider.label")
             break
     }
