@@ -64,19 +64,16 @@
                 <img class="ui image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/>
                 <g:message code="myinst.subscriptionImport.manual.p4"/>
             </div>
-            <%
-                String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
-                if(contextService.getOrg().isCustomerType_Consortium()) {
-                    templatePath = 'bulk_load_subscription_records_template.csv'
-                }
-            %>
-            <a href="${resource(dir: 'files', file: templatePath)}"
-               download="template_bulk_load_subscription_records.csv">
-                <p><g:message code="myinst.subscriptionImport.template"/></p>
-            </a>
-
-
 </div>
+<%
+    String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
+    if(contextService.getOrg().isCustomerType_Consortium()) {
+        templatePath = 'bulk_load_subscription_records_template.csv'
+    }
+%>
+<a href="${resource(dir: 'files', file: templatePath)}" download="template_bulk_load_subscription_records.csv" class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em" >
+    <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.subscriptionImport.template"/>
+</a>
 <g:uploadForm action="processSubscriptionImport" method="post">
     <ui:msg class="warning" header="Achtung" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
     <div class="field">
@@ -93,10 +90,8 @@
                 </div>
 
                 <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
-
         </div>
     </div>
-
 </g:uploadForm>
 
 
