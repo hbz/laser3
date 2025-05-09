@@ -300,9 +300,9 @@
     $.fn.dropdown.settings.message = {
         noResults: "<g:message code="select2.noMatchesFound" />"
     };
-%{--    $("#filterSubStatus, #filterCIStatus").dropdown({
+    $("#filterSubStatus, #filterCIStatus").dropdown({
         "clearable": true
-    });--}%
+    });
     JSPC.app.links = {
         "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProviders"])}?query={query}&forFinanceView=true",
         "filterSubVendors": "${createLink([controller:"ajaxJson", action:"lookupVendors"])}?query={query}&forFinanceView=true",
