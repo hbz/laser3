@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6568    09.05.2025  rc-3.5  3.5-RC      Andreas Bug         Lizenztitel konnten als Pro-Nutzer nicht exportiert werden
+
+6564    09.05.2025  rc-3.5  3.5-RC      Andreas Feature     Weitere Einschränkung der möglichen Plattformen
+
 6443    08.05.2025  rc-3.5  3.5-RC      Andreas Feature     Verfahrensverzeichnisse der Verarbeitungstätigkeiten aktualisiert
 
 6548    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter nach Kontakt-Position nachgereicht
