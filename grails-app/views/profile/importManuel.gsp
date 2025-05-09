@@ -12,7 +12,7 @@
 <br />
 
 <div class="ui segment la-markdown">
-    <ui:renderMarkdown manual="variousImport" />
+    <ui:renderMarkdown manual="financeImport" />
 </div>
 
 <g:render template="/public/markdownScript" />

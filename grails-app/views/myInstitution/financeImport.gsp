@@ -16,7 +16,7 @@
 
     <ui:messages data="${flash}" />
 
-    <div class="ui segment la-markdown">
+%{--    <div class="ui segment la-markdown">
         <div>
             <g:message code="myinst.financeImport.manual.p1"/>
             <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
@@ -80,8 +80,14 @@
             <img class="ui  image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/>
             <g:message code="myinst.financeImport.manual.p4"/>
         </div>
+    </div>--}%
+<div class="ui segment la-markdown">
+    <div>
+        <g:message code="myinst.financeImport.manual.p1"/>
+        <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
     </div>
-
+    <ui:renderMarkdown manual="financeImport" />
+</div>
 <div class="ui segment">
 
     <g:if test="${params.id}">

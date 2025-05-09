@@ -53,10 +53,9 @@
             <hr/>
             <div>
                 <g:message code="myinst.subscriptionImport.manual.p3"/>
-                <ol>
+                <ul>
                     <li><g:message code="myinst.subscriptionImport.manual.li12"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li13"/></li>
-                </ol>
+                </ul>
                 <img class="ui image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/>
                 <ul>
                     <li><g:message code="myinst.subscriptionImport.manual.li14"/></li>
