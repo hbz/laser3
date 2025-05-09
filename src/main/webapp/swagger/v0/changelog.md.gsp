@@ -10,6 +10,10 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed attribute: `Organisation.retirementDate`
 - removed new virtual object: `Link_Org`
 
+#### 3.7 (ERMS-6506)
+
+- internal refactoring
+
 #### 3.6 (ERMS-6223, ERMS-6224, ERMS-6238)
 
 - internal refactoring: `EZBInstitutionStub.status`

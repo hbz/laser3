@@ -1245,7 +1245,9 @@ class SubscriptionService {
      * @param target the member subscription whose holding should be enriched
      * @param consortia the consortial subscription whose holding should be taken
      * @param pkg the package to be linked
+     * @deprecated addToMemberSubscription() does the same thing
      */
+    @Deprecated
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         try {
@@ -1384,6 +1386,17 @@ class SubscriptionService {
         sub.holdingSelection = value
         sub.save()
         Set<Subscription> members = Subscription.findAllByInstanceOf(sub)
+        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            if(! AuditConfig.getConfig(sub, prop)) {
+                AuditConfig.addConfig(sub, prop)
+
+                members.each { Subscription m ->
+                    m.setProperty(prop, sub.getProperty(prop))
+                    m.save()
+                }
+            }
+        }
+        /*
         switch(value) {
             case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
                 if(! AuditConfig.getConfig(sub, prop)) {
@@ -1396,20 +1409,21 @@ class SubscriptionService {
                 }
                 break
             case RDStore.SUBSCRIPTION_HOLDING_PARTIAL:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, sub.getProperty(prop))
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
             default:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, null)
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
         }
+        */
     }
 
     /**

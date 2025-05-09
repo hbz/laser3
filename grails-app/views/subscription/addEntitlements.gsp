@@ -95,10 +95,10 @@
 
         <div class="field"></div>
 
-        <g:if test="${institution.isCustomerType_Consortium()}">
+        <g:if test="${institution.isCustomerType_Consortium() && !auditService.getAuditConfig(subscription, 'holdingSelection')}">
             <div class="field">
                 <div class="ui right floated checkbox toggle">
-                    <g:checkBox name="withChildren" value="${withChildren}"/>
+                    <g:checkBox name="withChildren" />
                     <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
                 </div>
             </div>

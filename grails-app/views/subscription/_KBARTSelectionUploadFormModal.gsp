@@ -1,7 +1,7 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <ui:modal id="KBARTUploadForm" message="${headerToken}" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
-    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+    <g:if test="${AuditConfig.getConfig(subscription, 'holdingSelection')}">
         <ui:msg showIcon="true" class="info" message="${headerToken}.manual" hideClose="true"/>
 
         <g:form class="ui form" method="post" enctype="multipart/form-data">

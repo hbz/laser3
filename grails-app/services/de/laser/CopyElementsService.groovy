@@ -1853,14 +1853,16 @@ class CopyElementsService {
                     }
                     batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
-                        Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
+                        List<Subscription> targetMembers = Subscription.findAllByInstanceOf(targetObject)
+                        subscriptionService.addToMemberSubscription(targetObject, targetMembers, subscriptionPackage.pkg, AuditConfig.getConfig(targetObject, 'holdingSelection') != null)
+                        /*.each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                if(subscriptionPackage.subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                if(AuditConfig.getConfig(targetObject)) {
                                     batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
             }

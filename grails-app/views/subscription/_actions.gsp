@@ -77,7 +77,12 @@
             <g:if test="${editable}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-                <ui:actionsDropdownItem controller="subscription" action="linkTitle" params="${[id:params.id]}" message="subscription.details.linkTitle.label.subscription" />
+                <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                    <ui:actionsDropdownItem controller="subscription" action="linkTitle" params="${[id:params.id]}" message="subscription.details.linkTitle.label.subscription" />
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItemDisabled message="subscription.details.linkTitle.label.subscription" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                </g:else>
                 <g:if test="${subscription.packages}">
                     <g:if test="${titleManipulation}">
                         <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />

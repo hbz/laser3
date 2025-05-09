@@ -495,7 +495,7 @@
                                                         <g:if test="${priceItem.listCurrency}">
                                                             <div class="ui list">
                                                                 <div class="item">
-                                                                    <div class="contet">
+                                                                    <div class="content">
                                                                         <div class="header"><g:message code="tipp.price.listPrice"/></div>
                                                                         <div class="content"><g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}"
                                                                                                                                                               currencySymbol="${priceItem.listCurrency.value}"/>
@@ -514,7 +514,7 @@
                                                         <div class="${Btn.MODERN.SIMPLE}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
-                                                        <g:if test="${editable && !AuditConfig.getConfig(subscription, 'holdingSelection')}">
+                                                        <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
                                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -649,7 +649,7 @@
                                                                 </g:each>
                                                             </div>
                                                             <hr>
-                                                            <g:if test="${editable}">
+                                                            <g:if test="${editable && subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE && !auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
                                                                 <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="priceWrapper" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
