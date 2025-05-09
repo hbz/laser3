@@ -9,8 +9,9 @@ Nachfolgend eine Anleitung, wie Sie die Tabelle mit Excel befüllen können.
 * Suchen Sie im sich öffnenden Menü den Eintrag "Aus Text/CSV".
 ![financeupload_2.png]({{url_laser_static}}/media/finance/financeupload_2.png)
 -------------------------
-1. Laden Sie jetzt die Beispiel-Vorlagendatei.
-2. Stellen Sie im sich jetzt öffnenden Fenster im Menüfeld "Dateiursprung" die Zeichenkodierung auf "65001: Unicode (UTF-8)".
+* Laden Sie jetzt die Beispiel-Vorlagendatei.
+1. Stellen Sie im sich jetzt öffnenden Fenster im Menüfeld "Dateiursprung" die Zeichenkodierung auf "65001: Unicode (UTF-8)".
+2. Stellen Sie die Trennzeichen auf "Tabstopp".
 3. Klicken Sie anschließend auf "Daten transformieren".
 ![financeupload_3.png]({{url_laser_static}}/media/finance/financeupload_3.png)
 -------------------------

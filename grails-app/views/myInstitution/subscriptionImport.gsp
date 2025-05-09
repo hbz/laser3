@@ -33,17 +33,26 @@
             </div>
             <hr/>
             <div>
-                <ol>
+                <ul>
                     <li><g:message code="myinst.subscriptionImport.manual.li5"/></li>
+                </ul>
+                <ol>
                     <li><g:message code="myinst.subscriptionImport.manual.li6"/></li>
+                    <li><g:message code="myinst.subscriptionImport.manual.li6b"/></li>
                     <li><g:message code="myinst.subscriptionImport.manual.li7"/></li>
                 </ol>
                 <img class="ui image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_3.png')}"/>
+            </div>
+            <hr/>
+            <div>
                 <ol>
                     <li><g:message code="myinst.subscriptionImport.manual.li8"/></li>
                     <li><g:message code="myinst.subscriptionImport.manual.li9"/></li>
                 </ol>
                 <img class="ui  image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_4.png')}"/>
+            </div>
+            <hr/>
+            <div>
                 <ol>
                     <li><g:message code="myinst.subscriptionImport.manual.li10"/></li>
                     <li><g:message code="myinst.subscriptionImport.manual.li11"/></li>
@@ -57,6 +66,9 @@
                     <li><g:message code="myinst.subscriptionImport.manual.li12"/></li>
                 </ul>
                 <img class="ui image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/>
+            </div>
+            <hr/>
+            <div>
                 <ul>
                     <li><g:message code="myinst.subscriptionImport.manual.li14"/></li>
                 </ul>
