@@ -174,7 +174,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="8">K
+                        <td colspan="8">
                             <g:link action="financeImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
                             <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
                         </td>
