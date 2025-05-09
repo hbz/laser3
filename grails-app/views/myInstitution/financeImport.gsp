@@ -95,8 +95,13 @@
         </a>
     </g:else>
 
-    <g:uploadForm action="processSubscriptionImport" method="post">
+    <g:uploadForm action="processFinanceImport" method="post">
         <ui:msg class="warning" header="Achtung" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
+
+        <g:if test="${params.id}">
+            <g:hiddenField name="subId" value="${params.id}"/>
+        </g:if>
+
         <div class="field">
             <div class="two fields">
                 <div class="ui action input">
@@ -114,11 +119,18 @@
             </div>
         </div>
     </g:uploadForm>
-
-
 </div>
 
-
 <g:render template="/public/markdownScript" />
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+        $(this).parent('.action').find('input:file').click();
+    });
+
+    $('input:file', '.ui.action.input').on('change', function (e) {
+        var name = e.target.files[0].name;
+        $('input:text', $(e.target).parent()).val(name);
+    });
+</laser:script>
 
 <laser:htmlEnd />
