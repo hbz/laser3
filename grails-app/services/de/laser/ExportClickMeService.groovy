@@ -6640,7 +6640,7 @@ class ExportClickMeService {
                 queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
             }
             else if (fieldKey.contains('subscription.consortium')) {
-                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_rv_fk = :consortium), null) as consName"
+                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_fk = :consortium), null) as consName"
                 queryArgs.consortium = RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
             }
             else if (fieldKey.contains('tipp.ddcs')) {
