@@ -97,7 +97,7 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
-    def h2AdminOnly= { attrs, body ->
+    def cardLabelAdminOnly= { attrs, body ->
         String text = message(code: 'default.adminsOnly.label')
 
         if (attrs.text) {
@@ -107,13 +107,13 @@ class UiTagLib {
             SwissKnife.checkMessageKey(attrs.message as String)
             text = "${message(code: attrs.message)}"
         }
-        out << '  <h2 class="ui dividing header orange">'
-        out << '    <i class="' + Icon.AUTH.ROLE_ADMIN + ' small"></i>'
+        out << '  <div class="ui top right attached label">'
+        out << '    <i class="' + Icon.AUTH.ROLE_ADMIN + ' orange"></i>'
         out << '    <span class="content">' + text + '</span>'
-        out << '  </h2>'
+        out << '  </div>'
     }
 
-    def h2ConsortiumOnly = { attrs, body ->
+    def cardLabelConsortiumOnly = { attrs, body ->
         String text = message(code: 'default.consortiumOnly.label')
 
         if (attrs.text) {
@@ -123,13 +123,13 @@ class UiTagLib {
             SwissKnife.checkMessageKey(attrs.message as String)
             text = "${message(code: attrs.message)}"
         }
-        out << '  <h2 class="ui dividing header teal">'
-        out << '    <i class="' + Icon.AUTH.ORG_CONSORTIUM + ' small"></i>'
+        out << '  <div class="ui top right attached label">'
+        out << '    <i class="' + Icon.AUTH.ORG_CONSORTIUM + ' teal"></i>'
         out << '    <span class="content">' + text + '</span>'
-        out << '  </h2>'
+        out << '  </div>'
     }
 
-    def h2Deprecated = { attrs, body ->
+    def cardLabelDeprecated = { attrs, body ->
         String text = 'DEPRECATED: Wird zukünftig entfernt'
 
         if (attrs.text) {
@@ -139,10 +139,10 @@ class UiTagLib {
             SwissKnife.checkMessageKey(attrs.message as String)
             text = "${message(code: attrs.message)}"
         }
-        out << '  <h2 class="ui dividing header red">'
-        out << '    <i class="' + Icon.UI.WARNING + ' small"></i>'
+        out << '  <div class="ui top right attached label">'
+        out << '    <i class="' + Icon.UI.WARNING + ' red"></i>'
         out << '    <span class="content">' + text + '</span>'
-        out << '  </h2>'
+        out << '  </div>'
     }
 
     @FixedFeature_DoNotModify

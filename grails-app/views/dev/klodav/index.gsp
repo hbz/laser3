@@ -70,6 +70,33 @@
     </div>
 </div>
 
+<div class="ui three column grid">
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelAdminOnly />
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelConsortiumOnly />
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelDeprecated />
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="ui fluid card">
     <div class="content">
         <div class="header"><icon:pointingHand/> SymbolTagLib</div>
