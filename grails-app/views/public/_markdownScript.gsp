@@ -1,22 +1,11 @@
-<style>
-    .la-markdown img.image {
-        max-width: 98%;
-        margin: 0.5em;
-        border: 2px solid transparent;
-    }
-    .la-markdown img.image:hover {
-        cursor: pointer;
-    }
-    .la-markdown img.image.medium:hover {
-        border-color: #fbbd08;
-    }
-</style>
+
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('.la-markdown img').each( function(){
+    $('.la-markdown img').not('.la-js-questionMark').each( function(){
         $(this).addClass('ui medium image');
     });
-    $('.la-markdown img').on('click', function(e){
-        $(this).toggleClass('medium');
+    $('.la-markdown img').not('.la-js-questionMark').on('click', function(e){
+        $(this).toggleClass('ui medium image');
+        $(this).toggleClass('ui fluid image');
     });
 </laser:script>
