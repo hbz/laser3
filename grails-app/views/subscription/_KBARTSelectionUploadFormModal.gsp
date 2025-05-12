@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <ui:modal id="KBARTUploadForm" message="${headerToken}" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
-    <g:if test="${AuditConfig.getConfig(subscription, 'holdingSelection')}">
+    <g:if test="${!(subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection'))}">
         <ui:msg showIcon="true" class="info" message="${headerToken}.manual" hideClose="true"/>
 
         <g:form class="ui form" method="post" enctype="multipart/form-data">
@@ -29,14 +29,19 @@
                 </div>
             </div>
             <g:if test="${referer == 'addEntitlements'}">
-                <g:if test="${institution.isCustomerType_Consortium()}">
-                    <div class="field">
-                        <div class="ui right floated checkbox toggle">
-                            <g:checkBox name="withChildrenKBART"/>
-                            <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
+                <%-- meaningless since the control of the title distribution via inheritance!
+                cases:
+                a) title of consortium = title of members: either holding entire or holding partial with inheritance activated
+                b) title of consortium != title of members: process title enrichment at _each_ member individually
+                    <g:if test="${institution.isCustomerType_Consortium()}">
+                        <div class="field">
+                            <div class="ui right floated checkbox toggle">
+                                <g:checkBox name="withChildrenKBART"/>
+                                <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
+                            </div>
                         </div>
-                    </div>
-                </g:if>
+                    </g:if>
+                --%>
                 <div class="ui two fields">
                     <g:if test="${subscription.ieGroups}">
                         <div class="field">

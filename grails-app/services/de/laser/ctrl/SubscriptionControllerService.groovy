@@ -3757,7 +3757,7 @@ class SubscriptionControllerService {
             if(result.subscription.instanceOf)
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
-            result.titleManipulation = result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL
+            result.titleManipulation = result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !auditService.getAuditConfig(result.subscription.instanceOf, 'holdingSelection')
             result.titleManipulationBlocked = auditService.getAuditConfig(result.subscription, 'holdingSelection')
 
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]

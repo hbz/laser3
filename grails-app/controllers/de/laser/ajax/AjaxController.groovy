@@ -1319,7 +1319,7 @@ class AjaxController {
                                     //synchronise data
                                     Set<Package> subPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :owner', [owner: owner])
                                     subPackages.each { Package pkg ->
-                                        batchQueryService.clearIssueEntitlements([sub: members, pkg_id: pkg.id])
+                                        batchQueryService.clearIssueEntitlements([sub: members.id, pkg_id: pkg.id])
                                     }
                                 })
                             }

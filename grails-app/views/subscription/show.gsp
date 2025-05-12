@@ -455,7 +455,7 @@
                                     </g:else>
                                 </dd>
                                 <%-- partially needed because inheritance is defined implicitly by value if holdingSelection == entire --%>
-                                <g:if test="${editable}">
+                                <g:if test="${editable && subscription._getCalculatedType() != CalculatedType.TYPE_LOCAL}">
                                     <dd>
                                         <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                             <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">

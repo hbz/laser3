@@ -91,8 +91,10 @@
                         <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuPick"/>
                     </g:if>
                     <g:else>
-                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
-                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menu" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menuID" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menu" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menuPick" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
                     </g:else>
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <g:if test="${titleManipulation}">
