@@ -15,7 +15,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_rnd_lorem(length INT DEFAULT 1) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_generate_lorem(length INT DEFAULT 1) RETURNS TEXT AS $$
 DECLARE
     data TEXT[];
 BEGIN
@@ -65,7 +65,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_rnd_phrase() RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_generate_phrase() RETURNS TEXT AS $$
 DECLARE
     data TEXT[];
 BEGIN
@@ -91,10 +91,11 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_person(gender TEXT) RETURNS TEXT[] AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_generate_person(gender TEXT DEFAULT NULL) RETURNS TEXT[] AS $$
 DECLARE
     data_mn TEXT[];
     data_fn TEXT[];
+    data_nn TEXT[];
     data_ln TEXT[];
 BEGIN
     data_mn = ARRAY [
@@ -123,6 +124,9 @@ BEGIN
         'Jana', 'Jennifer', 'Jessica', 'Judy', 'Julia',
         'Karin', 'Karla', 'Katja', 'Kim', 'Kristina'
         ];
+    data_nn = ARRAY [
+        'Alex', 'Kim', 'Mika', 'Robin'
+        ];
     data_ln = ARRAY [
         'Aberle', 'Ackermann', 'Althaus', 'Andersen', 'Auerbach',
         'Bachmeier', 'Birken', 'Beckmann', 'Bluhme', 'Böhmer',
@@ -145,19 +149,25 @@ BEGIN
         RETURN (SELECT ARRAY[pg_temp.anon_sample(data_mn), pg_temp.anon_sample(data_ln)]);
     ELSEIF lower(gender) = 'female' THEN
         RETURN (SELECT ARRAY[pg_temp.anon_sample(data_fn), pg_temp.anon_sample(data_ln)]);
+    ELSEIF lower(gender) = 'third gender' THEN
+        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_nn), pg_temp.anon_sample(data_ln)]);
     ELSE
-        RETURN (SELECT ARRAY[null, null]);
+        RETURN (SELECT ARRAY[null, 'Bibo']);
     END IF;
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_contact(type TEXT, person TEXT[] DEFAULT ARRAY['Max', 'Mustermann']) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_generate_contact(type TEXT, person TEXT[] DEFAULT ARRAY['Max', 'Mustermann']) RETURNS TEXT AS $$
 DECLARE
 BEGIN
     IF array_position(ARRAY['email', 'e-mail', 'mail'], lower(type)) > 0 THEN
-        RETURN concat(lower(person[1]), '.', lower(person[2]), '@anon.example');
+        IF trim(coalesce(person[1], '')) = '' THEN
+            RETURN concat(lower(person[2]), '@anon.example');
+        ELSE
+            RETURN concat(lower(person[1]), '.', lower(person[2]), '@anon.example');
+        END IF;
     ELSEIF array_position(ARRAY['fax', 'phone'], lower(type)) > 0  THEN
-        RETURN concat('01234 - ', round(random() * 1000), round(random() * 1000), '0');
+        RETURN concat('01234 - ', round(random() * 1000), ' ', round(random() * 1000), '0');
     ELSEIF array_position(ARRAY['url'], lower(type)) > 0 THEN
         RETURN pg_temp.anon_gen_url();
     ELSE
@@ -166,7 +176,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_gen_url() RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_generate_url() RETURNS TEXT AS $$
 DECLARE
     part1 TEXT[];
     part2 TEXT[];
@@ -180,38 +190,42 @@ $$ LANGUAGE PLPGSQL;
 
 -- Anon base functions (examples)
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_examples() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_run_examples() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> examples';
 
     RAISE NOTICE 'anon_sample([a, b, c) > %', (SELECT pg_temp.anon_sample(ARRAY['a', 'b', 'c']));
 
-    RAISE NOTICE 'anon_gen_rnd_lorem() > %', (SELECT pg_temp.anon_gen_rnd_lorem());
-    RAISE NOTICE 'anon_gen_rnd_lorem(3) > %', (SELECT pg_temp.anon_gen_rnd_lorem(3));
+    RAISE NOTICE 'anon_generate_lorem() > %', (SELECT pg_temp.anon_generate_lorem());
+    RAISE NOTICE 'anon_generate_lorem(3) > %', (SELECT pg_temp.anon_generate_lorem(3));
 
-    RAISE NOTICE 'anon_gen_rnd_phrase() > %', (SELECT pg_temp.anon_gen_rnd_phrase());
+    RAISE NOTICE 'anon_generate_phrase() > %', (SELECT pg_temp.anon_generate_phrase());
 
-    RAISE NOTICE 'anon_gen_person(male) > %', (SELECT pg_temp.anon_gen_person('male'));
-    RAISE NOTICE 'anon_gen_person(female) > %', (SELECT pg_temp.anon_gen_person('female'));
+    RAISE NOTICE 'anon_generate_person(male) > %', (SELECT pg_temp.anon_generate_person('male'));
+    RAISE NOTICE 'anon_generate_person(female) > %', (SELECT pg_temp.anon_generate_person('female'));
+    RAISE NOTICE 'anon_generate_person(third gender) > %', (SELECT pg_temp.anon_generate_person('third gender'));
+    RAISE NOTICE 'anon_generate_person() > %', (SELECT pg_temp.anon_generate_person());
 
-    RAISE NOTICE 'anon_gen_contact(mail, anon_gen_person(male)) > %', (SELECT pg_temp.anon_gen_contact('mail', pg_temp.anon_gen_person('male')));
-    RAISE NOTICE 'anon_gen_contact(mail, anon_gen_person(female)) > %', (SELECT pg_temp.anon_gen_contact('mail', pg_temp.anon_gen_person('female')));
+    RAISE NOTICE 'anon_generate_contact(mail, anon_generate_person(male)) > %', (SELECT pg_temp.anon_generate_contact('mail', pg_temp.anon_generate_person('male')));
+    RAISE NOTICE 'anon_generate_contact(mail, anon_generate_person(female)) > %', (SELECT pg_temp.anon_generate_contact('mail', pg_temp.anon_generate_person('female')));
+    RAISE NOTICE 'anon_generate_contact(mail, anon_generate_person(third gender)) > %', (SELECT pg_temp.anon_generate_contact('mail', pg_temp.anon_generate_person('third gender')));
+    RAISE NOTICE 'anon_generate_contact(mail, anon_generate_person()) > %', (SELECT pg_temp.anon_generate_contact('mail', pg_temp.anon_generate_person()));
 
-    RAISE NOTICE 'anon_gen_contact(phone) > %', (SELECT pg_temp.anon_gen_contact('phone'));
-    RAISE NOTICE 'anon_gen_contact(url) > %', (SELECT pg_temp.anon_gen_contact('url'));
+    RAISE NOTICE 'anon_generate_contact(phone) > %', (SELECT pg_temp.anon_generate_contact('phone'));
+    RAISE NOTICE 'anon_generate_contact(url) > %', (SELECT pg_temp.anon_generate_contact('url'));
 
-    RAISE NOTICE 'anon_gen_url(url) > %', (SELECT pg_temp.anon_gen_url());
+    RAISE NOTICE 'anon_generate_url(url) > %', (SELECT pg_temp.anon_generate_url());
 END;
 $$ LANGUAGE PLPGSQL;
 
-SELECT pg_temp.anon_examples();
+SELECT pg_temp.anon_run_examples();
 
 -- Anon functions for use
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_lorem(oldValue TEXT, length INT DEFAULT 1) RETURNS TEXT AS $$
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
-        RETURN pg_temp.anon_gen_rnd_lorem(length);
+        RETURN pg_temp.anon_generate_lorem(length);
     ELSE
         RETURN oldValue;
     END IF;
@@ -242,9 +256,9 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_phrase(oldValue TEXT, debugInfo TEXT DEF
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
         IF debugInfo != '' THEN
-            RETURN concat( pg_temp.anon_gen_rnd_phrase(), ' (', debugInfo, ')' );
+            RETURN concat( pg_temp.anon_generate_phrase(), ' (', debugInfo, ')' );
         ELSE
-            RETURN pg_temp.anon_gen_rnd_phrase();
+            RETURN pg_temp.anon_generate_phrase();
         END IF;
     ELSE
         RETURN oldValue;
@@ -255,7 +269,7 @@ $$ LANGUAGE PLPGSQL;
 CREATE OR REPLACE FUNCTION pg_temp.anon_url(oldValue TEXT) RETURNS TEXT AS $$
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
-        RETURN pg_temp.anon_gen_url();
+        RETURN pg_temp.anon_generate_url();
     ELSE
         RETURN oldValue;
     END IF;
@@ -276,9 +290,55 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- Anon functions for use (tests)
+-- Anon complex functions for use
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_test() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_person_and_contact() RETURNS VOID AS $$
+DECLARE
+    pp RECORD;
+    pp_person TEXT[];
+    co RECORD;
+    co_contact TEXT;
+BEGIN
+    FOR pp IN
+        SELECT * FROM person WHERE
+            prs_is_public = false AND
+            prs_tenant_fk NOT IN (
+                SELECT org_id FROM org WHERE org_is_beta_tester = true
+            ) LIMIT 100
+    LOOP
+        SELECT pg_temp.anon_generate_person(CASE
+            WHEN pp.prs_gender_rv_fk = 62    THEN 'female'
+            WHEN pp.prs_gender_rv_fk = 63    THEN 'male'
+            WHEN pp.prs_gender_rv_fk = 64    THEN 'third gender'
+            ELSE NULL END) INTO pp_person;
+
+--         RAISE NOTICE '%s %s', pp_person;
+
+        FOR co IN
+            SELECT * FROM contact WHERE
+                ct_prs_fk = pp.prs_id
+        LOOP
+            SELECT pg_temp.anon_generate_contact(CASE
+                WHEN co.ct_content_type_rv_fk = 16  THEN 'mail'
+                WHEN co.ct_content_type_rv_fk = 17  THEN 'phone'
+                WHEN co.ct_content_type_rv_fk = 18  THEN 'fax'
+                WHEN co.ct_content_type_rv_fk = 718 THEN 'url'
+                WHEN co.ct_content_type_rv_fk = 1563 THEN 'phone'
+                WHEN co.ct_content_type_rv_fk = 1564 THEN 'url'
+                ELSE NULL END, pp_person) INTO co_contact;
+
+            RAISE NOTICE '(%, %, %, %) + (% % %) > [% %]',
+                pp.prs_id, pp.prs_first_name, pp.prs_last_name, pp.prs_gender_rv_fk,
+                co.ct_id, co.ct_content_type_rv_fk, co.ct_content,
+                pp_person, co_contact;
+        END LOOP;
+    END LOOP;
+END;
+$$ LANGUAGE PLPGSQL;
+
+-- Anon tests
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_run_tests() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> running tests';
 
@@ -330,7 +390,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-SELECT pg_temp.anon_test();
+SELECT pg_temp.anon_run_tests();
 
 --
 -- Pseudonymization (B: data manipulation)
@@ -388,6 +448,10 @@ UPDATE customer_identifier SET
 WHERE cid_customer_fk NOT IN (
     SELECT org_id FROM org WHERE org_is_beta_tester = true
 );
+
+-- Addressbook
+
+SELECT pg_temp.anon_mask_person_and_contact(); -- TODO
 
 -- Finance
 
