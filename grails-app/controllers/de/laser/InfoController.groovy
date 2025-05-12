@@ -24,7 +24,7 @@ class InfoController {
         Map<String, Object> result = [:]
 
         switch(params.template) {
-            case 'org': result = organisationControllerService.mailInfos(null, params)
+            case 'org': result = organisationControllerService.mailInfos(params)
                 break
             case 'reportTitleToProvider': result = _reportTitleToProvider(params)
                 break

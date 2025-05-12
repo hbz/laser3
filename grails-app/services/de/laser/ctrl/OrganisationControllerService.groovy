@@ -40,7 +40,7 @@ class OrganisationControllerService {
 
     PageRenderer groovyPageRenderer
 
-    Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
+    Map<String,Object> mailInfos(GrailsParameterMap params) {
         Map<String, Object> result = [
                 user: contextService.getUser(),
                 institution: contextService.getOrg(),
@@ -66,7 +66,7 @@ class OrganisationControllerService {
             result.sub = Subscription.get(params.id_subscription)
 
             if(result.sub) {
-                List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.responsibilityType = :responsibilityType and c.contentType = :type and p.isPublic = false and p.tenant = :ctx and pr.sub = :obj",
                         [providers         : result.sub.providerRelations.provider,
@@ -75,25 +75,25 @@ class OrganisationControllerService {
                          ctx               : contextService.getOrg(),
                          obj               : result.sub]) : []
 
-                List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = false and p.tenant = :ctx",
                         [providers         : result.sub.providerRelations.provider,
-                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING, RDStore.PRS_FUNC_TECHNICAL_SUPPORT],
                          type              : RDStore.CCT_EMAIL,
                          ctx               : contextService.getOrg()]) : []
 
-                List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",
                         [providers    : result.sub.providerRelations.provider,
-                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING],
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING, RDStore.PRS_FUNC_TECHNICAL_SUPPORT],
                          type         : RDStore.CCT_EMAIL]) : []
+
 
                 contactListProvider = contactListProvider + contactListProviderAddressBook
 
-                result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
-                result.mailAddressOfProviderWekb = contactListProviderWekb ? contactListProviderWekb.join("; ") : ''
+                result.mailtoList = (contactListProviderWekb + contactListProvider + contactListProviderAddressBook).unique()
 
                 List<Platform> platformList = Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: result.sub])
 
@@ -254,6 +254,27 @@ class OrganisationControllerService {
 
             String langDe = RDStore.LANGUAGE_DE.value
             String langEn = RDStore.LANGUAGE_EN.value
+
+            result.mailcc = result.user.email
+            result.mailto = 'Bitte ausfüllen'
+
+            result.mailSubject = [
+                    de: "Fehlerhafte Titel-Daten in der We:kb - ",
+                    en: "Incorrect title information in the We:kb - "
+            ]
+
+            if (result.sub) {
+                result.mailSubject = [
+                        de: "${messageSource.getMessage('mail.sub.mailInfos', null, new Locale(langDe) )} - ${result.sub.getLabel()}",
+                        en: "${messageSource.getMessage('mail.sub.mailInfos', null, new Locale(langEn))} - ${result.sub.getLabel()}"
+                ]
+            } else {
+                result.mailSubject = [
+                        de: "${messageSource.getMessage('mail.org.mailInfos', null, new Locale(langDe))} - (${result.orgInstance.name})",
+                        en: "${messageSource.getMessage('mail.org.mailInfos', null, new Locale(langEn))} - (${result.orgInstance.name})"
+
+                ]
+            }
 
             result.mailText[langDe] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langDe),
                                                                                                                                               org                 : result.orgInstance,

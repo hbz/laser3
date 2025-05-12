@@ -1468,7 +1468,7 @@ class SurveyControllerService {
             transferWorkflowSubs.eachWithIndex { Subscription subscription, int i ->
                 if (subscription == result.parentSuccessorSubscription) {
                     if (i == 0) {
-                        if (subscription == result.surveyConfig.subscription) {
+                        if (result.surveyConfig.subscription && subscription == result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()) {
                             if (params.transferMembers != null) {
                                 transferWorkflow.transferMembers = params.transferMembers
                                 if (result.surveyConfig.subSurveyUseForTransfer) {

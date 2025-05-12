@@ -2040,7 +2040,7 @@ class FilterService {
             //deactivated because of performance reasons; query would take 11 seconds instead of millis
             //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
             queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
-            queryParams.filter = "%${params.filter.toLowerCase()}%"
+            queryParams.filter = "%${params.filter.trim().toLowerCase()}%"
         }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         //ERMS-5972
@@ -2121,7 +2121,7 @@ class FilterService {
 
         if (params.provider) {
             queryArgs << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
-            queryParams.provider = Params.getLongList(params, 'provider')
+            queryParams.provider = Params.getLongList_forCommaSeparatedString(params, 'provider')
         }
 
         if (params.publishers) {

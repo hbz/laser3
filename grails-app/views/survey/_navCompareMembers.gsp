@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.AuditConfig; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.finance.CostItem" %>
 <div class="ui tablet stackable steps">
 
     <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
@@ -14,7 +14,7 @@
                 <i class="exchange icon"></i>${message(code: 'surveyInfo.transferMembers')}
             </div>
         </div>
-
+    &nbsp;
         <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferMembers)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferMembers: false]">
@@ -30,7 +30,7 @@
 
     </div>
 
-    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+    <g:if test="${surveyConfig.subSurveyUseForTransfer && !(AuditConfig.getConfig(parentSuccessorSubscription, 'holdingSelection') && parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)}">
         <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
 
             <div class="content">
@@ -140,7 +140,7 @@
                 <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
-
+        &nbsp;
         <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyProperties: false]">
@@ -172,7 +172,7 @@
                 <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
-
+        &nbsp;
         <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferCustomProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferCustomProperties: false]">
@@ -202,7 +202,7 @@
                 <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
             </div>
         </div>
-
+    &nbsp;
         <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferPrivateProperties)}">
             <g:link controller="survey" action="setSurveyTransferConfig"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferPrivateProperties: false]">
@@ -235,7 +235,7 @@
                     <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
                 </div>
             </div>
-
+        &nbsp;
             <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyCostItems)}">
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyCostItems: false]">
@@ -268,7 +268,7 @@
                     <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
                 </div>
             </div>
-
+        &nbsp;
             <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyCostItems)}">
                 <g:link controller="survey" action="setSurveyTransferConfig"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyCostItemPackage: false]">
