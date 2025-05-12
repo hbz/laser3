@@ -91,7 +91,7 @@
                 <g:if test="${contextService.getUser().isYoda() || contextService.getUser().isAdmin()}">
                     <div class="ui card">
                         <div class="ui content">
-                            <ui:h2AdminOnly />
+                            <ui:cardLabelAdminOnly />
 
                             <div class="ui form">
 %{--                                <div class="ui field">--}%

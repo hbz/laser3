@@ -506,9 +506,11 @@
                 </div>
             </div>
 
-            <g:if test="${provider.createdBy || provider.legallyObligedBy}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') && (provider.createdBy || provider.legallyObligedBy)}">
                 <div class="ui card">
                     <div class="content">
+                        <ui:cardLabelAdminOnly />
+
                         <g:if test="${provider.createdBy}">
                             <dl>
                                 <dt class="control-label">
