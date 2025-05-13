@@ -5442,9 +5442,10 @@ class SurveyControllerService {
                         }
                     }
 
-                    if(AuditConfig.getConfig(newParentSub, 'holdingSelection') && newParentSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE){
+                    if(AuditConfig.getConfig(newParentSub, 'holdingSelection')){
                         newParentSub.packages.each { SubscriptionPackage subscriptionPackage ->
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, subscriptionPackage.pkg, false)
+                            //subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, subscriptionPackage.pkg, false)
+                            subscriptionService.addToMemberSubscription(newParentSub, [memberSub], subscriptionPackage.pkg, false)
                         }
                     }
 

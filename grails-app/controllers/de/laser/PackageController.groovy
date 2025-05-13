@@ -550,69 +550,6 @@ class PackageController {
     }
 
     /**
-     * Links the given package to the given subscription and creates issue entitlements
-     * of the current package holding. If the package was not available in the app,
-     * the we:kb data will be fetched and data mirrored prior to linking the package
-     * to the subscription
-     */
-    @DebugInfo(isInstEditor_denySupport = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport()
-    })
-    def processLinkToSub() {
-        Map<String, Object> result = [:]
-        result.pkg = Package.get(params.id)
-        result.subscription = genericOIDService.resolveOID(params.targetObjectId)
-
-        if (result.subscription) {
-            boolean bulkProcessRunning = false
-            String threadName = 'PackageSync_' + result.subscription.id
-            if (subscriptionService.checkThreadRunning(threadName) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
-                result.message = message(code: 'subscription.details.linkPackage.thread.running')
-                bulkProcessRunning = true
-            }
-            if(params.holdingSelection) {
-                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
-                result.subscription.holdingSelection = holdingSelection
-                result.subscription.save()
-            }
-            //to be deployed in parallel thread
-            if (result.pkg) {
-                if(!bulkProcessRunning) {
-                    executorService.execute({
-                        long start = System.currentTimeSeconds()
-                        Thread.currentThread().setName(threadName)
-                        log.debug("Add package entitlements to subscription ${result.subscription}")
-                        subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                        }
-                        if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
-                            globalService.notifyBackgroundProcessFinish(result.user, threadName, message(code: 'subscription.details.linkPackage.thread.completed', args: [result.subscription.name] as Object[]))
-                        }
-                    })
-                }
-            }
-            switch (result.subscription.holdingSelection) {
-                case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
-                    redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
-                    return
-                    break
-                case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
-                    redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
-                    return
-                    break
-            }
-        } else {
-            flash.error = message(code: 'package.show.linkToSub.noSubSelection') as String
-            redirect controller: 'package', action: 'show', params: [id: params.id]
-            return
-        }
-
-        redirect(url: request.getHeader("referer"))
-    }
-
-    /**
      * For that no accidental call may occur ... ROLE_YODA is correct!
      * Lists duplicates package in the database
      */
