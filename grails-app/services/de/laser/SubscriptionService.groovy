@@ -1032,15 +1032,18 @@ class SubscriptionService {
                 Map checked = issueEntitlementCandidates.get('checked')
                 if(checked) {
                     Set<Long> childSubIds = [], pkgIds = []
+                    /*
                     if(params.withChildren == 'on') {
                         childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
                     }
+                    */
                     checked.keySet().collate(65000).each { subSet ->
                         pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: subSet]))
                     }
                     executorService.execute({
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
                         bulkAddEntitlements(result.subscription, checked.keySet(), false)
+                        /*
                         if(params.withChildren == 'on') {
                             Sql sql = GlobalService.obtainSqlConnection()
                             try {
@@ -1054,7 +1057,7 @@ class SubscriptionService {
                                 sql.close()
                             }
                         }
-
+                        */
                         if(params.process && params.process	== "withTitleGroup") {
                             IssueEntitlementGroup issueEntitlementGroup
                             if (params.issueEntitlementGroupNew) {
@@ -1245,7 +1248,9 @@ class SubscriptionService {
      * @param target the member subscription whose holding should be enriched
      * @param consortia the consortial subscription whose holding should be taken
      * @param pkg the package to be linked
+     * @deprecated addToMemberSubscription() does the same thing
      */
+    @Deprecated
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         try {
@@ -1384,6 +1389,17 @@ class SubscriptionService {
         sub.holdingSelection = value
         sub.save()
         Set<Subscription> members = Subscription.findAllByInstanceOf(sub)
+        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            if(! AuditConfig.getConfig(sub, prop)) {
+                AuditConfig.addConfig(sub, prop)
+
+                members.each { Subscription m ->
+                    m.setProperty(prop, sub.getProperty(prop))
+                    m.save()
+                }
+            }
+        }
+        /*
         switch(value) {
             case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
                 if(! AuditConfig.getConfig(sub, prop)) {
@@ -1396,20 +1412,21 @@ class SubscriptionService {
                 }
                 break
             case RDStore.SUBSCRIPTION_HOLDING_PARTIAL:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, sub.getProperty(prop))
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
             default:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, null)
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
         }
+        */
     }
 
     /**
@@ -1528,6 +1545,7 @@ class SubscriptionService {
                 //Thread.currentThread().setName("EntitlementEnrichment_${configMap.subscription.id}")
                 bulkAddEntitlements(configMap.subscription, toBeAdded, configMap.subscription.hasPerpetualAccess)
                 userCache.put('progress', 80)
+                /*
                 if(configMap.withChildrenKBART == 'on') {
                     Sql sql = GlobalService.obtainSqlConnection()
                     try {
@@ -1542,6 +1560,7 @@ class SubscriptionService {
                     }
                 }
                 userCache.put('progress', 90)
+                */
                 if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
                     IssueEntitlementGroup issueEntitlementGroup
                     if (configMap.issueEntitlementGroupNewKBART) {
