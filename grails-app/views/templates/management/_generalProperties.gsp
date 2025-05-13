@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyConfig" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -74,9 +74,21 @@
                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
                     <td>
-                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/>
-                        <%-- implicitly defined by value
-                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>--%>
+                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
+                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                             data_confirm_term_how="ok"
+                                             class="js-open-confirm-modal-xEditableRefData"
+                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                        <%-- partially implicitly defined by value --%>
+                        <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
+                                <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        </g:else>
                     </td>
 
                     <td class="x">
@@ -285,6 +297,7 @@
                             </g:if>
                         </div>
                     </div>
+                    <%-- too dangerous; risk of enourmous workload
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
@@ -304,6 +317,7 @@
                             </g:if>
                         </div>
                     </div>
+                    --%>
                     <div class="four wide column">
                         <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <div class="field">
@@ -446,8 +460,30 @@
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
-                            <ui:auditButton auditable="[sub, 'holdingSelection']"/>
+                            <g:if test="${sub._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" id="holdingSelection"
+                                                     data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditableRefData"
+                                                     data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && (!SurveyConfig.findBySubscriptionAndType(sub, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(sub.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                            </g:if>
+                            <g:elseif test="${sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" id="holdingSelection"
+                                                     data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditableRefData"
+                                                     data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && !auditService.getAuditConfig(sub.instanceOf, 'holdingSelection')}"/>
+                            </g:elseif>
+                            <g:if test="${sub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
+                                    <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <ui:auditButton auditable="[sub, 'holdingSelection']"/>
+                            </g:else>
                         </td>
                         <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <td>
