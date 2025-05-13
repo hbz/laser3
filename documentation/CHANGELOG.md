@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6570    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Paginierung griff bei we:kb-Filter nicht
+
 6568    09.05.2025  rc-3.5  3.5-RC      Andreas Bug         Lizenztitel konnten als Pro-Nutzer nicht exportiert werden
 
 6564    09.05.2025  rc-3.5  3.5-RC      Andreas Feature     Weitere Einschränkung der möglichen Plattformen
