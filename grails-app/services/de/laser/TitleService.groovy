@@ -70,6 +70,27 @@ class TitleService {
         TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where lower(id.value) like :identifier '+pkgFilter+' and id.ns.ns in (:titleNS) and id.ns.nsType = :titleObj', identifierConfigMap)
     }
 
+    Set<Map> mapTitleTypeStringToI10n(Set result) {
+        Set<Map> titleTypes = []
+        result.each { String titleType ->
+            String name
+            switch(titleType) {
+                case 'database': name = RDStore.TITLE_TYPE_DATABASE.getI10n('value')
+                    break
+                case 'monograph': name = RDStore.TITLE_TYPE_EBOOK.getI10n('value')
+                    break
+                case 'serial': name = RDStore.TITLE_TYPE_JOURNAL.getI10n('value')
+                    break
+                case 'other': name = RDStore.TITLE_TYPE_OTHER.getI10n('value')
+                    break
+                default: name = RDStore.TITLE_TYPE_UNKNOWN.getI10n('value')
+                    break
+            }
+            titleTypes << [name: name, value: titleType]
+        }
+        titleTypes
+    }
+
     Map<String, Object> getParameterGenerics(configMap) {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'

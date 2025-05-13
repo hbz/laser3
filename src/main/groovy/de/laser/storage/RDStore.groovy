@@ -273,6 +273,8 @@ class RDStore {
     public final static RefdataValue TITLE_TYPE_EBOOK       = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_JOURNAL     = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_DATABASE    = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_OTHER       = getRefdataValue('Other', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_UNKNOWN     = getRefdataValue('Title', RDConstants.TITLE_MEDIUM)
 
     public final static RefdataValue TITLE_STATUS_CURRENT   = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     public final static RefdataValue TITLE_STATUS_RETIRED   = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
