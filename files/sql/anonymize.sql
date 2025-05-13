@@ -109,7 +109,12 @@ BEGIN
         'Hannes', 'Hans', 'Helmut', 'Herbert', 'Horst',
         'Ian', 'Igor', 'Ingolf', 'Ivan',
         'Jakob', 'Jens', 'Jochen', 'Jörg', 'Jürgen',
-        'Karl', 'Kevin', 'Kim', 'Klaus', 'Knut'
+        'Karl', 'Kevin', 'Kim', 'Klaus', 'Knut',
+        'Lars', 'Lawrence', 'Leif', 'Louis',
+        'Markus', 'Mario', 'Max', 'Michael', 'Moritz',
+        'Nils', 'Nino', 'Norbert',
+        'Olaf', 'Oliver', 'Otto',
+        'Paul', 'Peter', 'Piet'
         ];
     data_fn = ARRAY [
         'Agathe', 'Alina', 'Andrea', 'Anja', 'Astrid',
@@ -122,7 +127,12 @@ BEGIN
         'Hanna', 'Heidi', 'Heike', 'Helene', 'Hildegard',
         'Ilka', 'Inge', 'Iris', 'Isabel',
         'Jana', 'Jennifer', 'Jessica', 'Judy', 'Julia',
-        'Karin', 'Karla', 'Katja', 'Kim', 'Kristina'
+        'Karin', 'Karla', 'Katja', 'Kim', 'Kristina',
+        'Laura', 'Lena', 'Linda', 'Louise',
+        'Maike', 'Marie', 'Margot', 'Mia', 'Monika',
+        'Nadja', 'Nicole', 'Nina',
+        'Olga', 'Olivia', 'Otta',
+        'Paula', 'Petra', 'Pina'
         ];
     data_nn = ARRAY [
         'Alex', 'Kim', 'Mika', 'Robin'
@@ -142,7 +152,8 @@ BEGIN
         'Lambertz', 'Lehmann', 'Leppert', 'Lorenz', 'Lücke',
         'Maier', 'Mertens', 'Mielke', 'Morgenstern', 'Müller',
         'Nagel', 'Neuberger', 'Nitsche', 'Nordmeyer', 'Nuschke',
-        'Oberhuber', 'Ohlig', 'Orlowski', 'Ostwald', 'Overkamp'
+        'Oberhuber', 'Ohlig', 'Orlowski', 'Ostwald', 'Overkamp',
+        'Pampel', 'Pellnitz', 'Pirner', 'Posewitz', 'Püttmann'
         ];
 
     IF lower(gender) = 'male' THEN
@@ -152,7 +163,7 @@ BEGIN
     ELSEIF lower(gender) = 'third gender' THEN
         RETURN (SELECT ARRAY[pg_temp.anon_sample(data_nn), pg_temp.anon_sample(data_ln)]);
     ELSE
-        RETURN (SELECT ARRAY[null, 'Bibo']);
+        RETURN (SELECT ARRAY[null, concat('Bibo', floor(random() * 1000))]);
     END IF;
 END;
 $$ LANGUAGE PLPGSQL;
@@ -426,19 +437,18 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- TODO
 CREATE OR REPLACE FUNCTION pg_temp.anon_mask_person_and_contact() RETURNS VOID AS $$
 DECLARE
     count_person INT;
     count_contact INT;
-    pp RECORD;
-    pp_person TEXT[];
-    co RECORD;
-    co_contact TEXT;
+    count_tmp INT;
+    prs RECORD;
+    prs_person TEXT[];
 BEGIN
-    RAISE NOTICE '----- TODO: SELECT ONLY /  -----';
+    count_person = 0;
+    count_contact = 0;
 
-    FOR pp IN
+    FOR prs IN
         SELECT * FROM person WHERE
             prs_is_public = false AND
             prs_tenant_fk NOT IN (
@@ -446,32 +456,37 @@ BEGIN
             )
     LOOP
         SELECT pg_temp.anon_generate_person(CASE
-            WHEN pp.prs_gender_rv_fk = 62    THEN 'female'
-            WHEN pp.prs_gender_rv_fk = 63    THEN 'male'
-            WHEN pp.prs_gender_rv_fk = 64    THEN 'third gender'
-            ELSE NULL END) INTO pp_person;
+            WHEN prs.prs_gender_rv_fk = 62    THEN 'female'
+            WHEN prs.prs_gender_rv_fk = 63    THEN 'male'
+            WHEN prs.prs_gender_rv_fk = 64    THEN 'third gender'
+            ELSE NULL END) INTO prs_person;
 
---         RAISE NOTICE '%s %s', pp_person;
+        UPDATE person SET
+            prs_first_name = prs_person[1],
+            prs_last_name = prs_person[2]
+        WHERE prs_id = prs.prs_id;
 
-        FOR co IN
-            SELECT * FROM contact WHERE
-                ct_prs_fk = pp.prs_id
-        LOOP
-            SELECT pg_temp.anon_generate_contact(CASE
-                WHEN co.ct_content_type_rv_fk = 16  THEN 'mail'
-                WHEN co.ct_content_type_rv_fk = 17  THEN 'phone'
-                WHEN co.ct_content_type_rv_fk = 18  THEN 'fax'
-                WHEN co.ct_content_type_rv_fk = 718 THEN 'url'
-                WHEN co.ct_content_type_rv_fk = 1563 THEN 'phone'
-                WHEN co.ct_content_type_rv_fk = 1564 THEN 'url'
-                ELSE NULL END, pp_person) INTO co_contact;
+        GET DIAGNOSTICS count_tmp = ROW_COUNT;
+        count_person = count_person + count_tmp;
 
-            RAISE NOTICE '(%, %, %, %) + (% % %) > [% %]',
-                pp.prs_id, pp.prs_first_name, pp.prs_last_name, pp.prs_gender_rv_fk,
-                co.ct_id, co.ct_content_type_rv_fk, co.ct_content,
-                pp_person, co_contact;
-        END LOOP;
+        UPDATE contact SET
+            ct_content = pg_temp.anon_generate_contact(CASE
+                WHEN ct_content_type_rv_fk = 16  THEN 'mail'
+                WHEN ct_content_type_rv_fk = 17  THEN 'phone'
+                WHEN ct_content_type_rv_fk = 18  THEN 'fax'
+                WHEN ct_content_type_rv_fk = 718 THEN 'url'
+                WHEN ct_content_type_rv_fk = 1563 THEN 'phone'
+                WHEN ct_content_type_rv_fk = 1564 THEN 'url'
+                ELSE NULL END, prs_person
+            )
+        WHERE ct_prs_fk = prs.prs_id;
+
+        GET DIAGNOSTICS count_tmp = ROW_COUNT;
+        count_contact = count_contact + count_tmp;
     END LOOP;
+
+    RAISE NOTICE '----- masking table  person (prs_first_name, prs_last_name) > %', count_person;
+    RAISE NOTICE '----- masking table contact (ct_content) > %', count_contact;
 END;
 $$ LANGUAGE PLPGSQL;
 
