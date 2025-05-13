@@ -876,52 +876,6 @@ class SubscriptionService {
     }
 
     /**
-     * Queries the we:kb ElasticSearch index and returns a (filtered) list of packages which may be linked to the
-     * given subscription
-     * @param params the request parameter map, containing also filter parameters to limit the package results
-     * @return a filtered list of packages
-     * @see de.laser.remote.Wekb
-     * @see Package
-     */
-    Map<String,Object> linkTitle(GrailsParameterMap params) {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        if(!result)
-            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
-        else {
-            if(checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[getCachedPackageName('PackageTransfer_'+result.subscription.id)] as Object[], LocaleUtils.getCurrentLocale())
-                result.bulkProcessRunning = true
-            }
-            if (result.subscription.packages) {
-                result.pkgs = []
-                result.subscription.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
-                    result.pkgs.add(sp.pkg.gokbId)
-                }
-            } else {
-                log.debug("Subscription has no linked packages yet")
-            }
-            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
-            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
-            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
-            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
-            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-            Set<Set<String>> filterConfig = [
-                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
-            ]
-            Map<String, Set<Set<String>>> filterAccordionConfig = [
-                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
-            ]
-            result.filterConfig = filterConfig
-            result.filterAccordionConfig = filterAccordionConfig
-            result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
-            if(params.containsKey('search'))
-                result.putAll(packageService.getWekbPackages(params))
-            [result: result, status: SubscriptionControllerService.STATUS_OK]
-        }
-    }
-
-    /**
      * Gets the issue entitlements (= the titles) of the given subscription
      * @param subscription the subscription whose holding should be returned
      * @return a sorted list of issue entitlements

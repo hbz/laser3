@@ -1372,9 +1372,9 @@ SELECT * FROM (
      */
     @Secured(['ROLE_ADMIN'])
     def packageLaserVsWekb() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], configMap = params.clone()
         result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, result.user)
+        configMap.putAll(SwissKnife.setPaginationParams(result, params, result.user))
         result.filterConfig = [['q', 'pkgStatus'],
                                ['provider', 'ddc', 'curatoryGroup'],
                                ['curatoryGroupType', 'automaticUpdates']]
@@ -1383,7 +1383,7 @@ SELECT * FROM (
             result.tableConfig << 'yodaActions'
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
-        result.putAll(packageService.getWekbPackages(params.clone()))
+        result.putAll(packageService.getWekbPackages(configMap))
         result
     }
 }
