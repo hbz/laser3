@@ -351,12 +351,19 @@
                             }).done(function (data) {
                                 $('.ui.dimmer.modals > #addForAllSurveyCostItem').remove();
                                 $('#dynamicModalContainer').empty().html(data);
-
+                                let keyboardHandler = function(e) {
+                                    if (e.keyCode === 27) {
+                                        $('#addForAllSurveyCostItem,#openSurveyAgain,#openSurveyNow,#bulkCostItemsUpload').modal('hide');
+                                    }
+                                };
                                 $('#dynamicModalContainer .ui.modal').modal({
                                     onShow: function () {
                                         r2d2.initDynamicUiStuff('#addForAllSurveyCostItem');
                                         r2d2.initDynamicXEditableStuff('#addForAllSurveyCostItem');
 
+                                    },
+                                    onVisible: function () {
+                                        document.addEventListener('keyup', keyboardHandler);
                                     },
                                     detachable: true,
                                     closable: false,
@@ -364,6 +371,9 @@
                                     onApprove: function () {
                                         $(this).find('#addForAllSurveyCostItem .ui.form').submit();
                                         return false;
+                                    },
+                                    onHide : function() {
+                                        document.removeEventListener('keyup', keyboardHandler);
                                     }
                                 }).modal('show');
                             })

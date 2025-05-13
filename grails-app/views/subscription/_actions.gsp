@@ -233,12 +233,19 @@
             }).done( function (data) {
                 $('.ui.dimmer.modals > #KBARTUploadForm').remove();
                 $('#dynamicModalContainer').empty().html(data);
-
+                let keyboardHandler = function(e) {
+                    if (e.keyCode === 27) {
+                        $('#KBARTUploadForm').modal('hide');
+                    }
+                };
                 $('#dynamicModalContainer .ui.modal').modal({
                    onShow: function () {
                         r2d2.initDynamicUiStuff('#KBARTUploadForm');
                         r2d2.initDynamicXEditableStuff('#KBARTUploadForm');
                         $("html").css("cursor", "auto");
+                    },
+                    onVisible: function () {
+                        document.addEventListener('keyup', keyboardHandler);
                     },
                     detachable: true,
                     autofocus: false,
@@ -247,6 +254,9 @@
                     onApprove : function() {
                         $(this).find('.ui.form').submit();
                         return false;
+                    },
+                    onHide : function() {
+                        document.removeEventListener('keyup', keyboardHandler);
                     }
                 }).modal('show');
             })

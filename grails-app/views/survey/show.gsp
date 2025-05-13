@@ -521,12 +521,22 @@
                     $('#modalEditComment').remove();
 
                     $('#dynamicModalContainer').html(result);
+                    let keyboardHandler = function(e) {
+                        if (e.keyCode === 27) {
+                            $('#modalEditComment').modal('hide');
+                        }
+                    };
                     $('#dynamicModalContainer .ui.modal').modal({
                         autofocus: false,
                         closable: false,
                         onVisible: function() {
                             r2d2.helper.focusFirstFormElement(this);
+                            document.addEventListener('keyup', keyboardHandler);
+                        },
+                        onHide : function() {
+                           document.removeEventListener('keyup', keyboardHandler);
                         }
+
                     }).modal('show');
                 }
             });
