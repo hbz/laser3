@@ -1,8 +1,3 @@
-### Wie kann ich Kosten hochladen?
-So können Sie Kosten in Form einer Tabelle hochladen: Eine Vorlage finden der Tabelle Sie unter **Meine Einrichtung > Kostenübersicht > Zauberstab > Finanzimport**. 
-Erläuterungen darüber, mit welchen Daten Sie die Spalten befüllen müssen, finden Sie dort in dem Ausklappfenster, das Sie mit dem Fragezeichen oben rechts öffnen können.
-![Abbildung_Fragezeichen_Icon.png]({{url_laser_static}}/media/finance/Abbildung_Fragezeichen_Icon.png)
-
 Nachfolgend eine Anleitung, wie Sie die Tabelle mit Excel befüllen können. 
 **Hinweis:** die Anleitung wurde mit Excel 2019 erstellt, ggf. weichen einige Bezeichnungen und Abbildungen in anderen Versionen ab!
 
@@ -14,8 +9,9 @@ Nachfolgend eine Anleitung, wie Sie die Tabelle mit Excel befüllen können.
 * Suchen Sie im sich öffnenden Menü den Eintrag "Aus Text/CSV".
 ![financeupload_2.png]({{url_laser_static}}/media/finance/financeupload_2.png)
 -------------------------
-1. Laden Sie jetzt die Beispiel-Vorlagendatei.
-2. Stellen Sie im sich jetzt öffnenden Fenster im Menüfeld "Dateiursprung" die Zeichenkodierung auf "65001: Unicode (UTF-8)".
+* Laden Sie jetzt die Beispiel-Vorlagendatei.
+1. Stellen Sie im sich jetzt öffnenden Fenster im Menüfeld "Dateiursprung" die Zeichenkodierung auf "65001: Unicode (UTF-8)".
+2. Stellen Sie die Trennzeichen auf "Tabstopp".
 3. Klicken Sie anschließend auf "Daten transformieren".
 ![financeupload_3.png]({{url_laser_static}}/media/finance/financeupload_3.png)
 -------------------------
@@ -30,8 +26,7 @@ können Sie sie durch Heraufscrollen im Bereich "Tabellenformatvorlagen" auf ein
 -------------------------
 Nachdem Sie die Werte befüllt haben, gehen Sie bitte wie folgt vor:
 
-1. Wählen Sie nach Klick auf "Speichern unter ..." als Dateityp "Excel-Arbeitsmappe"
-2. als Dateiformat "Text (Tabstopp-getrennt)" ab. Die Dateiendung .txt stört dabei nicht.
+* Wählen Sie nach Klick auf "Speichern unter ..." als Dateityp "Text (Tabstopp-getrennt)"
 ![financeupload_6.png]({{url_laser_static}}/media/finance/financeupload_6.png)
 -------------------------
 * Datei speichern.
