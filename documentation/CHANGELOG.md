@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6574    14.05.2025  rc-3.5  3.5-RC      David   Feature     Build Info wieder einbauen QA
+
 6572    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Syncfehler behoben
 
 6570    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Paginierung griff bei we:kb-Filter nicht
