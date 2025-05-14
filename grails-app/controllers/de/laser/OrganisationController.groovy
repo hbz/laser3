@@ -695,7 +695,11 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        List<Platform> allPlatforms = organisationService.getAllPlatformsForContextOrg()
+        boolean isComboRelated = Combo.findByFromOrgAndToOrg(org, contextService.getOrg()) != null
+        List<Platform> allPlatforms
+        if(isComboRelated)
+            allPlatforms = organisationService.getAllPlatformsForContextOrg(org)
+        else allPlatforms = organisationService.getAllPlatformsForContextOrg()
 
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
@@ -976,7 +980,9 @@ class OrganisationController  {
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
-                result.allPlatforms = organisationService.getAllPlatformsForContextOrg()
+                if(isComboRelated)
+                    result.allPlatforms = organisationService.getAllPlatformsForContextOrg(result.orgInstance)
+                else result.allPlatforms = organisationService.getAllPlatformsForContextOrg()
                 Map<String, Object> queryParams = [customer: result.orgInstance]
                 String validSubsQuery = "select oo.sub from OrgRole oo where oo.org = :customer", consortiaRelationFilter = "and exists(select ooo from OrgRole ooo where ooo.sub = oo.sub and ooo.org = :context)"
                 Set<Subscription> validSubs
@@ -1854,7 +1860,7 @@ class OrganisationController  {
     })
     @Check404(domain=Org)
     def mailInfos() {
-        Map<String, Object> result = organisationControllerService.mailInfos(this, params)
+        Map<String, Object> result = organisationControllerService.mailInfos(params)
         if (! result) {
             response.sendError(401)
             return

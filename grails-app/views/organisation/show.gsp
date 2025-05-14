@@ -392,7 +392,7 @@
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                 <div class="ui card">
                     <div class="content">
-                        <ui:h2AdminOnly />
+                        <ui:cardLabelAdminOnly />
                         <dl>
                             <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
                             <dd>
@@ -409,10 +409,10 @@
             <div class="ui card">
                 <div class="content">
                     <g:if test="${institution.isCustomerType_Consortium()}">
-                        <ui:h2ConsortiumOnly />
+                        <ui:cardLabelConsortiumOnly />
                     </g:if>
                     <g:else>
-                        <ui:h2AdminOnly />
+                        <ui:cardLabelAdminOnly />
                     </g:else>
                     <div class="ui stackable grid two column">
                         <div class="column">

@@ -1468,7 +1468,7 @@ class SurveyControllerService {
             transferWorkflowSubs.eachWithIndex { Subscription subscription, int i ->
                 if (subscription == result.parentSuccessorSubscription) {
                     if (i == 0) {
-                        if (subscription == result.surveyConfig.subscription) {
+                        if (result.surveyConfig.subscription && subscription == result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()) {
                             if (params.transferMembers != null) {
                                 transferWorkflow.transferMembers = params.transferMembers
                                 if (result.surveyConfig.subSurveyUseForTransfer) {
@@ -5442,9 +5442,10 @@ class SurveyControllerService {
                         }
                     }
 
-                    if(AuditConfig.getConfig(newParentSub, 'holdingSelection') && newParentSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE){
+                    if(AuditConfig.getConfig(newParentSub, 'holdingSelection')){
                         newParentSub.packages.each { SubscriptionPackage subscriptionPackage ->
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, subscriptionPackage.pkg, false)
+                            //subscriptionService.addToSubscriptionCurrentStock(memberSub, newParentSub, subscriptionPackage.pkg, false)
+                            subscriptionService.addToMemberSubscription(newParentSub, [memberSub], subscriptionPackage.pkg, false)
                         }
                     }
 

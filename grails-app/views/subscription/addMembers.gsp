@@ -146,7 +146,11 @@
                         <div class="field">
                             <g:if test="${validPackages}">
                                 <div class="grouped fields">
-                                    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
+                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
+                                    </g:if>
+                                    <g:else>
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
@@ -167,10 +171,6 @@
                                                 </div>
                                             </div>
                                         </g:if>
-                                    </g:if>
-                                    <g:else>
-                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
-                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
                                     </g:else>
                                 </div>
                             </g:if>

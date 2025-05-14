@@ -392,7 +392,7 @@ class ManagementService {
             long userId = contextService.getUser().id
             if(subscriptions) {
                 executorService.execute({
-                    long start = System.currentTimeSeconds()
+                    //long start = System.currentTimeSeconds()
                     Thread.currentThread().setName(threadName)
                     pkgsToProcess.each { Package pkg ->
                         permittedSubs.each { Subscription selectedSub ->
@@ -400,11 +400,12 @@ class ManagementService {
                             if(params.processOption =~ /^link/) {
                                 if(!sp) {
                                     if(result.subscription) {
-                                        subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        //subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        subscriptionService.addToMemberSubscription(result.subscription, [selectedSub], pkg, params.processOption == 'linkwithIE')
                                     }
                                     else {
-                                        if(selectedSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                                            subscriptionService.addToSubscription(selectedSub, pkg, true)
+                                        if(auditService.getAuditConfig(selectedSub, 'holdingSelection'))
+                                            subscriptionService.addToSubscription(selectedSub, pkg, false)
                                         else
                                             subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
                                     }
@@ -426,9 +427,11 @@ class ManagementService {
 
                         }
                     }
+                    /*
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
+                    */
                 })
             }
 

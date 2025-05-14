@@ -86,7 +86,40 @@
             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP}"></i></span></label>
         </div>
         <div class="four fields">
-            <g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+            <g:if test="${!subscription.instanceOf && !subscription.holdingSelection}">
+                <div class="field" id="holdingSelection_${subscription.id}">
+                    <ui:select class="ui dropdown search selection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
+                               optionKey="id" optionValue="value" noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <div class="field">
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_TOOLTIP} la-audit-button disabled" data-inherited="true">
+                                    <i aria-hidden="true" class="${Icon.SIG.INHERITANCE}"></i>
+                                </button>
+                            </g:if>
+                            <g:else>
+                                <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_TOOLTIP} la-audit-button" data-inherited="true">
+                                    <i aria-hidden="true" class="${Icon.SIG.INHERITANCE}"></i>
+                                </button>
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button" data-inherited="false">
+                                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_OFF}"></i>
+                            </button>
+                        </g:else>
+                    </div>
+                </g:if>
+            </g:if>
+            <g:else>
+                <div class="field">
+                    ${subscription.holdingSelection.getI10n('value')}
+                </div>
+            </g:else>
+            <%-- notice: deactivated because of the single title linking and to make the setting impossible to override later --%>
+            <%--<g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
                 <div class="field">
                     ${subscription.holdingSelection.getI10n('value')}
                 </div>
@@ -96,7 +129,6 @@
                     <ui:select class="ui dropdown clearable search selection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                                optionKey="id" optionValue="value" value="${subscription.holdingSelection?.id}" noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
-                <%--
                 <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
                     <div class="field">
                         <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
@@ -118,27 +150,28 @@
                         </g:else>
                     </div>
                 </g:if>
-                --%>
-            </g:else>
+            </g:else>--%>
             <div class="field">
-                    <div class="ui createEntitlements checkbox toggle">
-                        <g:checkBox name="createEntitlements" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
-                        <label><g:message code="subscription.details.link.with_ents"/></label>
-                    </div>
+                <div class="ui createEntitlements checkbox toggle">
+                    <g:checkBox name="createEntitlements" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                    <label><g:message code="subscription.details.link.with_ents"/></label>
+                </div>
             </div>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="field">
                     <div class="ui linkToChildren checkbox toggle">
-                        <g:checkBox name="linkToChildren" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                        <g:checkBox name="linkToChildren" checked="${auditService.getAuditConfig(subscription, 'holdingSelection') != null}" disabled="${auditService.getAuditConfig(subscription, 'holdingSelection') != null}"/>
                         <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkPackage.label"/></label>
                     </div>
                 </div>
-                <div class="field">
-                    <div class="ui createEntitlementsForChildren checkbox toggle">
-                        <g:checkBox name="createEntitlementsForChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
-                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.link.with_ents"/></label>
+                <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                    <div class="field">
+                        <div class="ui createEntitlementsForChildren checkbox toggle">
+                            <g:checkBox name="createEntitlementsForChildren" />
+                            <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.link.with_ents"/></label>
+                        </div>
                     </div>
-                </div>
+                </g:if>
             </g:if>
         </div>
     </g:form>

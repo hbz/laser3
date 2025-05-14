@@ -1853,14 +1853,22 @@ class CopyElementsService {
                     }
                     batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
-                        Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
+                        List<Subscription> targetMembers = Subscription.findAllByInstanceOf(targetObject)
+                        subscriptionService.addToMemberSubscription(targetObject, targetMembers, subscriptionPackage.pkg, false)
+                        if(targetObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !AuditConfig.getConfig(targetObject, 'holdingSelection')) {
+                            targetMembers.each { Subscription child ->
+                                Long sourceChildId = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where s.instanceOf = :sourceObject and oo.org = :subscriber', [subscriber: child.getSubscriber(), sourceObject: subscriptionPackage.subscription])
+                                batchQueryService.bulkAddHolding(sql, child.id, subscriptionPackage.pkg.id, child.hasPerpetualAccess, null, sourceChildId)
+                            }
+                        }
+                        /*.each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                if(subscriptionPackage.subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                if(AuditConfig.getConfig(targetObject)) {
                                     batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
             }

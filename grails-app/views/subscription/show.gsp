@@ -451,17 +451,23 @@
                                     </g:if>
                                     <g:else>
                                         <ui:xEditableRefData owner="${subscription}" field="holdingSelection"
-                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !subscription.instanceOf && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
                                     </g:else>
                                 </dd>
-                                <%-- not needed because inheritance is defined implicitly by value
-                                <g:if test="${editable}">
+                                <%-- partially needed because inheritance is defined implicitly by value if holdingSelection == entire --%>
+                                <g:if test="${editable && subscription._getCalculatedType() != CalculatedType.TYPE_LOCAL}">
                                     <dd>
-                                        <ui:auditButton auditable="[subscription, 'holdingSelection']"
-                                                        auditConfigs="${auditConfigs}"/>
+                                        <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
+                                                <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <ui:auditButton auditable="[subscription, 'holdingSelection']"
+                                                            auditConfigs="${auditConfigs}"/>
+                                        </g:else>
                                     </dd>
                                 </g:if>
-                                --%>
                             <%-- Extra Call from editable cause validation needed only in Case of Selection "Ja" --%>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('#holdingSelection').editable('destroy').editable({

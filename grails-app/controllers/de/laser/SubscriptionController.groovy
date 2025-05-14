@@ -803,14 +803,14 @@ class SubscriptionController {
                             if(updatedSubList && packagesToProcessCurParent) {
                                 packagesToProcessCurParent.each { Package pkg ->
                                     subscriptionService.cachePackageName("PackageTransfer_" + ctrlResult.result.parentSubscriptions[0].id, pkg.name)
-                                    updatedSubList.each { Subscription currMember ->
-                                        /*
+                                    subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
+                                    /*
+                                        updatedSubList.each { Subscription currMember ->
                                         if(currParent.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !auditService.getAuditConfig(currParent, 'holdingSelection')) {
-                                            subscriptionService.addToMemberSubscription(currParent, [currMember], pkg, true)
+                                            }
+                                            subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, )
                                         }
-                                        */
-                                        subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
-                                    }
+                                    */
                                 }
                             }
                         }
@@ -1005,7 +1005,7 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                if(params.createEntitlements == 'on' || ctrlResult.result.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                if(params.createEntitlements == 'on') {
                     flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     return
@@ -1484,7 +1484,7 @@ class SubscriptionController {
                 result
             }
         }
-        else if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+        else if(result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || AuditConfig.getConfig(result.subscription.instanceOf, 'holdingSelection')) {
             flash.error = message(code: 'subscription.details.addEntitlements.holdingEntire')
             redirect controller: 'subscription', action: 'show', params: [id: params.id]
             return
