@@ -3,7 +3,13 @@
 -- Pseudonymization (A: requirements, examples, tests)
 --
 
--- Anon base functions
+-- Anon helper
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_msk(text TEXT, count INT) RETURNS TEXT AS $$
+BEGIN
+    RETURN concat(lpad(concat(' ', count::TEXT), 10, '-'), ' --- masked entries @ ', text);
+END;
+$$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_sample(data TEXT[] DEFAULT NULL) RETURNS TEXT AS $$
 BEGIN
@@ -14,6 +20,8 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE PLPGSQL;
+
+-- Anon base functions
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_generate_lorem(length INT DEFAULT 1) RETURNS TEXT AS $$
 DECLARE
@@ -99,43 +107,43 @@ DECLARE
     data_ln TEXT[];
 BEGIN
     data_mn = ARRAY [
-        'Achim', 'Adam', 'Alexander', 'Alfred', 'Anton',
+        'Achim', 'Adam', 'Alexander', 'Alfred', 'Anton', 'Arnold',
         'Balduin', 'Bernd', 'Björn', 'Boris',
         'Carsten', 'Christoph', 'Cem', 'Claus',
-        'Dagobert', 'Daniel', 'Didi', 'Dorian',
-        'Eckard', 'Erich', 'Erwin',
+        'Dagobert', 'Daniel', 'Denis', 'Didi', 'Dorian',
+        'Eckhart', 'Edmund', 'Elvis', 'Erich', 'Ersun', 'Erwin',
         'Falko', 'Felix', 'Florian', 'Franz',
         'Georg', 'Gerd', 'Gisbert', 'Günther',
         'Hannes', 'Hans', 'Helmut', 'Herbert', 'Horst',
         'Ian', 'Igor', 'Ingolf', 'Ivan',
         'Jakob', 'Jens', 'Jochen', 'Jörg', 'Jürgen',
-        'Karl', 'Kevin', 'Kim', 'Klaus', 'Knut',
+        'Karl', 'Karsten', 'Kevin', 'Klaus', 'Knut',
         'Lars', 'Lawrence', 'Leif', 'Louis',
         'Markus', 'Mario', 'Max', 'Michael', 'Moritz',
-        'Nils', 'Nino', 'Norbert',
+        'Nicolas', 'Nils', 'Nino', 'Norbert',
         'Olaf', 'Oliver', 'Otto',
-        'Paul', 'Peter', 'Piet'
+        'Paul', 'Peter', 'Philipp', 'Piet'
         ];
     data_fn = ARRAY [
-        'Agathe', 'Alina', 'Andrea', 'Anja', 'Astrid',
+        'Agathe', 'Alina', 'Andrea', 'Anja', 'Anna', 'Astrid',
         'Barbara', 'Berta', 'Bettina', 'Birgit',
         'Carolin', 'Celine', 'Christine', 'Claudia',
-        'Dagmar', 'Diane', 'Doris', 'Dörthe',
-        'Edda', 'Elke', 'Emma',
+        'Dagmar', 'Daniela', 'Diane', 'Doris', 'Dörthe',
+        'Edda', 'Edith', 'Eike', 'Elke', 'Emma', 'Ester',
         'Fenja', 'Flora', 'Frauke', 'Friederike',
         'Gabi', 'Gerda', 'Greta', 'Gudrun',
         'Hanna', 'Heidi', 'Heike', 'Helene', 'Hildegard',
         'Ilka', 'Inge', 'Iris', 'Isabel',
         'Jana', 'Jennifer', 'Jessica', 'Judy', 'Julia',
-        'Karin', 'Karla', 'Katja', 'Kim', 'Kristina',
+        'Karin', 'Karla', 'Katja', 'Klaudia', 'Kristina',
         'Laura', 'Lena', 'Linda', 'Louise',
         'Maike', 'Marie', 'Margot', 'Mia', 'Monika',
-        'Nadja', 'Nicole', 'Nina',
-        'Olga', 'Olivia', 'Otta',
-        'Paula', 'Petra', 'Pina'
+        'Nadja', 'Naomi', 'Nicole', 'Nina',
+        'Oksana', 'Olga', 'Olivia',
+        'Paula', 'Petra', 'Pia', 'Pina'
         ];
     data_nn = ARRAY [
-        'Alex', 'Kim', 'Mika', 'Robin'
+        'Alex', 'Dido', 'Kim', 'Mika', 'Robin'
         ];
     data_ln = ARRAY [
         'Aberle', 'Ackermann', 'Althaus', 'Andersen', 'Auerbach',
@@ -178,7 +186,7 @@ BEGIN
             RETURN concat(lower(person[1]), '.', lower(person[2]), '@anon.example');
         END IF;
     ELSEIF array_position(ARRAY['fax', 'phone'], lower(type)) > 0  THEN
-        RETURN concat('01234 - ', round(random() * 1000), ' ', round(random() * 1000), '0');
+        RETURN concat('01234 - ', round(random() * 1000), ' 0', round(random() * 1000));
     ELSEIF array_position(ARRAY['url'], lower(type)) > 0 THEN
         RETURN pg_temp.anon_generate_url();
     ELSE
@@ -205,7 +213,10 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_run_examples() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> base functions -> EXAMPLES';
 
+    RAISE NOTICE 'anon_msk(test, 123) > %', pg_temp.anon_msk('test', 123);
+
     RAISE NOTICE 'anon_sample([a, b, c) > %', (SELECT pg_temp.anon_sample(ARRAY['a', 'b', 'c']));
+--     RAISE NOTICE 'anon_sample([]) > %', (SELECT pg_temp.anon_sample(ARRAY[])); -- FAIL
 
     RAISE NOTICE 'anon_generate_lorem() > %', (SELECT pg_temp.anon_generate_lorem());
     RAISE NOTICE 'anon_generate_lorem(3) > %', (SELECT pg_temp.anon_generate_lorem(3));
@@ -364,7 +375,6 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_dummy() RETURNS VOID AS $$
         count_x INT;
 BEGIN
     RAISE NOTICE '----- dummy -----';
-    RAISE NOTICE '----- masking table x > %', count_x;
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -389,7 +399,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_user = ROW_COUNT;
-    RAISE NOTICE '----- masking table         user (usr_username, usr_display, usr_email, usr_password, usr_enabled) > %', count_user;
+    RAISE NOTICE '%', pg_temp.anon_msk('user (usr_username, usr_display, usr_email, usr_password, usr_enabled)', count_user);
 
     UPDATE user_setting SET
         us_string_value = 'cc@anon.local'
@@ -405,7 +415,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_user_setting = ROW_COUNT;
-    RAISE NOTICE '----- masking table user_setting (us_string_value) > %', count_user_setting;
+    RAISE NOTICE '%', pg_temp.anon_msk('user_setting (us_string_value)', count_user_setting);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -422,7 +432,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_org_setting = ROW_COUNT;
-    RAISE NOTICE '----- masking table         org_setting (os_string_value) > %', count_org_setting;
+    RAISE NOTICE '%', pg_temp.anon_msk('org_setting (os_string_value)', count_org_setting);
 
     UPDATE customer_identifier SET
         cid_value           = pg_temp.anon_xval(cid_value),
@@ -433,11 +443,11 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_customer_identifier = ROW_COUNT;
-    RAISE NOTICE '----- masking table customer_identifier (cid_value, cid_requestor_key, cid_note) > %', count_customer_identifier;
+    RAISE NOTICE '%', pg_temp.anon_msk('customer_identifier (cid_value, cid_requestor_key, cid_note)', count_customer_identifier);
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_mask_person_and_contact() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_addressbook() RETURNS VOID AS $$
 DECLARE
     count_person INT;
     count_contact INT;
@@ -485,12 +495,12 @@ BEGIN
         count_contact = count_contact + count_tmp;
     END LOOP;
 
-    RAISE NOTICE '----- masking table  person (prs_first_name, prs_last_name) > %', count_person;
-    RAISE NOTICE '----- masking table contact (ct_content) > %', count_contact;
+    RAISE NOTICE '%', pg_temp.anon_msk('person (prs_first_name, prs_last_name)', count_person);
+    RAISE NOTICE '%', pg_temp.anon_msk('contact (ct_content)', count_contact);
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties1() RETURNS VOID AS $$
     DECLARE
         count_org_property INT;
         count_person_property INT;
@@ -498,9 +508,6 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties() RETURNS VOID AS $$
         count_provider_property INT;
         count_vendor_property INT;
 BEGIN
-    RAISE NOTICE '----- TODO: license_property -----';
-    RAISE NOTICE '----- TODO: license_property -----';
-
     UPDATE org_property SET
         op_note             = pg_temp.anon_lorem(op_note),
         op_string_value     = pg_temp.anon_phrase(op_string_value, concat(to_char(op_date_created, 'DD.MM.YYYY'), ', ', op_is_public)),
@@ -512,7 +519,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_org_property = ROW_COUNT;
-    RAISE NOTICE '----- masking table      org_property (op_note,  op_string_value,  op_url_value,  op_long_value,  op_dec_value) > %', count_org_property;
+    RAISE NOTICE '%', pg_temp.anon_msk('org_property (op_note, op_string_value, op_url_value, op_long_value, op_dec_value)', count_org_property);
 
     UPDATE person_property SET
         pp_note             = pg_temp.anon_lorem(pp_note),
@@ -525,7 +532,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_person_property = ROW_COUNT;
-    RAISE NOTICE '----- masking table   person_property (pp_note,  pp_string_value,  pp_url_value,  pp_long_value,  pp_dec_value) > %', count_person_property;
+    RAISE NOTICE '%', pg_temp.anon_msk('person_property (pp_note, pp_string_value, pp_url_value, pp_long_value, pp_dec_value)', count_person_property);
 
     UPDATE platform_property SET
         plp_note            = pg_temp.anon_lorem(plp_note),
@@ -538,7 +545,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_platform_property = ROW_COUNT;
-    RAISE NOTICE '----- masking table platform_property (plp_note, plp_string_value, plp_url_value, plp_long_value, plp_dec_value) > %', count_platform_property;
+    RAISE NOTICE '%', pg_temp.anon_msk('platform_property (plp_note, plp_string_value, plp_url_value, plp_long_value, plp_dec_value)', count_platform_property);
 
     UPDATE provider_property SET
         prp_note            = pg_temp.anon_lorem(prp_note),
@@ -551,7 +558,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_provider_property = ROW_COUNT;
-    RAISE NOTICE '----- masking table provider_property (prp_note, prp_string_value, prp_url_value, prp_long_value, prp_dec_value) > %', count_provider_property;
+    RAISE NOTICE '%', pg_temp.anon_msk('provider_property (prp_note, prp_string_value, prp_url_value, prp_long_value, prp_dec_value)', count_provider_property);
 
     UPDATE vendor_property SET
         vp_note             = pg_temp.anon_lorem(vp_note),
@@ -564,7 +571,84 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_vendor_property = ROW_COUNT;
-    RAISE NOTICE '----- masking table   vendor_property (vp_note,  vp_string_value,  vp_url_value,  vp_long_value,  vp_dec_value) > %', count_vendor_property;
+    RAISE NOTICE '%', pg_temp.anon_msk('vendor_property (vp_note, vp_string_value, vp_url_value, vp_long_value, vp_dec_value)', count_vendor_property);
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties2() RETURNS VOID AS $$
+    DECLARE
+        count_sub_prop INT;
+        count_sub_prop_child INT;
+        count_lic_prop INT;
+        count_lic_prop_child INT;
+BEGIN
+    UPDATE subscription_property SET
+        sp_note             = pg_temp.anon_lorem(sp_note),
+        sp_string_value     = pg_temp.anon_phrase(sp_string_value, concat(sp_id, ', ', to_char(sp_date_created, 'DD.MM.YYYY'), ', ', sp_is_public)),
+        sp_url_value        = pg_temp.anon_url(sp_url_value),
+        sp_long_value       = pg_temp.anon_bigint(sp_long_value),
+        sp_dec_value        = pg_temp.anon_numeric(sp_dec_value)
+    WHERE
+        sp_instance_of_fk IS NULL AND
+        sp_tenant_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
+
+    GET DIAGNOSTICS count_sub_prop = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_msk('subscription_property (sp_note, sp_string_value, sp_url_value, sp_long_value, sp_dec_value)', count_sub_prop);
+
+    UPDATE subscription_property child SET
+        sp_note             = parent.sp_note,
+        sp_string_value     = parent.sp_string_value,
+        sp_url_value        = parent.sp_url_value,
+        sp_long_value       = parent.sp_long_value,
+        sp_dec_value        = parent.sp_dec_value
+    FROM subscription_property parent
+    WHERE
+        parent.sp_id = child.sp_instance_of_fk AND
+        parent.sp_instance_of_fk IS NULL AND
+        parent.sp_tenant_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
+
+    GET DIAGNOSTICS count_sub_prop_child = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_msk('subscription_property ~ children', count_sub_prop_child);
+
+    UPDATE license_property SET
+        lp_note             = pg_temp.anon_lorem(lp_note),
+        lp_string_value     = pg_temp.anon_phrase(lp_string_value, concat(lp_id, ', ', to_char(lp_date_created, 'DD.MM.YYYY'), ', ', lp_is_public)),
+        lp_url_value        = pg_temp.anon_url(lp_url_value),
+        lp_long_value       = pg_temp.anon_bigint(lp_long_value),
+        lp_dec_value        = pg_temp.anon_numeric(lp_dec_value),
+        lp_paragraph        = pg_temp.anon_lorem(lp_paragraph, 3),
+        lp_paragraph_number = pg_temp.anon_xval(lp_paragraph_number)
+    WHERE
+        lp_instance_of_fk IS NULL AND
+        lp_tenant_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
+
+    GET DIAGNOSTICS count_lic_prop = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_msk('license_property (lp_note, lp_string_value, lp_url_value, lp_long_value, lp_dec_value, lp_paragraph, lp_paragraph_number)', count_lic_prop);
+
+    UPDATE license_property child SET
+        lp_note             = parent.lp_note,
+        lp_string_value     = parent.lp_string_value,
+        lp_url_value        = parent.lp_url_value,
+        lp_long_value       = parent.lp_long_value,
+        lp_dec_value        = parent.lp_dec_value,
+        lp_paragraph        = parent.lp_paragraph,
+        lp_paragraph_number = parent.lp_paragraph_number
+    FROM license_property parent
+    WHERE
+        parent.lp_id = child.lp_instance_of_fk AND
+        parent.lp_instance_of_fk IS NULL AND
+        parent.lp_tenant_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
+
+    GET DIAGNOSTICS count_lic_prop_child = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_msk('license_property ~ children', count_lic_prop_child);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -594,7 +678,25 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_cost_item_2 = ROW_COUNT;
-    RAISE NOTICE '----- masking table cost_item (ci_cost_in_billing_currency, ci_cost_in_local_currency) > %, %', count_cost_item_1, count_cost_item_2;
+    RAISE NOTICE '%', pg_temp.anon_msk('cost_item (ci_cost_in_billing_currency)', count_cost_item_1);
+    RAISE NOTICE '%', pg_temp.anon_msk('cost_item (ci_cost_in_local_currency)', count_cost_item_2);
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_docs() RETURNS VOID AS $$
+DECLARE
+    count_doc INT;
+BEGIN
+    UPDATE doc SET
+        doc_title       = pg_temp.anon_phrase(doc_title, to_char(doc_date_created, 'DD.MM.YYYY')),
+        doc_content     = pg_temp.anon_lorem(doc_content, 4)
+    WHERE doc_content_type = 0 AND
+        doc_owner_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
+
+    GET DIAGNOSTICS count_doc = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_msk('doc (doc_title, doc_content)', count_doc);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -612,7 +714,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_task = ROW_COUNT;
-    RAISE NOTICE '----- masking table task (tsk_title, tsk_description) > %', count_task;
+    RAISE NOTICE '%', pg_temp.anon_msk('task (tsk_title, tsk_description)', count_task);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -630,7 +732,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_wf_checklist = ROW_COUNT;
-    RAISE NOTICE '----- masking table  wf_checklist (wfcl_title, wfcl_description, wfcl_comment) > %', count_wf_checklist;
+    RAISE NOTICE '%', pg_temp.anon_msk('wf_checklist (wfcl_title, wfcl_description, wfcl_comment)', count_wf_checklist);
 
     UPDATE wf_checkpoint SET
         wfcp_title          = pg_temp.anon_phrase(wfcp_title, wfcp_position::text),
@@ -643,7 +745,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_wf_checkpoint = ROW_COUNT;
-    RAISE NOTICE '----- masking table wf_checkpoint (wfcp_title, wfcp_description, wfcp_comment) > %', count_wf_checkpoint;
+    RAISE NOTICE '%', pg_temp.anon_msk('wf_checkpoint (wfcp_title, wfcp_description, wfcp_comment)', count_wf_checkpoint);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -663,22 +765,15 @@ SELECT pg_temp.anon_mask_users();               -- Users
 
 SELECT pg_temp.anon_mask_orgs();                -- Orgs
 
-SELECT pg_temp.anon_mask_person_and_contact();  -- Addressbook -- TODO
+SELECT pg_temp.anon_mask_addressbook();         -- Person, Contact
 
 SELECT pg_temp.anon_mask_finance();             -- Finance
 
-SELECT pg_temp.anon_mask_properties();          -- Properties -- TODO
+SELECT pg_temp.anon_mask_docs();                -- Docs (notes)
+
+SELECT pg_temp.anon_mask_properties1();         -- Properties (Org, Person, Platform, Provider, Vendor)
+SELECT pg_temp.anon_mask_properties2();         -- Properties (License, Subscription)
 
 SELECT pg_temp.anon_mask_tasks();               -- Tasks
 
 SELECT pg_temp.anon_mask_workflows();           -- Workflows
-
--- Various
-
--- UPDATE doc SET
---     doc_title       = pg_temp.anon_phrase(title, to_char(doc_date_created, 'DD.MM.YYYY')),
---     doc_content     = pg_temp.anon_lorem(doc_content, 5)
--- WHERE doc_content_type = 0 AND
---     doc_owner_fk NOT IN (
---         SELECT org_id FROM org WHERE org_is_beta_tester = true
---     );
