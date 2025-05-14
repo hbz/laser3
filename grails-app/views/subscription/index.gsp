@@ -791,7 +791,6 @@
             $('#globalLoadingIndicator').hide();
         });
     });
-    <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
 
     $("[data-ajaxTippId]").on('click', function(e) {

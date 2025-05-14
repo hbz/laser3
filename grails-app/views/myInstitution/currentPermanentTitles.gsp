@@ -1,9 +1,27 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 <laser:htmlStart message="myinst.currentPermanentTitles.label" />
+
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <g:if test="${num_tipp_rows < 1000000}">
+            <ui:exportDropdownItem>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
+        <ui:exportDropdownItem>
+            <g:link class="item kbartExport  js-no-wait-wheel" params="${params + [exportKBart: true]}">KBART Export</g:link>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
+
+<div id="downloadWrapper"></div>
 
 <ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
@@ -13,8 +31,8 @@
               model="${[
                       tt_controller:    controllerName,
                       tt_action:        actionName,
-                      tt_tabs:          ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
-                      tt_counts:        [currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]
+                      tt_tabs:          ['currentIEs', null, 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:        [currentTippCounts, null, expiredTippCounts, deletedTippCounts, allTippCounts]
               ]}" />
 
 <div class="ui bottom attached tab active segment">
@@ -209,6 +227,23 @@
 
 </div>
 
+<g:render template="/clickMe/export/js"/>
+
 <g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="exportPermanentTitles" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
+</laser:script>
 
 <laser:htmlEnd/>

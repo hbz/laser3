@@ -2,11 +2,13 @@ package de.laser
 
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostInformationDefinitionGroup
@@ -1890,7 +1892,7 @@ class MyInstitutionController  {
      * The list may be filtered
      * @return a list of permanent titles with the given status
      * @see PermanentTitle
-     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org)
+     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, java.util.Set)
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
@@ -1906,34 +1908,105 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg())
+        Set<Org> possibleOwners = [contextService.getOrg()]
+        possibleOwners.addAll(Combo.findAllByFromOrg(contextService.getOrg()).toOrg)
+        Map query = filterService.getPermanentTitlesQuery(params, possibleOwners)
         result.filterSet = query.filterSet
-        Set tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
-        result.tippIDs = tipps
+        Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
 
         result.num_tipp_rows = tipps.size()
 
         String orderClause = 'order by tipp.sortname'
         if(params.sort){
-                if(params.sort.contains('sortname'))
-                    orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
-                else
-                    orderClause = "order by ${params.sort} ${params.order} "
+            if(params.sort.contains('sortname'))
+                orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
+            else
+                orderClause = "order by ${params.sort} ${params.order} "
         }
-        Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
+        Set filteredIDs = tipps.drop(result.offset).take(result.max)
+
         result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
 
-        result.currentTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.deletedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.allTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-
+        result.currentTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+        //no sense of planned IEs among permanent titles ... planned titles cannot be purchased (yet)
+        //result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_DELETED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status != :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.disableStatus = params.tab != 'allIEs'
         //for tipp_ieFilter
         params.institution = contextService.getOrg().id
         params.filterForPermanentTitle = true
 
         result
+    }
+
+    @DebugInfo(isInstUser = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    @Check404()
+    def exportPermanentTitles() {
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs', true)
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        Set<Org> possibleOwners = [contextService.getOrg()]
+        possibleOwners.addAll(Combo.findAllByFromOrg(contextService.getOrg()).toOrg)
+        Map query = filterService.getPermanentTitlesQuery(params, possibleOwners)
+        result.filterSet = query.filterSet
+        Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+
+        result.num_tipp_rows = tipps.size()
+
+        String filename = "${escapeService.escapeString(message(code: 'menu.my.permanentTitles'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        Map<String, Object> selectedFields = [:]
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        if (params.exportKBart) {
+            String dir = GlobalService.obtainTmpFileLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                FileOutputStream fos = new FileOutputStream(f)
+                Map<String, Object> tableData = exportService.generateTitleExport([format: ExportService.KBART, tippIDs: tipps])
+                fos.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                fos.flush()
+                fos.close()
+            }
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: ExportService.KBART]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
+        }
+        else if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
     }
 
     /**
