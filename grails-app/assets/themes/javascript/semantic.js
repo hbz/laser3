@@ -13965,7 +13965,13 @@
                                     module.hide();
                                 }
                             } else {
-                                module.debug('Escape key pressed, but closable is set to false');
+                                if(settings.escapable) {
+                                    module.debug('Escape key pressed, closable is set to false, escapable is set to true hiding modal');
+                                    if ($module.hasClass(className.front)) {
+                                        module.hide();
+                                    }
+                                }
+                                module.debug('Escape key pressed, but closable is set to false, escapable is set to false');
                             }
                             event.preventDefault();
                         }
@@ -14828,6 +14834,7 @@
         allowMultiple: false,
         detachable: true,
         closable: true,
+        escapable: true,
         autofocus: true,
         restoreFocus: true,
         autoShow: false,
