@@ -1195,6 +1195,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     else
                                         throw new SyncException("Provider loading failed for UUID ${packageRecord.providerUuid}!")
                                 }
+                                else result.provider = provider
+                                if (!result.save())
+                                    throw new SyncException(result.errors)
                             }
                             catch (SyncException e) {
                                 throw e

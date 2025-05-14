@@ -76,8 +76,9 @@ class PackageController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
 
-        SwissKnife.setPaginationParams(result, params, result.user)
-        result.putAll(packageService.getWekbPackages(params))
+        Map<String, Object> configMap = params.clone()
+        configMap.putAll(SwissKnife.setPaginationParams(result, params, result.user))
+        result.putAll(packageService.getWekbPackages(configMap))
         result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
         result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
         result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)

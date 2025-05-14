@@ -2049,6 +2049,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -2079,7 +2080,10 @@ class SubscriptionControllerService {
             result.filterConfig = filterConfig
             result.filterAccordionConfig = filterAccordionConfig
             result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
-            result.putAll(packageService.getWekbPackages(params))
+            Map<String, Object> configMap = params.clone()
+            configMap.max = result.max
+            configMap.offset = result.offset
+            result.putAll(packageService.getWekbPackages(configMap))
             [result: result, status: STATUS_OK]
         }
     }
