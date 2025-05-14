@@ -446,7 +446,7 @@
     JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${configMap}"/>', '${params.languages}');
     JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${configMap}"/>', '${params.yearsFirstOnline}');
     JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${configMap}"/>', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.title_types}', 'titleType');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${configMap}"/>', '${params.title_types}');
     JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.publishers}', 'publisherName', 1);
     JSPC.app.ajaxDropdown($('#provider'),           '<g:createLink controller="ajaxJson" action="getAllPossibleProviders" params="${configMap}"/>', '${params.provider}', 1);
     JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${configMap}"/>', '${params.coverageDepth}');
