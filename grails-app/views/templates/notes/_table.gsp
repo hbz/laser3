@@ -111,11 +111,21 @@
                 $('#modalEditNote').remove();
 
                 $('#dynamicModalContainer').html(result);
+                let keyboardHandler = function(e) {
+                    if (e.keyCode === 27) {
+                        $('#modalEditNote').modal('hide');
+                    }
+                };
                 $('#dynamicModalContainer .ui.modal').modal({
                     autofocus: false,
                     closable: false,
                     onVisible: function() {
                         r2d2.helper.focusFirstFormElement(this);
+                        document.addEventListener('keyup', keyboardHandler);
+
+                    },
+                    onHide : function() {
+                        document.removeEventListener('keyup', keyboardHandler);
                     }
                 }).modal('show');
             }
@@ -129,9 +139,18 @@
                     $('#modalReadNote').remove();
 
                     $('#dynamicModalContainer').html(result);
+                    if (e.keyCode === 27) {
+                        $('#modalReadNote').modal('hide');
+                    }
                     $('#dynamicModalContainer .ui.modal').modal({
+                        onVisible: function () {
+                            document.addEventListener('keyup', keyboardHandler);
+                        },
                         closable: false,
-                        autofocus: false
+                        autofocus: false,
+                        onHide : function() {
+                            document.removeEventListener('keyup', keyboardHandler);
+                        }
                     }).modal('show');
                 }
             });
