@@ -23,10 +23,12 @@
             <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
         </g:if>
 
-        <div class="ui two cards">
-            <laser:render template="/myInstitution/dashboard/rttp" />
-            <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
-        </div>
+        <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_WEKBNEWS, RDStore.YN_YES).value == RDStore.YN_YES}">
+            <div class="ui two cards">
+                <laser:render template="/myInstitution/dashboard/rttp" />
+                <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+            </div>
+        </g:if>
 
     <%
         RefdataValue us_dashboard_tab
