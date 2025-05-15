@@ -4926,7 +4926,7 @@ class SurveyControllerService {
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
 
-                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                             surveyTransfer.save()
 
                             countNewSubs++
@@ -4945,7 +4945,7 @@ class SurveyControllerService {
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
 
-                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                             surveyTransfer.save()
 
                             countNewSubs++
@@ -4964,7 +4964,7 @@ class SurveyControllerService {
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
 
-                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                             surveyTransfer.save()
 
                             countNewSubs++
@@ -4984,7 +4984,7 @@ class SurveyControllerService {
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
 
-                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                             surveyTransfer.save()
 
                             countNewSubs++
@@ -5005,7 +5005,7 @@ class SurveyControllerService {
                             Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                             if(subscription){
 
-                                SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig)
+                                SurveyTransfer surveyTransfer = new SurveyTransfer(org: it.participant, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                                 surveyTransfer.save()
 
                                 countNewSubs++
@@ -5025,7 +5025,7 @@ class SurveyControllerService {
                         Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
 
-                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: org, subscription: subscription, surveyConfig: result.surveyConfig)
+                            SurveyTransfer surveyTransfer = new SurveyTransfer(org: org, subscription: subscription, surveyConfig: result.surveyConfig, transferDate: new Date())
                             surveyTransfer.save()
 
                             countNewSubs++
