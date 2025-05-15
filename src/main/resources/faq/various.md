@@ -6,7 +6,7 @@ Diese Informationen finden Sie hier: [https://service-wiki.hbz-nrw.de/display/LA
 
 In LAS:eR gibt es an verschiedenen Orten die Möglichkeit Informationen hochzuladen. Jedoch müssen diese Informationen in einer Upload-Datei richtig formatiert sein.
 
-[Anleitung zum Hochladen]({{url_laser}}/public/manual/financeImport)
+[Anleitung zum Hochladen]({{url_laser}}/public/manual/fileImport)
 
 ### Wie kann ich die Rechtschreibprüfung nutzen?
 

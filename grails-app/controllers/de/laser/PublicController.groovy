@@ -370,7 +370,7 @@ class PublicController {
                 content : [
                         'various'                       : ['Allgemein', 'General'],
                         'subscriptionInformationSheet'  : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
-                        'financeImport'                 : ['Kosten hochladen', 'Upload Cost Items']
+                        'fileImport'                    : ['Anleitung zum Hochladen', 'Upload instructions']
                 ], // todo
                 topic   : 'various'
         ]

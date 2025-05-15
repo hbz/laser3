@@ -21,7 +21,7 @@
         <g:message code="myinst.financeImport.manual.p1"/>
         <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
     </div>
-    <ui:renderMarkdown manual="financeImport" />
+    <ui:renderMarkdown manual="fileImport" />
 </div>
 <div class="ui segment">
 

@@ -48,7 +48,7 @@
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
-            <g:link class="item" controller="public" action="manual" id="financeImport" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport.short')}</g:link>
             <br>
 
             <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
