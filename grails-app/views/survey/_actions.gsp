@@ -298,7 +298,7 @@
                     <g:hiddenField name="costItemsForSurveyPackage" value="true"/>
                 </g:if>
                 <br>
-                <g:link class="item" controller="profile" action="importManuel"
+                <g:link class="item" controller="public" action="manual" id="financeImport"
                         target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
                 <br>
 
