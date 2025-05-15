@@ -17,6 +17,9 @@
 <g:if test="${selectPkg == "true"}">
     <g:hiddenField name="selectPkg" value="${selectPkg}"/>
 </g:if>
+<g:if test="${selectSubscription == "true"}">
+    <g:hiddenField name="selectSubscription" value="${selectSubscription}"/>
+</g:if>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -160,6 +163,26 @@
                                   optionKey="${{ it.pkg.id }}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"
                                   value="${selectedPackageID}"/>
+                    </g:if>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</g:if>
+
+<g:if test="${selectSubscription == "true"}">
+    <div class="field">
+        <div class="one fields la-forms-grid">
+            <fieldset class="sixteen wide field">
+                <div class="field">
+                    <label>${message(code: 'subscription.label')}</label>
+                    <g:if test="${surveyConfig.surveySubscriptions}">
+                        <g:select name="newSurveyConfigSubscription" id="newSurveyConfigSubscription_${idSuffix}" class="ui dropdown clearable search"
+                                  from="${surveyConfig.surveySubscriptions}"
+                                  optionValue="${{ it.subscription.name }}"
+                                  optionKey="${{ it.id }}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                  value="${selectedSurveyConfigSubscriptionID}"/>
                     </g:if>
                 </div>
             </fieldset>

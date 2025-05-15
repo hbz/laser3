@@ -268,6 +268,8 @@
                                                     <i class="${Icon.SURVEY} bordered colored"></i>
                                                 </div>
                                             </g:if>
+
+
                                         </td>
                                     </tr>
                                 </g:if>

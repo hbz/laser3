@@ -174,6 +174,15 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubscriptionSurvey">${message(code: 'surveyconfig.subscriptionSurvey.label')}</label>
+                            <input id="checkSubscriptionSurvey" name="checkSubscriptionSurvey" type="checkbox"
+                                   <g:if test="${params.checkSubscriptionSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyOrg; de.laser.addressbook.Contact; de.laser.survey.SurveyResult; de.laser.survey.SurveyPersonResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.survey.SurveySubscriptionResult; de.laser.storage.RDConstants; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyOrg; de.laser.addressbook.Contact; de.laser.survey.SurveyResult; de.laser.survey.SurveyPersonResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -143,6 +143,15 @@
     <br/>
 </g:if>
 
+
+<g:if test="${survey.surveyConfigs[0].subscriptionSurvey}">
+    <g:set var="subs"
+           value="${SurveySubscriptionResult.executeQuery('select ssr.subscription from SurveySubscriptionResult ssr where ssr.participant = :participant and ssr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
+    <strong><g:message code="surveySubscriptions.selectedSubscriptions" locale="${language}"/>:</strong><br/>
+    <g:each in="${subs}" var="sub">${sub.name}</g:each>
+    <br/>
+    <br/>
+</g:if>
 <g:if test="${survey.surveyConfigs[0].vendorSurvey}">
     <g:set var="vendors"
            value="${SurveyVendorResult.executeQuery('select svr.vendor from SurveyVendorResult svr where svr.participant = :participant and svr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>

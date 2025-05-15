@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.survey.SurveyOrg; de.laser.survey.SurveyPersonResult; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
 
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" />
 
@@ -54,7 +54,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-    <ui:msg class="success" showIcon="true" hideClose="true" text="${message(code:"surveyResult.finish.info.consortia")}." />
+    <ui:msg class="success" showIcon="true" hideClose="true" text="${message(code:"surveyResult.finish.info.consortia")}. ${formatDate(format: message(code: 'default.date.format.notime'), date: SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate)}" />
 </g:if>
 
     <g:render template="/survey/participantMessage"/>

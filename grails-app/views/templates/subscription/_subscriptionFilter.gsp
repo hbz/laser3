@@ -10,6 +10,10 @@
         <g:if test="${packageInstance}">
             <input type="hidden" name="id" value="${packageInstance.id}"/>
         </g:if>
+        <g:if test="${surveyInfo}">
+            <input type="hidden" name="id" value="${surveyInfo.id}"/>
+            <input type="hidden" name="surveyConfigID" value="${surveyConfig.id}"/>
+        </g:if>
         <g:if test="${actionName == 'subscriptionsManagement'}">
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>

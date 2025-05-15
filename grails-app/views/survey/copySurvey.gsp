@@ -95,6 +95,38 @@
                         ${surveyConfig.invoicingInformation ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </td>
                 </tr>
+                <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_INTEREST}">
+                    <tr>
+                        <td><g:checkBox name="copySurvey.copySubscriptionSurvey" value="${true}"/></td>
+                        <td>${message(code: 'copySurvey.copySubscriptionSurvey')}</td>
+                        <td>
+                            ${surveyConfig.subscriptionSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><g:checkBox name="copySurvey.copySubscriptions" value="${true}"/></td>
+                        <td>${message(code: 'copySurvey.copySubscriptions')}</td>
+                        <td>
+                            <table class="ui sortable celled la-js-responsive-table la-table table">
+
+                                <thead>
+                                <tr>
+                                    <th>${message(code: 'sidewide.number')}</th>
+                                    <th>${message(code: 'default.name.label')}</th>
+                                    <th>${message(code: 'default.status.label')}</th>
+                                </tr></thead><tbody>
+                            <g:each in="${surveyConfig.surveySubscriptions.sort { it.subscription.name }}" var="surveySub" status="i">
+                                <tr>
+                                    <td class="center aligned">${i + 1}</td>
+                                    <td>${surveySub.name}</td>
+                                    <td>${surveySub.status?.getI10n('value')}</td>
+                                </tr>
+                            </g:each>
+                            </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </g:if>
                 <tr>
                     <td><g:checkBox name="copySurvey.copyPackages" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyPackages')}</td>
