@@ -965,6 +965,23 @@ class AjaxJsonController {
     }
 
     /**
+     * Call to retrieve all possible title publication types for the given context
+     */
+    @Secured(['ROLE_USER'])
+    def getAllPossibleTitleTypes() {
+        Map result = [:]
+        switch(params.by) {
+            case 'pkg': result.results = controlledListService.getAllPossibleTitleTypesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+            case 'status': result.results = controlledListService.getAllPossibleTitleTypesByStatus(params)
+                break
+            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+                break
+        }
+        render result as JSON
+    }
+
+    /**
      * Call to retrieve all possible title publishers (not providers nor vendors!) for the given context
      */
     @Secured(['ROLE_USER'])
@@ -1256,7 +1273,7 @@ class AjaxJsonController {
                 List<RefdataValue> selectedRoleTypes = selectedRoleTypIds ? RefdataValue.findAllByIdInList(selectedRoleTypIds) : []
 
                 if (selectedRoleTypes) {
-                    query += "and pr.functionType in (:selectedRoleTypes) "
+                    query += "and (pr.functionType in (:selectedRoleTypes) or pr.positionType in (:selectedRoleTypes)) "
                     queryParams << [selectedRoleTypes: selectedRoleTypes]
                 }
             }

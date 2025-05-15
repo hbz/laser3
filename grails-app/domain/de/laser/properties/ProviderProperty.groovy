@@ -16,8 +16,6 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -36,7 +34,6 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
         id                   column: 'prp_id'
         version              column: 'prp_version'
         stringValue          column: 'prp_string_value', type: 'text'
-        intValue             column: 'prp_int_value'
         longValue            column: 'prp_long_value'
         decValue             column: 'prp_dec_value'
         refValue             column: 'prp_ref_value_rv_fk', index: 'prp_ref_value_idx'
@@ -54,7 +51,6 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

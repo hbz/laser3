@@ -16,6 +16,30 @@
 
 <div class="ui fluid card">
     <div class="content">
+        <div class="header"> <icon:pathFolder/> grails-app/views/* </div>
+    </div>
+    <div class="content">
+        <table class="ui selectable table">
+            <thead>
+            <tr>
+                <td class="three wide"></td>
+                <td class="eight wide"></td>
+                <td class="five wide"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><icon:pathFolder/> help / *.gsp</td>
+                <td>GSP-Templates für <i class="${Icon.UI.HELP}"></i>- Flyouts</td>
+                <td>Automatische Einbindung. Mapping über Dateiname</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
         <div class="header"> <icon:pathFolder/> src/main/resources/* </div>
     </div>
     <div class="content">
@@ -84,7 +108,7 @@
             </tr>
             <tr>
                 <td><icon:pathFolder/> setup / *.csv</td>
-                <td>Stammdaten (Referenzwerte, Merkmale, o.ä). Werden beim Systemstart geparst und mit der Datenbank abgeglichen</td>
+                <td>Stammdaten (Referenzwerte, Merkmale, o.ä). Werden beim Systemstart mit der Datenbank abgeglichen</td>
                 <td></td>
             </tr>
             <tr>

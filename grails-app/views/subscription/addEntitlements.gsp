@@ -95,14 +95,19 @@
 
         <div class="field"></div>
 
-        <g:if test="${institution.isCustomerType_Consortium()}">
+        <%-- meaningless since the control of the title distribution via inheritance!
+        cases:
+        a) title of consortium = title of members: either holding entire or holding partial with inheritance activated
+        b) title of consortium != title of members: process title enrichment at _each_ member individually
+        <g:if test="${institution.isCustomerType_Consortium() && !auditService.getAuditConfig(subscription, 'holdingSelection')}">
             <div class="field">
                 <div class="ui right floated checkbox toggle">
-                    <g:checkBox name="withChildren" value="${withChildren}"/>
+                    <g:checkBox name="withChildren" />
                     <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
                 </div>
             </div>
         </g:if>
+        --%>
         <div class="ui blue large label">
             <g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
         </div>

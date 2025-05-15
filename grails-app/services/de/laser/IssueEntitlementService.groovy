@@ -15,13 +15,14 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional
 class IssueEntitlementService {
 
+    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     FilterService filterService
     TitleService titleService
 
     Subscription getTargetSubscription(Subscription s) {
-        if(s.instanceOf && s.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+        if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
             s.instanceOf
         else s
     }

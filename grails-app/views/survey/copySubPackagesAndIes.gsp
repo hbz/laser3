@@ -158,7 +158,7 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <g:if test="${parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                            <g:if test="${auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
                                 <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                         name="processOption"
                                         value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
@@ -243,7 +243,7 @@
                                 <g:each in="${participant.oldSub?.packages}" var="sp">
                                     <div class="item">
                                         <div class="content">
-                                            <g:if test="${participant.oldSub?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                            <g:if test="${auditService.getAuditConfig(participant.oldSub, 'holdingSelection')}">
                                                 <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
                                                         params="[pkgfilter: sp.pkg.id]">
                                                     ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
@@ -265,7 +265,7 @@
                                 <g:each in="${participant.newSub.packages}" var="sp">
                                     <div class="item">
                                         <div class="content">
-                                            <g:if test="${participant.newSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                            <g:if test="${auditService.getAuditConfig(participant.newSub, 'holdingSelection')}">
                                                 <g:link controller="subscription" action="index" id="${participant.newSub.id}"
                                                         params="[pkgfilter: sp.pkg.id]">
                                                     ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>

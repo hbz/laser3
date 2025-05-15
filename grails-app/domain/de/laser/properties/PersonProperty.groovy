@@ -15,8 +15,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -35,7 +33,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         id                   column: 'pp_id'
         version              column: 'pp_version'
         stringValue          column: 'pp_string_value', type: 'text'
-        intValue             column: 'pp_int_value'
         longValue            column: 'pp_long_value'
         decValue             column: 'pp_dec_value'
         refValue             column: 'pp_ref_value_rv_fk', index: 'pp_ref_value_idx'
@@ -53,7 +50,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

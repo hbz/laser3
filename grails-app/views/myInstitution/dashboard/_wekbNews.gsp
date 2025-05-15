@@ -228,7 +228,7 @@
             </div>
         </div>
 
-    <div id="wekbFlyout" class="ui ten wide flyout"></div>
+    <div id="wekbFlyout" class="ui very wide flyout"></div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 

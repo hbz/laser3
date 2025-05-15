@@ -2819,7 +2819,7 @@ class ExportClickMeService {
                 exportFields.put(it.key, it.value)
             }
         }
-        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
 
         cifList.each { CostInformationDefinition costInformationDefinition ->
             exportFields.put("costInformation." + costInformationDefinition.id, [field: null, label: costInformationDefinition."${localizedName}", privateProperty: (costInformationDefinition.tenant?.id == contextOrg.id)])
@@ -2886,7 +2886,7 @@ class ExportClickMeService {
         fields.costInformation.fields.clear()
         fields.myCostInformation.fields.clear()
 
-        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
 
         cifList.each { CostInformationDefinition costInformationDefinition ->
             //the proxies again ...
@@ -6662,7 +6662,7 @@ class ExportClickMeService {
                 queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
             }
             else if (fieldKey.contains('subscription.consortium')) {
-                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_rv_fk = :consortium), null) as consName"
+                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_fk = :consortium), null) as consName"
                 queryArgs.consortium = RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
             }
             else if (fieldKey.contains('tipp.ddcs')) {

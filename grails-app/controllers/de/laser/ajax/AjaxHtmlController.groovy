@@ -836,7 +836,7 @@ class AjaxHtmlController {
     def linkTitleModal() {
         log.debug('ajaxHtmlController.linkTitleModal ' + params)
         Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium(), header: message(code: params.headerToken)]
-        result.tipp = TitleInstancePackagePlatform.findByGokbId(params.tippID)
+        result.tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(params.containsKey('fixedSubscription'))
             result.fixedSubscription = Subscription.get(params.fixedSubscription)
         render template: '/title/linkTitle', model: result

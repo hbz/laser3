@@ -298,12 +298,12 @@
 %{-- help flyout --}%
 
 <g:if test="${helpMatch == HelpService.GSP}">
-    <div class="ui wide flyout" id="help-content">
+    <div class="ui very wide flyout" id="help-content">
         <g:render template="${'/help/' + helpService.getMapping()}" />
     </div>
 </g:if>
 <g:elseif test="${helpMatch in [HelpService.MD, HelpService.BOTH]}">
-    <div class="ui wide la-markdown flyout" id="help-content">
+    <div class="ui very wide la-markdown flyout" id="help-content">
         <div class="scrolling content">
             <ui:renderMarkdown help="${helpService.getMapping()}" />
 
@@ -388,20 +388,6 @@
 
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
-
-%{--            $('.button.la-toggle-green-red').on('click', function() {
-                let $button = $(this);
-                let $icon = $button.find('.icon');
-
-                if ($button.hasClass("inactive")) {
-                    $button.removeClass('inactive').addClass('active')
-                    $icon.removeClass("slash");
-                }
-                else {
-                    $button.removeClass('active').addClass('inactive')
-                    $icon.addClass("slash");
-                }
-            });--}%
 
             $('#advancedMode-toggle').on('click', function() {
                 let $button = $(this);

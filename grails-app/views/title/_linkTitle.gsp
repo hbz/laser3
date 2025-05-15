@@ -72,6 +72,7 @@
             initSubscriptionDropdown();
             </laser:script>
         </g:else>
+        <%-- deactivated as of phone call of May 8th, '25 - use case not given
         <g:if test="${isConsortium}">
             <div class="field">
                 <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkTitle.label.subscription"/></label>
@@ -79,6 +80,6 @@
                     <g:checkBox name="linkToChildren"/>
                 </div>
             </div>
-        </g:if>
+        </g:if>--%>
     </g:form>
 </ui:modal>

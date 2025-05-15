@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Subscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="${pageTitle}" />
 
@@ -16,98 +16,62 @@
 
     <ui:messages data="${flash}" />
 
+<div class="ui segment la-markdown">
     <div>
         <g:message code="myinst.financeImport.manual.p1"/>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"><img class="ui small image" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/></a>
+        <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
     </div>
-    <div>
-        <g:message code="myinst.financeImport.manual.p2"/>
-        <ul>
-            <li><g:message code="myinst.financeImport.manual.li1"/></li>
-            <li><g:message code="myinst.financeImport.manual.li2"/></li>
-            <li><g:message code="myinst.financeImport.manual.li3"/></li>
-        </ul>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"><img class="ui small image" alt="financeupload_1.png" src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <ul>
-            <li><g:message code="myinst.financeImport.manual.li4"/></li>
-        </ul>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"><img class="ui small image" alt="financeupload_2.png" src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li5"/></li>
-            <li><g:message code="myinst.financeImport.manual.li6"/></li>
-            <li><g:message code="myinst.financeImport.manual.li7"/></li>
-        </ol>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_3.png')}"><img class="ui small image" alt="financeupload_3.png" src="${resource(dir: 'media', file: 'finance/financeupload_3.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li8"/></li>
-            <li><g:message code="myinst.financeImport.manual.li9"/></li>
-        </ol>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_4.png')}"><img class="ui small image" alt="financeupload_4.png" src="${resource(dir: 'media', file: 'finance/financeupload_4.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li10"/></li>
-            <li><g:message code="myinst.financeImport.manual.li11"/></li>
-        </ol>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_5.png')}"><img class="ui small image" alt="financeupload_5.png" src="${resource(dir: 'media', file: 'finance/financeupload_5.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <g:message code="myinst.financeImport.manual.p3"/>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li12"/></li>
-            <li><g:message code="myinst.financeImport.manual.li13"/></li>
-        </ol>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"><img class="ui small image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/></a>
-    </div>
-    <hr/>
-    <div>
-        <ul>
-            <li><g:message code="myinst.financeImport.manual.li17"/></li>
-        </ul>
-        <a href="#" class="previewImage" data-src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"><img class="ui small image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/></a>
-        <g:message code="myinst.financeImport.manual.p4"/>
-    </div>
-          <g:if test="${params.id}">
-              <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
-                  <p>${message(code:'myinst.financeImport.subscription.template')}</p>
-              </g:link>
-          </g:if>
-          <g:else>
-              <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template.csv')}" download="template_bulk_load_cost_item_records.csv">
-                  <p>${message(code:'myinst.financeImport.template')}</p>
-              </a>
-          </g:else>
+    <ui:renderMarkdown manual="financeImport" />
+</div>
+<div class="ui segment">
 
+    <g:if test="${params.id}">
+        <g:link class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em" action="generateFinanceImportWorksheet" params="${[id:params.id]}">
+            <i class="${Icon.CMD.DOWNLOAD}"></i><g:message code="myinst.financeImport.subscription.template"/>
+        </g:link>
+    </g:if>
+    <g:else>
+        <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template.csv')}" download="template_bulk_load_cost_item_records.csv" class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em">
+            <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.financeImport.template"/>
+        </a>
+    </g:else>
 
-          <g:uploadForm action="processFinanceImport" method="POST">
-              <g:if test="${params.id}">
-                  <g:hiddenField name="subId" value="${params.id}"/>
-              </g:if>
-              <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
-              <input class="ui input" type="file" name="tsvFile" id="tsvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"/>
-              <input class="${Btn.SIMPLE}" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
-          </g:uploadForm>
+    <g:uploadForm action="processFinanceImport" method="post">
+        <ui:msg class="warning" header="Achtung" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
 
-    <ui:modal id="fullsizeImage" hideSubmitButton="true">
-        <img class="ui image" src="#" alt="fullsize image"/>
-    </ui:modal>
+        <g:if test="${params.id}">
+            <g:hiddenField name="subId" value="${params.id}"/>
+        </g:if>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('.previewImage').click(function() {
-            $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
-            $('#fullsizeImage').modal('show');
-        });
-    </laser:script>
+        <div class="field">
+            <div class="two fields">
+                <div class="ui action input">
+                    <input type="text" readonly="readonly" class="ui input"
+                           placeholder="${message(code: 'myinst.subscriptionImport.uploadCSV')}">
+
+                    <input type="file" name="tsvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                           style="display: none;">
+                    <div class="${Btn.ICON.SIMPLE}">
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+                    </div>
+                </div>
+
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
+            </div>
+        </div>
+    </g:uploadForm>
+</div>
+
+<g:render template="/public/markdownScript" />
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+        $(this).parent('.action').find('input:file').click();
+    });
+
+    $('input:file', '.ui.action.input').on('change', function (e) {
+        var name = e.target.files[0].name;
+        $('input:text', $(e.target).parent()).val(name);
+    });
+</laser:script>
 
 <laser:htmlEnd />

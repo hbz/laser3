@@ -2049,6 +2049,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
@@ -2079,7 +2080,10 @@ class SubscriptionControllerService {
             result.filterConfig = filterConfig
             result.filterAccordionConfig = filterAccordionConfig
             result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
-            result.putAll(packageService.getWekbPackages(params))
+            Map<String, Object> configMap = params.clone()
+            configMap.max = result.max
+            configMap.offset = result.offset
+            result.putAll(packageService.getWekbPackages(configMap))
             [result: result, status: STATUS_OK]
         }
     }
@@ -2196,11 +2200,11 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         boolean unlinkPkg
-        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
+        if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id+'_'+result.package.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
                 //double-check because action may be called after AJAX change of subscription holding and before page reload
-                if(result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && params.option in ['onlyIE', 'childOnlyIE']) {
+                if(auditService.getAuditConfig(result.subscription, 'holdingSelection') && params.option in ['onlyIE', 'childOnlyIE']) {
                     result.error = messageSource.getMessage('subscriptionsManagement.unlinkInfo.blockingHoldingEntire',null,locale)
                     [result:result,status:STATUS_ERROR]
                 }
@@ -2215,7 +2219,7 @@ class SubscriptionControllerService {
                 subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
             }
             executorService.execute({
-                String threadName = 'PackageUnlink_'+result.subscription.id
+                String threadName = 'PackageUnlink_'+result.subscription.id+'_'+result.package.id
                 Thread.currentThread().setName(threadName)
                 //long start = System.currentTimeSeconds()
                 if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
@@ -3757,8 +3761,8 @@ class SubscriptionControllerService {
             if(result.subscription.instanceOf)
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
-            result.titleManipulation = result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL
-            result.titleManipulationBlocked = result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && auditService.getAuditConfig(result.subscription, 'holdingSelection')
+            result.titleManipulation = result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !auditService.getAuditConfig(result.subscription.instanceOf, 'holdingSelection')
+            result.titleManipulationBlocked = auditService.getAuditConfig(result.subscription, 'holdingSelection')
 
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 

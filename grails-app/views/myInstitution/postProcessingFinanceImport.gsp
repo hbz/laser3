@@ -174,9 +174,9 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3">
-                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
+                        <td colspan="8">
                             <g:link action="financeImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
                         </td>
                     </tr>
                 </tfoot>

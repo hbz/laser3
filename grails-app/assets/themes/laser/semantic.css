@@ -38666,6 +38666,15 @@ img.ui.bordered.image {
 /*******************************
          Theme Overrides
 *******************************/
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+.la-markdown img.image:not(.la-js-questionMark):hover {
+  cursor: pointer;
+  border-color: #fbbd08;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Input
  * https://github.com/fomantic/Fomantic-UI/
