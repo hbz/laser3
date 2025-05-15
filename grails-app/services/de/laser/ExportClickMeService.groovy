@@ -6769,7 +6769,7 @@ class ExportClickMeService {
                 queryCols << "create_cell('${format}', (select ${sqlCol} from platform where plat_id = tipp_plat_fk), null) as ${field}"
             }
             else if (fieldKey == 'perpetualAccessBySub') {
-                queryCols << "create_cell('${format}', (select string_agg(sub_name || ' (' || to_char(sub_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || '-' || to_char(sub_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || ')', ';') from permanent_title join subscription on pt_subscription_fk = sub_id where pt_tipp_fk = tipp_id and pt_owner_fk = ${contextService.getOrg().id}), null)"
+                queryCols << "create_cell('${format}', (select string_agg(sub_name || ' (' || to_char(sub_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || '-' || to_char(sub_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || ')', ';') from permanent_title join subscription on pt_subscription_fk = sub_id where pt_tipp_fk = tipp_id and (pt_owner_fk = ${contextService.getOrg().id} or pt_subscription_fk in (select os.sub_parent_sub_fk from org_role join subscription as os on or_sub_fk = os.sub_id where or_org_fk = ${contextService.getOrg().id} and or_roletype_fk = ${RDStore.OR_SUBSCRIBER_CONS.id} and exists(select auc_id from audit_config where auc_reference_field = 'holdingSelection' and auc_reference_class = '${Subscription.class.name}' and auc_reference_id = os.sub_parent_sub_fk)))), null)"
             }
             else if (fieldKey.startsWith('coverage.')) {
                 if(fieldKey.contains('startDate')) {

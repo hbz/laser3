@@ -1639,7 +1639,7 @@ class FilterService {
      * @param owner the org whose be the owner of permanent titles
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Set<Org> possibleOwners) {
+    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner, Set<Subscription> subsWithInheritance) {
         log.debug 'getPermanentTitlesQuery'
 
         int hashCode = params.hashCode()
@@ -1647,8 +1647,12 @@ class FilterService {
         Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
-        String base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where pt.owner in (:owner) "
-        Map<String,Object> qry_params = [owner: possibleOwners]
+        String base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
+        Map<String,Object> qry_params = [owner: owner]
+        if(subsWithInheritance) {
+            base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where (pt.owner = :owner or pt.subscription in (:subsWithInheritance)) "
+            qry_params.subsWithInheritance = subsWithInheritance
+        }
         if (params.filter) {
             base_qry += "and ( ( lower(pt.tipp.name) like :title ) or ((lower(pt.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(pt.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"

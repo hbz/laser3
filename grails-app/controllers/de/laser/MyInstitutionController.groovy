@@ -1892,7 +1892,7 @@ class MyInstitutionController  {
      * The list may be filtered
      * @return a list of permanent titles with the given status
      * @see PermanentTitle
-     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, java.util.Set)
+     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org, java.util.Set)
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
@@ -1907,10 +1907,9 @@ class MyInstitutionController  {
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Set<Org> possibleOwners = [contextService.getOrg()]
-        possibleOwners.addAll(Combo.findAllByFromOrg(contextService.getOrg()).toOrg)
-        Map query = filterService.getPermanentTitlesQuery(params, possibleOwners)
+        String inheritanceQuery = "select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '${Subscription.class.name}' and ac.referenceId = s.instanceOf.id)"
+        Set<Subscription> subsWithInheritance = Subscription.executeQuery(inheritanceQuery, [owner: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
         result.filterSet = query.filterSet
         Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
 
@@ -1926,13 +1925,18 @@ class MyInstitutionController  {
         Set filteredIDs = tipps.drop(result.offset).take(result.max)
 
         result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
-
-        result.currentTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+        String ownerFilter = "pt.owner = :owner"
+        Map<String, Object> ownerParams = [owner: contextService.getOrg()]
+        if(subsWithInheritance) {
+            ownerFilter = "(pt.owner = :owner or pt.subscription in (:subsWithInheritance))"
+            ownerParams.subsWithInheritance = subsWithInheritance
+        }
+        result.currentTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
         //no sense of planned IEs among permanent titles ... planned titles cannot be purchased (yet)
         //result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_RETIRED])[0]
-        result.deletedTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status = :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_DELETED])[0]
-        result.allTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where pt.owner in (:org) and ie.status != :ieStatus", [org: possibleOwners, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_DELETED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status != :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
         result.disableStatus = params.tab != 'allIEs'
         //for tipp_ieFilter
         params.institution = contextService.getOrg().id
@@ -1954,10 +1958,9 @@ class MyInstitutionController  {
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Set<Org> possibleOwners = [contextService.getOrg()]
-        possibleOwners.addAll(Combo.findAllByFromOrg(contextService.getOrg()).toOrg)
-        Map query = filterService.getPermanentTitlesQuery(params, possibleOwners)
+        String inheritanceQuery = "select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '${Subscription.class.name}' and ac.referenceId = s.instanceOf.id)"
+        Set<Subscription> subsWithInheritance = Subscription.executeQuery(inheritanceQuery, [owner: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
         result.filterSet = query.filterSet
         Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
 

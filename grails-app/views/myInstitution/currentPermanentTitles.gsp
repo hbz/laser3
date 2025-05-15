@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentPermanentTitles.label" />
 
 <ui:controlButtons>
@@ -76,7 +76,7 @@
                                             %>
 
                                             <g:render template="/templates/titles/title_segment_accordion"
-                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(contextService.getOrg(), tipp)]"/>
+                                                      model="${[ie: null, tipp: tipp, permanentTitle: PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :owner or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id)))", [owner: contextService.getOrg(), tipp: tipp, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]]}"/>
 
                                             <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                                 <div class="ui stackable grid" data-ajaxTarget="true">

@@ -1740,11 +1740,12 @@ class SurveyService {
             Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                     '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                     'tipp.status != :tippStatus AND ' +
-                    'pt.owner = :org',
+                    '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
                     [hostPlatformURL: tipp.hostPlatformURL,
                      tippStatus: RDStore.TIPP_STATUS_REMOVED,
                      tipp: tipp,
-                     org: org])[0]
+                     org: org,
+                     subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
 
             if(countPermanentTitles > 0){
                 return true
@@ -1763,11 +1764,12 @@ class SurveyService {
         List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                 'tipp.status != :tippStatus AND ' +
-                'pt.owner = :org',
+                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
                 [hostPlatformURL: tipp.hostPlatformURL,
                  tippStatus: RDStore.TIPP_STATUS_REMOVED,
                  tipp: tipp,
-                 org: org])
+                 org: org,
+                 subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
 
         permanentTitles
     }

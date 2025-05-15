@@ -2129,6 +2129,9 @@ class SubscriptionControllerService {
                         createEntitlementsForChildren = false
                     //}
                 }
+                else if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                    linkToChildren = true
+                }
                 GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " + source.getUri())
                 globalSourceSyncService.source = source
