@@ -196,6 +196,19 @@
                                     </g:else>
                                 </dd>
                             </dl>
+                            <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_INTEREST}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.subscriptionSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="subscriptionSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="subscriptionSurvey" overwriteEditable="false"/>
+                                    </g:else>
+
+                                </dd>
+                            </dl>
+                            </g:if>
                         </g:if>
 
                         <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION}">

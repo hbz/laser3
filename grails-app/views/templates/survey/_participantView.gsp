@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.survey.SurveySubscriptionResult; de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 <ui:greySegment>
     <div class="ui form la-padding-left-07em">
@@ -76,6 +76,18 @@
 
                     <ui:bubble float="true"
                                count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
+                </g:link>
+            </g:if>
+
+            <g:if test="${surveyConfig.subscriptionSurvey}">
+                <g:link class="item ${params.viewTab == 'subscriptionSurvey' ? 'active' : ''}"
+                        controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                        params="${parame + [viewTab: 'subscriptionSurvey']}">
+
+                    ${message(code: 'surveyconfig.subscriptionSurvey.label')}
+
+                    <ui:bubble float="true"
+                               count="${SurveySubscriptionResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
                 </g:link>
             </g:if>
 
@@ -339,6 +351,70 @@
                                 tmplShowCheckbox : false,
                                 tmplConfigShow   : tmplConfigShowList,
                                 tmplConfigShowFilter: [['name']]]"/>
+                    </div>
+
+                </g:if>
+
+                <g:if test="${params.viewTab == 'subscriptionSurvey' && surveyConfig.subscriptionSurvey}">
+
+                    <div class="sixteen wide column">
+                        <div class="la-inline-lists">
+                            <g:render template="/templates/survey/costsWithSurveySubscriptions"/>
+                        </div>
+                    </div>
+
+                    <div class="two wide column">
+                        <div class="ui fluid vertical tabular menu">
+                            <g:link class="item ${params.viewTab == 'subscriptionSurvey' && params.subTab == 'allSubscriptions' ? 'active' : ''}"
+                                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                    params="${parame + [viewTab: 'subscriptionSurvey', subTab: 'allSubscriptions']}">
+                                ${message(code: 'surveySubscriptions.all')}
+                                <ui:bubble float="true" count="${SurveyConfigSubscription.countBySurveyConfig(surveyConfig)}"/>
+                            </g:link>
+                            <g:link class="item ${params.viewTab == 'subscriptionSurvey' && params.subTab == 'selectSubscriptions' ? 'active' : ''}"
+                                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                    params="${parame + [viewTab: 'subscriptionSurvey', subTab: 'selectSubscriptions']}">
+                                ${message(code: 'surveySubscriptions.selectedSubscriptions')}
+                                <ui:bubble float="true" count="${SurveySubscriptionResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
+                            </g:link>
+                        </div>
+                    </div>
+
+                    <div class="fourteen wide column">
+                        <div class="ui tab active">
+                            <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectSubscriptions' ? 'surveySubscriptions.selectedSubscriptions' : 'surveySubscriptions.all')}
+                            <ui:totalNumber total="${num_sub_rows}"/>
+                            </h2>
+
+                            <g:render template="/templates/subscription/subscriptionFilter"/>
+
+                            <g:form controller="$controllerName" action="$actionName" id="${surveyInfo.id}" params="${params}" method="post" class="ui form">
+
+                                <g:render template="/survey/subscriptionTableForParticipant" model="[tmplShowCheckbox: editable]"/>
+
+
+                                <g:if test="${editable && params.subTab == 'selectSubscriptions'}">
+                                    <br>
+
+                                    <div class="field">
+                                        <button name="processOption" value="unlinkSubscriptions" type="submit"
+                                                class="${Btn.SIMPLE_CLICKCONTROL}">${message(code: 'surveySubscriptions.unlinkSubscription.plural')}</button>
+                                    </div>
+                                </g:if>
+                                <g:if test="${editable && params.subTab == 'allSubscriptions'}">
+                                    <br>
+
+                                    <div class="field">
+                                        <button name="processOption" value="linkSubscriptions" type="submit"
+                                                class="${Btn.SIMPLE_CLICKCONTROL}">${message(code: 'surveySubscriptions.linkSubscription.plural')}</button>
+                                    </div>
+                                </g:if>
+
+                            </g:form>
+
+                            <ui:paginate action="$actionName" controller="$controllerName" params="${params}"
+                                         max="${max}" total="${num_sub_rows}"/>
+                        </div>
                     </div>
 
                 </g:if>

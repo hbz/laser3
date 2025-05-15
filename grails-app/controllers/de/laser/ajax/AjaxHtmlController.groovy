@@ -892,7 +892,10 @@ class AjaxHtmlController {
                     result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                 }
             }
-        }else if (notProcessedMandatoryProperties.size() > 0) {
+        }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
+
+        }
+        else if (notProcessedMandatoryProperties.size() > 0) {
             result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
         }
 

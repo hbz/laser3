@@ -66,6 +66,9 @@ class IconAttr {
         @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
         public static String SURVEY_RESULTS_NOT_PROCESSED   = 'edit red icon'
 
+        @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
+        public static String SURVEY_ORG_TRANSFERRED   = 'exchange green icon'
+
         @UIDoc(usage = 'Only for TASK: creator')
         public static String TASK_CREATOR           = 'user icon'
         @UIDoc(usage = 'Only for TASK: status done')

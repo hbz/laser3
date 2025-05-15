@@ -2541,6 +2541,9 @@ class MyInstitutionController  {
                         }
                     }
                 }
+                else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
+
+                }
 
             }
 

@@ -3,6 +3,7 @@ package de.laser.finance
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
 import de.laser.properties.PropertyDefinition
+import de.laser.survey.SurveyConfigSubscription
 import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.survey.SurveyOrg
@@ -63,6 +64,7 @@ class CostItem extends AbstractBase
 
     IssueEntitlement issueEntitlement // only set if sub
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
+    SurveyConfigSubscription surveyConfigSubscription // NOT set if sub (exclusive)
     Package pkg // only set if sub
     Order order
     Invoice invoice
@@ -137,6 +139,7 @@ class CostItem extends AbstractBase
         pkg             column: 'ci_pkg_fk',        index: 'ci_pkg_idx'
         issueEntitlement    column: 'ci_e_fk',      index: 'ci_e_idx' //the index is needed for deletion checks of issue entitlements where each foreign key is being checked
         surveyOrg       column: 'ci_surorg_fk',     index: 'ci_surorg_idx'
+        surveyConfigSubscription       column: 'ci_surveyconfigsubscription_fk',     index: 'ci_surveyconfigsubscription_idx'
         order           column: 'ci_ord_fk',        index: 'ci_ord_idx'
         invoice         column: 'ci_inv_fk',        index: 'ci_inv_idx'
         issueEntitlementGroup column: 'ci_ie_group_fk',         index: 'ci_ie_group_idx'
@@ -194,6 +197,7 @@ class CostItem extends AbstractBase
             }
         })
         surveyOrg       (nullable: true)
+        surveyConfigSubscription       (nullable: true)
         order           (nullable: true)
         invoice         (nullable: true)
         costDescription (nullable: true, blank: false)

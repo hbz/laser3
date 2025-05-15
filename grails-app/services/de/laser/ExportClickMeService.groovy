@@ -2039,6 +2039,9 @@ class ExportClickMeService {
         if(surveyConfig.vendorSurvey){
             exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
+        if(surveyConfig.subscriptionSurvey){
+            exportFields.put("subscriptionSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true'])
+        }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
         }
@@ -2131,6 +2134,14 @@ class ExportClickMeService {
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+        if(surveyConfig.subscriptionSurvey){
+            fields.survey.fields << ["subscriptionSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('subscriptionSurvey')) {
+                fields.survey.fields.remove('subscriptionSurvey')
             }
         }
 
@@ -3583,6 +3594,9 @@ class ExportClickMeService {
         if(surveyConfig.vendorSurvey){
             exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
+        if(surveyConfig.subscriptionSurvey){
+            exportFields.put("subscriptionSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true'])
+        }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
         }
@@ -3663,6 +3677,14 @@ class ExportClickMeService {
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+        if(surveyConfig.subscriptionSurvey){
+            fields.survey.fields << ["subscriptionSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('subscriptionSurvey')) {
+                fields.survey.fields.remove('subscriptionSurvey')
             }
         }
 
@@ -6988,7 +7010,7 @@ class ExportClickMeService {
 
         }*/
 
-        if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
+       /* if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
             if (orgList) {
 
                 export = accessPointService.exportEZProxysOfOrgs(orgList, format, true)
@@ -6996,7 +7018,7 @@ class ExportClickMeService {
                 sheetData[sheetName] = export
             }
 
-        }
+        }*/
 
         return sheetData
     }
