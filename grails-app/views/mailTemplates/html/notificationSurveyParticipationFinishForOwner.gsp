@@ -133,6 +133,14 @@
     <br/>
 </g:if>
 
+<g:if test="${survey.surveyConfigs[0].subscriptionSurvey}">
+    <g:set var="subs"
+           value="${SurveySubscriptionResult.executeQuery('select ssr.subscription from SurveySubscriptionResult ssr where ssr.participant = :participant and ssr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
+    <strong><g:message code="surveySubscriptions.selectedSubscriptions" locale="${language}"/>:</strong><br/>
+    <g:each in="${subs}" var="sub">${sub.name}</g:each>
+    <br/>
+    <br/>
+</g:if>
 <g:if test="${survey.surveyConfigs[0].vendorSurvey}">
     <g:set var="vendors"
            value="${SurveyVendorResult.executeQuery('select svr.vendor from SurveyVendorResult svr where svr.participant = :participant and svr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>

@@ -868,24 +868,39 @@
     </ui:greySegment>
 
     <div class="sixteen wide field" style="text-align: center;">
-        <g:if test="${params.tab != 'privateProperties'}">
+        <g:if test="${params.tab != 'privateProperties' && surveyConfig.subscription}">
             <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
         </g:if>
-        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
-            <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
-                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-            </g:link>
-        </g:elseif>
-        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
-                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-            </g:link>
-        </g:elseif>
+        <g:else>
+            <g:if test="${surveyConfig.subscription && params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:if>
+            <g:elseif test="${surveyConfig.subscription && params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+            <g:elseif test="${params.tab == 'surveyProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+            <g:elseif test="${params.tab == 'surveyProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+        </g:else>
+
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">

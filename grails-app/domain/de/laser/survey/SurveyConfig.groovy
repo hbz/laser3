@@ -73,6 +73,7 @@ class SurveyConfig {
     boolean packageSurvey = false
     boolean invoicingInformation = false
     boolean vendorSurvey = false
+    boolean subscriptionSurvey = false
 
     String issueEntitlementGroupName
 
@@ -86,6 +87,7 @@ class SurveyConfig {
             surveyUrls         : SurveyUrl,
             surveyPackages      : SurveyConfigPackage,
             surveyVendors      : SurveyConfigVendor,
+            surveySubscriptions      : SurveyConfigSubscription,
     ]
 
     static constraints = {
@@ -128,6 +130,7 @@ class SurveyConfig {
         packageSurvey column: 'surconf_package_survey'
         invoicingInformation column: 'surconf_invoicing_information'
         vendorSurvey column: 'surconf_vendor_survey'
+        subscriptionSurvey column: 'surconf_subscription_survey'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'

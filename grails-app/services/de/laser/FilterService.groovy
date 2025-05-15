@@ -7,6 +7,7 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
 import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyVendorResult
@@ -722,6 +723,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkSubscriptionSurvey) {
+            query += " and surConfig.subscriptionSurvey = :checkSubscriptionSurvey"
+            queryParams << [checkSubscriptionSurvey: true]
+            isFilterSet = true
+        }
+
         if(params.checkInvoicingInformation) {
             query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
             queryParams << [checkInvoicingInformation: true]
@@ -886,6 +893,12 @@ class FilterService {
         if(params.checkVendorSurvey) {
             query += "surConfig.vendorSurvey = :checkVendorSurvey"
             queryParams << [checkVendorSurvey: true]
+            isFilterSet = true
+        }
+
+        if(params.checkSubscriptionSurvey) {
+            query += "surConfig.subscriptionSurvey = :checkSubscriptionSurvey"
+            queryParams << [checkSubscriptionSurvey: true]
             isFilterSet = true
         }
 
@@ -1212,6 +1225,17 @@ class FilterService {
                 }
             }
 
+            if(surveyConfig.subscriptionSurvey){
+                List<Subscription> subscriptions = SurveyConfigSubscription.executeQuery("select scv.subscription from SurveyConfigSubscription scv where scv.surveyConfig = :surveyConfig order by scv.subscription.name asc", [surveyConfig: surveyConfig])
+
+                subscriptions.each {Subscription subscription ->
+                    if(params.chartFilter == subscription.name.replace('"', '')){
+                        base_qry += " and exists (select svr from SurveySubscriptionResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.subscription = :subscription) "
+                        queryParams.put('subscription', subscription)
+                    }
+                }
+            }
+
             if(surveyConfig.packageSurvey){
                 List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
 
@@ -1277,6 +1301,11 @@ class FilterService {
         if (params.surveyPackages) {
             base_qry += ' and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg.id in (:pkgs))'
             queryParams << [pkgs : Params.getLongList(params, 'surveyPackages')]
+        }
+
+        if (params.surveySubscriptions) {
+            base_qry += ' and exists (select ssr from SurveySubscriptionResult as ssr where ssr.surveyConfig = surveyOrg.surveyConfig and ssr.participant = surveyOrg.org and ssr.subscription.id in (:subs))'
+            queryParams << [subs : Params.getLongList(params, 'surveySubscriptions')]
         }
 
 

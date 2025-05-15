@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItemsPackages.label')})" />
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItemsSubscriptions.label')})" />
 
 <ui:breadcrumbs>
 %{--    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>--}%
@@ -66,11 +66,11 @@
 
         <div class="ui bottom attached tab segment active">
 
-            <g:render template="costItemsByCostItemElementAndPkgTable"/>
+            <g:render template="costItemsByCostItemElementAndSubscriptionTable"/>
 
             <ui:filter>
                 <g:form action="surveyCostItems" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
+                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedSurveyConfigSubscriptionID: selectedSurveyConfigSubscriptionID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
                         tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['hasSubscription', 'subRunTimeMultiYear'], ['subscriptionAdjustDropdown']],
@@ -96,7 +96,7 @@
             </div>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID, selectPkg: 'true']">
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID, selectedSurveyConfigSubscriptionID: selectedSurveyConfigSubscriptionID, selectSubscription: 'true']">
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
@@ -172,10 +172,10 @@
                 </div>
 
                 <g:if test="${surveyConfig.subscription}">
-                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveyCostItemPackage']}"/>
+                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveyCostItemSubscription']}"/>
                 </g:if>
                 <g:else>
-                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveyCostItemPackage']}"/>
+                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveyCostItemSubscription']}"/>
                 </g:else>
 
                     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
@@ -246,8 +246,6 @@
             </g:form>
             <br />
             <br />
-
-
 
         </div>
     </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -35,7 +35,7 @@
             </g:if>
             <div class="ui divider"></div>
 
-            <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages') && (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED])}">
+            <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages' || actionName == 'surveyCostItemsSubscriptions') && (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED])}">
 
                 <g:if test="${participants.size() > 0}">
                     <g:if test="${actionName == 'surveyCostItems'}">
@@ -73,6 +73,28 @@
                                                             tooltip="${message(code: 'financials.enrichment.menu.disabled')}"/>
                         </g:else>
                     </g:if>
+
+                    <g:if test="${actionName == 'surveyCostItemsSubscriptions'}">
+                        <g:if test="${SurveyConfigSubscription.countBySurveyConfig(surveyConfig)}">
+                            <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
+                                                    message="surveyCostItems.createInitialCostItem"/>
+                           %{-- <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>--}%
+                        </g:if>
+                        <g:else>
+                            <ui:actionsDropdownItemDisabled message="surveyCostItems.createInitialCostItem"
+                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
+                            %{--<ui:actionsDropdownItemDisabled message="menu.institutions.financeImport"
+                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>--}%
+                        </g:else>
+                       %{-- <g:if test="${assignedCostItemElements && assignedSubscriptions}">
+                            <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment"
+                                                    message="financials.enrichment.menu"/>
+                        </g:if>
+                        <g:else>
+                            <ui:actionsDropdownItemDisabled message="financials.enrichment.menu"
+                                                            tooltip="${message(code: 'financials.enrichment.menu.disabled')}"/>
+                        </g:else>--}%
+                    </g:if>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItemDisabled message="surveyCostItems.createInitialCostItem"
@@ -99,7 +121,13 @@
                                             params="${[id: params.id, surveyConfigID: surveyConfig.id]}" message="surveyPackages.linkPackage.plural"/>
                 </g:if>
 
-                <g:if test="${surveyConfig.packageSurvey || surveyConfig.vendorSurvey}">
+                <g:if test="${surveyConfig.subscriptionSurvey}">
+                    <ui:actionsDropdownItem controller="survey" action="linkSurveySubscription"
+                                            params="${[id: params.id, surveyConfigID: surveyConfig.id, initial: true]}"
+                                            message="surveySubscriptions.linkSubscription"/>
+                </g:if>
+
+                <g:if test="${surveyConfig.packageSurvey || surveyConfig.vendorSurvey || surveyConfig.subscriptionSurvey}">
                     <div class="ui divider"></div>
                 </g:if>
 
@@ -251,7 +279,7 @@
         </ui:modal>
     </g:if>
 
-    <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages') && participants.size() > 0}">
+    <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages' || actionName == 'surveyCostItemsSubscriptions') && participants.size() > 0}">
         <laser:render template="/finance/financeEnrichment"/>
     </g:if>
 
@@ -287,7 +315,7 @@
         <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     </g:if>
 
-    <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages')}">
+    <g:if test="${(actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages' || actionName == 'surveyCostItemsSubscriptions')}">
         <ui:modal id="bulkCostItemsUpload" message="menu.institutions.financeImport"
                   refreshModal="true"
                   msgSave="${g.message(code: 'menu.institutions.financeImport')}">
@@ -345,6 +373,8 @@
                                     orgsIDs: orgsIDs,
                                     selectPkg: "${actionName == 'surveyCostItemsPackages' ? "true" : "false"}",
                                     selectedPackageID: "${selectedPackageID}",
+                                    selectSubscription: "${actionName == 'surveyCostItemsSubscriptions' ? "true" : "false"}",
+                                    selectedSurveyConfigSubscriptionID: "${selectedSurveyConfigSubscriptionID}",
                                     selectedCostItemElementID: "${selectedCostItemElementID}"
 
                                 }

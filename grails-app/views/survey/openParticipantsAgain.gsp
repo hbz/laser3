@@ -45,30 +45,38 @@
     <div class="sixteen wide stretched column">
 
         <ui:greySegment>
+
+            <g:set var="tmplConfigShowList"
+                   value="${['lineNumber', 'name', 'finishedDate']}"/>
+
             <g:if test="${surveyConfig.pickAndChoose}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+                       value="${tmplConfigShowList << ['surveyTitlesCount']}"/>
             </g:if>
-            <g:elseif test="${surveyConfig.pickAndChoose && surveyConfig.vendorSurvey}">
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList << ['surveyProperties']}"/>
+
+            <g:if test="${surveyConfig.packageSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+                       value="${tmplConfigShowList << ['surveyPackages', 'surveyCostItemsPackages']}"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.vendorSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.packageSurvey}">
+                       value="${tmplConfigShowList << ['surveyVendor']}"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.subscriptionSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner', 'reminderMailDate']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.vendorSurvey}">
-                <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
-            </g:elseif>
-            <g:else>
-                <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
-            </g:else>
+                       value="${tmplConfigShowList << ['surveySubscriptions', 'surveyCostItemsSubscriptions']}"/>
+            </g:if>
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList << ['commentOnlyForOwner', 'reminderMailDate']}"/>
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList.flatten()}"/>
 
             <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess  : editable,
                                                                         showCheckboxForParticipantsHasNoAccess: false,

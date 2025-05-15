@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg; de.laser.ExportService" %>
+<%@ page import="de.laser.survey.SurveySubscriptionResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg; de.laser.ExportService" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -115,18 +115,19 @@
                value="${filterConfigShowList << ['hasSubscription', 'subRunTimeMultiYear']}"/>
     </g:if>
 
-    <g:if test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
-        <g:set var="filterConfigShowList"
-               value="${filterConfigShowList << ['surveyPackages', 'surveyVendors']}"/>
-    </g:if>
-    <g:elseif test="${surveyConfig.packageSurvey}">
+    <g:if test="${surveyConfig.packageSurvey}">
         <g:set var="filterConfigShowList"
                value="${filterConfigShowList << ['surveyPackages']}"/>
-    </g:elseif>
-    <g:elseif test="${surveyConfig.vendorSurvey}">
+    </g:if>
+    <g:if test="${surveyConfig.vendorSurvey}">
         <g:set var="filterConfigShowList"
                value="${filterConfigShowList << ['surveyVendors']}"/>
-    </g:elseif>
+    </g:if>
+    <g:if test="${surveyConfig.subscriptionSurvey}">
+        <g:set var="filterConfigShowList"
+               value="${filterConfigShowList << ['surveySubscriptions']}"/>
+    </g:if>
+
 
 
     <g:form action="${actionName}" method="post" class="ui form"
@@ -270,6 +271,16 @@
                         ${message(code: 'surveyCostItemsPackages.label')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubscriptions')}">
+                    <th>
+                        ${message(code: 'surveySubscriptions.selectedSubscriptions')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsSubscriptions')}">
+                    <th>
+                        ${message(code: 'surveyCostItemsSubscriptions.label')}
+                    </th>
+                </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
                     <th>
                         ${message(code: 'surveyVendors.selectedVendors')}
@@ -365,7 +376,7 @@
                             </g:if>
 
 
-                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                            <g:if test="${surveyConfig.subscription && !surveyConfig.hasOrgSubscription(participant)}">
                                 <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'surveyResult.newOrg')}">
                                     <i class="la-sparkles large icon"></i>
@@ -627,6 +638,21 @@
                             <g:set var="costItemSumBySelectSurveyPackageOfParticipant"
                                    value="${surveyService.getCostItemSumBySelectSurveyPackageOfParticipant(surveyConfig, participant)}"/>
                             ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubscriptions')}">
+                        <td>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'subscriptionSurvey', subTab: 'selectSubscriptions']">
+                                ${SurveySubscriptionResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                            </g:link>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsSubscriptions')}">
+                        <td>
+                            <g:set var="costItemSumBySelectSurveySubscriptionsOfParticipant"
+                                   value="${surveyService.getCostItemSumBySelectSurveySubscriptionsOfParticipant(surveyConfig, participant)}"/>
+                            ${costItemSumBySelectSurveySubscriptionsOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveySubscriptionsOfParticipant.sumCostInBillingCurrencyAfterTax})
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
@@ -894,6 +920,16 @@
                             ${message(code: 'surveyCostItemsPackages.label')}
                         </th>
                     </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubscriptions')}">
+                        <th>
+                            ${message(code: 'surveySubscriptions.selectedSubscriptions')}
+                        </th>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsSubscriptions')}">
+                        <th>
+                            ${message(code: 'surveyCostItemsSubscriptions.label')}
+                        </th>
+                    </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
                         <th>
                             ${message(code: 'surveyVendors.selectedVendors')}
@@ -946,6 +982,7 @@
                                     (${fieldValue(bean: participant, field: "name")})
                                 </g:link>
 
+                            <g:if test="${showIcons}">
                                 <g:if test="${surveyConfig.surveyProperties}">
                                     <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                         <span data-position="top right" class="la-popup-tooltip"
@@ -973,6 +1010,7 @@
                                         <i class="${Icon.SYM.NO} red"></i>
                                     </span>
                                 </g:else>
+                            </g:if>
 
                                 <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                     <span data-position="top right" class="la-popup-tooltip"
@@ -981,7 +1019,7 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <g:if test="${surveyConfig.subscription && !surveyConfig.hasOrgSubscription(participant)}">
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'surveyResult.newOrg')}">
                                         <i class="${Icon.SIG.NEW_OBJECT} large"></i>
@@ -1247,6 +1285,21 @@
                                 ${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveyPackageOfParticipant.sumCostInBillingCurrencyAfterTax})
                             </td>
                         </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubscriptions')}">
+                            <td>
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'packageSurvey', subTab: 'selectPackages']">
+                                    ${SurveySubscriptionResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
+                                </g:link>
+                            </td>
+                        </g:if>
+                        <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemsSubscriptions')}">
+                            <td>
+                                <g:set var="costItemSumBySelectSurveySubscriptionsOfParticipant"
+                                       value="${surveyService.getCostItemSumBySelectSurveySubscriptionsOfParticipant(surveyConfig, participant)}"/>
+                                ${costItemSumBySelectSurveySubscriptionsOfParticipant.sumCostInBillingCurrency} (${costItemSumBySelectSurveySubscriptionsOfParticipant.sumCostInBillingCurrencyAfterTax})
+                            </td>
+                        </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
                             <td>
                                 <g:link controller="survey" action="evaluationParticipant"
@@ -1392,9 +1445,12 @@
                                    noSelection="${['': message(code: 'default.select.choose.label')]}"
                                    onchange="JSPC.app.adjustDropdown()"/>
                     </div>
-                    <br/>
-                    <br id="element-vor-target-dropdown"/>
-                    <br/>
+                    <div class="field">
+                        <label for="targetSubscriptionId">${message(code: 'subscription.label')}</label>
+                        <select id="targetSubscriptionId" name="targetSubscriptionId" class="ui fluid search selection dropdown">
+                            <option value="">${message(code: 'default.select.choose.label')}</option>
+                        </select>
+                    </div>
 
                 </div>
 
@@ -1450,55 +1506,50 @@
         })
     </g:if>
     <g:if test="${showTransferFields}">
-        JSPC.app.adjustDropdown = function () {
 
-            var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
 
-    var status = $("select#status").serialize()
-    if (status) {
-        url = url + '?' + status
-    }
+ JSPC.app.adjustDropdown = function () {
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
+
+        url = url + '?'
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
+        var selectedSubIds = [];
+        <g:if test="${params.surveySubscriptions}">
+            <g:each in="${params.list('surveySubscriptions')}" var="subId">
+                    selectedSubIds.push(${subId});
+            </g:each>
+        </g:if>
+
+        var dropdownSelectedObjects = $('#targetSubscriptionId');
+
+        dropdownSelectedObjects.empty();
+        dropdownSelectedObjects.append($('<option></option>').attr('value', '').text("${message(code: 'default.select.choose.label')}"));
 
     $.ajax({
-        url: url,
-        success: function (data) {
-            var select = '';
-            for (var index = 0; index < data.length; index++) {
-                var option = data[index];
-                var optionText = option.text;
-                var optionValue = option.value;
-                var count = index + 1
-                // console.log(optionValue +'-'+optionText)
-
-                select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
-            }
-
-            select = ' <div class="ui fluid search selection dropdown clearable la-filterProp">' +
-    '   <input type="hidden" id="subscription" name="targetSubscriptionId">' +
-    '   <i class="dropdown icon"></i>' +
-    '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
-    '   <div class="menu">'
-    + select +
-    '</div>' +
-    '</div>';
-
-            $('#element-vor-target-dropdown').next().replaceWith(select);
-
-            $('.la-filterProp').dropdown({
-                duration: 150,
-                transition: 'fade',
-                clearable: true,
-                forceSelection: false,
-                selectOnKeydown: false,
-                onChange: function (value, text, $selectedItem) {
-                    value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
-                }
-            });
-        }, async: false
-    });
+            url: url,
+            success: function (data) {
+                $.each(data, function (key, entry) {
+        <g:if test="${params.surveySubscriptions}">
+            if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
+               dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                    }else{
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    }
+        </g:if>
+        <g:else>
+            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+        </g:else>
+        });
+     }
+});
 }
 
-JSPC.app.adjustDropdown()
+JSPC.app.adjustDropdown();
+
     </g:if>
     JSPC.app.propertiesChanged = function (propertyDefinitionId) {
         $.ajax({
