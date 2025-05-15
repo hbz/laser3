@@ -40,8 +40,9 @@
 <g:if test="${params.tab != 'customerIdentifiers'}">
     <ui:filter>
         <g:form action="membersSubscriptionsManagement" controller="subscription"
-                params="${[id: params.id, tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear, propertiesFilterPropDef: propertiesFilterPropDef]}"
+                params="${[id: params.id, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear, propertiesFilterPropDef: propertiesFilterPropDef]}"
                 method="get" class="ui form">
+            <input type="hidden" name="tab" value="${params.tab}"/>
             <laser:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow      : [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],

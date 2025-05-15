@@ -168,8 +168,10 @@ class ClickMeController {
             case ExportClickMeService.TIPPS:
                 if(params.exportAction == 'addEntitlements')
                     result.exportAction = 'exportPossibleEntitlements'
+                else if(params.exportAction == 'currentPermanentTitles')
+                    result.exportAction = 'exportPermanentTitles'
                 result.formFields = exportClickMeService.getExportTippFieldsForUI()
-                result.exportFileName = result.exportFileName ?: message(code:'default.title.label')
+                result.exportFileName = result.exportFileName ?: escapeService.escapeString(message(code:'menu.my.permanentTitles'))
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 break
             case ExportClickMeService.VENDORS:
