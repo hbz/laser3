@@ -37,13 +37,6 @@ class ProfileController {
         result
     }
 
-    @Secured(['ROLE_USER'])
-    def importManuel() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result
-    }
-
     /**
      * Call to add the given user to the given institution
      * @return the profile page
