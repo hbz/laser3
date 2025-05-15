@@ -299,7 +299,7 @@
                 </g:if>
                 <br>
                 <g:link class="item" controller="public" action="manual" id="fileImport"
-                        target="_blank">${message(code: 'help.technicalHelp.fileImport.short')}</g:link>
+                        target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                 <br>
 
                 <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">

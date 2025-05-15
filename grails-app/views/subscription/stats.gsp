@@ -45,7 +45,7 @@
                                 ${message(code: 'default.usage.addRequestorIDs.text')}
 
                                 <br>
-                                <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport.short')}</g:link>
+                                <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                                 <br>
 
                                 <g:link controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id]">
