@@ -1250,7 +1250,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('#surveyCostItemModal .ui.form').submit();

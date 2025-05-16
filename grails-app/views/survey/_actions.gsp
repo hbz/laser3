@@ -389,7 +389,6 @@
 
                                     },
                                     detachable: true,
-                                    closable: false,
                                     transition: 'scale',
                                     onApprove: function () {
                                         $(this).find('#addForAllSurveyCostItem .ui.form').submit();
