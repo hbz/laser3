@@ -249,7 +249,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();
