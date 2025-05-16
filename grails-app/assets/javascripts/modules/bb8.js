@@ -120,7 +120,6 @@ bb8 = {
 
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal({
-                        closable: false,
                         onVisible: function () {
                             r2d2.initDynamicUiStuff(cssId);
                             r2d2.initDynamicXEditableStuff(cssId);
