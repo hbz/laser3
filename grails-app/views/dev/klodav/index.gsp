@@ -83,7 +83,7 @@
         <div class="ui fluid card">
             <div class="content">
                 <ui:cardLabelConsortiumOnly />
-                <br/>
+                <br />
             </div>
         </div>
     </div>
@@ -93,28 +93,27 @@
                 <ui:cardLabelDeprecated />
 
                 <button class="ui small button" data-ui="modal" data-href="#modal1">X</button>
-                <ui:modal id="modal1"> modal1 (ESC ok, no Dimmer) </ui:modal>
+                <ui:modal id="modal1">
+                    modal1 (data-ui="modal" data-href="#modal1") <br /><br />
+                </ui:modal>
 
                 <button class="ui small button" id="button2">Y</button>
-                <ui:modal id="modal2"> modal2 (ESC ok, Dimmer ok) </ui:modal>
+                <ui:modal id="modal2">
+                    $('#modal2').modal() <br/><br />
+                </ui:modal>
 
                 <button class="ui small button" id="button3">Z</button>
-                <ui:modal id="modal3"> modal3 (no ESC, no Dimmer) </ui:modal>
+                <ui:modal id="modal3">
+                    $('#modal3').modal({ closable: false })
+                </ui:modal>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
-                    $('#button2').click(function() {
-                        $("#modal2").modal('show');
-                    });
-                    $("#modal2").modal();
+                    $('#button2').click(function() { $('#modal2').modal('show'); });
+                    $('#modal2').modal();
 
-                    $('#button3').click(function() {
-                        $("#modal3").modal('show');
-                    });
-                    $("#modal3").modal({
-                        closable: false
-                    });
+                    $('#button3').click(function() { $('#modal3').modal('show'); });
+                    $('#modal3').modal({ closable: false });
                 </laser:script>
-
             </div>
         </div>
     </div>
