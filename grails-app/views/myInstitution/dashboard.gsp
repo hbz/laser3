@@ -10,20 +10,22 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES).value == RDStore.YN_YES}">
+        <g:if test="${dashboardService.showTopMenu()}">
             <laser:render template="/myInstitution/dashboard/topmenu" />
         </g:if>
 
         <ui:messages data="${flash}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES).value == RDStore.YN_YES}">
+            <g:if test="${dashboardService.showCharts()}">
                 <laser:render template="/myInstitution/dashboard/dataviz_inst" />
             </g:if>
-            <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+            <g:if test="${dashboardService.showCurrentTestSubscriptions()}">
+                <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+            </g:if>
         </g:if>
 
-        <g:if test="${user.getSetting(UserSetting.KEYS.DASHBOARD_SHOW_WEKBNEWS, RDStore.YN_YES).value == RDStore.YN_YES}">
+        <g:if test="${dashboardService.showWekbNews()}">
             <div class="ui two cards">
                 <laser:render template="/myInstitution/dashboard/rttp" />
                 <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>

@@ -485,11 +485,18 @@
                                 <g:set var="US_DASHBOARD_SHOW_TOPMENU" value="${user.getSetting(KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES)}" />
                                 <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" config="${US_DASHBOARD_SHOW_TOPMENU.key.rdc}" validation="notEmpty"/>
                             </div>
-                            <div class="field">
-                                <label>${message(code: 'profile.dashboardShowCharts')}</label>
-                                <g:set var="US_DASHBOARD_SHOW_CHARTS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES)}" />
-                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" validation="notEmpty"/>
-                            </div>
+                            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+                                <div class="field">
+                                    <label>${message(code: 'profile.dashboardShowCharts')}</label>
+                                    <g:set var="US_DASHBOARD_SHOW_CHARTS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES)}" />
+                                    <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" validation="notEmpty"/>
+                                </div>
+                                <div class="field">
+                                    <label>${message(code: 'profile.dashboardShowCurrentTestSubscriptions')}</label>
+                                    <g:set var="US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS, RDStore.YN_YES)}" />
+                                    <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS}" field="rdValue" config="${US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS.key.rdc}" validation="notEmpty"/>
+                                </div>
+                            </g:if>
                             <div class="field">
                                 <label>${message(code: 'profile.dashboardShowWekbNews')}</label>
                                 <g:set var="US_DASHBOARD_SHOW_WEKBNEWS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_WEKBNEWS, RDStore.YN_YES)}" />
