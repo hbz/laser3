@@ -28,6 +28,7 @@ class UserSetting {
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),
+        DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS   (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_WEKBNEWS                     (RefdataValue, RDConstants.Y_N),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
         LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
