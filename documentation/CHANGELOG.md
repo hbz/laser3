@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6582    15.05.2025  rc-3.5  3.5-RC      David   Feature     Verwaiste/Ungültige Views im Profile-Verzeichnis
+
+6579    15.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter bei "Einrichtungen verwalten" übernahm den Reiter nicht
+
+6571    15.05.2025  rc-3.5  3.5-RC      Andreas Feature     Vereinfachung der Upload-Anleitungen
+
 6574    14.05.2025  rc-3.5  3.5-RC      David   Feature     Build Info wieder einbauen QA
+
+6549    14.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbau der Sicht "Meine dauerhaften Titel"
 
 6572    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Syncfehler behoben
 

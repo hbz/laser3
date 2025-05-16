@@ -5,9 +5,15 @@
 
 -- Anon helper
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_msk(text TEXT, count INT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_log_mask(text TEXT, count INT) RETURNS TEXT AS $$
 BEGIN
     RETURN concat(lpad(concat(' ', count::TEXT), 10, '-'), ' --- masked entries @ ', text);
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_log_delete(text TEXT, count INT) RETURNS TEXT AS $$
+BEGIN
+    RETURN concat(lpad(concat(' ', count::TEXT), 10, '-'), ' --- deleted entries @ ', text);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -213,7 +219,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_run_examples() RETURNS VOID AS $$
 BEGIN
     RAISE NOTICE 'ANON -> base functions -> EXAMPLES';
 
-    RAISE NOTICE 'anon_msk(test, 123) > %', pg_temp.anon_msk('test', 123);
+    RAISE NOTICE 'anon_log_mask(test, 123) > %', pg_temp.anon_log_mask('test', 123);
 
     RAISE NOTICE 'anon_sample([a, b, c) > %', (SELECT pg_temp.anon_sample(ARRAY['a', 'b', 'c']));
 --     RAISE NOTICE 'anon_sample([]) > %', (SELECT pg_temp.anon_sample(ARRAY[])); -- FAIL
@@ -399,7 +405,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_user = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('user (usr_username, usr_display, usr_email, usr_password, usr_enabled)', count_user);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('user (usr_username, usr_display, usr_email, usr_password, usr_enabled)', count_user);
 
     UPDATE user_setting SET
         us_string_value = 'cc@anon.local'
@@ -415,7 +421,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_user_setting = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('user_setting (us_string_value)', count_user_setting);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('user_setting (us_string_value)', count_user_setting);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -432,7 +438,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_org_setting = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('org_setting (os_string_value)', count_org_setting);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('org_setting (os_string_value)', count_org_setting);
 
     UPDATE customer_identifier SET
         cid_value           = pg_temp.anon_xval(cid_value),
@@ -443,7 +449,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_customer_identifier = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('customer_identifier (cid_value, cid_requestor_key, cid_note)', count_customer_identifier);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('customer_identifier (cid_value, cid_requestor_key, cid_note)', count_customer_identifier);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -495,8 +501,8 @@ BEGIN
         count_contact = count_contact + count_tmp;
     END LOOP;
 
-    RAISE NOTICE '%', pg_temp.anon_msk('person (prs_first_name, prs_last_name)', count_person);
-    RAISE NOTICE '%', pg_temp.anon_msk('contact (ct_content)', count_contact);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('person (prs_first_name, prs_last_name)', count_person);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('contact (ct_content)', count_contact);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -519,7 +525,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_org_property = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('org_property (op_note, op_string_value, op_url_value, op_long_value, op_dec_value)', count_org_property);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('org_property (op_note, op_string_value, op_url_value, op_long_value, op_dec_value)', count_org_property);
 
     UPDATE person_property SET
         pp_note             = pg_temp.anon_lorem(pp_note),
@@ -532,7 +538,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_person_property = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('person_property (pp_note, pp_string_value, pp_url_value, pp_long_value, pp_dec_value)', count_person_property);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('person_property (pp_note, pp_string_value, pp_url_value, pp_long_value, pp_dec_value)', count_person_property);
 
     UPDATE platform_property SET
         plp_note            = pg_temp.anon_lorem(plp_note),
@@ -545,7 +551,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_platform_property = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('platform_property (plp_note, plp_string_value, plp_url_value, plp_long_value, plp_dec_value)', count_platform_property);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('platform_property (plp_note, plp_string_value, plp_url_value, plp_long_value, plp_dec_value)', count_platform_property);
 
     UPDATE provider_property SET
         prp_note            = pg_temp.anon_lorem(prp_note),
@@ -558,7 +564,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_provider_property = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('provider_property (prp_note, prp_string_value, prp_url_value, prp_long_value, prp_dec_value)', count_provider_property);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('provider_property (prp_note, prp_string_value, prp_url_value, prp_long_value, prp_dec_value)', count_provider_property);
 
     UPDATE vendor_property SET
         vp_note             = pg_temp.anon_lorem(vp_note),
@@ -571,7 +577,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_vendor_property = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('vendor_property (vp_note, vp_string_value, vp_url_value, vp_long_value, vp_dec_value)', count_vendor_property);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('vendor_property (vp_note, vp_string_value, vp_url_value, vp_long_value, vp_dec_value)', count_vendor_property);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -595,7 +601,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_sub_prop = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('subscription_property (sp_note, sp_string_value, sp_url_value, sp_long_value, sp_dec_value)', count_sub_prop);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('subscription_property (sp_note, sp_string_value, sp_url_value, sp_long_value, sp_dec_value)', count_sub_prop);
 
     UPDATE subscription_property child SET
         sp_note             = parent.sp_note,
@@ -612,7 +618,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_sub_prop_child = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('subscription_property ~ children', count_sub_prop_child);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('subscription_property ~ children', count_sub_prop_child);
 
     UPDATE license_property SET
         lp_note             = pg_temp.anon_lorem(lp_note),
@@ -629,7 +635,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_lic_prop = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('license_property (lp_note, lp_string_value, lp_url_value, lp_long_value, lp_dec_value, lp_paragraph, lp_paragraph_number)', count_lic_prop);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('license_property (lp_note, lp_string_value, lp_url_value, lp_long_value, lp_dec_value, lp_paragraph, lp_paragraph_number)', count_lic_prop);
 
     UPDATE license_property child SET
         lp_note             = parent.lp_note,
@@ -648,7 +654,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_lic_prop_child = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('license_property ~ children', count_lic_prop_child);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('license_property ~ children', count_lic_prop_child);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -678,8 +684,8 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_cost_item_2 = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('cost_item (ci_cost_in_billing_currency)', count_cost_item_1);
-    RAISE NOTICE '%', pg_temp.anon_msk('cost_item (ci_cost_in_local_currency)', count_cost_item_2);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('cost_item (ci_cost_in_billing_currency)', count_cost_item_1);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('cost_item (ci_cost_in_local_currency)', count_cost_item_2);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -696,7 +702,7 @@ BEGIN
         );
 
     GET DIAGNOSTICS count_doc = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('doc (doc_title, doc_content)', count_doc);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('doc (doc_title, doc_content)', count_doc);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -714,7 +720,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_task = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('task (tsk_title, tsk_description)', count_task);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('task (tsk_title, tsk_description)', count_task);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -732,7 +738,7 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_wf_checklist = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('wf_checklist (wfcl_title, wfcl_description, wfcl_comment)', count_wf_checklist);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('wf_checklist (wfcl_title, wfcl_description, wfcl_comment)', count_wf_checklist);
 
     UPDATE wf_checkpoint SET
         wfcp_title          = pg_temp.anon_phrase(wfcp_title, wfcp_position::text),
@@ -745,7 +751,39 @@ BEGIN
     );
 
     GET DIAGNOSTICS count_wf_checkpoint = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_msk('wf_checkpoint (wfcp_title, wfcp_description, wfcp_comment)', count_wf_checkpoint);
+    RAISE NOTICE '%', pg_temp.anon_log_mask('wf_checkpoint (wfcp_title, wfcp_description, wfcp_comment)', count_wf_checkpoint);
+END;
+$$ LANGUAGE PLPGSQL;
+
+-- Anon delete functions
+
+CREATE OR REPLACE FUNCTION pg_temp.anon_delete_mails() RETURNS VOID AS $$
+DECLARE
+    count_tmp INT;
+BEGIN
+    DELETE FROM async_mail_attachment;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_attachment', count_tmp);
+
+    DELETE FROM async_mail_header;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_header', count_tmp);
+
+    DELETE FROM async_mail_bcc;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_bcc', count_tmp);
+
+    DELETE FROM async_mail_cc;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_cc', count_tmp);
+
+    DELETE FROM async_mail_to;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_to', count_tmp);
+
+    DELETE FROM async_mail_mess;
+    GET DIAGNOSTICS count_tmp = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_delete('async_mail_mess', count_tmp);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -759,7 +797,7 @@ UPDATE org SET
     org_is_beta_tester = false
 WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3');
 
--- masking
+-- masking data
 
 SELECT pg_temp.anon_mask_users();               -- Users
 
@@ -777,3 +815,7 @@ SELECT pg_temp.anon_mask_properties2();         -- Properties (License, Subscrip
 SELECT pg_temp.anon_mask_tasks();               -- Tasks
 
 SELECT pg_temp.anon_mask_workflows();           -- Workflows
+
+-- deleting data
+
+SELECT pg_temp.anon_delete_mails();             -- Mails (Grails Asynchronous Mail Plugin)

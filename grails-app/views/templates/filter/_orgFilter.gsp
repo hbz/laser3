@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -433,6 +433,20 @@
                     </select>
                 </div>
             </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('surveySubscriptions')}">
+                <div class="field">
+                    <label for="surveySubscriptions">${message(code: 'surveySubscriptions.selectedSubscriptions')}</label>
+                    <select id="surveySubscriptions" name="surveySubscriptions" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveySubscriptions" value="${SurveyConfigSubscription.executeQuery("select scs.subscription from SurveyConfigSubscription scs where scs.surveyConfig = :surveyConfig order by scs.subscription.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveySubscriptions}" var="surveySubscription">
+                            <option <%=Params.getLongList(params, 'surveySubscriptions').contains(surveySubscription.id) ? 'selected="selected"' : '' %> value="${surveySubscription.id}">${surveySubscription.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('subscriptionAdjustDropdown')}">
                 <ui:greySegment>
                     <div class="two fields">
