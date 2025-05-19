@@ -4,7 +4,7 @@
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
         <g:if test="${(ie && ie.perpetualAccessBySub) || permanentTitle}">
-            <g:if test="${ie && ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf.id])}">
+            <g:if test="${ie && ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf?.id])}">
                 <g:link controller="subscription" action="index" id="${ieperpetualAccessBySub.id}">
                     <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                           data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
