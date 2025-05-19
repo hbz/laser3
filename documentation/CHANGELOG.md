@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
+
 6588    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         500er bei dauerhaften Käufen
 
 6582    15.05.2025  rc-3.5  3.5-RC      David   Feature     Verwaiste/Ungültige Views im Profile-Verzeichnis
