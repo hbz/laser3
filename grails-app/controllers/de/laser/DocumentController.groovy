@@ -14,6 +14,9 @@ import org.apache.http.HttpStatus
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 /**
  * This is the actual controller to handle uploaded documents. Handling notes is done in {@link NoteController}
  * @see DocContext
@@ -118,6 +121,27 @@ class DocumentController {
                             }
                             targetFile = new File("${tfPath}/${tfName}")
                             uploadFile.transferTo(targetFile)
+
+                            // --> TODO: remove if encryption works
+                            // --> raw file copy / without encryption
+                            try {
+                                String rcPath = "${tfPath}_rawCopies"
+                                File folderRc = new File(rcPath)
+                                if (!folderRc.exists()) {
+                                    folderRc.mkdirs()
+                                }
+                                File rcFile = new File("${rcPath}/${tfName}")
+                                Files.copy(targetFile.toPath(), rcFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                            } catch (Exception e) {
+                                log.warn ('rawCopies (TMP) -> '+ e.getMessage())
+                            }
+                            // -->
+
+                            // 1. documentStorageLocation/uuid
+                            // 2. tmp/<date>-uuid.enc
+                            // 3. tmp/<date>-uuid.dec
+                            // 4. if (valid) { copy 2. to 1. }
+                            // 5. delete 2. and 3.
 
                             fileCryptService.encryptRawFileAndUpdateDoc(targetFile, doc)
                         }
