@@ -35,7 +35,7 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.exports.csv')}
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.export.csv')}
                         </g:link>
                     </ui:exportDropdownItem>
                 </g:if>
@@ -52,7 +52,7 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.exports.csv')}
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.export.csv')}
                         </g:link>
                     </ui:exportDropdownItem>
                 </g:else>
