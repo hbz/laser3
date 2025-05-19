@@ -17,7 +17,7 @@
         String dataTooltip = ""
     %>
 
-    <g:if test="${surveyInfo.owner.id != contextService.getOrg().id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${actionName != 'show' && (costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -322,7 +322,7 @@
         </div>
     </g:if>
 
-    <g:if test="${surveyInfo.owner.id == contextService.getOrg().id}">
+    <g:if test="${actionName == 'show' && surveyInfo.owner.id == contextService.getOrg().id}">
         <g:set var="consCostItems"
                value="${subscription ? CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
