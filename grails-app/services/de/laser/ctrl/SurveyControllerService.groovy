@@ -1426,11 +1426,11 @@ class SurveyControllerService {
                                     }
                                 } else {
                                     if (cost_item_element) {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
                                             createCostItem = true
                                         }
                                     } else {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
                                             createCostItem = true
                                         }
                                     }
@@ -4408,7 +4408,7 @@ class SurveyControllerService {
                 newMap.oldSub = sub._getCalculatedPreviousForSurvey()
 
                 newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
-                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
+                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
 
                 result.participantsList << newMap
 
@@ -4706,7 +4706,7 @@ class SurveyControllerService {
                 newMap.newSub = sub
 
                 newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
-                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
+                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
 
                 result.participantsList << newMap
 

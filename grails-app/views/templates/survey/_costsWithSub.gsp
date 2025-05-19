@@ -98,7 +98,7 @@
                                 </td>
 
                                 <g:set var="surveyCostItems" scope="request"
-                                       value="${costItem.costItemElement && surveyOrg ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement) : null}"/>
+                                       value="${costItem.costItemElement && surveyOrg ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement) : null}"/>
 
 
                                 <g:if test="${surveyCostItems && !(costItem.costItemElement in (costItemElementsNotInSurveyCostItems))}">
@@ -184,7 +184,7 @@
                         </g:each>
 
                         <g:set var="costItemsWithoutSubCostItems"
-                               value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInListAndPkgIsNull(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
+                               value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInListAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
                         <g:if test="${costItemsWithoutSubCostItems}">
                             <g:each in="${costItemsWithoutSubCostItems}" var="ciWithoutSubCost">
                                 <tr>

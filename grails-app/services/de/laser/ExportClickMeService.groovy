@@ -4970,7 +4970,7 @@ class ExportClickMeService {
                 participantResult.surveyConfig = result.surveyConfig
                 participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
                 participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
                 participantResult.surveyOrg = surveyOrg
                 participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
                 participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
@@ -5011,7 +5011,7 @@ class ExportClickMeService {
                 participantResult.surveyConfig = result.surveyConfig
                 participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
                 participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
                 participantResult.surveyOrg = surveyOrg
                 participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
                 participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
@@ -5040,7 +5040,7 @@ class ExportClickMeService {
                 participantResult.surveyConfig = result.surveyConfig
                 participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
                 participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
                 participantResult.surveyOrg = surveyOrg
                 participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
                 participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
@@ -5239,7 +5239,7 @@ class ExportClickMeService {
                     costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.subForCostItems, costItemElements, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement'])
                 }else{
                     if(surveyOrg){
-                        costItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                        costItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
                     }
                 }
             }
