@@ -662,7 +662,8 @@ class ControlledListService {
 
             if(params.institution && params.filterForPermanentTitle){
                 queryMap.inst = Org.get(params.institution)
-                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+                queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
             }
 
             if (params.query) {
@@ -743,7 +744,8 @@ class ControlledListService {
 
             if(params.institution && params.filterForPermanentTitle){
                 queryMap.inst = Org.get(params.institution)
-                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+                queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
             }
 
             if (params.query) {
@@ -826,7 +828,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
            // TODO
            if (params.query) {
@@ -914,7 +917,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
 
            if (params.query) {
@@ -999,7 +1003,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
 
            if (params.query) {
@@ -1080,7 +1085,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
 
            if (params.query) {
@@ -1188,7 +1194,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
 
            if (params.query) {
@@ -1289,7 +1296,8 @@ class ControlledListService {
 
            if(params.institution && params.filterForPermanentTitle){
                queryMap.inst = Org.get(params.institution)
-               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+               queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
            }
 
            if (params.query) {
@@ -1373,7 +1381,8 @@ class ControlledListService {
 
             if(params.institution && params.filterForPermanentTitle) {
                 queryMap.inst = Org.get(params.institution)
-                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+                queryMap.subscrCons = RDStore.OR_SUBSCRIBER_CONS
+                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
             }
             if (params.query) {
                 query += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.sortname, :query) = true) "

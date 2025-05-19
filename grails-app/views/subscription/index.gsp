@@ -438,7 +438,7 @@
                                                 <g:set var="participantPerpetualAccessToTitle"
                                                        value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriberRespConsortia(), ie.tipp)}"/>
                                                 <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
-                                                    <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+                                                    <g:if test="${ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf?.id])}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
                                                             <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                                                                   data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
@@ -769,7 +769,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();
@@ -791,7 +790,6 @@
             $('#globalLoadingIndicator').hide();
         });
     });
-    <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
 
     $("[data-ajaxTippId]").on('click', function(e) {

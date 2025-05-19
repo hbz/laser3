@@ -10,23 +10,11 @@
 
             $('#dynamicModalContainer .ui.modal').modal({
                detachable: true,
-               closable: false,
                onShow: function () {
                     r2d2.initDynamicUiStuff('#exportClickMeModal');
                     r2d2.initDynamicXEditableStuff('#exportClickMeModal');
                     $("html").css("cursor", "auto");
-                    keyboardHandler = function (e) {
-                        if (e.keyCode === 27) {
-                            $(this).modal('hide');
-                        }
-                    };
-                    this.addEventListener('keyup', keyboardHandler);
                },
-
-                onHide : function() {
-                    this.removeEventListener('keyup', keyboardHandler);
-                },
-
                 onApprove : function() {
                     $(this).find('#exportClickMeModal .ui.form').submit();
                     return false;

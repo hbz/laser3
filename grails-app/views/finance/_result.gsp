@@ -198,11 +198,6 @@
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);
-                            let keyboardHandler = function(e) {
-                                if (e.keyCode === 27) {
-                                    $('#costItem_ajaxModal').modal('hide');
-                                }
-                            };
                             $('#dynamicModalContainer .ui.modal').modal({
                                 onVisible: function () {
                                     r2d2.initDynamicUiStuff('#costItem_ajaxModal');
@@ -211,19 +206,14 @@
                                     JSPC.app['finance'+idSuffix].preselectMembers();
 
                                     r2d2.helper.focusFirstFormElement(this);
-                                    document.addEventListener('keyup', keyboardHandler);
                                 },
                                 detachable: true,
                                 autofocus: false,
-                                closable: false,
                                 transition: 'scale',
                                 onApprove: function () {
                                     $(this).find('.ui.form').submit();
                                     return false;
                                 },
-                                onHide : function() {
-                                    document.removeEventListener('keyup', keyboardHandler);
-                                }
                             }).modal('show');
                         });
                         setTimeout(function () {
@@ -246,31 +236,20 @@
                     }).done( function(data) {
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty().html(data);
-                        let keyboardHandler = function(e) {
-                            if (e.keyCode === 27) {
-                                $('#costItem_ajaxModal').modal('hide');
-                            }
-                        };
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-
                                 r2d2.helper.focusFirstFormElement(this);
-                                document.addEventListener('keyup', keyboardHandler);
                             },
                             detachable: true,
                             autofocus: false,
-                            closable: false,
                             transition: 'scale',
                             onApprove : function() {
                                 $(this).find('.ui.form').submit();
                                 return false;
                             },
-                            onHide : function() {
-                                document.removeEventListener('keyup', keyboardHandler);
-                            }
                         }).modal('show');
                     })
                 });

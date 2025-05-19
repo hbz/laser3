@@ -118,7 +118,6 @@
 
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
-                    closable: false,
                     onVisible: function () {
                         r2d2.initDynamicUiStuff('#personModal');
                         r2d2.initDynamicXEditableStuff('#personModal');

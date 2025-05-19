@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -1668,55 +1669,29 @@ class FilterService {
      * @param owner the org whose be the owner of permanent titles
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner) {
-        log.debug 'getPermanentTitlesQuery'
+    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner, Set<Subscription> subsWithInheritance) {
+        log.debug "getPermanentTitlesQuery: ${params.toMapString()}"
 
         int hashCode = params.hashCode()
 
         Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
-        String base_qry
+        String base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
         Map<String,Object> qry_params = [owner: owner]
-        boolean filterSet = false
-        Date date_filter
-        if (params.asAt && params.asAt.length() > 0) {
-            date_filter = sdf.parse(params.asAt)
-            result.as_at_date = date_filter
-            result.editable = false
+        if(subsWithInheritance) {
+            base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where (pt.owner = :owner or pt.subscription in (:subsWithInheritance)) "
+            qry_params.subsWithInheritance = subsWithInheritance
         }
         if (params.filter) {
-            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
-            if (date_filter) {
-                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                // qry_params.add(deleted_ie);
-                base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
-                qry_params.startDate = date_filter
-                qry_params.endDate = date_filter
-            }
-            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(pt.tipp.name) like :title ) or ((lower(pt.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(pt.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-            qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
-            filterSet = true
-        }
-        else {
-            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
         }
 
-        if (params.status == RDStore.TIPP_STATUS_REMOVED.id.toString()) {
-            base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
-            qry_params.status = params.long('status')
-        }
-        else if (params.status) {
-            base_qry += " and ie.status.id in (:status) "
-            qry_params.status = Params.getLongList(params, 'status')
-            filterSet = true
-        }
-        else if (params.notStatus != '' && params.notStatus != null){
-            base_qry += " and ie.status.id != :notStatus "
-            qry_params.notStatus = params.notStatus
+        if (params.status) {
+            base_qry += " and ie.status in (:status) "
+            qry_params.status = Params.getRefdataList(params, 'status')
         }
         else {
             base_qry += " and ie.status = :current "
@@ -1726,35 +1701,26 @@ class FilterService {
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and tipp.pkg.id = :pkgId "
             qry_params.pkgId = params.long('pkgfilter')
-            filterSet = true
         }
 
         if (params.ddcs) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
             qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
-            filterSet = true
         }
 
         if (params.languages) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
             qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
-            filterSet = true
         }
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-            Set<String> subjectQuery = []
-            params.list('subject_references').each { String subReference ->
-                //subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-                subjectQuery << "tipp.subjectReference = '${subReference}'"
-            }
-            base_qry += " and (${subjectQuery.join(" or ")}) "
-            filterSet = true
+            base_qry += " and tipp.subjectReference in (:subjectReferences) "
+            qry_params.subjectReferences = params.list('subject_references')
         }
 
         if (params.series_names && params.series_names != "" && params.list('series_names')) {
-            base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
+            base_qry += " and lower(tipp.seriesName) in (:series_names) "
+            qry_params.series_names = params.list('series_names').collect { String seriesName -> seriesName.toLowerCase() }
         }
 
         if(params.summaryOfContent) {
@@ -1762,9 +1728,14 @@ class FilterService {
             qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
         }
 
-        if(params.ebookFirstAutorOrFirstEditor) {
-            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        if(params.first_author) {
+            base_qry += " and lower(tipp.firstAuthor) like :firstAuthor "
+            qry_params.firstAuthor = "%${params.first_author.trim().toLowerCase()}%"
+        }
+
+        if(params.first_editor) {
+            base_qry += " and lower(tipp.firstEditor) like :firstEditor "
+            qry_params.firstEditor = "%${params.first_editor.trim().toLowerCase()}%"
         }
 
         if(params.dateFirstOnlineFrom) {
@@ -1777,36 +1748,36 @@ class FilterService {
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
         }
 
-        // todo: ERMS-5517 > multiple values @ currentPermanentTitles
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
-            qry_params.identifier = "${params.identifier}"
-            filterSet = true
+            base_qry += " and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            qry_params.identifier = "%${params.identifier}%"
+        }
+
+        if (params.provider) {
+            base_qry += " and tipp.pkg.provider.id in (:provider) "
+            qry_params.provider = Params.getLongList(params, 'provider')
         }
 
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
             base_qry += "and lower(tipp.publisherName) in (:publishers) "
-            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
-            filterSet = true
+            qry_params.publishers = params.list('publishers').collect { String publisherName -> publisherName.toLowerCase() }
         }
 
 
         if (params.title_types && params.title_types != "" && params.list('title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
-            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
+            qry_params.title_types = params.list('title_types').collect { String titleType -> titleType.toLowerCase() }
         }
 
         if (params.medium) {
-            base_qry += " and tipp.medium.id in (:medium) "
-            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium')  // ?
-            filterSet = true
+            base_qry += " and tipp.medium in (:medium) "
+            qry_params.medium = Params.getRefdataList(params, 'medium')
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -1818,7 +1789,6 @@ class FilterService {
 
         result.query = base_qry
         result.queryParams = qry_params
-        result.filterSet = filterSet
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getPermanentTitlesQuery()'
