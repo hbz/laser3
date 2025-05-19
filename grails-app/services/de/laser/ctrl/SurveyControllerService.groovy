@@ -906,6 +906,9 @@ class SurveyControllerService {
                 if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
             }
 
+            result.vendorListTotal = result.vendorTotal.size()
+            result.vendorList = result.vendorTotal.drop(result.offset).take(result.max)
+
             [result: result, status: STATUS_OK]
         }
     }
