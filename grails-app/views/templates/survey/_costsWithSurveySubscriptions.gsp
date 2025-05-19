@@ -13,7 +13,7 @@
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveySubscriptions ? CostItem.findAllBySurveyOrgAndSurveyConfigSubscriptionInList(surveyOrg, SurveyConfigSubscription.findAllBySurveyConfigAndSubscriptionInList(surveyConfig, surveySubscriptions)) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != participant.id && costItemsSurvey}">
+    <g:if test="${costItemsSurvey}">
 
         <div class="ui card la-time-card">
 

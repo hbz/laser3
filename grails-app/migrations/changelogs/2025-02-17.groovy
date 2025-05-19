@@ -130,7 +130,9 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (hand-coded)", id: "1739806204859-14") {
         grailsChange {
             change {
-                String query = 'select s from SurveyOrg s where person is not null'
+               /*
+               Problem by Prod/Test deploy becouase changes on SurveyConfig Domain Class -> moved in 1746769820789-21
+               String query = 'select s from SurveyOrg s where person is not null'
                 Set<SurveyOrg> surveyOrgs = SurveyOrg.executeQuery(query)
                 int cnt = 0
                 int cntSurOrgPer = surveyOrgs.size()
@@ -143,7 +145,7 @@ databaseChangeLog = {
                     }
                 }
                 confirm("${query}: ${cnt}/${cntSurOrgPer}")
-                changeSet.setComments("${query}: ${cnt}/${cntSurOrgPer}")
+                changeSet.setComments("${query}: ${cnt}/${cntSurOrgPer}")*/
             }
             rollback {}
         }

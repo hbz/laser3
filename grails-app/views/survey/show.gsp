@@ -442,9 +442,9 @@
                                     </div>
                                 </g:if>
 
-                                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
+                              %{--  <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
                                     <laser:render template="/templates/survey/costsGeneralSurvey"/>
-                                </g:if>
+                                </g:if>--}%
                                 <g:if test="${surveyConfig.subscription}">
                                     <laser:render template="/templates/survey/costsWithSub"/>
                                 </g:if>
