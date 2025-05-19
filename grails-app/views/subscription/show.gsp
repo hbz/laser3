@@ -458,8 +458,8 @@
                                 <g:if test="${editable && subscription._getCalculatedType() != CalculatedType.TYPE_LOCAL}">
                                     <dd>
                                         <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
-                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
-                                                <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}">
+                                                <ui:auditButton auditable="[subscription, 'holdingSelection']" class="grey disabled"/>
                                             </span>
                                         </g:if>
                                         <g:else>
