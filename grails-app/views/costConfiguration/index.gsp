@@ -78,28 +78,18 @@
                 }).done( function (data) {
                     $('.ui.dimmer.modals > #ciecModal').remove();
                     $('#dynamicModalContainer').empty().html(data);
-                    let keyboardHandler = function(e) {
-                        if (e.keyCode === 27) {
-                            $('#ciecModal').modal('hide');
-                        }
-                    };
                     $('#dynamicModalContainer .ui.modal').modal({
                         onVisible: function () {
                             r2d2.initDynamicUiStuff('#ciecModal');
                             r2d2.initDynamicXEditableStuff('#ciecModal');
-                            document.addEventListener('keyup', keyboardHandler);
                         },
                         detachable: true,
                         autofocus: false,
-                        closable: false,
                         transition: 'scale',
                         onApprove : function() {
                             $(this).find('.ui.form').submit();
                             return false;
                         },
-                        onHide : function() {
-                            document.removeEventListener('keyup', keyboardHandler);
-                        }
                     }).modal('show');
                 })
             })

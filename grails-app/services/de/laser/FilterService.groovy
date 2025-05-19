@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -1669,7 +1670,7 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner, Set<Subscription> subsWithInheritance) {
-        log.debug 'getPermanentTitlesQuery'
+        log.debug "getPermanentTitlesQuery: ${params.toMapString()}"
 
         int hashCode = params.hashCode()
 
@@ -1727,9 +1728,14 @@ class FilterService {
             qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
         }
 
-        if(params.ebookFirstAutorOrFirstEditor) {
-            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        if(params.first_author) {
+            base_qry += " and lower(tipp.firstAuthor) like :firstAuthor "
+            qry_params.firstAuthor = "%${params.first_author.trim().toLowerCase()}%"
+        }
+
+        if(params.first_editor) {
+            base_qry += " and lower(tipp.firstEditor) like :firstEditor "
+            qry_params.firstEditor = "%${params.first_editor.trim().toLowerCase()}%"
         }
 
         if(params.dateFirstOnlineFrom) {
@@ -1748,8 +1754,13 @@ class FilterService {
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            base_qry += " and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "%${params.identifier}%"
+        }
+
+        if (params.provider) {
+            base_qry += " and tipp.pkg.provider.id in (:provider) "
+            qry_params.provider = Params.getLongList(params, 'provider')
         }
 
         if (params.publishers) {

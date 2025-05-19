@@ -178,7 +178,6 @@ surveyEvChart.on('click', function(params) {
                 },
                 detachable: true,
                 autofocus: false,
-                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('#exportClickMeModal .ui.form').submit();

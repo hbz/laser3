@@ -9,17 +9,9 @@
             success: function(result){
                 $("#dynamicModalContainer").empty();
                 $("#createPropertyModal").remove();
-
                 $("#dynamicModalContainer").html(result);
-                let keyboardHandler = function(e) {
-                    if (e.keyCode === 27) {
-                        $('#createPropertyModal').modal('hide');
-                    }
-                };
                 $("#dynamicModalContainer .ui.modal").modal({
-                    closable: false,
                     onVisible: function () {
-                        document.addEventListener('keyup', keyboardHandler);
                         r2d2.initDynamicUiStuff('#createPropertyModal');
                         r2d2.initDynamicXEditableStuff('#createPropertyModal');
                         $(".la-checkAllArea").each(function () {
