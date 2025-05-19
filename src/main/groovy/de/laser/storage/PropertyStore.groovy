@@ -64,6 +64,7 @@ class PropertyStore {
     public final static PropertyDefinition LIC_INDEMNIFICATION_BY_LICENSEE      = getPropertyDefinition('Indemnification by licensee clause indicator', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_INDEMNIFICATION_BY_LICENSOR      = getPropertyDefinition('Indemnification by licensor', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_INTELLECTUAL_PROPERTY_WARRANTY   = getPropertyDefinition('Intellectual property warranty', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_LICENSE_PROCESSING               = getPropertyDefinition('License Processing', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_OBLIGATIONS             = getPropertyDefinition('Licensee obligations', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_TERMINATION_CONDITION   = getPropertyDefinition('Licensee termination condition', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_TERMINATION_NOTICE_PERIOD = getPropertyDefinition('Licensee termination notice period', PropertyDefinition.LIC_PROP)

@@ -649,6 +649,15 @@ class YodaController {
         redirect action: "systemThreads"
     }
 
+    @Secured(['ROLE_YODA'])
+    def cleanupLibrarySuppliers() {
+        executorService.execute ({
+            Thread.currentThread().setName('cleanupLibrarySuppliers')
+            yodaService.cleanupLibrarySuppliers()
+        })
+        redirect action: "systemThreads"
+    }
+
     /**
      * Matches the status of the title instance to the issue entitlement holdings. Should be used in case of
      * preceding errors in the title synchronisation where the
@@ -1023,18 +1032,6 @@ class YodaController {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'platform', action: 'list'
-    }
-
-    @Secured(['ROLE_YODA'])
-    def migrateProviders() {
-        providerService.migrateProviders()
-        redirect controller: 'myInstitution', action: 'dashboard'
-    }
-
-    @Secured(['ROLE_YODA'])
-    def migrateVendors() {
-        vendorService.migrateVendors()
-        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     /**
