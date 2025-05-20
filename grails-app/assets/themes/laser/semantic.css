@@ -72384,6 +72384,12 @@ body.pushable > .pusher {
   justify-content: center;
   border-radius: 0.3em;
 }
+
+.ui.flyout .ui.message {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  width: auto;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Modal
  * https://github.com/fomantic/Fomantic-UI/
