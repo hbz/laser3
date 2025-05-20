@@ -20,7 +20,7 @@ class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
 
-	static final String VX = '--------------------------------------------------------------------------------'
+	static final String VT = '--------------------------------------------------------------------------------'
 	static final String V1 = '-     '
 	static final String V2 = '-        '
 	static final String V3 = '-           '
@@ -34,7 +34,7 @@ class CustomMigrationCallbacks {
 
 		if (count1 || count2 || count3) {
 			sql.withTransaction {
-				println VX
+				println VT
 				println V1 + 'Cleanup database migration table'
 				println V2 + 'done/pre% -> ' + count1
 				println V3 + 'updating pre1.0: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'done/pre1.0/', 'legacy/') where filename like 'done/pre1.0/%'")
@@ -47,7 +47,7 @@ class CustomMigrationCallbacks {
 				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelog-', 'changelogs/') where filename like 'changelog-2022-%'")
 
 				sql.commit()
-				println VX
+				println VT
 			}
 		}
 
@@ -55,12 +55,12 @@ class CustomMigrationCallbacks {
 
 		if (count4) {
 			sql.withTransaction {
-				println VX
+				println VT
 				println V1 + 'Cleanup database migration table'
 				println V2 + 'updating: ' + sql.executeUpdate("update databasechangelog set id = 'laser' where id = 'changelog' and filename = 'changelog.groovy'")
 
 				sql.commit()
-				println VX
+				println VT
 			}
 		}
 	}
@@ -78,7 +78,7 @@ class CustomMigrationCallbacks {
 
 		if (count.sum()) {
 			sql.withTransaction {
-				println VX
+				println VT
 				println V1 + 'Cleanup database migration table'
 				ranges.each { r ->
 					println V2 + '' + r
@@ -87,7 +87,7 @@ class CustomMigrationCallbacks {
 				}
 
 				sql.commit()
-				println VX
+				println VT
 			}
 		}
 	}
@@ -99,13 +99,13 @@ class CustomMigrationCallbacks {
 
 		if (count) {
 			sql.withTransaction {
-				println VX
+				println VT
 				println V1 + 'Cleanup database migration table'
 				println V2 + 'changelogs/2023-%'
 				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
 
 				sql.commit()
-				println VX
+				println VT
 			}
 		}
 	}
@@ -117,34 +117,43 @@ class CustomMigrationCallbacks {
 
 		if (count) {
 			sql.withTransaction {
-				println VX
+				println VT
 				println V1 + 'Cleanup storage migration table'
 				println V2 + 'changelogs/2023-%'
 				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-%'")
 
 				sql.commit()
-				println VX
+				println VT
 			}
 		}
 	}
 
-//	static void _localChangelogMigration_2025_05() {
-//		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
-//
-//		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2024-%'")).size()
-//
-//		if (count) {
-//			sql.withTransaction {
-//				println VX
-//				println V1 + 'Cleanup database migration table'
-//				println V2 + 'changelogs/2024-%'
-//				println V3 + 'updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2024-%'")
-//
-//				sql.commit()
-//				println VX
-//			}
-//		}
-//	}
+	static void _localChangelogMigration_2025_05() {
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
+
+		String[] ranges = ['changelogs/2024-%', 'changelogs/2025-01-%', 'changelogs/2025-02-%', 'changelogs/2025-03-%', 'changelogs/2025-04-%']
+		int[] count = [0, 0, 0, 0, 0]
+
+		ranges.eachWithIndex { r, i ->
+			String query = "select * from databasechangelog where filename like '${r}'"
+			count[i] = (sql.rows(query).size())
+		}
+
+		if (count.sum()) {
+			sql.withTransaction {
+				println VT
+				println V1 + 'Cleanup database migration table'
+				ranges.each { r ->
+					println V2 + '' + r
+					String query = "update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like '${r}'"
+					println V3 + 'updating: ' + sql.executeUpdate(query)
+				}
+
+				sql.commit()
+				println VT
+			}
+		}
+	}
 
 	void beforeStartMigration(Database database) {
 	}
@@ -165,12 +174,12 @@ class CustomMigrationCallbacks {
 
 		if (AppUtils.getCurrentServer() == AppUtils.DEV) {
 			if (! diff.empty) {
-				println VX
+				println VT
 				println V1 + 'Database migration'
 				println V2 + diff.size() + ' relevant changeset/s found ..'
 				println V2 + 'dump ignored, because server ' + AppUtils.getCurrentServer() + ' ..'
 				println V2 + 'done ..'
-				println VX
+				println VT
 			}
 		}
 		else if (! diff.empty) {
@@ -182,7 +191,7 @@ class CustomMigrationCallbacks {
 				fileName = 'laser-storage-backup'
 			}
 
-			println VX
+			println VT
 			println V1 + 'Database migration'
 			println V2 + diff.size() + ' relevant changeset/s found ..'
 			println V2 + 'dumping current database ..'
@@ -218,13 +227,13 @@ class CustomMigrationCallbacks {
 			}
 
 			println V2 + 'done ..'
-			println VX
+			println VT
 		}
 
 		if (isStorage) {
 //			_localChangelogMigration_2024_06_storage()
 		} else {
-//			_localChangelogMigration_2025_05()
+			_localChangelogMigration_2025_05()
 		}
 	}
 
