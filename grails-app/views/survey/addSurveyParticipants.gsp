@@ -60,7 +60,7 @@
                                   model="[orgList          : consortiaMembers,
                                           tmplShowCheckbox : (surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]),
                                           tmplDisableOrgIds: surveyConfig.orgs?.org?.id,
-                                          tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.sub ? 'surveySubInfo' : '')]
+                                          tmplConfigShow   : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.subs ? 'surveySubInfo' : '')]
                                   ]"/>
 
                     <br/>
@@ -73,7 +73,7 @@
                             ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
                             <br>
-                            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+                            <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                             <br>
 
                             <g:link controller="survey" action="templateForSurveyParticipantsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">

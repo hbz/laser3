@@ -60,7 +60,7 @@
             <g:else>
                 --%>
             <%-- enabling LAS:eR confirms for AJAX links requires additional engineering --%>
-                <g:link class="item kbartExport"
+                <g:link class="item kbartExport  js-no-wait-wheel"
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             <%--</g:else>--%>
         </ui:exportDropdownItem>

@@ -8,6 +8,7 @@ import de.laser.finance.PriceItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.helper.FactoryResult
+import de.laser.properties.LicenseProperty
 import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
 import de.laser.oap.OrgAccessPointLink
@@ -932,7 +933,8 @@ class CopyElementsService {
             */
 
             //log.debug(params.toMapString())
-            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
+            boolean optionsChecked = params.subscription?.keySet()?.intersect(['deletePackageIds', 'takePackageIds', 'takeTitleGroups', 'deleteTitleGroups'])?.size() > 0
+            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit && optionsChecked) {
                 flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                 executorService.execute({
                     try {
@@ -957,9 +959,11 @@ class CopyElementsService {
                             List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                             deleteIssueEntitlementGroupItem(deleteTitleGroups)
                         }
+                        /*
                         if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                             globalService.notifyBackgroundProcessFinish(userId, "PackageTransfer_${targetObject.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [targetObject.name] as Object[], LocaleUtils.getCurrentLocale()))
                         }
+                        */
                     }
                     catch (Exception e) {
                         e.printStackTrace()
@@ -1382,8 +1386,15 @@ class CopyElementsService {
 
 
         todoAuditProperties.each { Map todoAuditPro ->
-            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
-            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            AbstractPropertyWithCalculatedLastUpdated sourceProp
+            if(targetObject instanceof Subscription) {
+                sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+                targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            }
+            else if(targetObject instanceof License) {
+                sourceProp = LicenseProperty.get(todoAuditPro.sourcePropId)
+                targetProp = LicenseProperty.get(todoAuditPro.targetPropId)
+            }
             if(sourceProp && targetProp) {
                 targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
                     member = member.refresh()
@@ -1419,8 +1430,15 @@ class CopyElementsService {
         }
 
         todoAuditProperties.each { Map todoAuditPro ->
-            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
-            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            AbstractPropertyWithCalculatedLastUpdated sourceProp
+            if(targetObject instanceof Subscription) {
+                sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+                targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            }
+            else if(targetObject instanceof License) {
+                sourceProp = LicenseProperty.get(todoAuditPro.sourcePropId)
+                targetProp = LicenseProperty.get(todoAuditPro.targetPropId)
+            }
             if(sourceProp && targetProp) {
                 def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
                 auditConfigs.each {
@@ -1626,8 +1644,15 @@ class CopyElementsService {
      */
     boolean copyProviderRelations(List<ProviderRole> toCopyProviderRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        List<ProviderRole> sourceRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: sourceObject.id]),
-        targetRelations = ProviderRole.executeQuery('select pvr from ProviderRole pvr where :id in (pvr.subscription.id, pvr.license.id)', [id: targetObject.id])
+        List<ProviderRole> sourceRelations = [], targetRelations = []
+        if(sourceObject instanceof Subscription) {
+            sourceRelations = ProviderRole.findAllBySubscription(sourceObject)
+            targetRelations = ProviderRole.findAllBySubscription(targetObject)
+        }
+        else if(sourceObject instanceof License) {
+            sourceRelations = ProviderRole.findAllByLicense(sourceObject)
+            targetRelations = ProviderRole.findAllByLicense(targetObject)
+        }
         sourceRelations.each { ProviderRole pvrA ->
             if (pvrA in toCopyProviderRelations) {
                 if (targetRelations.find { ProviderRole pvrB -> pvrB.providerId == pvrA.providerId }) {
@@ -1663,9 +1688,16 @@ class CopyElementsService {
      */
     boolean copyVendorRelations(List<VendorRole> toCopyVendorRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        List<VendorRole> sourceRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: sourceObject.id]),
-                         targetRelations = VendorRole.executeQuery('select vr from VendorRole vr where :id in (vr.subscription.id, vr.license.id)', [id: targetObject.id])
-        sourceRelations?.each { VendorRole vrA ->
+        List<VendorRole> sourceRelations = [], targetRelations = []
+        if(sourceObject instanceof Subscription) {
+            sourceRelations = VendorRole.findAllBySubscription(sourceObject)
+            targetRelations = VendorRole.findAllBySubscription(targetObject)
+        }
+        else if(sourceObject instanceof License) {
+            sourceRelations = VendorRole.findAllByLicense(sourceObject)
+            targetRelations = VendorRole.findAllByLicense(targetObject)
+        }
+        sourceRelations.each { VendorRole vrA ->
             if (vrA in toCopyVendorRelations) {
                 if (targetRelations.find { VendorRole vrB -> vrA.vendorId == vrB.vendorId }) {
                     Object[] args = [vrA.vendor.name]
@@ -1821,14 +1853,22 @@ class CopyElementsService {
                     }
                     batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
-                        Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
+                        List<Subscription> targetMembers = Subscription.findAllByInstanceOf(targetObject)
+                        subscriptionService.addToMemberSubscription(targetObject, targetMembers, subscriptionPackage.pkg, false)
+                        if(targetObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !AuditConfig.getConfig(targetObject, 'holdingSelection')) {
+                            targetMembers.each { Subscription child ->
+                                Long sourceChildId = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where s.instanceOf = :sourceObject and oo.org = :subscriber', [subscriber: child.getSubscriber(), sourceObject: subscriptionPackage.subscription])
+                                batchQueryService.bulkAddHolding(sql, child.id, subscriptionPackage.pkg.id, child.hasPerpetualAccess, null, sourceChildId)
+                            }
+                        }
+                        /*.each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                if(subscriptionPackage.subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                if(AuditConfig.getConfig(targetObject)) {
                                     batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
             }

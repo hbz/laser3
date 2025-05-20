@@ -119,17 +119,10 @@ class YodaService {
     }
 
     /**
-     * Retrieves {@link IssueEntitlement}s that should be deleted with trace
-     * @return a map containing issue entitlement traces in the following structure:
-     * <ul>
-     *     <li>issue entitlement ID</li>
-     *     <li>{@link Package} we:kb ID</li>
-     *     <li>subscription global UID</li>
-     *     <li>{@link TitleInstancePackagePlatform} we:kb ID</li>
-     * </ul>
+     * Cleans {@link IssueEntitlement}s which should not exist because the issue entitlements of the parents hold
      */
     void cleanupIssueEntitlements() {
-        Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s where s.holdingSelection = :entire and s.instanceOf != null', [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
+        Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s where (s.holdingSelection = :entire or (s.holdingSelection = :partial and exists(select ac from AuditConfig ac where ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id and ac.referenceField = 'holdingSelection'))) and s.instanceOf != null", [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
         Sql storageSql = GlobalService.obtainStorageSqlConnection(), sql = GlobalService.obtainSqlConnection()
         Connection arrayConn = sql.getDataSource().getConnection()
         int processedTotal = 0

@@ -38,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller manages the survey-related calls
@@ -322,6 +323,7 @@ class SurveyController {
                         packageSurvey: (params.packageSurvey ?: false),
                         invoicingInformation: (params.invoicingInformation ?: false),
                         vendorSurvey: (params.vendorSurvey ?: false),
+                        subscriptionSurvey: (params.subscriptionSurvey ?: false)
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -352,6 +354,11 @@ class SurveyController {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
+        String consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextService.getOrg()])
+        result.referenceYears = availableReferenceYears
+
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         def date_restriction
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -376,42 +383,73 @@ class SurveyController {
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
-
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
-        //,[max: result.max, offset: result.offset]
+        List<Subscription> subscriptions
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
 
-        if (params.sort && params.sort.indexOf("§") >= 0) {
-            switch (params.sort) {
-                case "orgRole§provider":
-                    subscriptions.sort { x, y ->
-                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
-                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-                        a.compareToIgnoreCase b
+        if(params.sort == "provider") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
                     }
-                    if (params.order.equals("desc"))
-                        subscriptions.reverse(true)
-                    break
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                cmp
             }
         }
+        else if(params.sort == "vendor") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                }
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                }
+                cmp
+            }
+        }
+        result.allSubscriptions = subscriptions
+
+        result.date_restriction = date_restriction
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
-        result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions ,RDStore.LINKTYPE_LICENSE)
-        allLinkedLicenses.each { Links li ->
-            Subscription s = li.destinationSubscription
-            License l = li.sourceLicense
-            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
-            if(!linkedLicenses)
-                linkedLicenses = []
-            linkedLicenses << l
-            result.allLinkedLicenses.put(s,linkedLicenses)
-        }
+        if(subscriptions)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
 
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         result
 
     }
@@ -539,7 +577,7 @@ class SurveyController {
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         //double-check needed because menu is not being refreshed after xEditable change on sub/show
-        if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+        if(AuditConfig.getConfig(result.subscription, 'holdingSelection')) {
             flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
             redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
             return
@@ -908,7 +946,7 @@ class SurveyController {
             }
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                String query = 'select ci.id from CostItem ci where ci.pkg is null and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is null and ci.sub is null and ci.pkg is null) and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
 
                 Set<CostItem> missing = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
@@ -970,7 +1008,7 @@ class SurveyController {
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
                 Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
-                String query = 'select ci.id from CostItem ci where ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is null and ci.sub is null and ci.pkg is not null) and ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
 
                 Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
@@ -1033,6 +1071,109 @@ class SurveyController {
             redirect(action: 'surveyPackages', id: ctrlResult.result.surveyInfo.id)
             return
         }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def linkSurveySubscription() {
+        Map<String,Object> ctrlResult = surveyControllerService.linkSurveySubscription(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveySubscription() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveySubscription(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveySubscriptions', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> surveyCostItemsSubscriptions() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemsSubscriptions(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is not null and ci.sub is null and ci.pkg is null) and ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
+            ctrlResult.result
+        }
+
     }
 
     @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
@@ -1112,6 +1253,32 @@ class SurveyController {
     })
     def surveyVendors() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyVendors(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    /**
+     * Call to list the potential package candidates for linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def surveySubscriptions() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveySubscriptions(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -1513,6 +1680,22 @@ class SurveyController {
     })
     def surveyPackagesEvaluation() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyPackagesEvaluation(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def surveySubscriptionsEvaluation() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveySubscriptonsEvaluation(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -2866,6 +3049,11 @@ class SurveyController {
         if(params.selectPkg == "true"){
             result.selectPkg = params.selectPkg
         }
+
+        result.selectedSurveyConfigSubscriptionID = params.selectedSurveyConfigSubscriptionID ? Long.valueOf(params.selectedSurveyConfigSubscriptionID) : null
+        if(params.selectSubscription == "true"){
+            result.selectSubscription = params.selectSubscription
+        }
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         result.modalID = 'surveyCostItemModal'
@@ -2918,6 +3106,11 @@ class SurveyController {
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
+
+        result.selectedSurveyConfigSubscriptionID = params.selectedSurveyConfigSubscriptionID ? Long.valueOf(params.selectedSurveyConfigSubscriptionID) : null
+        if(params.selectSubscription == "true"){
+            result.selectSubscription = params.selectSubscription
+        }
 
         result.modalID = 'addForAllSurveyCostItem'
         result.idSuffix = 'addForAllSurveyCostItem'

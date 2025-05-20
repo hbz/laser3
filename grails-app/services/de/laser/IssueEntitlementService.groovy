@@ -15,13 +15,14 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional
 class IssueEntitlementService {
 
+    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     FilterService filterService
     TitleService titleService
 
     Subscription getTargetSubscription(Subscription s) {
-        if(s.instanceOf && s.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+        if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
             s.instanceOf
         else s
     }
@@ -300,18 +301,23 @@ class IssueEntitlementService {
                                     }
                                 }
                                 Map<String, Object> externalTitleData = [:]
-                                colMap.each { String colName, int colNo ->
-                                    if (colNo > -1 && line[colNo]) {
-                                        String cellEntry = line[colNo].trim()
-                                        if (cellEntry)
-                                            externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
+                                if(configMap.containsKey('withIDOnly')) {
+                                    externalTitleData.put('id', line[0].trim())
+                                }
+                                else {
+                                    colMap.each { String colName, int colNo ->
+                                        if (colNo > -1 && line[colNo]) {
+                                            String cellEntry = line[colNo].trim()
+                                            if (cellEntry)
+                                                externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
+                                        }
+                                        //fill up empty cells for an eventual return file
+                                        else if(colName in ['found_in_package', 'already_purchased_at']) {
+                                            if(colName == 'already_purchased_at' && !configMap.containsKey('issueEntitlementEnrichment'))
+                                                externalTitleData.put(colName, null)
+                                        }
+                                        else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
                                     }
-                                    //fill up empty cells for an eventual return file
-                                    else if(colName in ['found_in_package', 'already_purchased_at']) {
-                                        if(colName == 'already_purchased_at' && !configMap.containsKey('issueEntitlementEnrichment'))
-                                            externalTitleData.put(colName, null)
-                                    }
-                                    else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
                                 }
                                 if (match) {
                                     matchedTitles.put(match, externalTitleData)

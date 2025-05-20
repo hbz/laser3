@@ -73,6 +73,7 @@ class SurveyConfig {
     boolean packageSurvey = false
     boolean invoicingInformation = false
     boolean vendorSurvey = false
+    boolean subscriptionSurvey = false
 
     String issueEntitlementGroupName
 
@@ -86,6 +87,7 @@ class SurveyConfig {
             surveyUrls         : SurveyUrl,
             surveyPackages      : SurveyConfigPackage,
             surveyVendors      : SurveyConfigVendor,
+            surveySubscriptions      : SurveyConfigSubscription,
     ]
 
     static constraints = {
@@ -128,6 +130,7 @@ class SurveyConfig {
         packageSurvey column: 'surconf_package_survey'
         invoicingInformation column: 'surconf_invoicing_information'
         vendorSurvey column: 'surconf_vendor_survey'
+        subscriptionSurvey column: 'surconf_subscription_survey'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
@@ -274,10 +277,6 @@ class SurveyConfig {
      */
     def checkResultsEditByOrg(Org org) {
 
-        if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org).existsMultiYearTerm()) {
-            return ALL_RESULTS_PROCESSED_BY_ORG
-        } else {
-
             int countFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
                     "(sr.longValue != null or sr.stringValue != null or sr.decValue != null or sr.urlValue != null or sr.refValue != null or sr.dateValue != null)", [surConf: this, org: org])[0]
             int countNotFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
@@ -300,7 +299,6 @@ class SurveyConfig {
                 } else {
                     return ALL_RESULTS_NOT_PROCESSED_BY_ORG
                 }
-        }
 
 
     }
@@ -321,9 +319,7 @@ class SurveyConfig {
 
         if (surveyOrg?.finishDate){
             return true
-        }else if (this.subSurveyUseForTransfer && surveyOrg?.existsMultiYearTerm()) {
-            return true
-        } else {
+        }else {
            return false
         }
 
@@ -485,7 +481,7 @@ class SurveyConfig {
 
             Integer subMembersWithMultiYear = 0
             subChilds.each {
-                if(it.isCurrentMultiYearSubscriptionToParentSub())
+                if(BeanStore.getSurveyService().existsCurrentMultiYearTermBySurveyUseForTransfer(this, it.getSubscriber()))
                 {
                     subMembersWithMultiYear++
                 }
@@ -821,6 +817,14 @@ class SurveyConfig {
 
     boolean isTypeSubscriptionOrIssueEntitlement() {
         return type in [SURVEY_CONFIG_TYPE_SUBSCRIPTION, SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]
+    }
+
+    List<Subscription> getSubscriptionWhereOrgTransferred(Org org) {
+        return SurveyTransfer.executeQuery("select st.subscription from SurveyTransfer st where st.org = :org and st.surveyConfig = :surveyConfig", [org: org, surveyConfig: this])
+    }
+
+    boolean checkOrgTransferred(Org org) {
+        return SurveyTransfer.executeQuery("select count(*) from SurveyTransfer st where st.org = :org and st.surveyConfig = :surveyConfig", [org: org, surveyConfig: this])[0] > 0 ? true : false
     }
 
 

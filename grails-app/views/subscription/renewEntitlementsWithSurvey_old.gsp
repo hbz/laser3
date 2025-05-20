@@ -21,7 +21,7 @@
         <div class="header">KBART Exports</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+            <g:link class="item kbartExport  js-no-wait-wheel" action="renewEntitlementsWithSurvey"
                     id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
@@ -29,7 +29,7 @@
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+            <g:link class="item kbartExport  js-no-wait-wheel" action="renewEntitlementsWithSurvey"
                     id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
@@ -39,7 +39,7 @@
         <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
-                <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+                <g:link class="item kbartExport  js-no-wait-wheel" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,

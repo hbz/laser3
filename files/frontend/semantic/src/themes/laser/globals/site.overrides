@@ -96,14 +96,13 @@ aside.ui.accordion .title:not(.ui) {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
-    background-color: #f1ebe5;
-    .hidden.menu {
-        display: none;
+    .ui.grid {
+        margin: 0;
     }
     .ui.inverted.menu.la-top-menu {
-        //height: 50px;
         border-radius:0 !important;
         border: none !important;
+        margin:0!important;
         &.la-local {
             box-shadow: 0px 6px 0px 0px @yellow;
         }
@@ -118,11 +117,8 @@ aside.ui.accordion .title:not(.ui) {
             box-shadow: 0px 6px 0px 0px @blue;
         }
     }
-    .la-fixed-menu {
-        //height: 50px;
-    }
     .logo {
-        height: 50px;
+        height: auto;
         width: 144px;
         padding-right: 2rem;
 
@@ -181,10 +177,6 @@ aside.ui.accordion .title:not(.ui) {
 
 
     @media only screen and (max-width: 700px) {
-        .ui.fixed.menu {
-            display: none !important;
-        }
-
         .masthead.segment {
             min-height: 350px;
         }
@@ -201,6 +193,9 @@ aside.ui.accordion .title:not(.ui) {
         .masthead .ui.ui.ui.ui.massive.button{
             font-size: 1.3rem;
         }
+    }
+    @media only screen and (max-width: 1200px) {
+        min-height: auto;
     }
 }
 .ui {

@@ -70,81 +70,182 @@
     </div>
 </div>
 
+<div class="ui three column grid">
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelAdminOnly />
+                <br/>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelConsortiumOnly />
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="ui fluid card">
+            <div class="content">
+                <ui:cardLabelDeprecated />
+
+                <button class="ui small button" data-ui="modal" data-href="#modal1">X</button>
+                <ui:modal id="modal1">
+                    modal1 (data-ui="modal" data-href="#modal1") <br /><br />
+                </ui:modal>
+
+                <button class="ui small button" id="button2">Y</button>
+                <ui:modal id="modal2">
+                    $('#modal2').modal() <br/><br />
+                </ui:modal>
+
+                <button class="ui small button" id="button3">Z</button>
+                <ui:modal id="modal3">
+                    $('#modal3').modal({ closable: false })
+                </ui:modal>
+
+                <laser:script file="${this.getGroovyPageFileName()}">
+                    $('#button2').click(function() { $('#modal2').modal('show'); });
+                    $('#modal2').modal();
+
+                    $('#button3').click(function() { $('#modal3').modal('show'); });
+                    $('#modal3').modal({ closable: false });
+                </laser:script>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui four column grid la-clear-before">
+    <div class="column wide four">
+        <div class="la-inline-lists">
+            <div class="ui card">
+                <div class="ui top attached label">Lorem ipsum ..</div>
+                <div class="content"> </div>
+            </div>
+            <div class="ui card">
+                <div class="ui top attached label">Nam praesent ..</div>
+                <div class="content"> </div>
+            </div>
+        </div>
+    </div>
+    <div class="column wide four">
+        <div class="la-inline-lists">
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e3eaf3;">Semper tristique ..</div>
+                <div class="content"> </div>
+            </div>
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e3eaf3;">Nisi dolor ..</div>
+                <div class="content"> </div>
+            </div>
+        </div>
+    </div>
+    <div class="column wide four">
+        <div class="la-inline-lists">
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e4e8e9;">Lectus tempus ..</div>
+                <div class="content"> </div>
+            </div>
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e4e8e9;">Quisque facilisis ..</div>
+                <div class="content"> </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="column wide four">
+        <div class="la-inline-lists">
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e6eaef;">Mi dictum ..</div>
+                <div class="content"> </div>
+            </div>
+            <div class="ui card">
+                <div class="ui top attached label" style="background-color: #e6eaef;">Ut tristique ..</div>
+                <div class="content"> </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="ui fluid card">
     <div class="content">
         <div class="header"><icon:pointingHand/> SymbolTagLib</div>
     </div>
     <div class="content">
         <div class="ui list">
-        <div class="item">
-            <icon:placeholder/>
-            <div class="content"> &lt;icon:placeholder/> </div>
+            <div class="item">
+                <icon:placeholder/>
+                <div class="content"> &lt;icon:placeholder/> </div>
+            </div>
+            <div class="item">
+                <icon:arrow/>
+                <div class="content"> &lt;icon:arrow/> </div>
+            </div>
+            <div class="item">
+                <icon:pointingHand/>
+                <div class="content"> &lt;icon:pointingHand/> </div>
+            </div>
+            <div class="item">
+                <icon:bug/>
+                <div class="content"> &lt;icon:bug/> </div>
+            </div>
+            <div class="item">
+                <icon:database/>
+                <div class="content"> &lt;icon:database/> </div>
+            </div>
+            <div class="item">
+                <icon:pathFolder/>
+                <div class="content"> &lt;icon:pathFolder/> </div>
+            </div>
+            <div class="item">
+                <icon:pathFile/>
+                <div class="content"> &lt;icon:pathFile/> </div>
+            </div>
+            <div class="item">
+                <icon:codePackage/>
+                <div class="content"> &lt;icon:codePackage/> </div>
+            </div>
+            <div class="item">
+                <icon:codeClass/>
+                <div class="content"> &lt;icon:codeClass/> </div>
+            </div>
+            <div class="item">
+                <icon:universalAccess/>
+                <div class="content"> &lt;icon:universalAccess/> </div>
+            </div>
+            <div class="item">
+                <icon:pdf/>
+                <div class="content"> &lt;icon:pdf/> </div>
+            </div>
+            <div class="item">
+                <icon:video/>
+                <div class="content"> &lt;icon:video/> </div>
+            </div>
+            <div class="item">
+                <icon:flag_de/>
+                <div class="content"> &lt;icon:flag_de/> </div>
+            </div>
+            <div class="item">
+                <icon:flag_en/>
+                <div class="content"> &lt;icon:flag_en/> </div>
+            </div>
+            <div class="item">
+                <icon:help_chrome/>
+                <div class="content"> &lt;icon:help_chrome/> </div>
+            </div>
+            <div class="item">
+                <icon:help_firefox/>
+                <div class="content"> &lt;icon:help_firefox/> </div>
+            </div>
+            <div class="item">
+                <icon:help_ie/>
+                <div class="content"> &lt;icon:help_ie/> </div>
+            </div>
         </div>
-        <div class="item">
-            <icon:arrow/>
-            <div class="content"> &lt;icon:arrow/> </div>
-        </div>
-        <div class="item">
-            <icon:pointingHand/>
-            <div class="content"> &lt;icon:pointingHand/> </div>
-        </div>
-        <div class="item">
-            <icon:bug/>
-            <div class="content"> &lt;icon:bug/> </div>
-        </div>
-        <div class="item">
-            <icon:database/>
-            <div class="content"> &lt;icon:database/> </div>
-        </div>
-        <div class="item">
-            <icon:pathFolder/>
-            <div class="content"> &lt;icon:pathFolder/> </div>
-        </div>
-        <div class="item">
-            <icon:pathFile/>
-            <div class="content"> &lt;icon:pathFile/> </div>
-        </div>
-        <div class="item">
-            <icon:codePackage/>
-            <div class="content"> &lt;icon:codePackage/> </div>
-        </div>
-        <div class="item">
-            <icon:codeClass/>
-            <div class="content"> &lt;icon:codeClass/> </div>
-        </div>
-        <div class="item">
-            <icon:universalAccess/>
-            <div class="content"> &lt;icon:universalAccess/> </div>
-        </div>
-        <div class="item">
-            <icon:pdf/>
-            <div class="content"> &lt;icon:pdf/> </div>
-        </div>
-        <div class="item">
-            <icon:video/>
-            <div class="content"> &lt;icon:video/> </div>
-        </div>
-        <div class="item">
-            <icon:flag_de/>
-            <div class="content"> &lt;icon:flag_de/> </div>
-        </div>
-        <div class="item">
-            <icon:flag_en/>
-            <div class="content"> &lt;icon:flag_en/> </div>
-        </div>
-        <div class="item">
-            <icon:help_chrome/>
-            <div class="content"> &lt;icon:help_chrome/> </div>
-        </div>
-        <div class="item">
-            <icon:help_firefox/>
-            <div class="content"> &lt;icon:help_firefox/> </div>
-        </div>
-        <div class="item">
-            <icon:help_ie/>
-            <div class="content"> &lt;icon:help_ie/> </div>
-        </div>
-    </div>
     </div>
 </div>
 

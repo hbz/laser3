@@ -8,6 +8,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.FilterLogic
+import de.laser.helper.Profiler
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -802,14 +803,14 @@ class SubscriptionController {
                             if(updatedSubList && packagesToProcessCurParent) {
                                 packagesToProcessCurParent.each { Package pkg ->
                                     subscriptionService.cachePackageName("PackageTransfer_" + ctrlResult.result.parentSubscriptions[0].id, pkg.name)
-                                    updatedSubList.each { Subscription currMember ->
-                                        /*
+                                    subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
+                                    /*
+                                        updatedSubList.each { Subscription currMember ->
                                         if(currParent.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !auditService.getAuditConfig(currParent, 'holdingSelection')) {
-                                            subscriptionService.addToMemberSubscription(currParent, [currMember], pkg, true)
+                                            }
+                                            subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, )
                                         }
-                                        */
-                                        subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
-                                    }
+                                    */
                                 }
                             }
                         }
@@ -1004,7 +1005,7 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                if(params.createEntitlements == 'on' || ctrlResult.result.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                if(params.createEntitlements == 'on') {
                     flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     return
@@ -1061,20 +1062,35 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
-        Map<String,Object> ctrlResult = subscriptionService.linkTitle(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
+        log.debug("linkTitle : ${params}")
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(result) {
+            Profiler prf = new Profiler()
+            prf.setBenchmark('init')
+            Map<String, Object> configMap = [:]
+            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
+            if (ttParams.status) { params.status = ttParams.status }
+            if (ttParams.tab)    { params.tab = ttParams.tab }
+            SwissKnife.setPaginationParams(result, params, contextService.getUser())
+            if(params.containsKey('filterSet')) {
+                params.each { key, value ->
+                    if(value)
+                        configMap.put(key, value)
+                }
+                prf.setBenchmark('getting keys')
+                Set<Long> keys = titleService.getKeys(configMap)
+                prf.setBenchmark('get title list')
+                result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+                result.num_tipp_rows = keys.size()
+                result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+                result.tmplConfigShow = ['lineNumber', 'name', 'status', 'package', 'provider', 'platform', 'lastUpdatedDisplay', 'linkTitle']
             }
-            else {
-                flash.error = ctrlResult.result.error
-                ctrlResult.result
-            }
+            result.benchMark = prf.stopBenchmark()
+            result
         }
         else {
-            flash.message = ctrlResult.result.message
-            ctrlResult.result
+            response.sendError(401)
+            return
         }
     }
 
@@ -1089,6 +1105,8 @@ class SubscriptionController {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg
+            subscription.holdingSelection = RDStore.SUBSCRIPTION_HOLDING_PARTIAL //in case it was null before
+            subscription.save()
             subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
             redirect action: 'index', id: subscription.id
         }
@@ -1381,15 +1399,18 @@ class SubscriptionController {
                         [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
                 result.mailTo = mailTo
                 Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
-                String customerIdentifier = "", notInPackageRows = ""
+                String customerIdentifier = "", notInPackageRows = "", productIDString = ""
                 if(customerIdentifierSet)
-                    customerIdentifier = customerIdentifierSet.join(',')
+                    customerIdentifier = customerIdentifierSet.value.join(',')
                 if(result.notInPackage) {
                     result.notInPackage.each { Map<String, Object> row ->
-                        notInPackageRows << "${row.values().join('\t')}\n"
+                        notInPackageRows += "${row.values().join('\t')}\n"
                     }
                 }
-                result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
+                Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
+                if(productIDs)
+                    productIDString = productIDs.join('/')
+                result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), productIDString, notInPackageRows])
                 String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -1463,7 +1484,7 @@ class SubscriptionController {
                 result
             }
         }
-        else if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+        else if(result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || AuditConfig.getConfig(result.subscription.instanceOf, 'holdingSelection')) {
             flash.error = message(code: 'subscription.details.addEntitlements.holdingEntire')
             redirect controller: 'subscription', action: 'show', params: [id: params.id]
             return
@@ -1665,13 +1686,11 @@ class SubscriptionController {
             Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
             String customerIdentifier = "", notInPackageRows = "", productIDString = ""
             if(customerIdentifierSet)
-                customerIdentifier = customerIdentifierSet.join(',')
+                customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
-                notInPackageRows += "\n"
                 result.notInPackage.each { Map<String, Object> row ->
                     notInPackageRows += "${row.values().join('\t')}\n"
                 }
-                notInPackageRows += "\n"
             }
             Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
             if(productIDs)
@@ -1699,7 +1718,7 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def tippSelectForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         MultipartFile kbartPreselect = request.getFile('kbartPreselect')
         //we may presume that package linking is given and checked at this place
         Set<Package> subPkgs = result.subscription.packages.pkg
@@ -1719,22 +1738,24 @@ class SubscriptionController {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
             String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
             File f = new File(dir+'/'+filename)
-            result.titleRow.addAll(['found_in_package','already_purchased_at'])
+            if(!params.containsKey('withIDOnly'))
+                result.titleRow.addAll(['found_in_package','already_purchased_at'])
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
-            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.toList(), contextService.getOrg())
-            String customerIdentifier = "", notInPackageRows = ""
+            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
+            String customerIdentifier = "", notInPackageRows = "", productIDString = ""
             if(customerIdentifierSet)
-                customerIdentifier = customerIdentifierSet.join(',')
+                customerIdentifier = customerIdentifierSet.value.join(',')
             if(result.notInPackage) {
-                notInPackageRows << "<ul>"
                 result.notInPackage.each { Map<String, Object> row ->
-                    notInPackageRows << "<li>${row.values().join('\t')}</li>"
+                    notInPackageRows += "${row.values().join('\t')}\n"
                 }
-                notInPackageRows << "</ul>"
             }
-            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
+            Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
+            if(productIDs)
+                productIDString = productIDs.join('/')
+            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), productIDString, notInPackageRows])
             String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->

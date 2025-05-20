@@ -1,5 +1,6 @@
 package de.laser.api.v0
 
+import de.laser.AuditConfig
 import de.laser.ExportService
 import de.laser.AlternativeName
 import de.laser.wekb.DeweyDecimalClassification
@@ -354,7 +355,7 @@ class ApiCollectionReader {
         )
         */
         Subscription targetSub
-        if(subPkg.subscription.instanceOf && subPkg.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+        if(subPkg.subscription.instanceOf && (AuditConfig.getConfig(subPkg.subscription.instanceOf, 'holdingSelection')))
             targetSub = subPkg.subscription.instanceOf
         else targetSub = subPkg.subscription
         Map<String, Object> subParams = [subId: targetSub.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: targetSub.id, pkg: subPkg.pkg.id]

@@ -57,7 +57,7 @@
                       </g:link>
                   </g:if>
                   <g:else>
-                      <g:link class="item kbartExport" action="${actionName}"
+                      <g:link class="item kbartExport  js-no-wait-wheel" action="${actionName}"
                               params="${params + [exportKBart: true]}">KBART Export</g:link>
                   </g:else>
               </ui:exportDropdownItem>

@@ -139,7 +139,7 @@
                     <g:if test="${isConsortialObjects && objProperty == 'holdingSelection' && sourceObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                         <td class="center aligned">
                             <div class="ui disabled read-only checkbox la-toggle-radio la-inherit">
-                                <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
+                                <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" checked="true"/>
                             </div>
                         </td>
                     </g:if>

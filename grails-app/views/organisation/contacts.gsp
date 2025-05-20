@@ -18,24 +18,19 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}"/>
 
-<div class="ui grid">
-    <div class="two wide column">
-        <div class="ui fluid pointing secondary vertical tabular la-tab-with-js menu">
-            <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-                ${message(code: 'org.prsLinks.label')}
-            </a>
-            <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-                ${message(code: 'org.addresses.label')}
-            </a>
-        </div>
+<div class="ui top attached stackable tabular la-tab-with-js menu">
+    <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
+        ${message(code: 'org.prsLinks.label')}
+    </a>
+    <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
+        ${message(code: 'org.addresses.label')}
+    </a>
+</div>
 
-    </div>
-    <div class="fourteen wide column">
-
-        <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
+<div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
     <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
-    <h2 class="ui header la-clear-before left floated aligned la-positionRelative">${message(code: 'org.contacts.label')}</h2>
+
     <ui:filter simple="false" extended="false">
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
@@ -49,25 +44,25 @@
 
                 <div class="field">
                     <label><g:message code="person.function.label"/></label>
-                    <ui:select class="ui dropdown clearable search"
-                                  name="function"
-                                  from="${rdvAllPersonFunctions}"
-                                  multiple=""
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.function}"/>
+                    <ui:select class="ui dropdown search"
+                               name="function"
+                               from="${rdvAllPersonFunctions}"
+                               multiple=""
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.function}"/>
                 </div>
 
                 <div class="field">
                     <label><g:message code="person.position.label"/></label>
-                    <ui:select class="ui dropdown clearable search"
-                                  name="position"
-                                  from="${rdvAllPersonPositions}"
-                                  multiple=""
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.position}"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    <ui:select class="ui dropdown search"
+                               name="position"
+                               from="${rdvAllPersonPositions}"
+                               multiple=""
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.position}"
+                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </div>
 
@@ -80,35 +75,33 @@
     </ui:filter>
 
     <laser:render template="/addressbook/person_table"
-              model="${[persons       : visiblePersons,
-                        showContacts  : true,
-                        showOptions : true,
-                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position', 'preferredForSurvey']
-              ]}"/>
+                  model="${[persons       : visiblePersons,
+                            showContacts  : true,
+                            showOptions : true,
+                            tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position', 'preferredForSurvey']
+                  ]}"/>
 
     <ui:paginate action="contacts" controller="organisation" params="${params}"
-                    max="${max}"
-                    total="${num_visiblePersons}"/>
+                 max="${max}"
+                 total="${num_visiblePersons}"/>
 
 </div>
 
-        %{--------------------}%
+%{--------------------}%
 
-        <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
-            <h2 class="ui header la-clear-before left floated aligned la-positionRelative">${message(code: 'org.addresses.label')}</h2>
-            <laser:render template="/addressbook/address_table" model="${[
-                    addresses           : addresses,
-                    tmplShowDeleteButton: true,
-                    editable            : editable,
-                    showOptions : true,
-                    showPreferredForSurvey: true
-            ]}"/>
+<div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-        </div>
+    <laser:render template="/addressbook/address_table" model="${[
+            addresses           : addresses,
+            tmplShowDeleteButton: true,
+            editable            : editable,
+            showOptions : true,
+            showPreferredForSurvey: true
+    ]}"/>
 
-        %{--------------------}%
-    </div>
 </div>
+
+%{--------------------}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {

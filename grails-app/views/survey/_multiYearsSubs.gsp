@@ -51,7 +51,7 @@
                             <br>
                         </g:if>
 
-                        <g:if test="${countMultiYearMembers > 0 && parentSuccessorSubscription != nextSubs[i]}">
+                        <g:if test="${parentSuccessorSubscription != nextSubs[i]}">
                             <g:link controller="survey" action="$actionName"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: nextSubs[i].id]"
                                     class="${Btn.SIMPLE}">
@@ -132,7 +132,6 @@ console.log($(this).attr('href'))
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();

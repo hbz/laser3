@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PermanentTitle" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 <g:set var="counter" value="${(offset ?: 0) + 1}"/>
 <laser:serviceInjection/>
 
@@ -12,7 +12,7 @@
                     <div class="ui raised segments la-accordion-segments">
 
                         <g:render template="/templates/titles/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null, showPackageLinking: showPackageLinking]"/>
+                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null]"/>
 
                         <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>

@@ -3,6 +3,7 @@
     <h1 class="ui header">
         <g:message code="myinst.financeImport.headline"/>
     </h1>
+    <ui:msg class="warning" message="myinst.financeImport.mandatory" hideClose="true" showIcon="true"/>
     <div class="content">
         <table class="ui la-ignore-fixed compact table">
             <thead>
@@ -39,7 +40,7 @@
                         }
                     %>
                     <tr <g:if test="${mandatory}">class="negative"</g:if>>
-                        <td>${message(code:"myinst.financeImport.${mpg}")}<g:if test="${mandatory}"><span style="color: #BB1600">*</span></g:if></td>
+                        <td>${message(code:"myinst.financeImport.${mpg}")}</td>
                         <%--<td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>--%>
                         <td>
                             ${message(code:"myinst.financeImport.format.${mpg}")}

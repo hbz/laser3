@@ -696,10 +696,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      */
 
 
-    boolean isCurrentMultiYearSubscriptionNew() {
+/*    boolean isCurrentMultiYearSubscriptionNew() {
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
-    }
+    }*/
 
     /**
      * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the parent subscription

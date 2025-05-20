@@ -13922,6 +13922,10 @@
                             module.verbose('Dimmer clicked but closable setting is disabled');
 
                             return;
+                        } else {
+                            module.verbose('Dimmer clicked and closable is set to true - but ignored due new global behaviour (CCC-1)'); // CCC-1
+
+                            return;
                         }
                         if (initialMouseDownInModal) {
                             module.debug('Dimmer clicked but mouse down was initially registered inside the modal');

@@ -17,6 +17,9 @@
 <g:if test="${selectPkg == "true"}">
     <g:hiddenField name="selectPkg" value="${selectPkg}"/>
 </g:if>
+<g:if test="${selectSubscription == "true"}">
+    <g:hiddenField name="selectSubscription" value="${selectSubscription}"/>
+</g:if>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -167,6 +170,26 @@
     </div>
 </g:if>
 
+<g:if test="${selectSubscription == "true"}">
+    <div class="field">
+        <div class="one fields la-forms-grid">
+            <fieldset class="sixteen wide field">
+                <div class="field">
+                    <label>${message(code: 'subscription.label')}</label>
+                    <g:if test="${surveyConfig.surveySubscriptions}">
+                        <g:select name="newSurveyConfigSubscription" id="newSurveyConfigSubscription_${idSuffix}" class="ui dropdown clearable search"
+                                  from="${surveyConfig.surveySubscriptions}"
+                                  optionValue="${{ it.subscription.name }}"
+                                  optionKey="${{ it.id }}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                  value="${selectedSurveyConfigSubscriptionID}"/>
+                    </g:if>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</g:if>
+
 <div class="field">
     <div class="two fields la-forms-grid">
         <ui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
@@ -203,9 +226,14 @@
         ciec: $("#ciec_${idSuffix}"),
         costElems: $("#newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
-        percentOnOldPrice: $("#percentOnOldPrice"),
-        percentOnSurveyPrice: $("#percentOnSurveyPrice"),
-        processSurveyCostItemsBulk_del_btn: $("#processSurveyCostItemsBulk_del_btn"),
+        <%
+            if(bulkCostItems){
+                println 'percentOnOldPrice: $("#percentOnOldPrice"),'
+                println        'percentOnSurveyPrice: $("#percentOnSurveyPrice"),'
+                println   'processSurveyCostItemsBulk_del_btn: $("#processSurveyCostItemsBulk_del_btn"),'
+            }
+        %>
+
         elementChangeable: false,
         costItemElementConfigurations: {
         <%
@@ -318,16 +346,16 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
+                if(JSPC.app.finance${idSuffix}.percentOnOldPrice && JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
-                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() != 0) {
+                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice && JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() >= 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
-                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
+                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn && JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else {

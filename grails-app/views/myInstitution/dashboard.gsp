@@ -10,19 +10,27 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/dashboard/topmenu" />
+        <g:if test="${dashboardService.showTopMenu()}">
+            <laser:render template="/myInstitution/dashboard/topmenu" />
+        </g:if>
 
         <ui:messages data="${flash}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="/myInstitution/dashboard/dataviz_inst" />
-            <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+            <g:if test="${dashboardService.showCharts()}">
+                <laser:render template="/myInstitution/dashboard/dataviz_inst" />
+            </g:if>
+            <g:if test="${dashboardService.showCurrentTestSubscriptions()}">
+                <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+            </g:if>
         </g:if>
 
-        <div class="ui two cards">
-            <laser:render template="/myInstitution/dashboard/rttp" />
-            <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
-        </div>
+        <g:if test="${dashboardService.showWekbNews()}">
+            <div class="ui two cards">
+                <laser:render template="/myInstitution/dashboard/rttp" />
+                <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+            </div>
+        </g:if>
 
     <%
         RefdataValue us_dashboard_tab
@@ -167,7 +175,7 @@
         </g:if>
 
         <g:if test="${workflowService.hasREAD()}">
-            <div id="wfFlyout" class="ui eight wide flyout"></div>
+            <div id="wfFlyout" class="ui very wide flyout"></div>
 
             <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
@@ -177,7 +185,7 @@
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
+%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.dashboardTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
                         </ui:msg>
                     </g:if>
 

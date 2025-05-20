@@ -2,8 +2,16 @@
 <laser:serviceInjection />
 
 <div class="ui card">
+    <g:if test="${controllerName == 'profile'}"> %{-- tmp: new --}%
+        <div class="ui top attached label">
+            ${message(code: 'profile.membership.existing')}
+        </div>
+    </g:if>
+
     <div class="content">
-    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+        <g:if test="${controllerName != 'profile'}"> %{-- tmp: default --}%
+            <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+        </g:if>
 
     <table class="ui fixed celled la-js-responsive-table la-table table">
         <thead>

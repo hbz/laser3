@@ -165,13 +165,13 @@
                 JSPC.app.isClicked = false;
 
                 $("[data-tab='" + JSPC.app.tab + "']").addClass("active");
-                $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + JSPC.app.tab);
+                $(".exportCSV").attr("href", JSPC.app.rawHref); // + "&showView=" + JSPC.app.tab
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
-                        $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + tabPath);
+                        $(".exportCSV").attr("href", JSPC.app.rawHref); //  + "&showView=" + tabPath
                         $("#showView").val(tabPath);
                     }
                 });
@@ -193,15 +193,11 @@
                             data: {
                                 sub: "${fixedSubscription?.id}",
                                 showView: "${showView}",
+                                offset: ${params.offset ?: 0},
                                 preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);
-                            let keyboardHandler = function(e) {
-                                if (e.keyCode === 27) {
-                                    $('#costItem_ajaxModal').modal('hide');
-                                }
-                            };
                             $('#dynamicModalContainer .ui.modal').modal({
                                 onVisible: function () {
                                     r2d2.initDynamicUiStuff('#costItem_ajaxModal');
@@ -210,19 +206,14 @@
                                     JSPC.app['finance'+idSuffix].preselectMembers();
 
                                     r2d2.helper.focusFirstFormElement(this);
-                                    document.addEventListener('keyup', keyboardHandler);
                                 },
                                 detachable: true,
                                 autofocus: false,
-                                closable: false,
                                 transition: 'scale',
                                 onApprove: function () {
                                     $(this).find('.ui.form').submit();
                                     return false;
                                 },
-                                onHide : function() {
-                                    document.removeEventListener('keyup', keyboardHandler);
-                                }
                             }).modal('show');
                         });
                         setTimeout(function () {
@@ -245,23 +236,20 @@
                     }).done( function(data) {
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty().html(data);
-
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-
                                 r2d2.helper.focusFirstFormElement(this);
                             },
                             detachable: true,
                             autofocus: false,
-                            closable: false,
                             transition: 'scale',
                             onApprove : function() {
                                 $(this).find('.ui.form').submit();
                                 return false;
-                            }
+                            },
                         }).modal('show');
                     })
                 });

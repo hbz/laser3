@@ -10,15 +10,11 @@
 <ui:messages data="${flash}" />
 
 <g:if test="${!error}">
-    <laser:render template="/templates/filter/packageGokbFilter"
-        model="[
-                tmplConfigShow: [
-                        ['q', 'provider', 'pkgStatus'],
-                        ['ddc', 'automaticUpdates', 'curatoryGroup', 'curatoryGroupType'],
-                        ['status', 'hasPerpetualAccess', '', '']
-                ]
-        ]"
-    />
+    <laser:render template="/templates/filter/packageGokbFilter" model="[
+            filterConfig: filterConfig,
+            curatoryGroupTypes: curatoryGroupTypes,
+            automaticUpdates: automaticUpdates,
+    ]"/>
 
     <g:if test="${records}">
         <laser:render template="/templates/filter/packageGokbFilterTable"

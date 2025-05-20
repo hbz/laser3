@@ -107,6 +107,10 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
 
     abstract def afterDelete()      /* { afterDeleteHandler() } */
 
+    boolean isVisibleExternally() {
+        isPublic
+    }
+
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }

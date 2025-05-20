@@ -22,11 +22,11 @@
         <g:if test="${parent}">
             <input type="hidden" name="parent" value="${parent}" />
         </g:if>
-        <g:else test="${withToggler}">
+        <g:if test="${withToggler}">
             <input type="hidden" name="refererController" value="${controllerName}" />
             <input type="hidden" name="takeSelectedSubs" value="/${controllerName}/subscriptionManagement/${params.tab}/${user.id}" />
             <input type="hidden" name="membersListToggler" class="membersListToggler_modal" value="false" />
-        </g:else>
+        </g:if>
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
 
         <label for="${tmplModalID}_orgSearch">${message(code: 'title.search')}</label>
@@ -57,7 +57,12 @@
             }
             searchTimer = setTimeout(function() {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&subscription=${params.id}&query="+searchVal,
+                    <g:if test="${parent}">
+                        url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&parent=${parent}&query="+searchVal,
+                    </g:if>
+                    <g:else>
+                        url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&query="+searchVal,
+                    </g:else>
                     success: function (data) {
                         $('#${tmplModalID}_providerResultWrapper').html(data);
                     }

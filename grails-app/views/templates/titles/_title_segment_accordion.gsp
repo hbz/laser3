@@ -3,9 +3,8 @@
 
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
-
         <g:if test="${(ie && ie.perpetualAccessBySub) || permanentTitle}">
-            <g:if test="${ie && ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+            <g:if test="${ie && ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf?.id])}">
                 <g:link controller="subscription" action="index" id="${ieperpetualAccessBySub.id}">
                     <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                           data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
@@ -86,41 +85,6 @@
                 </div>
             </div>
         </div>
-
-        <g:if test="${showPackageLinking && editable}">
-            <div class="two wide column">
-                <a id="linkTitleToSubscription_${tipp.gokbId}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: tipp.gokbId])}" class="ui icon button"><g:message code="subscription.details.linkTitle.label"/></a>
-            </div>
-
-            <laser:script file="${this.getGroovyPageFileName()}">
-                $('#linkTitleToSubscription_${tipp.gokbId}').on('click', function(e) {
-                    e.preventDefault();
-
-                    $.ajax({
-                        url: $(this).attr('href')
-                    }).done( function (data) {
-                        $('.ui.dimmer.modals > #linkTitleModal').remove();
-                        $('#dynamicModalContainer').empty().html(data);
-
-                        $('#dynamicModalContainer .ui.modal').modal({
-                           onShow: function () {
-                                r2d2.initDynamicUiStuff('#linkTitleModal');
-                                r2d2.initDynamicXEditableStuff('#linkTitleModal');
-                                $("html").css("cursor", "auto");
-                            },
-                            detachable: true,
-                            autofocus: false,
-                            closable: false,
-                            transition: 'scale',
-                            onApprove : function() {
-                                $(this).find('.ui.form').submit();
-                                return false;
-                            }
-                        }).modal('show');
-                    })
-                });
-            </laser:script>
-        </g:if>
     </div>
 </div>
 

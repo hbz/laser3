@@ -1,4 +1,7 @@
-Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie Verknüpfung zu Objekten, wie Paketen und Verträgen, welche der Lizenz angehören. 
-In der **Übersicht** sind diese kompakt dargestellt. 
+## Lizenzübersicht
 
-Mehr dazu erfahren Sie auf dieser Seite: *(Link zur Hilfeseite des Lizenzinformationsblatts)*
+Das Lizenzinformationsblatt beinhaltet alle relevanten Metadaten und Lizenzinformationen, sowie Verknüpfung zu weiteren Objekten, wie Paketen, Anbietern und Verträgen.
+In der **Übersicht** sind diese Informationen kompakt dargestellt. 
+
+Mehr dazu erfahren Sie auf dieser Seite: [Lizenzinformationsblatt]({{url_laser}}/public/manual/subscriptionInformationSheet)
+

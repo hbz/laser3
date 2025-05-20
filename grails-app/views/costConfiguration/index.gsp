@@ -78,7 +78,6 @@
                 }).done( function (data) {
                     $('.ui.dimmer.modals > #ciecModal').remove();
                     $('#dynamicModalContainer').empty().html(data);
-
                     $('#dynamicModalContainer .ui.modal').modal({
                         onVisible: function () {
                             r2d2.initDynamicUiStuff('#ciecModal');
@@ -86,12 +85,11 @@
                         },
                         detachable: true,
                         autofocus: false,
-                        closable: false,
                         transition: 'scale',
                         onApprove : function() {
                             $(this).find('.ui.form').submit();
                             return false;
-                        }
+                        },
                     }).modal('show');
                 })
             })

@@ -27,6 +27,7 @@ class MyInstitutionControllerService {
     CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
+    DashboardService dashboardService
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
@@ -125,19 +126,23 @@ class MyInstitutionControllerService {
             result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
 
-        prf.setBenchmark('wekbNews')
-        result.wekbNews = wekbNewsService.getCurrentNews()
+        if (dashboardService.showWekbNews()) {
+            prf.setBenchmark('wekbNews')
+            result.wekbNews = wekbNewsService.getCurrentNews()
+        }
 
-        prf.setBenchmark('testSubscription')
-        result.currentTestSubscriptions = Subscription.executeQuery(
-            'select distinct(s) from Subscription s join s.orgRelations oo where oo.org = :owner and oo.roleType in (:roles) AND s.status = :ta ' +
-                'and (s.startDate is null or s.startDate <= :today) and (s.endDate is null or s.endDate >= :today) order by s.name', [
-                    owner: contextService.getOrg(),
-                    roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER],
-                    ta: RDStore.SUBSCRIPTION_TEST_ACCESS,
-                    today: new Date()
+        if (dashboardService.showCurrentTestSubscriptions()) {
+            prf.setBenchmark('testSubscription')
+            result.currentTestSubscriptions = Subscription.executeQuery(
+                    'select distinct(s) from Subscription s join s.orgRelations oo where oo.org = :owner and oo.roleType in (:roles) AND s.status = :ta ' +
+                            'and (s.startDate is null or s.startDate <= :today) and (s.endDate is null or s.endDate >= :today) order by s.name', [
+                        owner: contextService.getOrg(),
+                        roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER],
+                        ta   : RDStore.SUBSCRIPTION_TEST_ACCESS,
+                        today: new Date()
                 ]
-        )
+            )
+        }
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]

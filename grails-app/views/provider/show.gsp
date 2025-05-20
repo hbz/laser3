@@ -309,22 +309,24 @@
                                         }
                                     %>
                                     <g:if test="${pair != null}">
-                                        <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                        <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                        <td class="right aligned">
-                                            <g:if test="${isAdmin}">
-                                                <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
-                                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
-                                                            data-confirm-term-how="unlink"
-                                                            action="unlinkProviderVendor" params="[id: provider.id, combo: row.id]"
-                                                            role="button"
-                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icon.CMD.UNLINK}"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
-                                        </td>
+                                        <tr>
+                                            <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
+                                            <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
+                                            <td class="right aligned">
+                                                <g:if test="${isAdmin}">
+                                                    <span class="la-popup-tooltip" data-content="${message(code:'provider.linking.unlink')}">
+                                                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
+                                                                data-confirm-term-how="unlink"
+                                                                action="unlink" params="[id: provider.id, providerLink: row.id]"
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                            <i class="${Icon.CMD.UNLINK}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:if>
+                                            </td>
+                                        </tr>
                                     </g:if>
                                 </g:each>
                             </table>
@@ -360,28 +362,16 @@
                                 <i class="dropdown icon la-dropdown-accordion"></i>
                                 <div class="ui horizontal relaxed list">
                                     <div class="item">
-                                        <strong><g:message code="package.plural" /></strong>
-                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
-                                    </div>
-                                    <div class="item">
                                         <strong><g:message code="platform.plural" /></strong>
                                         &nbsp;<ui:bubble count="${allPlatforms.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
                                     </div>
                                 </div>
                             </div>
                             <div class="content">
-                                <p class="ui header"><g:message code="package.plural" /></p>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${allPackages}" var="pkg">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-
                                 <p class="ui header"><g:message code="platform.plural" /></p>
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -389,6 +379,18 @@
                                         <div class="ui item">
                                             <div class="content la-space-right">
                                                 <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header"><g:message code="package.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${allPackages}" var="pkg">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                             </div>
                                         </div>
                                     </g:each>
@@ -504,9 +506,11 @@
                 </div>
             </div>
 
-            <g:if test="${provider.createdBy || provider.legallyObligedBy}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') && (provider.createdBy || provider.legallyObligedBy)}">
                 <div class="ui card">
                     <div class="content">
+                        <ui:cardLabelAdminOnly />
+
                         <g:if test="${provider.createdBy}">
                             <dl>
                                 <dt class="control-label">

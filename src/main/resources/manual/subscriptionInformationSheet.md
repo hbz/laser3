@@ -13,7 +13,7 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 8.	**Library Supplier:** Wie auch bei den Anbietern stammen die Kontaktangaben der Library Supplier aus der we:kb.
 9.	**Kostenübersicht:** Ein Übersicht der Kosten für die Lizenz. Weitere Details finden Sie oben im Reiter **Kosten**.  
 
-**Vergößern: Auf Bild klicken**
+**Vergrößern: Auf Bild klicken**
 
 ![Screenshot 1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern")
 
@@ -27,7 +27,7 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 4. **Eigene Anmerkungen**: es können Anmerkungen zu einer Lizenz verfasst und abgespeichert werden. Pro-Nutzende können zudem Dokumente anhängen und lizenzspezfische Aufgaben und Workflows erstellen.
 5. **Geteilte Anmerkungen/Dokumente**: von der Konsortialstelle mit den Einrichtungen geteilte Anmerkungen/Dokumente.
 
-**Vergößern: Auf Bild klicken**
+**Vergrößern: Auf Bild klicken**
 
 ![Screenshot 2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern")
 

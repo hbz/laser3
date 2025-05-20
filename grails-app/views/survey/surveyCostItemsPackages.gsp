@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" />
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItemsPackages.label')})" />
 
 <ui:breadcrumbs>
 %{--    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>--}%
@@ -112,7 +112,7 @@
 
                         <div class="ui basic segment">
 
-                            <laser:render template="costItemInputSurvey"/>
+                            <laser:render template="costItemInputSurvey" model="[bulkCostItems: true]"/>
 
                                 <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
@@ -247,20 +247,7 @@
             <br />
             <br />
 
-            <g:if test="${editable}">
-                <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setSurveyWorkFlowInfo: 'workflowCostItemsFinish']">
 
-                    <div class="ui right floated compact segment">
-                        <div class="ui checkbox">
-                            <input type="checkbox" onchange="this.form.submit()"
-                                   name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
-                            <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
-                        </div>
-                    </div>
-
-                </g:form>
-            </g:if>
 
         </div>
     </div>

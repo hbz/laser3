@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.Wekb; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.remote.Wekb; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -7,7 +7,7 @@
     <g:set var="sumOldCostItem" value="${0.0}"/>
 </g:if>
 
-<g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
+<g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow || 'surveyCostItemSubscription' in tmplConfigShow}">
     <g:set var="sumNewCostItem" value="${0.0}"/>
     <g:set var="sumSurveyCostItem" value="${0.0}"/>
     <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
@@ -214,6 +214,37 @@
                 </th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemSubscription')}">
+                <th>
+                    ${message(code: 'surveyCostItems.label')}:
+                    <g:if test="${actionName == 'surveyCostItemSubscriptions'}">
+                        <%
+                            def tmpParams3 = params.clone()
+                            tmpParams3.remove("sort")
+                        %>
+                        <g:if test="${sortOnCostItemsUp}">
+                            <g:link action="surveyCostItemSubscriptions"
+                                    params="${tmpParams3 + [sortOnCostItemsDown: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow down circle icon blue"></i>
+                            </span></g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link action="surveyCostItemSubscriptions"
+                                    params="${tmpParams2 + [sortOnCostItemsUp: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow up circle icon blue"></i>
+                            </span></g:link>
+                        </g:else>
+                    </g:if>
+                    ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
+                </th>
+            </g:if>
+
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isBetaTester')}">
                 <th class="center aligned">
                     todo
@@ -254,8 +285,8 @@
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
-            <g:set var="orgSub" value="${(surveyConfig.subscription || params.sub instanceof Subscription) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf = :sub',
-                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], sub: (params.sub instanceof Subscription ? params.sub : surveyConfig.subscription)])[0] : null}"/>
+            <g:set var="orgSubs" value="${(surveyConfig.subscription || params.subs) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf in (:subs)',
+                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], subs: (params.subs ?: [surveyConfig.subscription])]) : null}"/>
 
         </g:if>
 
@@ -682,27 +713,40 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfo')}">
                 <td>
-                    <g:if test="${orgSub}">
+                    <g:if test="${orgSubs}">
+                        <g:each in="${orgSubs}" var="orgSub">
+                            <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                                <g:message code="surveyOrg.perennialTerm.current"/>
+                                <br/>
+                            </g:if>
+                            <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+                                <br/>
+                            </g:elseif>
 
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:if>
+                            <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
 
-                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
-
-                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                            <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment"
+                                                type="textarea" overwriteEditable="${false}"/>
+                            <br>
+                            <br>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
+                    <g:set var="orgSub" value="${orgSubs ? orgSubs[0] : null}"/>
                 <td class="center aligned" style="${(orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br/>
+                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                            <g:message code="surveyOrg.perennialTerm.current"/>
+                            <br />
                         </g:if>
+                        <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                            <g:message code="surveyOrg.perennialTerm.available"/>
+                            <br />
+                        </g:elseif>
 
                         <g:link controller="subscription" action="show" id="${orgSub.id}">
                             <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br/>
@@ -716,13 +760,21 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStatus')}">
                 <td>
-                    <g:if test="${orgSub}">
-                        <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                            <br />
-                        </g:if>
+                    <g:if test="${orgSubs}">
+                        <g:each in="${orgSubs}" var="orgSub">
+                            <g:if test="${orgSub.isCurrentMultiYearSubscriptionToParentSub()}">
+                                <g:message code="surveyOrg.perennialTerm.current"/>
+                                <br />
+                            </g:if>
+                            <g:elseif test="${orgSub.isMultiYearSubscription()}">
+                                <g:message code="surveyOrg.perennialTerm.available"/>
+                                <br />
+                            </g:elseif>
 
-                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
+                            <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
+                            <br>
+                            <br>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>
@@ -731,11 +783,8 @@
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
-                <g:if test="${orgSub}">
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub.isCurrentMultiYearSubscriptionNew()}">
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                    </g:if>
-                    <g:else>
+                <g:if test="${orgSubs}">
+                    <g:each in="${orgSubs}" var="orgSub">
                         <table class="ui very basic compact table">
                             <tbody>
                             <g:if test="${selectedCostItemElementID}">
@@ -772,18 +821,13 @@
                             </g:if>
                             </tbody>
                         </table>
-                    </g:else>
+                    </g:each>
                 </g:if>
 
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <td class="center aligned">
-
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                    </g:if>
-                    <g:else>
 
                         <g:set var="costItems" scope="request"
                                value="${selectedCostItemElementID ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID))) : null}"/>
@@ -872,8 +916,6 @@
                                 </button>
                             </g:if>
                         </g:else>
-
-                    </g:else>
                 </td>
             </g:if>
 
@@ -978,6 +1020,107 @@
             </g:if>
 
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemSubscription')}">
+            %{-- // TODO Moe - date.minusDays() --}%
+                <td class="center aligned">
+
+                    <g:if test="${selectedSurveyConfigSubscriptionID && selectedCostItemElementID}">
+                        <g:set var="costItems" scope="request"
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndSurveyConfigSubscription(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)), SurveyConfigSubscription.get(Long.valueOf(selectedSurveyConfigSubscriptionID)))}"/>
+
+                        <g:if test="${costItems}">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${costItems}"
+                                        var="costItem">
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
+
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
+
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
+
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
+
+                                                <strong><g:formatNumber
+                                                        number="${(((costItem.costInBillingCurrencyAfterTax ?: 0) - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
+
+                                                (<g:formatNumber number="${(((costItem.costInBillingCurrency ?: 0) - oldCostItem) / oldCostItem) * 100}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>%)
+
+                                            </g:if>
+                                        </td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                        </td>
+
+                                        <td>
+                                            <g:if test="${editable}">
+                                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                                         participant              : org.id,
+                                                                                                                         costItem                 : costItem.id,
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                         selectedSurveyConfigSubscriptionID        : selectedSurveyConfigSubscriptionID,
+                                                                                                                         selectSubscription              : "true"])}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                                </button>
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem && costItem.costDescription}">
+
+                                                <div class="ui icon la-popup-tooltip" data-content="${costItem.costDescription}">
+                                                    <i class="info circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
+                        </g:if>
+                        <g:else>
+                            <g:if test="${editable}">
+                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                         participant              : org.id,
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                         selectedSurveyConfigSubscriptionID        : selectedSurveyConfigSubscriptionID,
+                                                                                                         selectSubscription              : "true"])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </button>
+                            </g:if>
+                        </g:else>
+                    </g:if>
+                </td>
+            </g:if>
+
+
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
@@ -1023,7 +1166,7 @@
         </tr>
     </g:each><!-- orgList -->
     </tbody>
-    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow)}">
+    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow || 'surveyCostItemSubsscription' in tmplConfigShow)}">
         <tfoot>
         <tr>
             <g:if test="${tmplShowCheckbox}">
@@ -1040,7 +1183,7 @@
                                      maxFractionDigits="2" type="number"/>)
                 </td>
             </g:if>
-            <g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
+            <g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow || 'surveyCostItemSubsscription' in tmplConfigShow}">
                 <td>
                     <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
                                        maxFractionDigits="2" type="number"/></strong>
@@ -1088,7 +1231,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && editable}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage') || tmplConfigShow?.contains('surveyCostItemSubscription')) && editable}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.triggerSurveyCostItemModal').on('click', function(e) {
             e.preventDefault();
@@ -1107,7 +1250,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('#surveyCostItemModal .ui.form').submit();

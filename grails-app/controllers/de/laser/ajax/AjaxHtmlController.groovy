@@ -395,24 +395,28 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupProviders() {
-        Map<String, Object> model = [:], result = controlledListService.getProviders(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
         model.providerList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'parent')) {
+            Object s = genericOIDService.resolveOID(params.parent)
+            Set currProvLinks
+            if(s instanceof Subscription) {
+                currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription', [subscription: s])
+                model.currProviders = currProvLinks
+                model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
+                if (s.instanceOf) {
+                    model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.subscription = :subscription and pvr.isShared = true', [subscription: s.instanceOf])
+                } else model.currProvSharedLinks = [:]
             }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currProvLinks = Provider.executeQuery('select new map(pvr.provider.id as provId, pvr.isShared as isShared) from ProviderRole pvr, OrgRole oo where pvr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currProvLinks) {
-            model.currProviders = currProvLinks.provId.toSet()
-            model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currProvSharedLinks = currProvLinks.collectEntries { row -> [row.provId, row.isShared] }
-            else model.currProvSharedLinks = [:]
+            if(s instanceof License) {
+                currProvLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.license = :license', [license: s])
+                model.currProviders = currProvLinks
+                model.allChecked = model.providerList.size() > 0 && model.providerList.id.intersect(model.currProviders).size() == model.providerList.size()
+                if (s.instanceOf) {
+                    model.currProvSharedLinks = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr where pvr.license = :license and pvr.isShared = true', [license: s.instanceOf])
+                } else model.currProvSharedLinks = [:]
+            }
         }
         else {
             model.currProviders = []
@@ -430,30 +434,33 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def lookupVendors() {
-        Map<String, Object> model = [:], result = controlledListService.getVendors(params), queryParams = [contextOrg: contextService.getOrg()]
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
         model.vendorList = result.results
-        String consortiumFilter = "", subscriptionFilter = ""
-        if(contextService.getOrg().isCustomerType_Consortium()) {
-            if(GlobalService.isset(params, 'subscription')) {
-                subscriptionFilter = "and oo.sub = :filterSub"
-                queryParams.filterSub = Subscription.get(params.subscription)
+        model.unlink = params.containsKey('unlink')
+        if(GlobalService.isset(params, 'parent')) {
+            Object s = genericOIDService.resolveOID(params.parent)
+            Set currVenLinks
+            if(s instanceof Subscription) {
+                currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription', [subscription: s])
+                model.currVendors = currVenLinks
+                model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
+                if (s.instanceOf)
+                    model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.subscription = :subscription and vr.isShared = true', [subscription: s.instanceOf])
+                else model.currVenSharedLinks = [:]
             }
-            else
-                consortiumFilter = "and oo.sub.instanceOf = null"
-        }
-        List currVenLinks = Vendor.executeQuery('select new map(vr.vendor.id as venId, vr.isShared as isShared) from VendorRole vr, OrgRole oo where vr.subscription = oo.sub and oo.org = :contextOrg '+consortiumFilter+' '+subscriptionFilter, queryParams)
-        if(currVenLinks) {
-            model.currVendors = currVenLinks.venId.toSet()
-            model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
-            if(GlobalService.isset(params, 'subscription'))
-                model.currVenSharedLinks = currVenLinks.collectEntries { row -> [row.venId, row.isShared] }
-            else model.currVenSharedLinks = [:]
+            if(s instanceof License) {
+                currVenLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.license = :license', [license: s])
+                model.currVendors = currVenLinks
+                model.allChecked = model.vendorList.size() > 0 && model.vendorList.id.intersect(model.currVendors).size() == model.vendorList.size()
+                if (s.instanceOf)
+                    model.currVenSharedLinks = Vendor.executeQuery('select vr.vendor.id from VendorRole vr where vr.license = :license and vr.isShared = true', [license: s.instanceOf])
+                else model.currVenSharedLinks = [:]
+            }
         }
         else {
             model.currVendors = []
             model.currVenSharedLinks = [:]
         }
-        model.currVenLinks = currVenLinks
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'
@@ -828,8 +835,8 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def linkTitleModal() {
         log.debug('ajaxHtmlController.linkTitleModal ' + params)
-        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium()]
-        result.tipp = TitleInstancePackagePlatform.findByGokbId(params.tippID)
+        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium(), header: message(code: params.headerToken)]
+        result.tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(params.containsKey('fixedSubscription'))
             result.fixedSubscription = Subscription.get(params.fixedSubscription)
         render template: '/title/linkTitle', model: result
@@ -858,17 +865,18 @@ class AjaxHtmlController {
         List<String> notProcessedMandatoryProperties = []
         //see ERMS-5815
 
+        boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
         if(!noParticipation) {
             surveyResults.each { SurveyResult surre ->
                 SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !existsMultiYearTerm) {
                     allResultHaveValue = false
                     notProcessedMandatoryProperties << surre.type.getI10n('name')
                 }
             }
         }
 
-        if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+        if((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
             result.error = g.message(code: 'surveyResult.finish.invoicingInformation')
         }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
             result.error = g.message(code: 'surveyResult.finish.surveyContact')
@@ -884,7 +892,10 @@ class AjaxHtmlController {
                     result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                 }
             }
-        }else if (notProcessedMandatoryProperties.size() > 0) {
+        }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
+
+        }
+        else if (notProcessedMandatoryProperties.size() > 0) {
             result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
         }
 

@@ -2,11 +2,13 @@ package de.laser
 
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostInformationDefinitionGroup
@@ -1890,7 +1892,7 @@ class MyInstitutionController  {
      * The list may be filtered
      * @return a list of permanent titles with the given status
      * @see PermanentTitle
-     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org)
+     * @see FilterService#getPermanentTitlesQuery(grails.web.servlet.mvc.GrailsParameterMap, de.laser.Org, java.util.Set)
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
@@ -1905,35 +1907,109 @@ class MyInstitutionController  {
         if (ttParams.tab)    { params.tab = ttParams.tab }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg())
+        String inheritanceQuery = "select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '${Subscription.class.name}' and ac.referenceId = s.instanceOf.id)"
+        Set<Subscription> subsWithInheritance = Subscription.executeQuery(inheritanceQuery, [owner: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
         result.filterSet = query.filterSet
-        Set tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
-        result.tippIDs = tipps
+        Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
 
         result.num_tipp_rows = tipps.size()
 
         String orderClause = 'order by tipp.sortname'
         if(params.sort){
-                if(params.sort.contains('sortname'))
-                    orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
-                else
-                    orderClause = "order by ${params.sort} ${params.order} "
+            if(params.sort.contains('sortname'))
+                orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
+            else
+                orderClause = "order by ${params.sort} ${params.order} "
         }
-        Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
+        Set filteredIDs = tipps.drop(result.offset).take(result.max)
+
         result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
-
-        result.currentTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.deletedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.allTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-
+        String ownerFilter = "pt.owner = :owner"
+        Map<String, Object> ownerParams = [owner: contextService.getOrg()]
+        if(subsWithInheritance) {
+            ownerFilter = "(pt.owner = :owner or pt.subscription in (:subsWithInheritance))"
+            ownerParams.subsWithInheritance = subsWithInheritance
+        }
+        result.currentTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+        //no sense of planned IEs among permanent titles ... planned titles cannot be purchased (yet)
+        //result.plannedTippCounts = PermanentTitle.executeQuery("select count(*) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: contextService.getOrg(), status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status = :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_DELETED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count (distinct(pt.tipp)) from PermanentTitle as pt join pt.issueEntitlement ie where "+ownerFilter+" and ie.status != :ieStatus", ownerParams+[ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.disableStatus = params.tab != 'allIEs'
         //for tipp_ieFilter
         params.institution = contextService.getOrg().id
         params.filterForPermanentTitle = true
 
         result
+    }
+
+    @DebugInfo(isInstUser = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    @Check404()
+    def exportPermanentTitles() {
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs', true)
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        String inheritanceQuery = "select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '${Subscription.class.name}' and ac.referenceId = s.instanceOf.id)"
+        Set<Subscription> subsWithInheritance = Subscription.executeQuery(inheritanceQuery, [owner: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+        Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
+        result.filterSet = query.filterSet
+        Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+
+        result.num_tipp_rows = tipps.size()
+
+        String filename = "${escapeService.escapeString(message(code: 'menu.my.permanentTitles'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        Map<String, Object> selectedFields = [:]
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        if (params.exportKBart) {
+            String dir = GlobalService.obtainTmpFileLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                FileOutputStream fos = new FileOutputStream(f)
+                Map<String, Object> tableData = exportService.generateTitleExport([format: ExportService.KBART, tippIDs: tipps])
+                fos.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                fos.flush()
+                fos.close()
+            }
+            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: ExportService.KBART]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
+        }
+        else if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
     }
 
     /**
@@ -2022,8 +2098,20 @@ class MyInstitutionController  {
             result.curatoryGroups = remote.curatoryGroups
             result.curatoryGroupTypes = remote.curatoryGroupTypes
             result.automaticUpdates = remote.automaticUpdates
+            result.contentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PACKAGE_CONTENT_TYPE)
+            result.paymentTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.PAYMENT_TYPE)
+            result.openAccessTypes = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LICENSE_OA_TYPE)
+            result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
             result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+            Set<Set<String>> filterConfig = [
+                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ]
+            Map<String, Set<Set<String>>> filterAccordionConfig = [
+                    'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
+            ]
+            result.filterConfig = filterConfig
+            result.filterAccordionConfig = filterAccordionConfig
             Set tmp = []
             packageSubscriptionList.eachWithIndex { entry, int i ->
                 String key = 'package_' + entry[0]
@@ -2063,7 +2151,7 @@ class MyInstitutionController  {
                 Map<String, Object> definiteRec = [:], wekbRec = remote.records.find { Map remoteRec -> remoteRec.uuid == entry[0] }
                 if(wekbRec)
                     definiteRec.putAll(wekbRec)
-                else if(!params.containsKey('curatoryGroup') && !params.containsKey('curatoryGroupType') && !params.containsKey('automaticUpdates')) {
+                else if(params.keySet().intersect(FilterService.PACKAGE_FILTER_GENERIC_FIELDS.keySet()).size() == 0) {
                     definiteRec.put('uuid', entry[0])
                 }
                 if(definiteRec.size() > 0)
@@ -2142,6 +2230,10 @@ class MyInstitutionController  {
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        if(params.id)
+            result.pageTitle = "menu.institutions.subFinanceImport"
+        else
+            result.pageTitle = "menu.institutions.financeImport"
         result.mappingCols = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
                               "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"/*,"institution"*/]
         result
@@ -2495,15 +2587,16 @@ class MyInstitutionController  {
              */
             boolean noParticipation = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO
             List<PropertyDefinition> notProcessedMandatoryProperties = []
+            boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
             if(!noParticipation) {
                 surveyResults.each { SurveyResult surre ->
                     SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !existsMultiYearTerm) {
                         allResultHaveValue = false
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+                if((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
                 }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
@@ -2523,6 +2616,9 @@ class MyInstitutionController  {
                             flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                         }
                     }
+                }
+                else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
+
                 }
 
             }
@@ -2630,18 +2726,9 @@ class MyInstitutionController  {
         if (org && surveyLink && result.editable) {
 
             SurveyOrg.withTransaction { TransactionStatus ts ->
-                    boolean existsMultiYearTerm = false
-                    Subscription sub = surveyConfig.subscription
-                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-                        Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                boolean selectable = surveyService.selectableDespiteMultiYearTerm(surveyConfig, org)
 
-                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
-                            existsMultiYearTerm = true
-                        }
-
-                    }
-
-                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && selectable) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org,
@@ -4528,7 +4615,7 @@ join sub.orgRelations or_sub where
                     }
                 }
                 break
-            case 'delete': flash.message = _deletePrivatePropertyDefinition(params)
+            case 'delete': flash.message = propertyService.deletePrivatePropertyDefinition(params)
                 break
         }
 
@@ -4609,45 +4696,6 @@ join sub.orgRelations or_sub where
         }
         else
             render view: 'managePropertyDefinitions', model: result
-    }
-
-    /**
-     * Deletes the given private property definition for this institution
-     * @param params the parameter map containing the property definition parameters
-     * @return success or error messages
-     */
-    private _deletePrivatePropertyDefinition(GrailsParameterMap params) {
-        PropertyDefinition.withTransaction {
-            log.debug("delete private property definition for institution: " + params)
-
-            String messages = ""
-            Org tenant = contextService.getOrg()
-
-            Params.getLongList(params, 'deleteIds').each { id ->
-                PropertyDefinition privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
-                if (privatePropDef) {
-
-                    try {
-                        if (privatePropDef.mandatory) {
-                            privatePropDef.mandatory = false
-                            privatePropDef.save()
-
-                            // delete inbetween created mandatories
-                            Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { prop ->
-                                prop.delete()
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error(e.toString())
-                    }
-
-                    String oldPropertyName = privatePropDef.getI10n('name')
-                    privatePropDef.delete()
-                    messages += message(code: 'default.deleted.message', args: [message(code: "propertyDefinition.${privatePropDef.descr}.create.label"), oldPropertyName])
-                }
-            }
-            messages
-        }
     }
 
     /**

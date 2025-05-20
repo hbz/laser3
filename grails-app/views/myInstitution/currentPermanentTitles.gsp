@@ -1,9 +1,27 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.currentPermanentTitles.label" />
+
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <g:if test="${num_tipp_rows < 1000000}">
+            <ui:exportDropdownItem>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
+        <ui:exportDropdownItem>
+            <g:link class="item kbartExport  js-no-wait-wheel" params="${params + [exportKBart: true]}">KBART Export</g:link>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
+
+<div id="downloadWrapper"></div>
 
 <ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
@@ -13,8 +31,8 @@
               model="${[
                       tt_controller:    controllerName,
                       tt_action:        actionName,
-                      tt_tabs:          ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
-                      tt_counts:        [currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]
+                      tt_tabs:          ['currentIEs', null, 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:        [currentTippCounts, null, expiredTippCounts, deletedTippCounts, allTippCounts]
               ]}" />
 
 <div class="ui bottom attached tab active segment">
@@ -58,7 +76,7 @@
                                             %>
 
                                             <g:render template="/templates/titles/title_segment_accordion"
-                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(contextService.getOrg(), tipp)]"/>
+                                                      model="${[ie: null, tipp: tipp, permanentTitle: PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :owner or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id)))", [owner: contextService.getOrg(), tipp: tipp, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]]}"/>
 
                                             <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                                 <div class="ui stackable grid" data-ajaxTarget="true">
@@ -209,6 +227,23 @@
 
 </div>
 
+<g:render template="/clickMe/export/js"/>
+
 <g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="exportPermanentTitles" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
+</laser:script>
 
 <laser:htmlEnd/>

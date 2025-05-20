@@ -6,14 +6,17 @@ import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
 import de.laser.addressbook.Address
 import de.laser.addressbook.Person
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.finance.PriceItem
 import de.laser.helper.Params
+import de.laser.helper.Profiler
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -29,17 +32,20 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
 import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyPackageResult
 import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveySubscriptionResult
 import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -59,6 +65,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -82,6 +89,7 @@ class SurveyService {
     PackageService packageService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
+    SubscriptionsQueryService subscriptionsQueryService
     MailSendService mailSendService
     VendorService vendorService
 
@@ -582,6 +590,59 @@ class SurveyService {
                         row3.add([field: surveyPackageResult.comment ?: '', style: null])
                         row3.add([field: surveyPackageResult.participantComment ?: '', style: null])
                         CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkg(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED, surveyPackageResult.pkg).each { CostItem surveyCostItem ->
+                            row3.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
+                            row3.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
+                            row3.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
+                            String surveyCostTax
+                            if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                surveyCostTax = RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")
+                            else if(surveyCostItem.taxKey)
+                                surveyCostTax = surveyCostItem.taxKey.taxType?.getI10n("value") + " (" + surveyCostItem.taxKey.taxRate + "%)"
+                            else
+                                surveyCostTax = ''
+                            row3.add([field: surveyCostTax, style: null])
+                            if(surveyCostItem.taxKey && surveyCostItem.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
+                                row3.add([field: '', style: null])
+                            else
+                                row3.add([field: surveyCostItem.costInBillingCurrencyAfterTax ?: '', style: null])
+                            row3.add([field: surveyCostItem.startDate ? formatter.format(surveyCostItem.startDate) : '', style: null])
+                            row3.add([field: surveyCostItem.endDate ? formatter.format(surveyCostItem.endDate) : '', style: null])
+                            row3.add([field: surveyCostItem.costDescription ?: '', style: null])
+                        }
+
+                        surveyData.add(row3)
+                    }
+                }
+
+                //Lizenz-Umfrage
+                if(surveyConfig.subscriptionSurvey) {
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([])
+                    surveyData.add([[field: messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale), style: 'bold']])
+                    List rowPackage = [[field: messageSource.getMessage('default.name.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.status.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('provider.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyResult.comment', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyResult.commentOnlyForParticipant', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costItemElement', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costInBillingCurrency', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.currency.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.newCosts.taxTypeAndRate', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('financials.costInBillingCurrencyAfterTax', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.startDate.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('default.endDate.label', null, locale), style: 'bold'],
+                                       [field: messageSource.getMessage('surveyConfigsInfo.newPrice.comment', null, locale), style: 'bold']]
+                    surveyData.add(rowPackage)
+
+                    SurveySubscriptionResult.findAllBySurveyConfigAndParticipant(surveyConfig, contextOrg).sort { it.subscription.name }.each { surveySubscriptionResult ->
+                        List row3 = []
+                        row3.add([field: surveySubscriptionResult.subscription.name, style: null])
+                        row3.add([field: surveySubscriptionResult.subscription.status?.getI10n('value'), style: null])
+                        row3.add([field: surveySubscriptionResult.subscription.providers?.collect {it.name}.join('; '), style: null])
+                        row3.add([field: surveySubscriptionResult.comment ?: '', style: null])
+                        row3.add([field: surveySubscriptionResult.participantComment ?: '', style: null])
+                        CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndSurveyConfigSubscription(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED, de.laser.survey.SurveyConfigSubscription.findBySurveyConfigAndSubscription(surveySubscriptionResult.surveyConfig, surveySubscriptionResult.subscription)).each { CostItem surveyCostItem ->
                             row3.add([field: surveyCostItem.costItemElement?.getI10n('value') ?: '', style: null])
                             row3.add([field: surveyCostItem.costInBillingCurrency ?: '', style: null])
                             row3.add([field: surveyCostItem.billingCurrency?.value ?: '', style: null])
@@ -1145,19 +1206,9 @@ class SurveyService {
         currentMembersSubs.each { Subscription subChild ->
                 Org org = subChild.getSubscriberRespConsortia()
 
-                if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+            boolean selectable = selectableDespiteMultiYearTerm(surveyConfig, org)
 
-                    boolean existsMultiYearTerm = false
-
-                    if (!surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
-
-
-                        if (subChild.isCurrentMultiYearSubscriptionNew()) {
-                            existsMultiYearTerm = true
-                        }
-
-                    }
-                    if (!existsMultiYearTerm) {
+            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && selectable) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
                                 org: org
@@ -1205,7 +1256,6 @@ class SurveyService {
                                 }
                             }
                         }
-                    }
                 }
             }
 
@@ -1222,13 +1272,7 @@ class SurveyService {
 
             if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
 
-                boolean existsMultiYearTerm = false
-
-
-                if (subChild.isCurrentMultiYearSubscriptionNew()) {
-                    existsMultiYearTerm = true
-                }
-
+                boolean existsMultiYearTerm = existsMultiYearTermBySurveyUseForTransfer(surveyConfig, org)
 
                 if (existsMultiYearTerm) {
                     SurveyOrg surveyOrg = new SurveyOrg(
@@ -1372,6 +1416,13 @@ class SurveyService {
                 new SurveyConfigPackage(surveyConfig: newSurveyConfig, pkg: surveyConfigPackage.pkg).save()
             }
         }
+
+        if (params.copySurvey.copySubscriptions) {
+            oldSurveyConfig.surveySubscriptions.each { SurveyConfigSubscription surveyConfigSubscription ->
+                new SurveyConfigSubscription(surveyConfig: newSurveyConfig, pkg: surveyConfigSubscription.subscription).save()
+            }
+        }
+
         if (params.copySurvey.copyVendors) {
             oldSurveyConfig.surveyVendors.each { SurveyConfigVendor surveyConfigVendor ->
                 new SurveyConfigVendor(surveyConfig: newSurveyConfig, vendor: surveyConfigVendor.vendor).save()
@@ -1757,11 +1808,12 @@ class SurveyService {
             Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                     '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                     'tipp.status != :tippStatus AND ' +
-                    'pt.owner = :org',
+                    '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
                     [hostPlatformURL: tipp.hostPlatformURL,
                      tippStatus: RDStore.TIPP_STATUS_REMOVED,
                      tipp: tipp,
-                     org: org])[0]
+                     org: org,
+                     subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
 
             if(countPermanentTitles > 0){
                 return true
@@ -1780,11 +1832,12 @@ class SurveyService {
         List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                 'tipp.status != :tippStatus AND ' +
-                'pt.owner = :org',
+                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
                 [hostPlatformURL: tipp.hostPlatformURL,
                  tippStatus: RDStore.TIPP_STATUS_REMOVED,
                  tipp: tipp,
-                 org: org])
+                 org: org,
+                 subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
 
         permanentTitles
     }
@@ -2469,6 +2522,23 @@ class SurveyService {
         return chartSource
     }
 
+    List generateSurveySubscriptionDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
+
+        List<Subscription> subs = SurveyConfigSubscription.executeQuery("select scp.subscription from SurveyConfigSubscription scp where scp.surveyConfig = :surveyConfig order by scp.subscription.name asc", [surveyConfig: surveyConfig])
+
+        subs.each {Subscription sub ->
+            int countSubs = SurveySubscriptionResult.executeQuery("select count(*) from SurveySubscriptionResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.subscription = :subscription", [subscription: sub, surveyConfig: surveyConfig, participants: orgList])[0]
+            if(countSubs > 0) {
+                chartSource << ["${sub.name.replace('"', '')}", countSubs]
+            }
+        }
+
+        chartSource = chartSource.reverse()
+        return chartSource
+    }
+
     List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
         //List chartSource = [['property', 'value']]
         List chartSource = []
@@ -2494,6 +2564,25 @@ class SurveyService {
 
         if(surveyPackageResultList){
             List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndPkgInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), surveyPackageResultList.pkg)
+            costItemList.each { CostItem costItem ->
+
+                sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
+                sumCostInBillingCurrencyAfterTax = sumCostInBillingCurrencyAfterTax+ costItem.costInBillingCurrencyAfterTax
+            }
+        }
+
+        [sumCostInBillingCurrency: sumCostInBillingCurrency, sumCostInBillingCurrencyAfterTax: sumCostInBillingCurrencyAfterTax]
+
+    }
+
+    Map getCostItemSumBySelectSurveySubscriptionsOfParticipant(SurveyConfig surveyConfig, Org participant){
+        Double sumCostInBillingCurrency = 0.0
+        Double sumCostInBillingCurrencyAfterTax = 0.0
+
+        List<SurveySubscriptionResult> surveySubscriptionResultList = SurveySubscriptionResult.findAllBySurveyConfigAndParticipant(surveyConfig, participant)
+
+        if(surveySubscriptionResultList){
+            List<CostItem> costItemList = CostItem.findAllBySurveyOrgAndSurveyConfigSubscriptionInList(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), SurveyConfigSubscription.findAllBySurveyConfig(surveyConfig))
             costItemList.each { CostItem costItem ->
 
                 sumCostInBillingCurrency = sumCostInBillingCurrency+ costItem.costInBillingCurrency
@@ -2804,7 +2893,93 @@ class SurveyService {
                 result.records = []
                 result.recordsCount = 0
             }
-        }else if (params.viewTab == 'vendorSurvey') {
+        }else if (params.viewTab == 'subscriptionSurvey') {
+            if (result.editable) {
+                /*switch (params.actionsForSurveySubscriptions) {
+                    case "addSurveySubscription":
+                        Subscription surveySubscription = Subscription.findById(params.XXX)
+                        if (SurveyConfigSubscription.findBySurveyConfigAndSubscription(result.surveyConfig, surveySubscription) && !SurveySubscriptionResult.findBySurveyConfigAndParticipantAndSubscription(result.surveyConfig, participant, surveySubscription)) {
+                            SurveySubscriptionResult surveySubscriptionResult = new SurveySubscriptionResult(surveyConfig: result.surveyConfig, participant: participant, subscription: surveySubscription, owner: result.surveyInfo.owner)
+                            surveySubscriptionResult.save()
+                        }
+
+                        break
+                    case "removeSurveySubscription":
+                        Subscription surveySubscription = Subscription.findById(params.XXX)
+                        SurveySubscriptionResult surveySubscriptionResult = SurveySubscriptionResult.findBySurveyConfigAndParticipantSubscription(result.surveyConfig, participant, surveySubscription)
+                        if (SurveyConfigSubscription.findBySurveyConfigAndSubscription(result.surveyConfig, surveySubscription) && surveySubscriptionResult) {
+                            surveySubscriptionResult.delete()
+                        }
+                        break
+                }*/
+
+                if (params.selectedSubs || params.subListToggler) {
+
+                    List selectedSubs = []
+                    if (params.subListToggler == 'on') {
+                        if (params.processOption == 'unlinkSubscriptions') {
+                            List<Subscription> subscriptions = SurveySubscriptionResult.executeQuery("select scs.subscription from SurveySubscriptionResult scs where scs.surveyConfig = :surveyConfig and scs.participant = :participant", [surveyConfig: result.surveyConfig, participant: participant])
+                            result.putAll(getMySubscriptions(params, result.user, result.surveyInfo.owner), subscriptions)
+                        } else {
+                            result.putAll(getMySubscriptions(params, result.user, result.surveyInfo.owner))
+                        }
+
+                        result.subscriptions.each {
+                            selectedSubs << it.id
+                        }
+                    } else selectedSubs = params.list("selectedSubs")
+
+
+                    if (selectedSubs) {
+                        selectedSubs.each {
+                            Subscription subscription = Subscription.get(it)
+
+                            if (params.processOption == 'unlinkSubscriptions') {
+                                SurveySubscriptionResult surveySubscriptionResult = SurveySubscriptionResult.findBySurveyConfigAndParticipantAndSubscription(result.surveyConfig, participant, subscription)
+                                if (subscription && SurveyConfigSubscription.findBySurveyConfigAndSubscription(result.surveyConfig, subscription) && surveySubscriptionResult) {
+                                    surveySubscriptionResult.delete()
+                                }
+                            }
+                            if (params.processOption == 'linkSubscriptions') {
+                                if (subscription && SurveyConfigSubscription.findBySurveyConfigAndSubscription(result.surveyConfig, subscription) && !SurveySubscriptionResult.findBySurveyConfigAndParticipantAndSubscription(result.surveyConfig, participant, subscription)) {
+                                    SurveySubscriptionResult surveySubscriptionResult = new SurveySubscriptionResult(surveyConfig: result.surveyConfig, participant: participant, subscription: subscription, owner: result.surveyInfo.owner)
+                                    surveySubscriptionResult.save()
+                                }
+                            }
+                        }
+                        params.remove("selectedSubs")
+                    }
+                }
+            }
+
+            params.subTab = params.subTab ?: 'allSubscriptions'
+
+            List<Subscription> subscriptions
+
+
+            if(params.subTab == 'allSubscriptions') {
+                subscriptions = SurveyConfigSubscription.executeQuery("select scs.subscription from SurveyConfigSubscription scs where scs.surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])
+            }
+
+            if(params.subTab == 'selectSubscriptions') {
+                subscriptions = SurveySubscriptionResult.executeQuery("select scs.subscription from SurveySubscriptionResult scs where scs.surveyConfig = :surveyConfig and scs.participant = :participant", [surveyConfig: result.surveyConfig, participant: participant])
+            }
+
+
+
+            result.putAll(getMySubscriptions(params, result.user, result.surveyInfo.owner, subscriptions))
+
+            result.subscriptions = result.subscriptions.drop((int) result.offset).take((int) result.max)
+            if(result.subscriptions)
+                result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions, RDStore.LINKTYPE_LICENSE)
+
+            if(result.surveySubscriptionsCount == 0){
+                result.num_sub_rows = 0
+                result.subscriptions = []
+            }
+
+        }
+        else if (params.viewTab == 'vendorSurvey') {
             if (result.editable) {
                 switch (params.actionsForSurveyVendors) {
                     case "addSurveyVendor":
@@ -3024,6 +3199,223 @@ class SurveyService {
         result.noRecordCounter = noRecordCounter
         result.totalRows = totalRows
         result.afterEnrichment = true
+        result
+    }
+
+    boolean existsMultiYearTermBySurveyUseForTransfer(SurveyConfig surveyConfig, Org org) {
+        boolean existsMultiYearTerm = false
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - NOW())) > 366)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                return true
+            }
+        }
+
+        return existsMultiYearTerm
+    }
+
+    /**
+     * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the parent subscription
+     * @return true if we are within the given multi-year range, false otherwise
+     */
+
+
+    boolean existsCurrentMultiYearTermBySurveyUseForTransfer(SurveyConfig surveyConfig, Org org) {
+        boolean existsMultiYearTerm = false
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - sub.instanceOf.startDate)) > 366)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                return true
+            }
+        }
+
+        return existsMultiYearTerm
+    }
+
+    boolean selectableDespiteMultiYearTerm(SurveyConfig surveyConfig, Org org) {
+        boolean selectable = true
+        Subscription sub = surveyConfig.subscription
+
+        if (surveyConfig.subSurveyUseForTransfer && sub) {
+            Subscription subMuliYear = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.org = :org and orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub" +
+                    " and sub.isMultiYear = true and sub.endDate != null and (EXTRACT (DAY FROM (sub.endDate - sub.instanceOf.startDate)) > 549)",
+                    [org          : org,
+                     roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: sub])[0]
+
+            if (subMuliYear) {
+                selectable = false
+            }
+        }
+
+        return selectable
+    }
+
+    Map<String,Object> getMySubscriptions(GrailsParameterMap params, User contextUser, Org contextOrg, List<Subscription> filteredSubs = null) {
+        Map<String,Object> result = [:]
+        EhcacheWrapper cache = contextService.getUserCache("/subscriptions/filter/")
+        if(cache && cache.get('subscriptionFilterCache')) {
+            if(!params.resetFilter && !params.isSiteReloaded)
+                params.putAll((GrailsParameterMap) cache.get('subscriptionFilterCache'))
+            else params.remove('resetFilter')
+            cache.remove('subscriptionFilterCache') //has to be executed in any case in order to enable cache updating
+        }
+        SwissKnife.setPaginationParams(result, params, contextUser)
+
+
+    /*    result.availableConsortia = Combo.executeQuery(
+                'select c.toOrg from Combo as c where c.fromOrg = :fromOrg and c.type = :type',
+                [fromOrg: contextOrg, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )*/
+
+/*        List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] }
+
+        result.allConsortia = Org.executeQuery(
+                """select o from Org o, OrgSetting os_ct where 
+                        os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
+                        order by lower(o.name)""",
+                [roles: consRoles]
+        )*/
+
+       /* def viableOrgs = []
+
+        if ( result.availableConsortia ){
+            result.availableConsortia.each {
+                viableOrgs.add(it)
+            }
+        }
+
+        viableOrgs.add(contextOrg)*/
+
+        String consortiaFilter = ''
+        if(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support())
+            consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
+
+        def date_restriction = null
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            date_restriction = sdf.parse(params.validOn)
+        }
+
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                String[] defaultStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
+                params.status = defaultStatus
+                //params.hasPerpetualAccess = RDStore.YN_YES.id.toString() as you wish, myladies ... as of May 16th, '22, the setting should be reverted
+                result.defaultSet = true
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
+        }
+        if(params.isSiteReloaded == "yes") {
+            params.remove('isSiteReloaded')
+            cache.put('subscriptionFilterCache', params)
+        }
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
+        result.filterSet = tmpQ[2]
+        List<Subscription> subscriptions
+
+        if(filteredSubs){
+            tmpQ[0] = tmpQ[0].replace("order by", "and s in (:subList) order by ")
+            Map query
+            tmpQ[1] << [subList: filteredSubs]
+        }
+
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
+        //impossible to sort in nothing ...
+        if(params.sort == "provider") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                cmp
+            }
+        }
+        else if(params.sort == "vendor") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                }
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                }
+                cmp
+            }
+        }
+        result.num_sub_rows = subscriptions.size()
+
+        result.date_restriction = date_restriction
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        result.subscriptions = subscriptions
+
         result
     }
 

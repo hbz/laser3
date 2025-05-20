@@ -876,40 +876,6 @@ class SubscriptionService {
     }
 
     /**
-     * Queries the we:kb ElasticSearch index and returns a (filtered) list of packages which may be linked to the
-     * given subscription
-     * @param params the request parameter map, containing also filter parameters to limit the package results
-     * @return a filtered list of packages
-     * @see de.laser.remote.Wekb
-     * @see Package
-     */
-    Map<String,Object> linkTitle(GrailsParameterMap params) {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        if(!result)
-            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
-        else {
-            if(checkThreadRunning('PackageTransfer_'+result.subscription.id) && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running.withPackage',[getCachedPackageName('PackageTransfer_'+result.subscription.id)] as Object[], LocaleUtils.getCurrentLocale())
-                result.bulkProcessRunning = true
-            }
-            if (result.subscription.packages) {
-                result.pkgs = []
-                result.subscription.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding GOKb ID: ${sp.pkg.gokbId})")
-                    result.pkgs.add(sp.pkg.gokbId)
-                }
-            } else {
-                log.debug("Subscription has no linked packages yet")
-            }
-            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-            result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
-            if(params.containsKey('search'))
-                result.putAll(packageService.getWekbPackages(params))
-            [result: result, status: SubscriptionControllerService.STATUS_OK]
-        }
-    }
-
-    /**
      * Gets the issue entitlements (= the titles) of the given subscription
      * @param subscription the subscription whose holding should be returned
      * @return a sorted list of issue entitlements
@@ -1020,15 +986,18 @@ class SubscriptionService {
                 Map checked = issueEntitlementCandidates.get('checked')
                 if(checked) {
                     Set<Long> childSubIds = [], pkgIds = []
+                    /*
                     if(params.withChildren == 'on') {
                         childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
                     }
+                    */
                     checked.keySet().collate(65000).each { subSet ->
                         pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: subSet]))
                     }
                     executorService.execute({
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
                         bulkAddEntitlements(result.subscription, checked.keySet(), false)
+                        /*
                         if(params.withChildren == 'on') {
                             Sql sql = GlobalService.obtainSqlConnection()
                             try {
@@ -1042,7 +1011,7 @@ class SubscriptionService {
                                 sql.close()
                             }
                         }
-
+                        */
                         if(params.process && params.process	== "withTitleGroup") {
                             IssueEntitlementGroup issueEntitlementGroup
                             if (params.issueEntitlementGroupNew) {
@@ -1233,7 +1202,9 @@ class SubscriptionService {
      * @param target the member subscription whose holding should be enriched
      * @param consortia the consortial subscription whose holding should be taken
      * @param pkg the package to be linked
+     * @deprecated addToMemberSubscription() does the same thing
      */
+    @Deprecated
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         try {
@@ -1372,6 +1343,17 @@ class SubscriptionService {
         sub.holdingSelection = value
         sub.save()
         Set<Subscription> members = Subscription.findAllByInstanceOf(sub)
+        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            if(! AuditConfig.getConfig(sub, prop)) {
+                AuditConfig.addConfig(sub, prop)
+
+                members.each { Subscription m ->
+                    m.setProperty(prop, sub.getProperty(prop))
+                    m.save()
+                }
+            }
+        }
+        /*
         switch(value) {
             case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
                 if(! AuditConfig.getConfig(sub, prop)) {
@@ -1384,20 +1366,21 @@ class SubscriptionService {
                 }
                 break
             case RDStore.SUBSCRIPTION_HOLDING_PARTIAL:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, sub.getProperty(prop))
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
             default:
-                /*members.each { Subscription m ->
+                members.each { Subscription m ->
                     m.setProperty(prop, null)
                     m.save()
-                }*/
+                }
                 AuditConfig.removeConfig(sub, prop)
                 break
         }
+        */
     }
 
     /**
@@ -1516,6 +1499,7 @@ class SubscriptionService {
                 //Thread.currentThread().setName("EntitlementEnrichment_${configMap.subscription.id}")
                 bulkAddEntitlements(configMap.subscription, toBeAdded, configMap.subscription.hasPerpetualAccess)
                 userCache.put('progress', 80)
+                /*
                 if(configMap.withChildrenKBART == 'on') {
                     Sql sql = GlobalService.obtainSqlConnection()
                     try {
@@ -1530,6 +1514,7 @@ class SubscriptionService {
                     }
                 }
                 userCache.put('progress', 90)
+                */
                 if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
                     IssueEntitlementGroup issueEntitlementGroup
                     if (configMap.issueEntitlementGroupNewKBART) {
@@ -3561,8 +3546,14 @@ class SubscriptionService {
             }
             else if (!allowedToSelect) {
                 externalTitleData.put('found_in_package', RDStore.YN_YES.value)
-                externalTitleData.put('already_purchased_at', "${participantPerpetualAccessToTitle.subscription.name} (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})")
+                String subHeaderString = participantPerpetualAccessToTitle.subscription.name
+                if(participantPerpetualAccessToTitle.subscription.startDate)
+                    subHeaderString += " (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-"
+                if(participantPerpetualAccessToTitle.subscription.endDate)
+                    subHeaderString += "${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})"
+                externalTitleData.put('already_purchased_at', subHeaderString)
                 result.notAddedTitles << externalTitleData
+                perpetuallyPurchasedCount++
             }
             userCache.put('progress', 50+i*pointsPerIteration)
         }
@@ -4304,8 +4295,8 @@ class SubscriptionService {
         return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND ((sp.tenant = :contextOrg OR sp.tenant is null) OR (sp.tenant != :contextOrg AND sp.isPublic = true)) AND sp.type.tenant is null', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
     }
 
-    int countPrivateSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription) {
-        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0]
+    int countPrivateSubscriptionPropertiesOfMembersByParentSub(Org contextOrg, Subscription subscription, PropertyDefinition propertyDefinition){
+        return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
     }
 
     Map selectSubMembersWithImport(InputStream stream) {
@@ -4471,6 +4462,7 @@ class SubscriptionService {
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
             result.subscriber = result.subscription.getSubscriberRespConsortia()
+            result.editable = surveyService.isEditableSurvey(contextService.getOrg(), result.surveyInfo)
             Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
             if (rtParams.tab)    { params.tab = rtParams.tab }
             if (rtParams.subTab) { params.subTab = rtParams.subTab }

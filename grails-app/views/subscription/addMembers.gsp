@@ -48,7 +48,7 @@
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
-            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
             <br>
 
             <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
@@ -102,7 +102,7 @@
                             <div class="grouped fields">
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}s" value="no">
+                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}" value="no">
                                         <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                                     </div>
                                 </div>
@@ -146,7 +146,11 @@
                         <div class="field">
                             <g:if test="${validPackages}">
                                 <div class="grouped fields">
-                                    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
+                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
+                                    </g:if>
+                                    <g:else>
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
@@ -167,10 +171,6 @@
                                                 </div>
                                             </div>
                                         </g:if>
-                                    </g:if>
-                                    <g:else>
-                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
-                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
                                     </g:else>
                                 </div>
                             </g:if>

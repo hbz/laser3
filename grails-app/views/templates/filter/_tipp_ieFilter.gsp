@@ -94,7 +94,7 @@
                 <label for="provider">${message(code: 'tipp.provider')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="provider">
                     <input type="hidden" name="provider"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <div class="default text"><g:message code="select2.minChars.note"/></div>
                     <i class="dropdown icon"></i>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                 <label for="publishers">${message(code: 'tipp.publisher')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="publishers">
                     <input type="hidden" name="publishers"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <div class="default text"><g:message code="select2.minChars.note"/></div>
                     <i class="dropdown icon"></i>
                 </div>
             </div>
@@ -411,13 +411,13 @@
             let by = 'pkg';
             let obj = '${genericOIDService.getOID(packageInstance)}';
         </g:if>
+        <g:elseif test="${controllerName == 'title' || action in ['linkTitle', 'currentPermanentTitles']}">
+            let by = 'status';
+            let obj;
+        </g:elseif>
         <g:elseif test="${controllerName == 'subscription'}">
             let by = 'sub';
             let obj = '${genericOIDService.getOID(subscription)}';
-        </g:elseif>
-        <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
-            let by = 'status';
-            let obj;
         </g:elseif>
         <g:else>
             let by;
@@ -440,14 +440,14 @@
         }
     }
 
-    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.series_names}', 'seriesName');
-    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.series_names}', 'seriesName', 1);
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}', 1);
     JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${configMap}"/>', '${params.ddcs}');
     JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${configMap}"/>', '${params.languages}');
     JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${configMap}"/>', '${params.yearsFirstOnline}');
     JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${configMap}"/>', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.title_types}', 'titleType');
-    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.publishers}', 'publisherName');
-    JSPC.app.ajaxDropdown($('#provider'),           '<g:createLink controller="ajaxJson" action="getAllPossibleProviders" params="${configMap}"/>', '${params.provider}');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${configMap}"/>', '${params.title_types}');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.publishers}', 'publisherName', 1);
+    JSPC.app.ajaxDropdown($('#provider'),           '<g:createLink controller="ajaxJson" action="getAllPossibleProviders" params="${configMap}"/>', '${params.provider}', 1);
     JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${configMap}"/>', '${params.coverageDepth}');
 </laser:script>

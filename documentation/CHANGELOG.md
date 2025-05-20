@@ -7,6 +7,78 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
+
+6588    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         500er bei dauerhaften Käufen
+
+6582    15.05.2025  rc-3.5  3.5-RC      David   Feature     Verwaiste/Ungültige Views im Profile-Verzeichnis
+
+6579    15.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter bei "Einrichtungen verwalten" übernahm den Reiter nicht
+
+6571    15.05.2025  rc-3.5  3.5-RC      Andreas Feature     Vereinfachung der Upload-Anleitungen
+
+6574    14.05.2025  rc-3.5  3.5-RC      David   Feature     Build Info wieder einbauen QA
+
+6549    14.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbau der Sicht "Meine dauerhaften Titel"
+
+6572    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Syncfehler behoben
+
+6570    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Paginierung griff bei we:kb-Filter nicht
+
+6563    12.05.2025  rc-3.5  3.5-RC      David   Feature     "Erstellt durch" bei Anbieter und Library Supplier
+
+6568    09.05.2025  rc-3.5  3.5-RC      Andreas Bug         Lizenztitel konnten als Pro-Nutzer nicht exportiert werden
+
+6564    09.05.2025  rc-3.5  3.5-RC      Andreas Feature     Weitere Einschränkung der möglichen Plattformen
+
+6565    08.05.2025  rc-3.5  3.5-RC      David   Feature     Reiterstruktur/Tab bei Plattform
+
+6553    08.05.2025  rc-3.5  3.5-RC      David   Feature     Hilfe (Beschreibung des Templates) bricht wegen ungesetztem Wert
+
+6443    08.05.2025  rc-3.5  3.5-RC      Andreas Feature     Verfahrensverzeichnisse der Verarbeitungstätigkeiten aktualisiert
+
+6548    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter nach Kontakt-Position nachgereicht
+
+6546    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         irrtümliche Entknüpfung von Titel behoben
+
+6545    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     bessere Darstellung des Hinweistextes
+
+6530    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     Übernahme der Tabelle aus "Alle Pakete"
+
+6544    06.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbenennung und Bereinigung von Positionstypen
+
+6540    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Schleife nachgereicht
+
+6532    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         Informationsbudgets wurden im Export nur nach Gruppierung vorgeschlagen
+
+6523    05.05.2025  rc-3.5  3.5-RC      David   Bug         Mehrfach vergebene eigene Merkmale werden als "nicht zulässig" definiert
+
+6524    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         CSV-Kostenausgabe schlug fehl
+
+6519    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlerhafter Seitenaufruf nach Löschen einer Einrichtungslizenz
+
+6518    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler im Formular behoben
+
+6517    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         doppelte Library Supplier-Übertragung behoben
+
+6504    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         diverse darstellerische Fehler bei Library Supplier behoben
+
+6513    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Eigene Kostenmerkmale waren nicht löschbar
+
+6502    30.04.2025  rc-3.5  3.5-RC      Andreas Feature     neue Referenzwerte für Discovery-Systeme
+
+6500    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Konsortiale Elternverträge können nicht mehr mit lokalen Lizenzen verknüpft werden
+
+6485    29.04.2025  rc-3.5  3.5-RC      David   Feature     Dashboard: Aufgaben etc. weiter oben positionieren
+
+6495    25.04.2025  rc-3.5  3.5-RC      David   Feature     Refdata aufräumen
+
+6492    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Kopie von Vertragsmerkmalen lief in Fehler
+
+6491    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler in der Tabellenüberschrift behoben
+
+6490    24.04.2025  rc-3.5  3.5-RC      Andreas Feature     Anpassung der Upload-Templates für Lizenzen und Kosten
+
 6489    24.04.2025  rc-3.5  3.5-RC      David   Feature     Reporting: neue Felder für Platform
 
 6478    17.04.2025  rc-3.5  3.5-RC      David   Feature     Landingpage und Login-Form zusammenführen

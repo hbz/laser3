@@ -25,7 +25,6 @@ import de.laser.remote.GlobalRecordSource
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.CodeUtils
@@ -254,27 +253,29 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    if(subChildIDs) {
+                                    if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id)) {
                                         executorService.execute({
-                                            String threadName = 'PackageUnlink_'+sub.id
+                                            Set<Package> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                            String threadName = 'PackageUnlink_' + sub.id
                                             Thread.currentThread().setName(threadName)
-                                            sub.packages.each { SubscriptionPackage sp ->
-                                                if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
-                                                    log.error('error on clearing issue entitlements when changing package holding selection')
+                                            if(subChildIDs) {
+                                                subPackages.each { SubscriptionPackage sp ->
+                                                    if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
+                                                        log.error('error on clearing issue entitlements when changing package holding selection')
+                                                    }
+                                                }
+                                            }
+                                            subPackages.each { SubscriptionPackage sp ->
+                                                Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
+                                                if(missingTipps.size() > 0) {
+                                                    log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
+                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
                                                 }
                                             }
                                         })
                                     }
-                                    sub.packages.each { SubscriptionPackage sp ->
-                                        Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if(missingTipps.size() > 0) {
-                                            log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
-                                            executorService.execute({
-                                                String threadName = 'PackageUnlink_' + sub.id
-                                                Thread.currentThread().setName(threadName)
-                                                subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
-                                            })
-                                        }
+                                    else {
+                                        log.info("process running for ${sub.id}, not starting again")
                                     }
                                 }
                             }
@@ -533,9 +534,9 @@ class AjaxController {
                       Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                       List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                       rows.each { GroovyRowResult row ->
-                          if(newChecked.containsKey(row['ie_id']))
-                              newChecked.remove(row['ie_id'])
-                          else newChecked.put(row['ie_id'], 'checked')
+                          if(newChecked.containsKey(row['ie_id'].toString()))
+                              newChecked.remove(row['ie_id'].toString())
+                          else newChecked.put(row['ie_id'].toString(), 'checked')
                       }
                       break
               }
@@ -1309,47 +1310,63 @@ class AjaxController {
                             m.setProperty(prop, owner.getProperty(prop))
                             m.save()
                         }
-                    }
-                    else {
-                        AuditConfig.removeConfig(owner, prop)
 
-                        if (! params.keep) {
-                            members.each { m ->
-                                if(m[prop] instanceof Boolean)
-                                    m.setProperty(prop, false)
-                                else {
-                                    if(m[prop] instanceof RefdataValue) {
-                                        if(m[prop].owner.desc == RDConstants.Y_N_U)
-                                            m.setProperty(prop, RDStore.YNU_UNKNOWN)
-                                        else m.setProperty(prop, null)
+                        if(prop == 'holdingSelection' && members && owner[prop] == RDStore.SUBSCRIPTION_HOLDING_PARTIAL) {
+                            if(!subscriptionService.checkThreadRunning('PackageUnlink_'+owner.id)) {
+                                executorService.execute({
+                                    String threadName = 'PackageUnlink_' + owner.id
+                                    Thread.currentThread().setName(threadName)
+                                    //synchronise data
+                                    Set<Package> subPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :owner', [owner: owner])
+                                    subPackages.each { Package pkg ->
+                                        batchQueryService.clearIssueEntitlements([sub: members.id, pkg_id: pkg.id])
                                     }
-                                    else
-                                        m.setProperty(prop, null)
-                                }
-                                m.save()
+                                })
                             }
                         }
+                    }
+                    else {
+                        //accidental prevention
+                        if(owner[prop] != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                            AuditConfig.removeConfig(owner, prop)
 
-                        // delete pending changes
-                        // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
-                        members.each { m ->
-                            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
-                                    [objectID: "${m.class.name}:${m.id}"])
+                            if (! params.keep) {
+                                members.each { m ->
+                                    if(m[prop] instanceof Boolean)
+                                        m.setProperty(prop, false)
+                                    else {
+                                        if(m[prop] instanceof RefdataValue) {
+                                            if(m[prop].owner.desc == RDConstants.Y_N_U)
+                                                m.setProperty(prop, RDStore.YNU_UNKNOWN)
+                                            else m.setProperty(prop, null)
+                                        }
+                                        else
+                                            m.setProperty(prop, null)
+                                    }
+                                    m.save()
+                                }
+                            }
 
-                            openPD?.each { pc ->
-                                def payload = JSON.parse(pc?.payload)
-                                if (payload && payload?.changeDoc) {
-                                    def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
-                                    def eventProp = payload.changeDoc?.prop
-                                    if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
-                                        pc.delete()
+                            // delete pending changes
+                            // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
+                            members.each { m ->
+                                List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.costItem is null and pc.oid = :objectID",
+                                        [objectID: "${m.class.name}:${m.id}"])
+
+                                openPD?.each { pc ->
+                                    def payload = JSON.parse(pc?.payload)
+                                    if (payload && payload?.changeDoc) {
+                                        def eventObj = genericOIDService.resolveOID(payload.changeDoc?.OID)
+                                        def eventProp = payload.changeDoc?.prop
+                                        if (eventObj?.id == owner?.id && eventProp.equalsIgnoreCase(prop)) {
+                                            pc.delete()
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
         if(Boolean.valueOf(params.returnSuccessAsJSON))

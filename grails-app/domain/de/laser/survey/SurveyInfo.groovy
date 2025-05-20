@@ -123,6 +123,10 @@ class SurveyInfo {
                 check = false
             }
 
+            if(it.subscriptionSurvey && (SurveyConfigSubscription.countBySurveyConfig(it) == 0)){
+                check = false
+            }
+
             if(it.packageSurvey && (SurveyConfigPackage.countBySurveyConfig(it) == 0)){
                 check = false
             }

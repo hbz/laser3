@@ -211,8 +211,8 @@ class ManagementService {
                 Map qry_params
 
                 if (contextService.getOrg().isCustomerType_Inst_Pro()) {
-                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-                    qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( o.roleType = :roleType1 AND o.org = :lic_org ) ) )"
+                    qry_params = [roleType1:RDStore.OR_LICENSEE, lic_org:result.institution]
                 }
                 else if (contextService.getOrg().isCustomerType_Consortium()) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
@@ -392,7 +392,7 @@ class ManagementService {
             long userId = contextService.getUser().id
             if(subscriptions) {
                 executorService.execute({
-                    long start = System.currentTimeSeconds()
+                    //long start = System.currentTimeSeconds()
                     Thread.currentThread().setName(threadName)
                     pkgsToProcess.each { Package pkg ->
                         permittedSubs.each { Subscription selectedSub ->
@@ -400,11 +400,12 @@ class ManagementService {
                             if(params.processOption =~ /^link/) {
                                 if(!sp) {
                                     if(result.subscription) {
-                                        subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        //subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        subscriptionService.addToMemberSubscription(result.subscription, [selectedSub], pkg, params.processOption == 'linkwithIE')
                                     }
                                     else {
-                                        if(selectedSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
-                                            subscriptionService.addToSubscription(selectedSub, pkg, true)
+                                        if(auditService.getAuditConfig(selectedSub, 'holdingSelection'))
+                                            subscriptionService.addToSubscription(selectedSub, pkg, false)
                                         else
                                             subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
                                     }
@@ -426,9 +427,11 @@ class ManagementService {
 
                         }
                     }
+                    /*
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
+                    */
                 })
             }
 

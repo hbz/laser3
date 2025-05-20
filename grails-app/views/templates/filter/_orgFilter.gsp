@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -433,6 +433,20 @@
                     </select>
                 </div>
             </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('surveySubscriptions')}">
+                <div class="field">
+                    <label for="surveySubscriptions">${message(code: 'surveySubscriptions.selectedSubscriptions')}</label>
+                    <select id="surveySubscriptions" name="surveySubscriptions" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveySubscriptions" value="${SurveyConfigSubscription.executeQuery("select scs.subscription from SurveyConfigSubscription scs where scs.surveyConfig = :surveyConfig order by scs.subscription.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveySubscriptions}" var="surveySubscription">
+                            <option <%=Params.getLongList(params, 'surveySubscriptions').contains(surveySubscription.id) ? 'selected="selected"' : '' %> value="${surveySubscription.id}">${surveySubscription.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('subscriptionAdjustDropdown')}">
                 <ui:greySegment>
                     <div class="two fields">
@@ -449,7 +463,7 @@
 
                         <div class="field">
                             <label for="subs">${message(code: 'subscription.label')}</label>
-                            <select id="subs" name="sub" class="ui fluid search selection dropdown">
+                            <select id="subs" name="subs" class="ui fluid search selection dropdown multiple" multiple="multiple">
                                 <option value="">${message(code: 'default.select.choose.label')}</option>
                             </select>
                         </div>
@@ -504,6 +518,14 @@
         if (status) {
             url = url + '&' + status
         }
+    var selectedSubIds = [];
+    <g:if test="${params.subs}">
+        <g:each in="${params.list('subs')}" var="sub">
+            <g:if test="${sub instanceof Subscription}">
+                selectedSubIds.push(${sub.id});
+            </g:if>
+        </g:each>
+    </g:if>
 
     var dropdownSelectedObjects = $('#subs');
 
@@ -514,9 +536,9 @@
             url: url,
             success: function (data) {
                 $.each(data, function (key, entry) {
-                <g:if test="${params.sub}">
-                    if(entry.value === ${params.sub.id}){
-                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                <g:if test="${params.subs}">
+                    if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
+                       dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
                     }else{
                         dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
                     }

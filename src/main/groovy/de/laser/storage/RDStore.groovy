@@ -99,8 +99,6 @@ class RDStore {
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
     public final static RefdataValue LANGUAGE_EN            = getRefdataValue('en', RDConstants.LANGUAGE)
 
-    public final static RefdataValue LICENSE_TYPE_ACTUAL    = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
-
     public final static RefdataValue LICENSE_NO_STATUS      = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_CURRENT        = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_INTENDED       = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
@@ -200,7 +198,6 @@ class RDStore {
     public final static RefdataValue PRS_POS_DIREKTION      = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_DIREKTION_ASS  = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_EA             = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_EL             = getRefdataValue('Erwerbungsleitung', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_FACHREFERAT    = getRefdataValue('Fachreferat', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_HEAD           = getRefdataValue('Head Access Services', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_LD             = getRefdataValue('Library Director', RDConstants.PERSON_POSITION)
@@ -276,6 +273,8 @@ class RDStore {
     public final static RefdataValue TITLE_TYPE_EBOOK       = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_JOURNAL     = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_DATABASE    = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_OTHER       = getRefdataValue('Other', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_UNKNOWN     = getRefdataValue('Title', RDConstants.TITLE_MEDIUM)
 
     public final static RefdataValue TITLE_STATUS_CURRENT   = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     public final static RefdataValue TITLE_STATUS_RETIRED   = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
@@ -291,7 +290,7 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
-    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS   = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     public final static RefdataValue VENDOR_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.VENDOR_STATUS)

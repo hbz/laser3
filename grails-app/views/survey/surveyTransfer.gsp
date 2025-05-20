@@ -25,7 +25,14 @@
                        href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
-<laser:render template="nav"/>
+<g:if test="${!surveyConfig.subSurveyUseForTransfer}">
+    <laser:render template="nav"/>
+</g:if>
+<g:else>
+    <h2 class="ui header">
+    <g:message code="surveyTransfer.action"/>:
+    </h2>
+</g:else>
 
 <ui:objectStatus object="${surveyInfo}"/>
 
@@ -39,6 +46,8 @@
     </div>
 </g:if>
 <g:else>
+
+        <g:render template="transferredSubs"/>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
 
@@ -67,35 +76,45 @@
 
         <div class="ui bottom attached tab segment active">
 
+            <g:set var="tmplConfigShowList"
+                   value="${['lineNumber', 'name']}"/>
+
             <g:if test="${surveyConfig.pickAndChoose}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner']}"/>
+                       value="${tmplConfigShowList << ['finishedDate', 'surveyTitlesCount']}"/>
             </g:if>
-            <g:elseif test="${surveyConfig.pickAndChoose && surveyConfig.vendorSurvey}">
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList << ['surveyProperties']}"/>
+
+            <g:if test="${surveyConfig.packageSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+                       value="${tmplConfigShowList << ['surveyPackages', 'surveyCostItemsPackages']}"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.vendorSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendor', 'commentOnlyForOwner']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.packageSurvey}">
+                       value="${tmplConfigShowList << ['surveyVendor']}"/>
+            </g:if>
+
+            <g:if test="${surveyConfig.subscriptionSurvey}">
                 <g:set var="tmplConfigShowList"
-                       value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
-            </g:elseif>
-            <g:elseif test="${surveyConfig.vendorSurvey}">
-                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner']}"/>
-            </g:elseif>
-            <g:else>
-                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
-            </g:else>
+                       value="${tmplConfigShowList << ['surveySubscriptions', 'surveyCostItemsSubscriptions']}"/>
+            </g:if>
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList << ['commentOnlyForOwner']}"/>
+
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList.flatten()}"/>
 
 
             <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess  : editable,
                                                                         showCheckboxForParticipantsHasNoAccess: editable,
                                                                         showTransferFields                    : editable,
                                                                         processAction                         : 'processTransferParticipants',
-                                                                        tmplConfigShow                        : tmplConfigShowList]"/>
+                                                                        tmplConfigShow                        : tmplConfigShowList,
+                                                                        showIcons: params.tab == 'participantsView']"/>
         </div>
 
 

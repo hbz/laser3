@@ -42,7 +42,7 @@
             %{-- TODO : ERMS-3058 - check if $calledFromSurvey@subscription/_properties.gsp must be applied here --}%
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextService.getOrg().id && editable) || (!prop.tenant && editable)}"/>
 
-            <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+            <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <g:if test="${prop.type.descr == prop_desc}">
                     <tr>
                         <td>

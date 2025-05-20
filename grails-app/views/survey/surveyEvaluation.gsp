@@ -69,24 +69,34 @@
     <g:if test="${surveyConfig.pickAndChoose}">
         <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
     </g:if>
-    <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
-        <g:set var="tmplConfigShowList"
-               value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendor', 'commentOnlyForOwner']}"/>
-    </g:elseif>
-    <g:elseif test="${surveyConfig.packageSurvey}">
-        <g:set var="tmplConfigShowList"
-               value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
-    </g:elseif>
-    <g:elseif test="${surveyConfig.vendorSurvey}">
-        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner']}"/>
-    </g:elseif>
     <g:else>
-        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties']}"/>
+
+        <g:if test="${surveyConfig.packageSurvey}">
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList <<  ['surveyPackages', 'surveyCostItemsPackages',]}"/>
+        </g:if>
+
+        <g:if test="${surveyConfig.vendorSurvey}">
+            <g:set var="tmplConfigShowList" value="${tmplConfigShowList << ['surveyVendor']}"/>
+        </g:if>
+
+        <g:if test="${surveyConfig.subscriptionSurvey}">
+            <g:set var="tmplConfigShowList"
+                   value="${tmplConfigShowList << ['surveySubscriptions', 'surveyCostItemsSubscriptions']}"/>
+        </g:if>
+
+        <g:set var="tmplConfigShowList"
+               value="${tmplConfigShowList << ['commentOnlyForOwner']}"/>
+
+        <g:set var="tmplConfigShowList"
+               value="${tmplConfigShowList.flatten()}"/>
     </g:else>
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
-                                                                tmplConfigShow   : tmplConfigShowList]"/>
+                                                                tmplConfigShow   : tmplConfigShowList,
+                                                                showIcons: params.tab == 'participantsView']"/>
 </div>
 
 
@@ -168,7 +178,6 @@ surveyEvChart.on('click', function(params) {
                 },
                 detachable: true,
                 autofocus: false,
-                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('#exportClickMeModal .ui.form').submit();

@@ -800,6 +800,7 @@ class DeletionService {
         List userSettings       = UserSetting.findAllWhere(user: user)
         List reportingFilter    = ReportingFilter.findAllByOwner(user)
         List systemAnnouncements  = SystemAnnouncement.findAllByUser(user)
+        List marker             = Marker.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -817,6 +818,7 @@ class DeletionService {
         result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
         result.info << ['Ankündigungen', systemAnnouncements, FLAG_SUBSTITUTE]
+        result.info << ['Beobachtungsliste', marker]
 
         // checking constraints and/or processing
 
@@ -855,6 +857,8 @@ class DeletionService {
                     ddds.each { tmp -> tmp.delete() }
 
                     reportingFilter.each { tmp -> tmp.delete() }
+
+                    marker.each { tmp -> tmp.delete() }
 
                     tasks.each { tmp ->
                         if (tmp.creator.id == user.id) {

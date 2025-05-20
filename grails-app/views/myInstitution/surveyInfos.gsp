@@ -98,7 +98,6 @@
                 },
                 detachable: true,
                 autofocus: false,
-                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('#surveyFinishModal .ui.form').submit();

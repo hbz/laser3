@@ -16,8 +16,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -36,7 +34,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         id          column: 'plp_id'
         version     column: 'plp_version'
         stringValue column: 'plp_string_value', type: 'text'
-        intValue    column: 'plp_int_value'
         longValue   column: 'plp_long_value'
         decValue    column: 'plp_dec_value'
         refValue    column: 'plp_ref_value_rv_fk', index: 'plp_ref_value_idx'
@@ -54,7 +51,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
