@@ -5197,10 +5197,9 @@ class SurveyControllerService {
                 if (!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)) {
 
                     Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
+                            [parentSub  : result.surveyConfig.subscription,
                              participant: it.participant
                             ])[0]
-
 
                     if (!oldSubofParticipant) {
                         oldSubofParticipant = result.parentSubscription
