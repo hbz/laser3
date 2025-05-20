@@ -2,15 +2,17 @@ package de.laser.storage
 
 import de.laser.RefdataValue
 import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Container class for frequently used controlled list values, so called {@link RefdataValue}s
  */
 @CompileStatic
-@Slf4j
 class RDStore {
+
+//    public final static RefdataValue $TEST                          = getRefdataValue('failure_test', 'failure_test')
 
     public final static RefdataValue GENERIC_NULL_VALUE             = getRefdataValue('generic.null.value','filter.fake.values')
 
@@ -38,10 +40,14 @@ class RDStore {
     public final static RefdataValue CIEC_NEUTRAL   = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
     public final static RefdataValue COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
-    public final static RefdataValue COMBO_TYPE_FOLLOWS         = getRefdataValue('follows', RDConstants.COMBO_TYPE)
 
     public final static RefdataValue COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public final static RefdataValue COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
+
+    public final static RefdataValue CONCURRENT_ACCESS_OTHER         = getRefdataValue('Other', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NO_LIMIT      = getRefdataValue('No limit', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NOT_SPECIFIED = getRefdataValue('Not Specified', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_SPECIFIED     = getRefdataValue('Specified', RDConstants.CONCURRENT_ACCESS)
 
     public final static RefdataValue CONTACT_TYPE_JOBRELATED    = getRefdataValue('Job-related', RDConstants.CONTACT_TYPE)
     public final static RefdataValue CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal', RDConstants.CONTACT_TYPE)
@@ -56,32 +62,42 @@ class RDStore {
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
     public final static RefdataValue COST_ITEM_ELEMENT_BUDGET_TITLE_PICK = getRefdataValue('budget: title pick and choose', RDConstants.COST_ITEM_ELEMENT)
 
-    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+    public final static RefdataValue CG_TYPE_OTHER      = getRefdataValue('other', RDConstants.CURATORY_GROUP_TYPE)
+    public final static RefdataValue CG_TYPE_PROVIDER   = getRefdataValue('provider', RDConstants.CURATORY_GROUP_TYPE)
+    public final static RefdataValue CG_TYPE_VENDOR     = getRefdataValue('vendor', RDConstants.CURATORY_GROUP_TYPE)
 
     public final static RefdataValue CURRENCY_EUR   = getRefdataValue('EUR', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
 
+    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+
     public final static RefdataValue DOC_CONF_PUBLIC            = getRefdataValue('public', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CONF_INTERNAL          = getRefdataValue('internal', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CONF_STRICTLY          = getRefdataValue('strictly_confidential', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
+    public final static RefdataValue DOC_TYPE_ADDENDUM          = getRefdataValue('Addendum', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
-    public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_LICENSE           = getRefdataValue('License', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_OFFER             = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_TITLELIST         = getRefdataValue('Title List', RDConstants.DOCUMENT_TYPE)
 
+    public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
+    public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
+
+    public final static RefdataValue INVOICE_PROCESSING_CONSORTIUM   = getRefdataValue('Consortium', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_NOT_SET   = getRefdataValue('Not set', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_PROVIDER   = getRefdataValue('Provider', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_PROVIDER_OR_VENDOR   = getRefdataValue('Provider or Vendor', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_VENDOR   = getRefdataValue('Vendor', RDConstants.INVOICE_PROCESSING)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
     public final static RefdataValue LANGUAGE_EN            = getRefdataValue('en', RDConstants.LANGUAGE)
-
-    public final static RefdataValue LICENSE_TYPE_ACTUAL    = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
 
     public final static RefdataValue LICENSE_NO_STATUS      = getRefdataValue('Status not defined', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_CURRENT        = getRefdataValue('Current', RDConstants.LICENSE_STATUS)
@@ -100,16 +116,11 @@ class RDStore {
     public final static RefdataValue MAIL_TYPE_SURVEY_REMINDER   = getRefdataValue('Survey-Reminder', RDConstants.MAIL_TYPE)
     public final static RefdataValue MAIL_TYPE_SURVEY_OPEN       = getRefdataValue('Survey-Open', RDConstants.MAIL_TYPE)
 
-    public final static RefdataValue ORG_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.ORG_STATUS)
-
     public final static RefdataValue OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE                = getRefdataValue('Licensee', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial', RDConstants.ORGANISATIONAL_ROLE)
 
-    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE)
+    public final static RefdataValue OR_SUBSCRIPTION_CONSORTIUM = getRefdataValue('Subscription Consortia', RDConstants.ORGANISATIONAL_ROLE) // TODO: 'Subscription Consortium'
     public final static RefdataValue OR_SUBSCRIBER              = getRefdataValue('Subscriber', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_SUBSCRIBER_CONS_HIDDEN  = getRefdataValue('Subscriber_Consortial_Hidden', RDConstants.ORGANISATIONAL_ROLE)
@@ -121,22 +132,10 @@ class RDStore {
     public final static RefdataValue OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
 
-    public final static RefdataValue O_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.ORG_STATUS)
-    public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
-
-    public final static RefdataValue OT_BROKER              = getRefdataValue('Broker', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_CONSORTIUM          = getRefdataValue('Consortium', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_CONTENT_PROVIDER    = getRefdataValue('Content Provider', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_IMPRINT             = getRefdataValue('Imprint', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_INSTITUTION         = getRefdataValue('Institution', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_ISSUING_BODY        = getRefdataValue('Issuing Body', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_AGENCY              = getRefdataValue('Agency', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_LICENSEE            = getRefdataValue('Licensee', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_LICENSOR            = getRefdataValue('Licensor', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_PLATFORM_PROVIDER   = getRefdataValue('Platform Provider', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_PROVIDER            = getRefdataValue('Provider', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_PUBLISHER           = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
-    public final static RefdataValue OT_VENDOR              = getRefdataValue('Vendor', RDConstants.ORG_TYPE)
+    @Deprecated
+    public final static RefdataValue OT_CONSORTIUM  = getRefdataValue('Consortium', RDConstants.ORG_TYPE)   // TODO: ERMS-6009
+    @Deprecated
+    public final static RefdataValue OT_INSTITUTION = getRefdataValue('Institution', RDConstants.ORG_TYPE)  // TODO: ERMS-6009
 
     public final static RefdataValue PACKAGE_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public final static RefdataValue PACKAGE_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
@@ -185,19 +184,20 @@ class RDStore {
     public final static RefdataValue PRS_FUNC_INVOICING_CONTACT         = getRefdataValue('Invoicing Contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_SERVICE_SUPPORT           = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_STATS_SUPPORT             = getRefdataValue('Statistical Support', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_TECHNICAL_SUPPORT         = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_METADATA                  = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_OA_CONTACT                = getRefdataValue('OA contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_CUSTOMER_SERVICE          = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_SALES_MARKETING           = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_TRAINING                  = getRefdataValue('Training', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_SURVEY_CONTACT         = getRefdataValue('Survey Contact', RDConstants.PERSON_FUNCTION)
 
     public final static RefdataValue PRS_POS_ACCOUNT        = getRefdataValue('Account Manager', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_BBL            = getRefdataValue('Bereichsbibliotheksleitung', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_DIREKTION      = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_DIREKTION_ASS  = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_EA             = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_EL             = getRefdataValue('Erwerbungsleitung', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_FACHREFERAT    = getRefdataValue('Fachreferat', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_HEAD           = getRefdataValue('Head Access Services', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_LD             = getRefdataValue('Library Director', RDConstants.PERSON_POSITION)
@@ -220,6 +220,7 @@ class RDStore {
     public final static RefdataValue READER_NUMBER_SCIENTIFIC_STAFF  = getRefdataValue('Scientific staff', RDConstants.NUMBER_TYPE)
     public final static RefdataValue READER_NUMBER_STUDENTS          = getRefdataValue('Students', RDConstants.NUMBER_TYPE)
     public final static RefdataValue READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
+    public final static RefdataValue READER_NUMBER_FTE_TOTAL         = getRefdataValue('FTE total', RDConstants.NUMBER_TYPE)
 
     public final static RefdataValue SHARE_CONF_ALL                     = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION)
@@ -272,6 +273,8 @@ class RDStore {
     public final static RefdataValue TITLE_TYPE_EBOOK       = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_JOURNAL     = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_DATABASE    = getRefdataValue('Database', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_OTHER       = getRefdataValue('Other', RDConstants.TITLE_MEDIUM)
+    public final static RefdataValue TITLE_TYPE_UNKNOWN     = getRefdataValue('Title', RDConstants.TITLE_MEDIUM)
 
     public final static RefdataValue TITLE_STATUS_CURRENT   = getRefdataValue('Current', RDConstants.TITLE_STATUS)
     public final static RefdataValue TITLE_STATUS_RETIRED   = getRefdataValue('Retired', RDConstants.TITLE_STATUS)
@@ -287,15 +290,12 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
-    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+    public final static RefdataValue US_DASHBOARD_TAB_SURVEYS   = getRefdataValue('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     public final static RefdataValue VENDOR_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.VENDOR_STATUS)
-
-    //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
-    //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)
 
     public final static RefdataValue WF_TASK_PRIORITY_NORMAL     = getRefdataValue('normal', RDConstants.WF_TASK_PRIORITY)
     public final static RefdataValue WF_TASK_PRIORITY_IMPORTANT  = getRefdataValue('important', RDConstants.WF_TASK_PRIORITY)
@@ -304,9 +304,6 @@ class RDStore {
     public final static RefdataValue WF_TASK_STATUS_OPEN         = getRefdataValue('open', RDConstants.WF_TASK_STATUS)
     public final static RefdataValue WF_TASK_STATUS_CANCELED     = getRefdataValue('canceled', RDConstants.WF_TASK_STATUS)
     public final static RefdataValue WF_TASK_STATUS_DONE         = getRefdataValue('done', RDConstants.WF_TASK_STATUS)
-
-    public final static RefdataValue WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
-    public final static RefdataValue WF_WORKFLOW_STATE_TEST      = getRefdataValue('test', RDConstants.WF_WORKFLOW_STATE)
 
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_ALL            = getRefdataValue('all', RDConstants.WF_WORKFLOW_TARGET_ROLE)
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_CONSORTIUM     = getRefdataValue('consortium', RDConstants.WF_WORKFLOW_TARGET_ROLE)
@@ -328,6 +325,8 @@ class RDStore {
     public final static RefdataValue YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     public final static RefdataValue YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     public final static RefdataValue YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+    public final static RefdataValue YNU_YES        = getRefdataValue('Yes', RDConstants.Y_N_U)
+    public final static RefdataValue YNU_NO         = getRefdataValue('No', RDConstants.Y_N_U)
     public final static RefdataValue YNU_UNKNOWN    = getRefdataValue('Unknown', RDConstants.Y_N_U)
 
     // --
@@ -342,6 +341,7 @@ class RDStore {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 
         if (! result) {
+            Logger log = LoggerFactory.getLogger(RDStore.name)
             log.warn "No RefdataValue found for value:'${value}', category:'${category}'"
         }
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)

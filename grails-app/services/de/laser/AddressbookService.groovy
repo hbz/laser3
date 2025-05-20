@@ -1,71 +1,37 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.helper.Params
 import de.laser.storage.RDStore
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 
 /**
  * This service handles retrieval and processing of contact data
- * @see Person
- * @see Address
- * @see Contact
+ * @see de.laser.addressbook.Person
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
  */
 @Transactional
 class AddressbookService {
 
     ContextService contextService
+    CustomerTypeService customerTypeService
     PropertyService propertyService
-    UserService userService
 
     /**
      * Retrieves all private contacts for the given tenant institution
      * @param tenant the institution ({@link Org}) whose private contacts should be retrieved
      * @return a list of private person contacts maintained by the given tenant
-     * @see Person
+     * @see de.laser.addressbook.Person
      */
     List<Person> getPrivatePersonsByTenant(Org tenant) {
-        List result = []
-
-        Person.findAllByTenant(tenant)?.each{ prs ->
-            if (! prs.isPublic) {
-                if (! result.contains(prs)) {
-                    result << prs
-                }
-            }
-        }
+        List result = Person.findAllByTenantAndIsPublic(tenant, false)
         result
-    }
-
-    /**
-     * Checks whether the given address is editable by the given user
-     * @param address the address which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
-     */
-    boolean isAddressEditable(Address address, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
-    }
-
-    /**
-     * Checks whether the given contact is editable by the given user
-     * @param address the contact which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
-     */
-    boolean isContactEditable(Contact contact, User user) {
-        Org org = contact.getPrs()?.tenant ?: contact.org
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
-    }
-
-    /**
-     * Checks whether the given person is editable by the given user
-     * @param person the person which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
-     */
-    boolean isPersonEditable(Person person, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**
@@ -98,6 +64,14 @@ class AddressbookService {
         if(!params.sort || params.sort == "sortname")
             sort = 'coalesce(org.sortname, vendor.sortname, provider.sortname) as sortname'
         else sort = params.sort
+
+        if (params.preferredSurveyPerson) {
+            qParts << "p.preferredSurveyPerson = true"
+        }
+
+        if (params.preferredBillingPerson) {
+            qParts << "p.preferredBillingPerson = true"
+        }
 
         if (params.prs) {
             qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
@@ -151,7 +125,7 @@ class AddressbookService {
             qParts << '('+posParts.join(' OR ')+')'
         }
 
-        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        Map<String, Object> instProvVenFilter = _getInstitutionProviderVendorFilter(params)
         if(instProvVenFilter.containsKey('qParams')) {
             qParts.add(instProvVenFilter.qParts)
             qParams.putAll(instProvVenFilter.qParams)
@@ -213,12 +187,6 @@ class AddressbookService {
                 break
         }
 
-        /*
-        if (params.prs) {
-            qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
-            qParams << [prsName: "${params.prs}"]
-        }
-        */
         if (params.org && params.org instanceof Org) {
             qParts << "org = :org"
             qParams << [org: params.org]
@@ -256,7 +224,7 @@ class AddressbookService {
             qParams << [selectedTypes: Params.getLongList(params, 'type')]
         }
 
-        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        Map<String, Object> instProvVenFilter = _getInstitutionProviderVendorFilter(params)
         if(instProvVenFilter.containsKey('qParts')) {
             qParts.add(instProvVenFilter.qParts)
             qParams.putAll(instProvVenFilter.qParams)
@@ -286,12 +254,13 @@ class AddressbookService {
         result
     }
 
-    private Map<String, Object> getInstitutionProviderVendorFilter(Map params) {
+    private Map<String, Object> _getInstitutionProviderVendorFilter(Map params) {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ))"
-            qParams << [instType: RDStore.OT_INSTITUTION.id]
+            qParts  << "exists (select os from OrgSetting os where os.org = org and os.key = :ct and os.roleValue in (:roles))"
+            qParams << ['ct': OrgSetting.KEYS.CUSTOMER_TYPE]
+            qParams << ['roles': customerTypeService.getOrgInstRoles()]
         }
 
         if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){

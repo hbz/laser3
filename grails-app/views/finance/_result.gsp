@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore" %>
     <ui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
@@ -7,17 +7,17 @@
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
                         <div class="item" data-tab="own">
-                            <g:message code="financials.tab.ownCosts"/> <span class="ui circular label">${own.count}</span>
+                            <g:message code="financials.tab.ownCosts"/> <ui:bubble count="${own.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view in ['cons','consAtSubscr']}">
                         <div class="item" data-tab="cons">
-                            <g:message code="financials.tab.consCosts"/> <span class="ui circular label">${cons.count}</span>
+                            <g:message code="financials.tab.consCosts"/> <ui:bubble count="${cons.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view == 'subscr'}">
                         <div class="item" data-tab="subscr">
-                            <g:message code="financials.tab.subscrCosts"/> <span class="ui circular label">${subscr.count}</span>
+                            <g:message code="financials.tab.subscrCosts"/> <ui:bubble count="${subscr.count}" grey="true"/>
                         </div>
                     </g:if>
                 </g:each>
@@ -39,24 +39,24 @@
                             <div class="field" style="text-align: right;">
                                 <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:else>
@@ -117,7 +117,7 @@
 
                                             <div class="two fields">
                                                 <div class="eight wide field" style="text-align: left;">
-                                                    <button class="ui button"
+                                                    <button class="${Btn.SIMPLE}"
                                                             type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                                                 </div>
 
@@ -129,15 +129,15 @@
 
                                 <div class="field la-field-right-aligned">
                                     <input name="delete" type="hidden" value="false"/>
-                                    <%-- <g:if test="${fixedSubscription}">
+                                    <g:if test="${fixedSubscription && showBulkCostItems != 'true'}">
                                         <input name="sub" type="hidden" value="${fixedSubscription.id}"/>
-                                    </g:if> --%>
+                                    </g:if>
                                     <input name="view" type="hidden" value="${view}"/>
-                                    <button type="submit" id="deleteButton" class="ui negative button js-open-confirm-modal" role="button"
+                                    <button type="submit" id="deleteButton" class="${Btn.NEGATIVE_CONFIRM}" role="button"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
-                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset, missing: missing]"/>
                             </g:form>
                         </g:if>
                         <g:else>
@@ -165,20 +165,19 @@
                 JSPC.app.isClicked = false;
 
                 $("[data-tab='" + JSPC.app.tab + "']").addClass("active");
-                $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + JSPC.app.tab);
+                $(".exportCSV").attr("href", JSPC.app.rawHref); // + "&showView=" + JSPC.app.tab
 
                 $('#financeFilterData .item').tab({
                     onVisible: function(tabPath) {
                         $('#financeFilterData').attr('data-current', tabPath);
                         //console.log(tabPath);
-                        $(".exportCSV").attr("href", JSPC.app.rawHref + "&showView=" + tabPath);
+                        $(".exportCSV").attr("href", JSPC.app.rawHref); //  + "&showView=" + tabPath
                         $("#showView").val(tabPath);
                     }
                 });
 
                 $('#btnAddNewCostItem').on('click', function(event) {
                     event.preventDefault();
-
                     // prevent 2 Clicks open 2 Modals
                     if (! JSPC.app.isClicked) {
                         JSPC.app.isClicked = true;
@@ -194,6 +193,7 @@
                             data: {
                                 sub: "${fixedSubscription?.id}",
                                 showView: "${showView}",
+                                offset: ${params.offset ?: 0},
                                 preselectedSubscriptions: JSON.stringify(preselectedSubscriptions)
                             }
                         }).done(function (data) {
@@ -209,12 +209,11 @@
                                 },
                                 detachable: true,
                                 autofocus: false,
-                                closable: false,
                                 transition: 'scale',
                                 onApprove: function () {
                                     $(this).find('.ui.form').submit();
                                     return false;
-                                }
+                                },
                             }).modal('show');
                         });
                         setTimeout(function () {
@@ -237,23 +236,20 @@
                     }).done( function(data) {
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty().html(data);
-
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-
                                 r2d2.helper.focusFirstFormElement(this);
                             },
                             detachable: true,
                             autofocus: false,
-                            closable: false,
                             transition: 'scale',
                             onApprove : function() {
                                 $(this).find('.ui.form').submit();
                                 return false;
-                            }
+                            },
                         }).modal('show');
                     })
                 });

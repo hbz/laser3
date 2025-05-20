@@ -6,6 +6,10 @@ import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderLink
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorLink
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -44,10 +48,6 @@ class LinksGenerationService {
             prevLink.addAll(Links.executeQuery('select li.destinationLicense'+id+' from Links li where li.sourceLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
             nextLink.addAll(Links.executeQuery('select li.sourceLicense'+id+' from Links li where li.destinationLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
-        else if(context instanceof Org) {
-            prevLink.addAll(Combo.executeQuery('select c.toOrg'+id+' from Combo c where c.fromOrg = :context and c.type = :type',[context:context,type:RDStore.COMBO_TYPE_FOLLOWS]))
-            nextLink.addAll(Combo.executeQuery('select c.fromOrg'+id+' from Combo c where c.toOrg = :context and c.type = :type',[context:context,type:RDStore.COMBO_TYPE_FOLLOWS]))
-        }
         return [prevLink:prevLink,nextLink:nextLink]
     }
 
@@ -73,12 +73,12 @@ class LinksGenerationService {
         // links
         Set<Links> sources = [], destinations = []
         if(obj instanceof Subscription) {
-            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceSubscription and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
-            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationSubscription and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.destinationSubscription and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.sourceSubscription and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
         }
         else if(obj instanceof License) {
-            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceLicense and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
-            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationLicense and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.destinationLicense and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.sourceLicense and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
         }
         //IN is from the point of view of the context object (= obj)
 
@@ -279,12 +279,12 @@ class LinksGenerationService {
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params.linkComment_new
                 if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.pair_new)
-                    configMap.destination = genericOIDService.resolveOID(params.context)
-                }
-                else if(perspectiveIndex == 1) {
                     configMap.source = genericOIDService.resolveOID(params.context)
                     configMap.destination = genericOIDService.resolveOID(params.pair_new)
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = genericOIDService.resolveOID(params.pair_new)
+                    configMap.destination = genericOIDService.resolveOID(params.context)
                 }
                 def currentObject = genericOIDService.resolveOID(params.context)
                 List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
@@ -438,58 +438,24 @@ class LinksGenerationService {
      * @param params the parameter map, containing the link parameters
      * @return true if the link saving was successful, false otherwise
      */
-    boolean linkOrgs(GrailsParameterMap params) {
-        log.debug(params.toMapString())
-        Combo c
-        if(params.linkType_new) {
-            c = new Combo()
-            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
-            c.type = RDStore.COMBO_TYPE_FOLLOWS
-            if(perspectiveIndex == 0) {
-                c.fromOrg = Org.get(params.pair_new)
-                c.toOrg = Org.get(params.context)
-            }
-            else if(perspectiveIndex == 1) {
-                c.fromOrg = Org.get(params.context)
-                c.toOrg = Org.get(params.pair_new)
-            }
-        }
-        c.save()
-    }
-
-    /**
-     * Disjoins the given link between two organisatons
-     * @param params the parameter map containing the combo to unlink
-     * @return true if the deletion was successful, false otherwise
-     */
-    boolean unlinkOrg(GrailsParameterMap params) {
-        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
-        return del > 0
-    }
-
-    /**
-     * Links two organisations by combo
-     * @param params the parameter map, containing the link parameters
-     * @return true if the link saving was successful, false otherwise
-     */
     boolean linkProviderVendor(GrailsParameterMap params, String linkInstanceType) {
         log.debug(params.toMapString())
         def l
         if(params.linkType_new) {
-            Long from, to
+            def from, to
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             if(perspectiveIndex == 0) {
-                from = params.long('pair_new')
-                to = params.long('context')
+                from = genericOIDService.resolveOID(params.pair_new)
+                to = genericOIDService.resolveOID(params.context)
             }
             else if(perspectiveIndex == 1) {
-                from = params.long('context')
-                to = params.long('pair_new')
+                from = genericOIDService.resolveOID(params.context)
+                to = genericOIDService.resolveOID(params.pair_new)
             }
             switch(linkInstanceType) {
-                case ProviderLink: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Provider.get(from), to: Provider.get(to))
+                case ProviderLink.class.name: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: from, to: to)
                     break
-                case VendorLink: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Vendor.get(from), to: Vendor.get(to))
+                case VendorLink.class.name: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: from, to: to)
                     break
             }
             if(l) {
@@ -501,21 +467,16 @@ class LinksGenerationService {
     }
 
     /**
-     * Disjoins the given link between two organisatons
+     * Disjoins the given link between two providers or vendors
      * @param params the parameter map containing the combo to unlink
      * @return true if the deletion was successful, false otherwise
      */
     boolean unlinkProviderVendor(GrailsParameterMap params) {
-        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        int del = 0
+        if(params.containsKey('providerLink'))
+            del = ProviderLink.executeUpdate('delete from ProviderLink pl where pl.id = :id',[id: params.long("providerLink")])
+        else if(params.containsKey('vendorLink'))
+            del = VendorLink.executeUpdate('delete from VendorLink vl where vl.id = :id',[id: params.long("vendorLink")])
         return del > 0
-    }
-
-    /**
-     * Gets the organisations connected to the given organisation
-     * @param org the {@link Org} whose connections should be retrieved
-     * @return a {@link Set} of connections from or to this {@link Org}
-     */
-    Set<Combo> getOrgLinks(Org org) {
-        Combo.executeQuery('select c from Combo c where (c.fromOrg = :context or c.toOrg = :context) and c.type = :follows', [follows: RDStore.COMBO_TYPE_FOLLOWS, context: org])
     }
 }

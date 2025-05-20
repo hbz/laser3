@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="task.plural" serviceInjection="true"/>
+<laser:htmlStart message="task.plural" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 

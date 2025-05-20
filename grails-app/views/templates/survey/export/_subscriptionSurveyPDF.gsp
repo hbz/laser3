@@ -1,36 +1,17 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.remote.ApiSource; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.SubscriptionPackage;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.SubscriptionPackage;" %>
 <g:set bean="genericOIDService" var="genericOIDService"/>
 <g:set bean="gokbService" var="gokbService"/>
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
 
 <g:if test="${ownerView && surveyOrg}">
     <dl>
         <dt>
-            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+            ${message(code: 'surveyOrg.ownerComment.label', args: [participant.sortname])}
         </dt>
         <dd>
             ${surveyOrg.ownerComment}
         </dd>
-    </dl>
-</g:if>
-
-
-<g:if test="${surveyConfig.subSurveyUseForTransfer}">
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.scheduledStartDate.label')}
-        </dt>
-        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                             overwriteEditable="${false}"/>
-        </dd>
-    </dl>
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.scheduledEndDate.label')}
-        </dt>
-        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                             overwriteEditable="${false}"/></dd>
     </dl>
 </g:if>
 
@@ -167,7 +148,7 @@
 
         %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
         <g:render template="/subscription/export/propertiesPDF" model="${[
-                subscription: subscription, calledFromSurvey: true, contextOrg: contextOrg
+                subscription: subscription, calledFromSurvey: true
         ]}"/>
 
     </div>
@@ -222,13 +203,12 @@
     </h2>
         <%
             List packages = []
-            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                 Map packageInfos = [:]
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+                Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
@@ -270,7 +250,7 @@
                                             <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                     var="curatoryGroup">
                                                 <g:link
-                                                        url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
+                                                        url="${baseUrl}/resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
                                             </g:each>
                                         </div>
                                     </dd>
@@ -454,68 +434,51 @@
                         (${refdataValues.join('/')})
                     </g:if>
                 </td>
-                <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
-
-                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
-                    <td>
-                        <g:message code="surveyOrg.perennialTerm.available"/>
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-
-                    </td>
-                </g:if>
-                <g:else>
-                    <td>
-                        <g:if test="${surveyResult.type.isLongType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="longValue"/>
+                <td>
+                    <g:if test="${surveyResult.type.isLongType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="longValue"/>
+                    </g:if>
+                    <g:elseif test="${surveyResult.type.isStringType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="stringValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isBigDecimalType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                      field="decValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isDateType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
+                                      field="dateValue"/>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isURLType()}">
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
+                                      field="urlValue"
+                                      class="la-overflow la-ellipsis"/>
+                        <g:if test="${surveyResult.urlValue}">
+                            <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                         </g:if>
-                        <g:elseif test="${surveyResult.type.isStringType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="stringValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="decValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isDateType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
-                                             field="dateValue"/>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isURLType()}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
-                                             field="urlValue"
-                                             class="la-overflow la-ellipsis"/>
-                            <g:if test="${surveyResult.urlValue}">
-                                <ui:linkWithIcon href="${surveyResult.urlValue}"/>
-                            </g:if>
-                        </g:elseif>
-                        <g:elseif test="${surveyResult.type.isRefdataValueType()}">
-                            <ui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                                    field="refValue"
-                                                    config="${surveyResult.type.refdataCategory}"/>
-                        </g:elseif>
-                    </td>
-                    <td>
+                    </g:elseif>
+                    <g:elseif test="${surveyResult.type.isRefdataValueType()}">
+                        <ui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                                             field="refValue"
+                                             config="${surveyResult.type.refdataCategory}"/>
+                    </g:elseif>
+                </td>
+                <td>
+                    <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                                  field="comment"/>
+                </td>
+                <td>
+                    <g:if test="${ownerView}">
                         <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                         field="comment"/>
-                    </td>
-                    <td>
-                        <g:if test="${ownerView}">
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                             field="ownerComment"/>
-                        </g:if>
-                        <g:else>
-                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
-                                             field="participantComment"/>
-                        </g:else>
-                    </td>
-                </g:else>
-
+                                      field="ownerComment"/>
+                    </g:if>
+                    <g:else>
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                                      field="participantComment"/>
+                    </g:else>
+                </td>
             </tr>
         </g:each>
     </table>

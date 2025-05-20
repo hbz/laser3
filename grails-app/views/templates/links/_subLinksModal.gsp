@@ -1,18 +1,18 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.wekb.ProviderRole; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.wekb.VendorLink; de.laser.utils.DateUtils; de.laser.*;de.laser.storage.RDStore;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 
-        <a role="button"
-           class="ui button la-modern-button la-popup-tooltip la-delay ${tmplCss}"
-           data-ui="modal" href="#${tmplModalID}"
-           data-content="${message(code:'license.details.editLink')}">
-            <g:if test="${tmplIcon}">
-                <i class="${tmplIcon} icon"></i>
-            </g:if>
-            <g:if test="${tmplButtonText}">
-                ${tmplButtonText}
-            </g:if>
-        </a>
+    <a role="button"
+        class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+        data-ui="modal" href="#${tmplModalID}"
+        data-content="${tmplTooltip}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 
 </g:if>
 
@@ -55,16 +55,9 @@
                 thisString += "${DateUtils.getLocalizedSDF_noTime().format(context.endDate)}"
             thisString += ")"
             break
-        case Org.class.name: header = message(code:"org.linking.header")
-            thisString = context.name
-            lookupName = "lookupOrgs"
-            instanceType = message(code:"org.label")
-            urlParams.controller = 'organisation'
-            urlParams.action = 'linkOrgs'
-            break
         case Provider.class.name: header = message(code:"provider.linking.header")
             thisString = context.name
-            lookupName = "lookupproviders"
+            lookupName = "lookupProviders"
             instanceType = message(code:"provider.label")
             urlParams.controller = 'provider'
             urlParams.action = 'link'
@@ -86,10 +79,7 @@
             LinkedHashMap linkTypes = [:]
             if(!subscriptionLicenseLink) {
                 List<RefdataValue> refdataValues = []
-                if(linkInstanceType == Combo.class.name) {
-                    refdataValues << RDStore.COMBO_TYPE_FOLLOWS
-                }
-                else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
+                if (linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
                     refdataValues << RDStore.PROVIDER_LINK_FOLLOWS
                 }
                 else {
@@ -97,7 +87,7 @@
                 }
                 refdataValues.each { RefdataValue rv ->
                     boolean isSimpleLinkType = (rv.id == RDStore.LINKTYPE_SIMPLE.id) // forced: bidirectional
-                    String[] linkArray = rv.getI10n("value").split("\\|").reverse()
+                    String[] linkArray = rv.getI10n("value").split("\\|")
                     if (isSimpleLinkType) { linkArray = [linkArray[0]] }
 
                     linkArray.eachWithIndex { l, int perspective ->
@@ -114,7 +104,7 @@
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
                         }
                     }
-                    else if(linkInstanceType in [Provider.class.name, Vendor.class.name]) {
+                    else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
                         if(link && link.type == rv) {
                             if(context == link.from)
                                 perspIndex = 0
@@ -201,7 +191,7 @@
                             ${thisString}
                         </div>
                         <div class="twelve wide column">
-                            <g:select class="ui dropdown select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
+                            <g:select class="ui dropdown clearable select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
                                       optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                         </div>
                     </div>
@@ -243,6 +233,10 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         function initPairDropdown(selProv) {
             let providerFilter = '';
+            let adminLinking = '';
+            <g:if test="${context.class.name in [Provider.class.name, Vendor.class.name]}">
+                adminLinking = '&adminLinking=true'
+            </g:if>
             let minChars = 1;
             if(typeof(selProv) !== 'undefined' && selProv.length > 0) {
                 providerFilter = '&providerFilter='+selProv;
@@ -250,7 +244,7 @@
             }
             $("#${selectPair}").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter,
+                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter+adminLinking,
                     cache: false
                 },
                 clearable: true,

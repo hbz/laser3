@@ -1,7 +1,6 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
-<g:set var="contextOrg" value="${contextService.getOrg()}"/>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
 
-<laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" serviceInjection="true"/>
+<laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -17,7 +16,7 @@
                     <th>TIPP ID</th>
                     <th>Titel</th>
                     <th>alternatives TIPP mit we:kb ID</th>
-                    <th>betroffener Lizenzbestand</th>
+                    <th>betroffene Titel in Lizenzen</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,7 +35,7 @@
                         <td>
                             <ul>
                                 <g:each in="${issueEntitlements.get(entry.tipp)}" var="ie">
-                                    <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention(contextOrg)}</li>
+                                    <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention()}</li>
                                 </g:each>
                             </ul>
                         </td>
@@ -46,11 +45,11 @@
             <tfoot>
                 <tr>
                     <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: true, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: true, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                     <td>
-                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="ui button">Testlauf (gefahrlos)</g:link>
+                        <g:link action="purgeTIPPsWithoutGOKBId" params="${[doIt: false, toDelete: toDelete as JSON, toUUIDfy: toUUIDfy as JSON]}" class="${Btn.SIMPLE}">Testlauf (gefahrlos)</g:link>
                     </td>
                 </tr>
             </tfoot>

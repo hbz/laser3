@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
-<laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem; de.laser.storage.RDConstants;" %>
+<laser:htmlStart message="surveyInfo.copySurveyCostItems" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -17,20 +17,20 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br/>
 
-<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -39,9 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'surveyInfo.copySurveyCostItems')}
-    </h2>
+    </h2>--}%
 
     <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 
@@ -98,7 +98,7 @@
 
         <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
             <g:set var="sumOldCostItem" value="${0.0}"/>
             <g:set var="sumNewCostItem" value="${0.0}"/>
@@ -126,7 +126,7 @@
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
-                                   class="ui dropdown"
+                                   class="ui dropdown clearable"
                                    id="selectedCostItemElementID"/>--}%
                     </th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
@@ -140,7 +140,7 @@
 
                     <tr class="">
                         <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                                 <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}"
                                             checked="false"/>
                             </g:if>
@@ -175,7 +175,7 @@
                             <g:if test="${participant.oldSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.oldSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
                                             var="costItemParticipantSub">
                                         <tr>
                                             <td>
@@ -255,7 +255,7 @@
                             <g:if test="${participant.newSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
                                             var="costItemParticipantSuccessorSub">
 
                                         <tr>
@@ -300,7 +300,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -310,8 +310,7 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                    <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                         <i class="bordered colored info icon"></i>
                                     </div>
                                 </g:if>
@@ -321,9 +320,8 @@
                                 <br>
                                 <br>
 
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>
@@ -387,11 +385,11 @@
                 </div>
 
                 <div class="eight wide field" style="text-align: right;">
-                    <button class="ui button positive"
+                    <button class="${Btn.POSITIVE}"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
                     <br/>
                     <br/>
-                    <button class="ui button positive" name="isVisibleForSubscriber" value="true"
+                    <button class="${Btn.POSITIVE}" name="isVisibleForSubscriber" value="true"
                             type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code: 'financials.isVisibleForSubscriber')})</button>
                 </div>
             </div>

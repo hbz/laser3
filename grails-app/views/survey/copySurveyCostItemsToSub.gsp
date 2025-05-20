@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<laser:htmlStart message="surveyInfo.copySurveyCostItems" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -23,10 +23,10 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
@@ -60,7 +60,7 @@
 
     <g:form action="proccessCopySurveyCostItemsToSub" controller="survey" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]"
-            method="post" class="ui form ">
+            method="post" class="ui form">
 
         <g:set var="sumNewCostItem" value="${0.0}"/>
         <g:set var="sumSurveyCostItem" value="${0.0}"/>
@@ -84,7 +84,7 @@
                                optionKey="id"
                                optionValue="value"
                                value="${selectedCostItemElementID}"
-                               class="ui dropdown"
+                               class="ui dropdown clearable"
                                id="selectedCostItemElementID"/>--}%
                 </th>
                 <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>
@@ -96,7 +96,7 @@
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -157,7 +157,7 @@
                         <g:if test="${participant.newSub}">
                             <table class="ui very basic compact table">
                                 <tbody>
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
                                         var="costItemParticipantSub">
                                     <tr>
                                         <td>
@@ -188,7 +188,7 @@
                     <td>
                         <g:if test="${participant.newSub}">
                             <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:participant.newSub.id]}"
-                                    class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                    class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -225,10 +225,10 @@
             </div>
 
             <div class="eight wide field" style="text-align: right;">
-                <button class="ui button positive" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
+                <button class="${Btn.POSITIVE}" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')}</button>
                 <br />
                 <br />
-                <button class="ui button positive" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
+                <button class="${Btn.POSITIVE}" name="isVisibleForSubscriber" value="true" type="submit">${message(code: 'copySurveyCostItems.copyCostItems')} (${message(code:'financials.isVisibleForSubscriber')})</button>
             </div>
         </div>
     </g:form>

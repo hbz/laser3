@@ -1,15 +1,16 @@
+<%@ page import="de.laser.ui.Icon" %>
 <div class="field required">
     <label>${message(code: 'accessPoint.' + accessMethod + '.name.label')}
         <g:if test="${accessMethod == 'proxy'}">
-            <span class="la-long-tooltip la-popup-tooltip la-delay"
+            <span class="la-long-tooltip la-popup-tooltip"
                   data-content="${message(code: "accessPoint.proxy.help")}">
-                <i class="grey question circle icon la-popup"></i></span>
+                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
         </g:if>
 
         <g:if test="${accessMethod == 'ezproxy'}">
-            <span class="la-long-tooltip la-popup-tooltip la-delay"
+            <span class="la-long-tooltip la-popup-tooltip"
                   data-content="${message(code: "accessPoint.ezproxy.help")}">
-                <i class="grey question circle icon la-popup"></i></span>
+                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
         </g:if>
 
     </label>
@@ -21,9 +22,9 @@
                     <div class="ui radio checkbox" onclick="JSPC.app.fillNameField('${nameOption.value}');">
                         <input type="radio" name="frequency" ${(i) == 0 ? 'checked=checked' : ''}>
                         <label>${message(code: "${nameOption.key}")}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                            <span class="la-long-tooltip la-popup-tooltip"
                                   data-content="${message(code: "${nameOption.key}.help")}">
-                                <i class="grey question circle icon la-popup"></i></span>
+                                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>
                     </div>
                 </div>

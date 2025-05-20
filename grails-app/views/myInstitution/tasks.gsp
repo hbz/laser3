@@ -1,5 +1,5 @@
-<%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-<laser:htmlStart message="menu.my.tasks" serviceInjection="true"/>
+<%@ page import="de.laser.Task; de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
+<laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.my.tasks" class="active"/>
@@ -26,19 +26,30 @@
                     <ui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
+                        <label>${message(code: 'task.object.label')}</label>
+                        <g:select class="ui fluid dropdown"
+                                  name="taskObject"
+                                  value="${params.taskObject}"
+                                  from="${Task.getObjectMap()}"
+                                  noSelection="${['' : message(code:'default.all')]}"
+                                  optionKey="${{it.key}}"
+                                  optionValue="${{it.value}}" />
+                    </div>
+
+                    <div class="field">
                         <label>${message(code: 'default.status.label')}</label>
                         <ui:select class="ui fluid dropdown"
-                                  name="taskStatus"
-                                  value="${params.taskStatus}"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
-                                  noSelection="${['' : message(code:'default.all')]}"
-                                  optionKey="id"
-                                  optionValue="value" />
+                                   name="taskStatus"
+                                   value="${params.taskStatus}"
+                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+                                   noSelection="${['' : message(code:'default.all')]}"
+                                   optionKey="id"
+                                   optionValue="value" />
                     </div>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.filterreset.label')}</a>
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}"/>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.filterreset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}"/>
                 </div>
                 <input type="hidden" name="ctrlFilterSend" value="true" />
             </form>

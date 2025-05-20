@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.yoda.appControllers" />
 
 <ui:breadcrumbs>
@@ -58,7 +59,7 @@
 <br />
 <br />
 
-%{--<button id="resultToggle" class="ui button">Hier klicken zum Ändern der Ansicht</button>--}%
+%{--<button id="resultToggle" class="${Btn.SIMPLE}">Hier klicken zum Ändern der Ansicht</button>--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.resultViewModes = [
@@ -143,7 +144,7 @@
                                         <g:elseif test="${info.key == 'ctrlService'}">
                                             <strong class="${info.key}_${info.value}">ctrlService</strong>
                                         </g:elseif>
-                                        <g:elseif test="${info.key == 'wtc'}">
+                                        <g:elseif test="${info.key == 'withTransaction'}">
                                             <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                         </g:elseif>
                                     </g:each>
@@ -158,11 +159,11 @@
                                                             ${dd.value.replaceAll('ORG_', '')}
                                                         </g:if>
                                                         <g:elseif test="${dd.key == 'test'}">
-                                                            <g:if test="${dd.value.contains('_denySupport_')}">
-                                                                [ - ] closure_denySupport
+                                                            <g:if test="${dd.value.contains('_denySupport')}">
+                                                                {denySupport}:
                                                             </g:if>
                                                             <g:else>
-                                                                [ + ] closure
+                                                                {}:
                                                             </g:else>
                                                         </g:elseif>
                                                         <g:else>
@@ -173,29 +174,29 @@
                                                     <g:if test="${dd.key == 'perm'}">
                                                         <g:if test="${dd.value.contains('ORG_INST_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                                <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
+                                                                <i class="${Icon.AUTH.ORG_INST_BASIC}"></i><i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_INST_PRO')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_PRO">
-                                                                <i class="icon trophy grey"></i>
+                                                                <i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_BASIC')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                                <i class="icon user circle teal"></i><i class="icon trophy teal"></i>
+                                                                <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}"></i><i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                         <g:if test="${dd.value.contains('ORG_CONSORTIUM_PRO')}">
                                                             <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_PRO">
-                                                                <i class="icon trophy teal"></i>
+                                                                <i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                             </span>
                                                         </g:if>
                                                     </g:if>
                                                     <g:if test="${dd.key == 'test'}">
                                                         <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_CONSORTIUM_PRO') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
-                                                            <g:if test="${! dd.value.contains('_denySupport_')}">
-                                                                <i class="icon theater masks red"></i>
+                                                            <g:if test="${! dd.value.contains('_denySupport')}">
+                                                                <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                             </g:if>
                                                         </g:if>
                                                     </g:if>
@@ -205,13 +206,13 @@
 
                                             <g:if test="${! info.value.getAt('perm')}">%{-- check without explicit perms --}%
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_INST_BASIC / ORG_INST_PRO">
-                                                    <i class="icon user circle grey"></i><i class="icon trophy grey"></i>
+                                                    <i class="${Icon.AUTH.ORG_INST_BASIC}"></i><i class="${Icon.AUTH.ORG_INST_PRO}"></i>
                                                 </span>
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
-                                                    <i class="icon user circle teal"></i><i class="icon trophy teal"></i>
+                                                    <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}"></i><i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                 </span>
-                                                <g:if test="${! info.value.getAt('test').contains('_denySupport_')}">
-                                                    <i class="icon theater masks red"></i>
+                                                <g:if test="${! info.value.getAt('test').contains('_denySupport')}">
+                                                    <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                 </g:if>
                                             </g:if>
                                         </g:if>
@@ -228,7 +229,7 @@
                     </div>
                 </div>
                 <g:if test="${c.value.methods.others}">
-                    <div class="ui segment" style="background-color:#eee;">
+                    <div class="ui segment" style="background-color:#f5f5f5;">
                         <div class="ui vertically divided grid">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="row">
@@ -263,7 +264,7 @@
                                             <g:elseif test="${info.key == 'ctrlService'}">
                                                 <strong class="${info.key}_${info.value}">ctrlService</strong>
                                             </g:elseif>
-                                            <g:elseif test="${info.key == 'wtc'}">
+                                            <g:elseif test="${info.key == 'withTransaction'}">
                                                 <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                             </g:elseif>
                                         </g:each>
@@ -319,10 +320,8 @@
 .secInfoWrapper .transactional,
 .secInfoWrapper .warning,
 .secInfoWrapper .modifier,
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1,
-.secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
+.secInfoWrapper .withTransaction_1,
+.secInfoWrapper .ctrlService_1 {
     margin-left: 0.5em;
     padding: 0.2rem 0.4rem;
     min-width: 90px;
@@ -343,16 +342,14 @@
     padding: 0.2rem 0.4rem;
 }
 
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1 {
+.secInfoWrapper .transactional {
     color: green;
-    opacity: 0.4;
 }
-
-.secInfoWrapper .transactional,
-.secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
-    color: green;
+.secInfoWrapper .withTransaction_1 {
+    color: limegreen;
+}
+.secInfoWrapper .ctrlService_1 {
+    color: cornflowerblue;
 }
 
 .secInfoWrapper .perm,
@@ -370,7 +367,7 @@
     font-style: italic;
 }
 .secInfoWrapper .test {
-    color: #dd33dd;
+    color: blueviolet;
     text-decoration: underline dotted;
 }
 

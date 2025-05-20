@@ -1,13 +1,14 @@
-<laser:htmlStart text="Manage FTControl" />
+<%@ page import="de.laser.ui.Btn" %>
+<laser:htmlStart message="menu.yoda.manageFTControl" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <ui:crumb text="FTControl" class="active" />
+        <ui:crumb message="menu.yoda.manageFTControl" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="FTControl" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda.manageFTControl" type="yoda" />
 
-    <ui:msg class="${dataload.running ? 'success' : 'info'}" noClose="true">
+    <ui:msg class="${dataload.running ? 'success' : 'info'}" hideClose="true">
         Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.running.toString().toUpperCase()}</strong>
     </ui:msg>
 
@@ -59,7 +60,7 @@
         </tbody>
       </table>
 
-    <h2 class="ui header">Elasticsearch</h2>
+    <h2 class="ui header">Indizes</h2>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
@@ -97,8 +98,8 @@
                     <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
                 </td>
                 <td class="right aligned">
-                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="ui tiny button red">Reset</g:link>
-                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="ui tiny button green ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
+                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="${Btn.NEGATIVE} tiny">Reset</g:link>
+                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="${Btn.POSITIVE} tiny ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
                 </td>
             </tr>
             </g:each>

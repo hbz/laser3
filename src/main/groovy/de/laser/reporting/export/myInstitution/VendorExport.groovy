@@ -1,6 +1,8 @@
 package de.laser.reporting.export.myInstitution
 
 import de.laser.*
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper
@@ -9,6 +11,7 @@ import de.laser.reporting.report.myInstitution.base.BaseDetails
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Vendor
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 
@@ -106,7 +109,7 @@ class VendorExport extends BaseDetailsExport {
                         List personList = []
 
                         functionTypes.each{ ft ->
-                            List<Person> persons = vendorService.getContactPersonsByFunctionType(ven, contextService.getOrg(), true, ft as RefdataValue)
+                            List<Person> persons = vendorService.getContactPersonsByFunctionType(ven, true, ft as RefdataValue)
                             persons.each {p ->
                                 String p1 = [
                                         ft.getI10n('value') + ':',

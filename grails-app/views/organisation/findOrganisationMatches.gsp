@@ -1,14 +1,14 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 
 <g:set var="entityName" value="${message(code: 'default.institution')}" />
-<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
 	<ui:breadcrumbs>
 		<ui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
 		<ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</ui:breadcrumbs>
 
-		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" type="institution"/>
 
 		<ui:messages data="${flash}" />
 
@@ -28,9 +28,9 @@
 				</div>
 			</g:if>
 			<div class="field la-field-right-aligned">
-				<a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button">
-				<g:link controller="organisation" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
+				<a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.searchreset.label')}</a>
+				<input type="submit" value="${message(code:'default.button.search.label')}" class="${Btn.PRIMARY}">
+				<g:link controller="organisation" action="list" class="${Btn.SIMPLE}">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>
 
@@ -53,14 +53,14 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(contextService.getOrg().isCustomerType_Consortium() && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+										<g:if test="${(contextService.getOrg().isCustomerType_Consortium() && members.get(organisationInstance.id)?.contains(contextService.getOrg().id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
 									<td>
 										<div class="ui list">
 											<span class="item js-copyTriggerParent">
-												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+												<span class="ui small basic image label js-copyTrigger la-popup-tooltip"
 													  data-position="top center"
 													  data-content="${message(code: 'globalUID.label')}">
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
@@ -85,8 +85,8 @@
 									<td>${organisationInstance.country}</td>
 									<td>
 									<%-- here: switch if in consortia or not --%>
-										<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
-											<g:link class="ui icon negative button la-popup-tooltip la-delay js-open-confirm-modal"
+										<g:if test="${members.get(organisationInstance.id)?.contains(contextService.getOrg().id)}">
+											<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
 													data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 													data-confirm-term-how="unlink"
 													data-content="${message(code:'org.consortiaToggle.remove.label')}"
@@ -95,12 +95,12 @@
 													params="${params+[direction:'remove', fromOrg:organisationInstance.id]}"
 													role="button"
 													aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-												<i class="minus icon"></i>
+												<i class="${Icon.CMD.REMOVE}"></i>
 											</g:link>
 										</g:if>
 										<g:else>
-											<g:link class="ui icon positive button blue la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
-												<i class="plus icon"></i>
+											<g:link class="${Btn.MODERN.POSITIVE_TOOLTIP}" data-content="${message(code:'org.consortiaToggle.add.label')}" controller="organisation" action="toggleCombo" params="${params+[direction:'add', fromOrg:organisationInstance.id]}">
+												<i class="${Icon.CMD.ADD}"></i>
 											</g:link>
 										</g:else>
 									</td>
@@ -110,7 +110,7 @@
 						</table>
 						<g:if test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
-							<g:link controller="organisation" action="createMember" class="ui negative button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
+							<g:link controller="organisation" action="createMember" class="${Btn.NEGATIVE}" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
@@ -119,7 +119,7 @@
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
-						<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
+						<g:link controller="organisation" action="createMember" class="${Btn.POSITIVE}" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.Org" %>
 
 <g:set var="entityName" value="${message(code: 'org.label')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
@@ -8,7 +8,7 @@
             <ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	    </ui:breadcrumbs>
 
-		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" type="institution"/>
 
 		<ui:messages data="${flash}" />
 
@@ -23,11 +23,11 @@
                             <laser:render template="form"/>
 
 							<div class="ui form-actions">
-								<button type="submit" class="ui button">
-									<i class="checkmark icon"></i>
+								<button type="submit" class="${Btn.SIMPLE}">
+									<i class="${Icon.SYM.YES}"></i>
 									<g:message code="default.button.create.label"/>
 								</button>
-								<input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+								<input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 							</div>
 						</fieldset>
 					</ui:form>

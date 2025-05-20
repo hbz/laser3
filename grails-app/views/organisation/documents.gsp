@@ -1,5 +1,5 @@
 <%@page import="de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
-<laser:htmlStart message="default.documents.label" serviceInjection="true" />
+<laser:htmlStart message="default.documents.label" />
 
     <%
       List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
@@ -13,7 +13,7 @@
       <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="[org:org]" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon text="${orgInstance.name}">
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 

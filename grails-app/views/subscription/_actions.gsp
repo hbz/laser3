@@ -1,5 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
-
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
 <%
@@ -16,21 +15,6 @@
     </g:if>
     <g:elseif test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
-            <%--
-            <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" action="${actionName}"
-                            params="${params + [format: 'csv']}">
-                        <g:message code="default.button.exports.csv"/>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
-                </g:else>
-            </ui:exportDropdownItem>
-            --%>
             <g:if test="${actionName == 'index'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
@@ -51,49 +35,15 @@
                     <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
                 </g:else>
             </g:elseif>
-            <%--
             <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" action="${actionName}"
-                            params="${params + [exportXLSX: true]}">
-                        <g:message code="default.button.exports.xls"/>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="${actionName}" params="${params+[exportXLSX: true]}">
-                        <g:message code="default.button.exports.xls"/>
-                    </g:link>
-                </g:else>
+                <g:link class="item kbartExport  js-no-wait-wheel" params="${params + [exportKBart: true]}">KBART Export</g:link>
             </ui:exportDropdownItem>
-            --%>
-            <ui:exportDropdownItem>
-                <%--<g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                             data-confirm-term-how="ok"
-                             action="${actionName}"
-                             id="${params.id}"
-                             params="${params + [exportKBart: true]}">KBART Export
-                    </g:link>
-                </g:if>
-                <g:else>--%>
-                    <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
-                <%--</g:else>--%>
-            </ui:exportDropdownItem>
-        <%--<ui:exportDropdownItem>
-                <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'json']}">JSON</g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'xml']}">XML</g:link>
-            </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:elseif>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/actions" />
 
         <div class="divider"></div>
 
@@ -109,11 +59,12 @@
             <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
+            <%-- removed as of ERMS-6441
             <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
                 <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
-            </g:if>
+            </g:if>--%>
         </g:if>
 
             <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription.instanceOf}">
@@ -126,17 +77,32 @@
             <g:if test="${editable}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
+                <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                    <ui:actionsDropdownItem controller="subscription" action="linkTitle" params="${[id:params.id]}" message="subscription.details.linkTitle.label.subscription" />
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItemDisabled message="subscription.details.linkTitle.label.subscription" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                </g:else>
                 <g:if test="${subscription.packages}">
-                    <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-                    <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
-                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
+                    <g:if test="${titleManipulation}">
+                        <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                        <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuID"/>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menu', progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menu"/>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuPick"/>
                     </g:if>
                     <g:else>
-                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menuID" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menu" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menuPick" tooltip="${message(code:'subscription.details.addEntitlements.holdingInherited')}"/>
                     </g:else>
-
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
-                    <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
+                    <g:if test="${titleManipulation}">
+                        <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
+                    </g:if>
+                    <g:else>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.issueEntitlementEnrichment.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                    </g:else>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
@@ -188,9 +154,12 @@
             <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
-
-                <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
-                                           params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                <g:if test="${titleManipulationBlocked}">
+                    <ui:actionsDropdownItemDisabled message="createIssueEntitlementsSurvey.label" tooltip="${message(code: 'subscription.details.addEntitlements.holdingInherited')}" />
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                </g:else>
                 <div class="divider"></div>
             </g:if>
 
@@ -214,20 +183,20 @@
             <g:elseif test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-                <g:if test="${!(contextOrg.id == subscriptionConsortia?.id && subscription.instanceOf)}">
+                <g:if test="${!(contextService.getOrg().id == subscriptionConsortia?.id && subscription.instanceOf)}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
 
                 <g:if test="${editable}">
                     <div class="divider"></div>
-                    <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.subscription')}</g:link>
+                    <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
             </g:elseif>
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN()}">
+<g:elseif test="${contextService.isInstEditor()}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
 
@@ -237,7 +206,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:elseif>
-<g:elseif test="${contextService.isInstUser_or_ROLEADMIN()}">
+<g:elseif test="${contextService.isInstUser()}">
     <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -245,8 +214,8 @@
     </g:if>
 </g:elseif>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
+<g:if test="${contextService.isInstEditor()}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
     <laser:render template="financeImportTemplate" />
 </g:if>
 
@@ -256,14 +225,14 @@
     <laser:render template="subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
 </g:if>
 
-<g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+<g:if test="${editable && subscription.getConsortium()?.id == contextService.getOrg().id}">
     <g:if test="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}">
         <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
     </g:if>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('#selectEntitlementsWithKBART').on('click', function(e) {
+    $('#selectEntitlementsWithKBART, #selectEntitlementsWithPick, #selectEntitlementsWithIDOnly').on('click', function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -280,7 +249,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();
@@ -288,7 +256,7 @@
                     }
                 }).modal('show');
             })
-        })
+        });
 </laser:script>
 
 

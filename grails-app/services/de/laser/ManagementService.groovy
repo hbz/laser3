@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
@@ -16,6 +17,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -41,8 +44,10 @@ class ManagementService {
 
     AuditService auditService
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
     ExecutorService executorService
+    FileCryptService fileCryptService
     FormService formService
     GenericOIDService genericOIDService
     GlobalService globalService
@@ -194,6 +199,7 @@ class ManagementService {
                     result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
                 }
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -205,8 +211,8 @@ class ManagementService {
                 Map qry_params
 
                 if (contextService.getOrg().isCustomerType_Inst_Pro()) {
-                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-                    qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+                    base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( o.roleType = :roleType1 AND o.org = :lic_org ) ) )"
+                    qry_params = [roleType1:RDStore.OR_LICENSEE, lic_org:result.institution]
                 }
                 else if (contextService.getOrg().isCustomerType_Consortium()) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
@@ -245,7 +251,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkLicense/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if(subscriptions && selectedLicenseIDs[0]) {
                 List<License> selectedLicenses = License.findAllByIdInList(selectedLicenseIDs.collect { String key -> Long.parseLong(key) })
                 selectedLicenses.each { License newLicense ->
@@ -263,8 +280,8 @@ class ManagementService {
                     }
                 }
             }
-            else{
-                if (subscriptions.size() < 1) {
+            else {
+                if (subscriptions) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
                 if (!selectedLicenseIDs[0]) {
@@ -291,6 +308,7 @@ class ManagementService {
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
+                    result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
                     result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
@@ -343,7 +361,18 @@ class ManagementService {
                     subscriptions = []
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackages/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+                paginationCache.remove('checkedMap')
+            }
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []
             result.message = []
@@ -361,19 +390,24 @@ class ManagementService {
                     permittedSubs << selectedSub
             }
             long userId = contextService.getUser().id
-            executorService.execute({
-                long start = System.currentTimeSeconds()
-                Thread.currentThread().setName(threadName)
-                pkgsToProcess.each { Package pkg ->
-                    permittedSubs.each { Subscription selectedSub ->
+            if(subscriptions) {
+                executorService.execute({
+                    //long start = System.currentTimeSeconds()
+                    Thread.currentThread().setName(threadName)
+                    pkgsToProcess.each { Package pkg ->
+                        permittedSubs.each { Subscription selectedSub ->
                             SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                             if(params.processOption =~ /^link/) {
                                 if(!sp) {
                                     if(result.subscription) {
-                                        subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        //subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                        subscriptionService.addToMemberSubscription(result.subscription, [selectedSub], pkg, params.processOption == 'linkwithIE')
                                     }
                                     else {
-                                        subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                        if(auditService.getAuditConfig(selectedSub, 'holdingSelection'))
+                                            subscriptionService.addToSubscription(selectedSub, pkg, false)
+                                        else
+                                            subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
                                     }
                                 }
                             }
@@ -391,12 +425,15 @@ class ManagementService {
                                 }
                             }
 
+                        }
                     }
-                }
-                if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
-                    globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
-                }
-            })
+                    /*
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                    }
+                    */
+                })
+            }
 
             /*
             dos:
@@ -499,6 +536,7 @@ class ManagementService {
         else {
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -699,6 +737,7 @@ class ManagementService {
 
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -734,7 +773,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/generalProperties/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if (subscriptions) {
                 Set change = [], noChange = []
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -758,7 +808,7 @@ class ManagementService {
                     params.containsKey(auditSetting) && params.get(auditSetting) != ""
                 }
                 if(params.processOption == 'changeProperties') {
-                    if(result.contextOrg.isCustomerType_Consortium() && controller instanceof MyInstitutionController) {
+                    if (contextService.getOrg().isCustomerType_Consortium() && controller instanceof MyInstitutionController) {
                         Set<String> updateParts = [], auditTrigger = []
                         Map<String, Object> updateParams = [subscriptions: subscriptions]
                         if (startDate) {
@@ -979,7 +1029,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/notes/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if (subscriptions) {
                 if(params.noteTitle || params.noteContent) {
                     if(params.processOption == 'newNote') {
@@ -1042,7 +1103,14 @@ class ManagementService {
                 }
             }
             else {
-                if(params.selectedSubscriptionIds) {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/documents/${result.user.id}/pagination")
+                if(paginationCache.checkedMap.values()) {
+                    List selectionCache = []
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                    paginationCache.remove('checkedMap')
+                }
+                else if(params.selectedSubscriptionIds) {
                     List<Long> ids = Params.getLongList_forCommaSeparatedString(params, 'selectedSubscriptionIds')
                     subscriptions = Subscription.findAllByIdInList(ids)
                 }
@@ -1063,7 +1131,6 @@ class ManagementService {
                                             owner: contextService.getOrg(),
                                             server: AppUtils.getCurrentServer()
                                     )
-
                                     doc_content.save()
 
                                     try {
@@ -1078,6 +1145,8 @@ class ManagementService {
                                         if(status == 0){
                                             sourceFile = new File("${fPath}/${fName}")
                                             input_file.transferTo(sourceFile)
+
+                                            fileCryptService.encryptRawFileAndUpdateDoc(sourceFile, doc_content)
                                         }else {
                                             Path source = sourceFile.toPath()
                                             Path target = new File("${fPath}/${fName}").toPath()
@@ -1125,6 +1194,47 @@ class ManagementService {
         grailsWebRequest.attributes.getFlashScope(request)
     }
 
+    String checkTogglerState(List<Long> subIDs, String cacheKeyReferer) {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("${cacheKeyReferer}/pagination")
+        Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
+        Set<String> subKeys = subIDs.collect { Long subId -> 'selectedSubs_'+subId }
+        boolean toggle = checkedMap.keySet().containsAll(subKeys) && checkedMap.keySet().size() > 0
+        toggle ? 'true' : 'false'
+    }
+
+    Set<Subscription> loadSubscriptions(GrailsParameterMap params, Subscription owner) {
+        Set<Subscription> subscriptions = []
+        EhcacheWrapper paginationCache
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        if(paginationCache.get('membersListToggler')) {
+            if(params.takeSelectedSubs.contains('/subscription/')) {
+                subscriptions = subscriptionControllerService.getFilteredSubscribers(params,owner).sub
+            }
+            else if(params.takeSelectedSubs.contains('/myInstitution/')) {
+                subscriptions = subscriptionService.getMySubscriptions(params,contextService.getUser(),contextService.getOrg()).allSubscriptions
+            }
+        }
+        else {
+            List selectionCache = []
+            if(paginationCache.get('checkedMap')) {
+                selectionCache.addAll(paginationCache.get('checkedMap').values())
+                paginationCache.remove('checkedMap')
+            }
+            else selectionCache.addAll(params.list('selectedSubs'))
+            if(selectionCache) {
+                subscriptions = Subscription.findAllByIdInList(selectionCache)
+            }
+        }
+        subscriptions
+    }
+
+    void clearSubscriptionCache(GrailsParameterMap params) {
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        paginationCache.clear()
+    }
+
     /**
      * Sets generic parameters used in the methods and checks whether the given user may access the view
      * @param controller the controller instance
@@ -1140,7 +1250,7 @@ class ManagementService {
 
         if(controller instanceof MyInstitutionController) {
             result = myInstitutionControllerService.getResultGenerics(controller, params)
-            result.contextOrg = contextService.getOrg()
+            result.institution = contextService.getOrg()
         }
 
         return  result

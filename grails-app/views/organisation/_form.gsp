@@ -19,7 +19,7 @@
 		<g:message code="org.libraryType.label" />
 	</label>
 	<ui:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
-				  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+				  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown clearable" noSelection="['null': '']"/>
 </div>
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'url', 'error')}">
@@ -41,7 +41,7 @@
 		<g:message code="org.country.label" />
 	</label>
 	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown clearable" noSelection="['null': '']"/>
 </div>
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'region', 'error')}">
@@ -49,7 +49,7 @@
 		<g:message code="org.region.label" />
 	</label>
 	<ui:select id="region" name="region.id" from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown clearable" noSelection="['null': '']"/>
 </div>
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'libraryNetwork', 'error')}">
@@ -57,7 +57,7 @@
 		<g:message code="org.libraryNetwork.label" />
 	</label>
 	<ui:select id="libraryNetwork" name="libraryNetwork.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown clearable" noSelection="['null': '']"/>
 </div>
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'funderType', 'error')}">
@@ -65,5 +65,5 @@
 		<g:message code="org.funderType.label" />
 	</label>
 	<ui:select id="funderType" name="funderType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.FUNDER_TYPE)}"
-			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
+			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown clearable" noSelection="['null': '']"/>
 </div>

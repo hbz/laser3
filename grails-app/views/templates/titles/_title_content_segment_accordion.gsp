@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Icon" %>
 <div class="ui fluid segment content" data-ajaxTargetWrap="true">
     <div class="ui stackable grid" data-ajaxTarget="true">
 
@@ -36,8 +36,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageNote}">
                         <div class="item">
-                            <i class="grey icon quote right la-popup-tooltip la-delay"
-                               data-content="${message(code: 'default.note.label')}"></i>
+                            <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
 
                             <div class="content">
                                 <div class="header">
@@ -52,8 +51,7 @@
                     </g:if>
                     <g:if test="${covStmt.coverageDepth}">
                         <div class="item">
-                            <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
-                               data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                            <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                             <div class="content">
                                 <div class="header">
@@ -68,8 +66,7 @@
                     </g:if>
                     <g:if test="${covStmt.embargo}">
                         <div class="item">
-                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                               data-content="${message(code: 'tipp.embargo')}"></i>
+                            <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
 
                             <div class="content">
                                 <div class="header">

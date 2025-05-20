@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.Org" %>
 
 <g:set var="entityName" value="${message(code: 'vendor.label')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
@@ -22,9 +22,9 @@
 				<input type="text" id="proposedVendor" name="proposedVendor" value="${params.proposedVendor}" />
 			</div>
 			<div class="field la-field-right-aligned">
-				<a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.searchreset.label')}</a>
-				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui primary button">
-				<g:link controller="vendor" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
+				<a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.searchreset.label')}</a>
+				<input type="submit" value="${message(code:'default.button.search.label')}" class="${Btn.PRIMARY}">
+				<g:link controller="vendor" action="list" class="${Btn.SIMPLE}">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</ui:searchSegment>
 
@@ -57,11 +57,11 @@
 							</tbody>
 						</table>
 						<ui:msg class="warning" message="org.findVendorMatches.match" args="[params.proposedVendor]" />
-						<g:link controller="vendor" action="createVendor" class="ui negative button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.matches.create', args: [params.proposedVendor])}</g:link>
+						<g:link controller="vendor" action="createVendor" class="${Btn.NEGATIVE}" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.matches.create', args: [params.proposedVendor])}</g:link>
 					</g:if>
 					<g:else>
 						<ui:msg class="warning" message="org.findVendorMatches.no_match" args="[params.proposedVendor]" />
-						<g:link controller="vendor" action="createVendor" class="ui positive button" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.no_matches.create', args: [params.proposedVendor])}</g:link>
+						<g:link controller="vendor" action="createVendor" class="${Btn.POSITIVE}" params="${[vendor:params.proposedVendor]}">${message(code:'org.findVendorMatches.no_matches.create', args: [params.proposedVendor])}</g:link>
 					</g:else>
 				</g:if>
 

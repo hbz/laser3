@@ -1,13 +1,11 @@
-<%@ page import="de.laser.helper.Icons; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.AuditConfig; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.current_ent" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-
-<ui:modeSwitch controller="subscription" action="index" params="${params}"/>
 
 <ui:messages data="${flash}"/>
 
@@ -25,52 +23,65 @@
 
 <laser:render template="nav"/>
 
-<g:if test="${permanentTitlesProcessRunning}">
-    <div class="ui icon warning message">
-        <i class="info icon"></i>
-        <div class="content">
-            <div class="header">Info</div>
+<div id="downloadWrapper"></div>
 
-            <p>${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}</p>
-        </div>
-    </div>
+<g:if test="${permanentTitlesProcessRunning}">
+    <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
-<g:if test="${enrichmentProcess}">
-    <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
-        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                   args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
-    </ui:msg>
-
-    <g:if test="${truncatedRows}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+<g:if test="${issueEntitlementEnrichment && (success || error)}">
+    <g:if test="${success}">
+        <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+            <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
+                       args="[processCount, toAddCount, processCountChangesCoverageDates, processCountChangesPrice]"/>
+        </ui:msg>
     </g:if>
-    <g:if test="${errorKBART}">
-        <ui:msg icon="ui exclamation icon" class="error" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="ui icon button la-modern-button" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="ui icon download"></i></g:link>
-    </g:if>
+    <g:if test="${Boolean.valueOf(error)}">
+        <g:if test="${pickWithNoPick}">
+            <ui:msg class="error" showIcon="true" message="subscription.details.issueEntitlementEnrichment.pickWithNoPick"/>
+        </g:if>
+        <g:else>
+            <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />
+            <input id="errorMailcc" type="hidden" value="${contextService.getUser().email}" />
+            <textarea id="errorMailBody" class="hidden">${mailBody}</textarea>
+            <ui:msg class="error" showIcon="true" message="subscription.details.issueEntitlementEnrichment.matchingError"
+                    args="[notAddedCount, notSubscribedCount, notInPackageCount, g.createLink(controller: 'package', action:'downloadLargeFile', params:[token: token, fileformat: 'kbart'])]"/>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.notifyProvider = function () {
+                    let mailto = $('#errorMailto').val();
+                    let mailcc = $('#errorMailcc').val();
+                    let subject = 'Fehlerhafte KBART';
+                    let body = $('#errorMailBody').html();
+                    let href = 'mailto:' + mailto + '?subject=' + subject + '&cc=' + mailcc + '&body=' + body;
 
+                    window.location.href = encodeURI(href);
+                }
+            </laser:script>
+        </g:else>
+    </g:if>
 </g:if>
 
 <g:if test="${deletedSPs}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
-                <li><g:message code="subscription.details.packagesDeleted.header"
-                               args="${[sp.name]}"/> ${message(code: "subscription.details.packagesDeleted.entry", args: [raw(link(url: sp.link) { 'we:kb' })])}</li>
+                <li>
+                    <g:message code="subscription.details.packagesDeleted.header" args="${[sp.name]}"/>
+                    <g:message code="subscription.details.packagesDeleted.entry"/> <ui:wekbIconLink type="package" gokbId="${sp.uuid}"/>
+                </li>
             </g:each>
         </ul>
     </div>
 </g:if>
 
 <g:if test="${frozenHoldings}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"
@@ -102,61 +113,76 @@
         <div class="ui grid">
             <div class="row">
                 <div class="column">
-                    <div class="ui la-filter segment">
-                        <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
+                    <g:if test="${!AuditConfig.getConfig(subscription, 'holdingSelection')}">
+                        <div class="ui la-filter segment">
+                            <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
-                        <ui:msg class="warning" header="${message(code: "message.attention")}"
-                                message="subscription.details.addEntitlements.warning"/>
-                        <g:form class="ui form" controller="subscription" action="index"
-                                params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
-                                method="post" enctype="multipart/form-data">
-                            <div class="three fields">
-                                <div class="field">
-                                    <div class="ui fluid action input">
-                                        <input type="text" readonly="readonly"
-                                               placeholder="${message(code: 'template.addDocument.selectFile')}">
-                                        <input type="file" id="kbartPreselect" name="kbartPreselect"
-                                               accept="text/tab-separated-values, text/plain"
-                                               style="display: none;">
+                            <ui:msg class="warning" header="${message(code: "message.attention")}"
+                                    message="subscription.details.addEntitlements.warning"/>
 
-                                        <div class="ui icon button">
-                                            <i class="attach icon"></i>
+                            <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
+                                    params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
+                                    method="post" enctype="multipart/form-data">
+                                <div class="three fields">
+                                    <div class="field">
+                                        <div class="ui fluid action input">
+                                            <input type="text" readonly="readonly"
+                                                   placeholder="${message(code: 'template.addDocument.selectFile')}">
+                                            <input type="file" id="kbartPreselect" name="kbartPreselect"
+                                                   accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                                                   style="display: none;">
+
+                                            <div class="${Btn.ICON.SIMPLE}">
+                                                <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="field">
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                    <div class="field">
+                                        <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                            <div class="ui checkbox toggle">
+                                                <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                                <label><g:message
+                                                        code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                            </div>
+                                        </g:if>
+
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
+                                            <label><g:message
+                                                    code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
+                                        </div>
                                     </div>
 
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
+                                    <div class="field">
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="withPick"/>
+                                            <label><g:message code="subscription.details.issueEntitlementEnrichment.withPick.label"/></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <input type="submit"
+                                               value="${message(code: 'subscription.details.addEntitlements.preselect')}"
+                                               class="${Btn.SIMPLE} fluid"/>
                                     </div>
                                 </div>
+                            </g:form>
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                $('.action .icon.button').click(function () {
+                                    $(this).parent('.action').find('input:file').click();
+                                });
 
-                                <div class="field">
-                                    <input type="submit"
-                                           value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                                           class="fluid ui button"/>
-                                </div>
-                            </div>
-                        </g:form>
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            $('.action .icon.button').click(function () {
-                                $(this).parent('.action').find('input:file').click();
-                            });
-
-                            $('input:file', '.ui.action.input').on('change', function (e) {
-                                var name = e.target.files[0].name;
-                                $('input:text', $(e.target).parent()).val(name);
-                            });
-                        </laser:script>
-                    </div>
+                                $('input:file', '.ui.action.input').on('change', function (e) {
+                                    var name = e.target.files[0].name;
+                                    $('input:text', $(e.target).parent()).val(name);
+                                });
+                            </laser:script>
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <ui:msg class="error" showIcon="error" header="${message(code:"default.error")}" message="subscription.details.addEntitlements.holdingEntire" />
+                    </g:else>
                 </div>
             </div><!--.row-->
         </div><!--.grid-->
@@ -167,9 +193,7 @@
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
-                <span class="ui blue circular label">
-                    ${num_ies_rows}
-                </span>
+                <ui:bubble count="${num_ies_rows}" />
             </g:link>
 
             <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
@@ -177,9 +201,7 @@
                         params="[titleGroup: titleGroup.id]"
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
-                    <span class="ui blue circular label">
-                        ${titleGroup.countCurrentTitles()}
-                    </span>
+                    <ui:bubble count="${titleGroup.countCurrentTitles()}" />
                 </g:link>
             </g:each>
         </div>
@@ -201,20 +223,19 @@
 
     <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
-<div id="downloadWrapper"></div>
 
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
                 <h3 class="ui icon header la-clear-before la-noMargin-top">
-                    <span class="ui circular label">${num_ies_rows}</span> <g:message code="title.filter.result"/>
+                    <ui:bubble count="${num_ies_rows}" grey="true"/> <g:message code="title.filter.result"/>
                 </h3>
             </div>
 
             <div class="eight wide column">
-                <g:if test="${entitlements}">
+                <g:if test="${entitlements && editable}">
                     <div class="field la-field-right-aligned">
-                        <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
+                        <div class="${Btn.SIMPLE} right floated la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                     </div>
                 </g:if>
             </div>
@@ -227,7 +248,7 @@
                     <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
                 </div>
                 <div class="field la-field-noLabel">
-                    <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                    <ui:showMoreCloseButton />
                 </div>
             </div>
         </div>
@@ -339,7 +360,7 @@
                         </div>
                         <div class="four wide column">
                             <div class="field la-field-noLabel">
-                                <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
+                                <ui:select class="ui dropdown clearable" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
@@ -355,7 +376,7 @@
                             <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
-                                    <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
+                                    <select class="ui dropdown clearable" name="titleGroupInsert" id="titleGroupInsert">
                                         <option value="">${message(code: 'default.select.choose.label')}</option>
                                         <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
                                             <option value="${titleGroup.id}">${titleGroup.name}</option>
@@ -399,7 +420,7 @@
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
+                                        class="${Btn.SIMPLE_TOOLTIP}"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>
@@ -409,7 +430,7 @@
                 <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
-                            <div class="ui accordion la-accordion-showMore">
+                            <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                                 <g:each in="${entitlements}" var="ie">
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
@@ -417,9 +438,9 @@
                                                 <g:set var="participantPerpetualAccessToTitle"
                                                        value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriberRespConsortia(), ie.tipp)}"/>
                                                 <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
-                                                    <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+                                                    <g:if test="${ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf?.id])}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
-                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                                                                   data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
                                                                   data-position="left center" data-variation="tiny">
                                                                 <i class="star blue icon"></i>
@@ -427,8 +448,8 @@
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo()}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
@@ -474,7 +495,7 @@
                                                         <g:if test="${priceItem.listCurrency}">
                                                             <div class="ui list">
                                                                 <div class="item">
-                                                                    <div class="contet">
+                                                                    <div class="content">
                                                                         <div class="header"><g:message code="tipp.price.listPrice"/></div>
                                                                         <div class="content"><g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}"
                                                                                                                                                               currencySymbol="${priceItem.listCurrency.value}"/>
@@ -490,30 +511,30 @@
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
                                                         </div>
-                                                        <div class="ui icon blue button la-modern-button">
-                                                            <i class="ui angle double down icon"></i>
+                                                        <div class="${Btn.MODERN.SIMPLE}">
+                                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
                                                                 <g:link action="removeEntitlement"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -558,7 +579,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
-                                                                    <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'default.note.label')}
@@ -571,7 +592,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}
@@ -584,7 +605,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.embargo}">
                                                                 <div class="item">
-                                                                    <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+                                                                    <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.embargo')}
@@ -601,24 +622,22 @@
                                                 </div>
                                                 <%-- My Area START--%>
                                                 <div class="seven wide column">
-                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                                     <div class="ui la-segment-with-icon">
-
                                                         <laser:render template="/templates/tipps/coverages_accordion"
                                                                       model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
                                                                         <div class="description">
-                                                                            <ui:xEditable owner="${ie}" type="text"
-                                                                                          field="notes"/>
+                                                                            <ui:xEditable owner="${ie}" type="text" field="notes"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -630,17 +649,23 @@
                                                                 </g:each>
                                                             </div>
                                                             <hr>
-                                                            <g:if test="${editable}">
-                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
-                                                                    <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                            <g:if test="${editable && subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE && !auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="priceWrapper" data-objType="priceItem" data-ie="${ie.id}">
+                                                                    <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
+                                                                <g:if test="${ie.tipp.titleType == 'serial'}">
+                                                                    <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="coverageWrapper" data-objType="coverage" data-ie="${ie.id}">
+                                                                        <%-- TODO David new icon for coverage statement --%>
+                                                                        <i class="file icon"></i>${message(code: 'subscription.details.addCoverage')}
+                                                                    </button>
+                                                                </g:if>
                                                             </g:if>
 
                                                             <%-- GROUPS START--%>
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                                                                     <div class="item">
-                                                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                                         <div class="content">
                                                                             <div class="header"><g:message code="subscription.details.ieGroups"/></div>
@@ -654,8 +679,8 @@
                                                                 <g:if test="${editable}">
                                                                     <g:link action="editEntitlementGroupItem"
                                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                            class="ui tiny button trigger-modal">
-                                                                        <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
+                                                                            class="${Btn.SIMPLE} tiny trigger-modal">
+                                                                        <i class="${Icon.IE_GROUP}"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                     </g:link>
                                                                 </g:if>
                                                             </g:if>
@@ -664,6 +689,8 @@
                                                             <%-- GROUPS END--%>
                                                         </div>
                                                     </div>
+
+                                                    <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: ie.tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -679,7 +706,7 @@
 </div><%--.grid --%>
 <g:if test="${entitlements}">
     <div class="ui clearing segment la-segmentNotVisable">
-        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+        <ui:showMoreCloseButton />
     </div>
 </g:if>
 </div>
@@ -688,16 +715,12 @@
     </div><%-- .ui.bottom.attached.tab.active.segment --%>
 </g:if>--}%
 
-
 <g:if test="${entitlements}">
-    <ui:paginate action="index" controller="subscription" params="${params}"
-                 max="${max}" total="${num_ies_rows}"/>
+    <ui:paginate action="index" controller="subscription" params="${params}" max="${max}" total="${num_ies_rows}"/>
 </g:if>
-
 
 <div id="magicArea">
 </div>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.hideModal = function () {
@@ -746,7 +769,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();
@@ -760,7 +782,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="index" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportHolding" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){
@@ -768,7 +790,6 @@
             $('#globalLoadingIndicator').hide();
         });
     });
-    <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
 
     $("[data-ajaxTippId]").on('click', function(e) {
@@ -797,7 +818,7 @@
         e.preventDefault();
         let objType = $(this).attr('data-objType');
         let ie = $(this).attr('data-ie');
-        let wrapper = "#priceWrapper_"+ie;
+        let wrapper = "#"+$(this).attr('data-wrapper')+"_"+ie;
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="addObject"/>',
             data: {
@@ -808,6 +829,24 @@
             $(wrapper).append(result);
             r2d2.initDynamicUiStuff(wrapper);
             r2d2.initDynamicXEditableStuff(wrapper);
+        });
+    });
+
+    $(".removeObject").on('click', function(e) {
+        e.preventDefault();
+        let objType = $(this).attr('data-objType');
+        let objId = $(this).attr('data-objId');
+        let trigger = $(this).attr('data-trigger');
+        $.ajax({
+            url: '<g:createLink controller="ajaxJson" action="removeObject"/>',
+            data: {
+                object: objType,
+                objId: objId
+            }
+        }).done(function(result) {
+            if(result.success === true) {
+                $('[data-object="'+trigger+'"]').remove();
+            }
         });
     });
 
@@ -844,5 +883,7 @@
 </laser:script>
 
 <g:render template="/clickMe/export/js"/>
+
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

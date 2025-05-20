@@ -1,5 +1,5 @@
 <%@ page import="de.laser.*" %>
-<laser:htmlStart message="menu.public.all_providers" serviceInjection="true" />
+<laser:htmlStart message="menu.public.all_providers" />
 
         <g:set var="entityName" value="${message(code: 'provider.label')}" />
 
@@ -29,7 +29,7 @@
             <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/providerFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'provStatus'], ['inhouseInvoicing', 'electronicBillings', 'invoiceDispatchs', 'invoicingVendors'], ['curatoryGroup', 'curatoryGroupType'], ['property&value', 'isMyX']],
+                                  tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'],  ['property&value', 'isMyX'], ['curatoryGroup', 'curatoryGroupType', '']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -38,7 +38,6 @@
             <g:if test="${providerList}">
                 <laser:render template="/templates/filter/providerFilterTable"
                       model="[providerList: providerList,
-                              apiSource: wekbApi,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'marker', 'isWekbCurated']
                       ]"/>

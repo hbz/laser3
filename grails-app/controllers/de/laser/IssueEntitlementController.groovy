@@ -3,11 +3,9 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.storage.PropertyStore
 import de.laser.utils.SwissKnife
-import de.laser.properties.PlatformProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.annotations.DebugInfo
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
@@ -33,9 +31,9 @@ class IssueEntitlementController {
     /**
      * Shows the given issue entitlement details
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def show() {
@@ -45,7 +43,7 @@ class IssueEntitlementController {
       result.issueEntitlementInstance = IssueEntitlement.get(params.id)
       result.sub = result.issueEntitlementInstance.subscription
 
-      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortia() && result.sub.getConsortia().id == contextService.getOrg().id)){
+      if(result.sub.getSubscriberRespConsortia().id == contextService.getOrg().id || (result.sub.getConsortium() && result.sub.getConsortium().id == contextService.getOrg().id)){
           result.isMySub = true
       }
 
@@ -82,39 +80,6 @@ class IssueEntitlementController {
           }
       }
 
-     /* String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
-      Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_REMOVED]
-
-      if ( params.filter ) {
-        base_qry += " and genfunc_filter_matcher(tipp.pkg.name,:pkgName) = true "
-        qry_params.put("pkgName","%${params.filter.trim().toLowerCase()}%")
-      }
-
-      if ( params.endsAfter && params.endsAfter.length() > 0 ) {
-        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        Date d = sdf.parse(params.endsAfter)
-        base_qry += " and (select max(tc.endDate) from TIPPCoverage tc where tc.tipp = tipp) >= :maxDate"
-        qry_params.put("maxDate",d)
-      }
-
-      if ( params.startsBefore && params.startsBefore.length() > 0 ) {
-          SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-          Date d = sdf.parse(params.startsBefore)
-        base_qry += " and (select min(tc.startDate) from TIPPCoverage tc where tc.tipp = tipp) <= :minDate"
-        qry_params.add("minDate",d)
-      }
-
-      if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
-        base_qry += " order by lower(${params.sort}) ${params.order}"
-      }
-      else {
-        base_qry += " order by lower(tipp.name) asc"
-      }*/
-
-      //result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:300, offset:0]);
-      //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
-
-        result.contextOrg = contextService.getOrg()
         result.participantPerpetualAccessToTitle = []
 
         result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.issueEntitlementInstance.subscription.getSubscriberRespConsortia(), result.issueEntitlementInstance.tipp)
@@ -122,9 +87,9 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     @Deprecated
     def delete() {

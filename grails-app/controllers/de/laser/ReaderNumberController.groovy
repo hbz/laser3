@@ -6,6 +6,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller manages library reader number related calls
@@ -17,9 +18,9 @@ class ReaderNumberController  {
 	 * Creates a new reader number for the given institution
 	 * @return redirect to the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -35,9 +36,9 @@ class ReaderNumberController  {
 	 * Takes the submitted parameters and updates the given reader number with the given parameter map
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
     def edit() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -48,8 +49,8 @@ class ReaderNumberController  {
 			}
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
-			if(params.dueDate)
-				rnData.dueDate = sdf.parse(params.dueDate)
+			if(params.year)
+				rnData.year = sdf.parse(params.year)
 			rnData.value = new BigDecimal(params.value)
 			numbersInstance.properties = rnData
 			if (! numbersInstance.save()) {
@@ -64,9 +65,9 @@ class ReaderNumberController  {
 	 * Deletes the given reader numbers, specified by their grouping unit
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
     def delete() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
@@ -76,9 +77,9 @@ class ReaderNumberController  {
 				ReaderNumber rn = ReaderNumber.get(params.number)
 				rn.delete()
 			}
-			else if(params.dueDate) {
-				Date dueDate = DateUtils.parseDateGeneric(params.dueDate)
-				numbersToDelete.addAll(ReaderNumber.findAllByDueDateAndOrg(dueDate,org).collect{ ReaderNumber rn -> rn.id })
+			else if(params.year) {
+				Year year = Year.parse(params.year)
+				numbersToDelete.addAll(ReaderNumber.findAllByYearAndOrg(year,org).collect{ ReaderNumber rn -> rn.id })
 			}
 			else if(params.semester) {
 				RefdataValue semester = RefdataValue.get(params.semester)

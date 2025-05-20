@@ -1,4 +1,5 @@
-<%@page import="de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.License; de.laser.AuditConfig; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinitionGroupBinding" %>
+<%@page import="de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.License; de.laser.AuditConfig; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinitionGroupBinding" %>
+<laser:serviceInjection/>
 <g:if test="${memberProperties}">
     <section>
         <g:if test="${subscription}">
@@ -93,7 +94,7 @@
                         </g:elseif>
                     </g:if>
                     <g:elseif test="${subscription}">
-                        <g:set var="consortium" value="${subscription.getConsortia()}"/>
+                        <g:set var="consortium" value="${subscription.getConsortium()}"/>
                         <g:set var="atSubscr" value="${subscription._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                         <g:if test="${isGroupVisible}">
                             <g:set var="propDefGroupItems" value="${pdg.getCurrentProperties(subscription)}" />
@@ -103,7 +104,7 @@
                         </g:elseif>
                     </g:elseif>
                     <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
-                        <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+                        <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                             <tr>
                                 <td>
                                     <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -116,7 +117,7 @@
                                         ${prop.type.getI10n('name')}
                                     </g:else>
                                     %{--<g:if test="${prop.type.multipleOccurrence}">
-                                        <span class="redo icon orange"> M </span>
+                                        <span class="${Icon.PROP.MULTIPLE}"> M </span>
                                     </g:if>--}%
                                 </td>
                                 <td>
@@ -191,7 +192,7 @@
     <header>
         <h3>
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
+                ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
             </g:if>
             <g:else>
                 ${message(code:'license.properties')}
@@ -211,7 +212,7 @@
             </thead>
             <tbody>
                 <g:each in="${allPropDefGroups.orphanedProperties.sort{a, b -> a.type.getI10n('name') <=> b.type.getI10n('name') ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
-                    <g:if test="${(prop.tenant?.id == institution.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+                    <g:if test="${(prop.tenant?.id == institution.id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                         <g:if test="${prop.type.descr == prop_desc}">
                             <tr>
                                 <td>
@@ -263,7 +264,7 @@
                                         <g:set var="consortium" value="${license.getLicensingConsortium()}"/>
                                     </g:if>
                                     <g:elseif test="${subscription}">
-                                        <g:set var="consortium" value="${subscription.getConsortia()}"/>
+                                        <g:set var="consortium" value="${subscription.getConsortium()}"/>
                                         <g:set var="atSubscr" value="${subscription._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                     </g:elseif>
                                     %{--<g:if test="${(prop.hasProperty('instanceOf') && prop.instan && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">

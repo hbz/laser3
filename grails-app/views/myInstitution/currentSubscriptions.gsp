@@ -1,6 +1,6 @@
-<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
         <ui:breadcrumbs>
             <ui:crumb message="myinst.currentSubscriptions.label" class="active" />
@@ -11,34 +11,6 @@
                 <ui:exportDropdownItem>
                     <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS]"/>
                 </ui:exportDropdownItem>
-                <%--
-                <g:if test="${filterSet || defaultSet}">
-                    <ui:exportDropdownItem>
-                        <g:link class="item js-open-confirm-modal"
-                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                                data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
-                                params="${params+[exportXLS:true]}">
-                            ${message(code:'default.button.exports.xls')}
-                        </g:link>
-                    </ui:exportDropdownItem>
-                    <ui:exportDropdownItem>
-                        <g:link class="item js-open-confirm-modal"
-                                data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                                data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
-                                params="${params+[format:'csv']}">
-                            ${message(code:'default.button.exports.csv')}
-                        </g:link>
-                    </ui:exportDropdownItem>
-                </g:if>
-                <g:else>
-                    <ui:exportDropdownItem>
-                        <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </ui:exportDropdownItem>
-                    <ui:exportDropdownItem>
-                        <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                    </ui:exportDropdownItem>
-                </g:else>
-                --%>
             </ui:exportDropdown>
 
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">

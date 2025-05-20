@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.HelpService; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -7,12 +7,12 @@
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
 
         <div class="ui sub header item la-context-org" style="display: none">
-            <ui:cbItemCustomerType org="${contextOrg}" />
-            <ui:cbItemUserAffiliation user="${contextUser}" />
-            <ui:cbItemUserSysRole user="${contextUser}" />
+            <ui:cbItemCustomerType org="${contextService.getOrg()}" />
+            <ui:cbItemUserAffiliation user="${contextService.getUser()}" />
+            <ui:cbItemUserSysRole user="${contextService.getUser()}" />
 
-            <div id="la-js-cb-context-display" data-display="${contextOrg?.name}">
-                ${contextOrg?.name}
+            <div id="la-js-cb-context-display" data-display="${contextService.getOrg()?.name}">
+                ${contextService.getOrg()?.name}
             </div>
         </div>
 
@@ -23,22 +23,25 @@
             %{-- my object indicator --}%
 
             <g:if test="${isMyPlatform}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="star" color="yellow" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.platform')}" icon="${Icon.SIG.MY_OBJECT}" color="yellow" />
             </g:if>
             <g:elseif test="${isMyPkg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="star" color="violet" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.pkg')}" icon="${Icon.SIG.MY_OBJECT}" color="yellow" />
             </g:elseif>
             <g:elseif test="${isMyOrg}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="star" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.org')}" icon="${Icon.SIG.MY_OBJECT}" color="yellow" />
+            </g:elseif>
+            <g:elseif test="${isMyProvider}">
+                <ui:cbItemInfo display="${message(code: 'license.relationship.provider')}" icon="${Icon.SIG.MY_OBJECT}" color="yellow" />
             </g:elseif>
             <g:elseif test="${isMyVendor}">
-                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="star" color="teal" />
+                <ui:cbItemInfo display="${message(code: 'license.relationship.vendor')}" icon="${Icon.SIG.MY_OBJECT}" color="yellow" />
             </g:elseif>
 
             %{-- child indicator --}%
 
             <g:if test="${controllerName == 'subscription' && subscription && !surveyConfig}">
-                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortia()?.id) || contextService.getUser().isYoda())}">
+                <g:if test="${subscription.instanceOf && ((contextService.getOrg().id == subscription.getConsortium()?.id) || contextService.getUser().isYoda())}">
                     <ui:cbItemInfo display="Sie sehen eine Kindlizenz" icon="child" color="orange" />
                 </g:if>
             </g:if>
@@ -63,9 +66,11 @@
 
             %{-- help panel --}%
 
-            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
+            <g:set var="helpMatch" value="${helpService.getMatch()}" />
+
+            <g:if test="${helpMatch}">
                 <div class="item la-cb-action">
-                    <button class="ui icon button la-toggle-ui" id="help-toggle"><i class="question circle icon"></i></button>
+                    <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
             </g:if>
 
@@ -76,9 +81,9 @@
             <g:if test="${controllerName in ['finance', 'subscription', 'survey'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
-                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionTransfer-toggle"
+                        <button class="${Btn.ICON.SIMPLE_TOOLTIP} la-toggle-ui" id="subscriptionTransfer-toggle"
                                 data-content="${message(code:'statusbar.showSubscriptionTransfer.tooltip')}" data-position="bottom left">
-                            <i class="${Icons.SUBSCRIPTION} icon"></i>
+                            <i class="${Icon.SUBSCRIPTION}"></i>
                         </button>
                     </div>
                 </g:if>
@@ -87,44 +92,33 @@
             %{-- subscription members --}%
 
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
-                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortia()?.id == contextService.getOrg().id}">
+                <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortium()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
-%{--                        <button class="ui icon button la-toggle-ui la-popup-tooltip la-delay" id="subscriptionMembers-toggle"--}%
-%{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
-%{--                            <i class="${Icons.ORG} icon"></i>--}%
+%{--                        <button class="${Btn.ICON.SIMPLE_TOOLTIP} la-toggle-ui" id="subscriptionMembers-toggle"--}%
+%{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" --}%
+%{--                                data-position="bottom left">--}%
+%{--                            <i class="${Icon.AUTH.ORG_INST}"></i>--}%
 %{--                        </button>--}%
-                        <button class="ui icon button la-toggle-ui" id="subscriptionMembers-toggle">
-                            <i class="${Icons.ORG} icon"></i>
+                        <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="subscriptionMembers-toggle">
+                            <i class="${Icon.AUTH.ORG_INST}"></i>
                         </button>
                     </div>
                 </g:if>
             </g:if>
 
-            %{-- advanced mode switcher  --}%
-
-            <g:if test="${(params.mode)}">
-                <g:if test="${params.mode=='advanced'}">
-                    <ui:cbItemToggleAction id="advancedMode-toggle" status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
-                                               reload="${g.createLink(action: actionName, params: params + ['mode':'basic'])}" />
-                </g:if>
-                <g:else>
-                    <ui:cbItemToggleAction id="advancedMode-toggle" status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
-                                               reload="${g.createLink(action: actionName, params: params + ['mode':'advanced'])}" />
-                </g:else>
-            </g:if>
 
             %{-- survey stuff  --}%
 
             <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                 <div class="item la-cb-action">
                     <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                        <g:link action="currentSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                        <g:link action="currentSurveysConsortia" controller="survey" class="${Btn.ICON.SIMPLE_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab icon"></i>
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="workflowsSurveysConsortia" controller="survey" class="ui icon button la-popup-tooltip la-delay"
+                        <g:link action="workflowsSurveysConsortia" controller="survey" class="${Btn.ICON.SIMPLE_TOOLTIP}"
                                 data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom center">
                             <i class="la-tab slash icon"></i>
                         </g:link>
@@ -149,11 +143,14 @@
                     <ui:cbItemMarkerAction provider="${provider}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
-            <g:elseif test="${controllerName == 'tipp' && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                <g:if test="${tipp}">
-                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
-                </g:if>
-            </g:elseif>
+%{--            <g:elseif test="${controllerName in ['issueEntitlement', 'tipp'] && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">--}%
+%{--                <g:if test="${tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:if>--}%
+%{--                <g:elseif test="${issueEntitlementInstance?.tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${issueEntitlementInstance.tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:elseif>--}%
+%{--            </g:elseif>--}%
             <g:elseif test="${controllerName == 'vendor'}">
                 <g:if test="${vendor}">
                     <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>
@@ -165,10 +162,11 @@
             <g:if test="${controllerName in ['finance', 'subscription'] && subscription}">
                 <g:set var="linkifyMap" value="${linksGenerationService.getSourcesAndDestinations(subscription, contextUser, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))}" />
 
-                <g:if test="${linkifyMap || subscription.instanceOf}">
+                <%-- null check at getConsortium() because of delete after process; see ERMS-6519 --%>
+                <g:if test="${linkifyMap || (subscription.instanceOf && subscription.getConsortium()?.id == contextService.getOrg().id)}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button icon">
-                            <i class="linkify icon"></i>
+                        <div class="ui simple dropdown clearable button icon">
+                            <i class="${Icon.SYM.LINKED_OBJECTS}"></i>
                             <div class="menu">
                                 <g:if test="${subscription.instanceOf}">
                                     <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" class="item la-flexbox">
@@ -197,10 +195,10 @@
                                                 </span>
                                                 <span class="description">
                                                     <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                        <i class="${linkPrio == 1 ? Icon.LNK.NEXT : Icon.LNK.PREV} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>
@@ -214,7 +212,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -232,7 +230,7 @@
                 <g:if test="${linkifyMap || license.instanceOf}">
                     <div class="item la-cb-action-ext">
                         <div class="ui simple dropdown button icon">
-                            <i class="linkify icon"></i>
+                            <i class="${Icon.SYM.LINKED_OBJECTS}"></i>
                             <div class="menu">
                                 <g:if test="${license.instanceOf}">
                                     <g:link controller="license" action="show" id="${license.instanceOf.id}" class="item la-flexbox">
@@ -260,7 +258,7 @@
                                                     (<g:formatDate formatName="default.date.format.notime" date="${linkTarget.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${linkTarget.endDate}"/>)
                                                 </span>
                                                 <span class="description">
-                                                    <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                     ${linkType}
                                                 </span>
                                             </g:link>
@@ -274,10 +272,10 @@
                                                 </span>
                                                 <span class="description">
                                                     <g:if test="${link.linkType == RDStore.LINKTYPE_FOLLOWS}">
-                                                        <i class="icon arrow ${linkPrio == 1 ? 'right' : 'left'} la-list-icon"></i>
+                                                        <i class="${linkPrio == 1 ? Icon.LNK.PREV : Icon.LNK.NEXT} la-list-icon"></i>
                                                     </g:if>
                                                     <g:else>
-                                                        <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                        <i class="${Icon.LICENSE} la-list-icon"></i>
                                                     </g:else>
                                                     ${linkType}
                                                 </span>
@@ -296,6 +294,29 @@
     </div>%{-- container --}%
 
 </nav>%{-- contextBar --}%
+
+%{-- help flyout --}%
+
+<g:if test="${helpMatch == HelpService.GSP}">
+    <div class="ui very wide flyout" id="help-content">
+        <g:render template="${'/help/' + helpService.getMapping()}" />
+    </div>
+</g:if>
+<g:elseif test="${helpMatch in [HelpService.MD, HelpService.BOTH]}">
+    <div class="ui very wide la-markdown flyout" id="help-content">
+        <div class="scrolling content">
+            <ui:renderMarkdown help="${helpService.getMapping()}" />
+
+            <g:if test="${helpMatch == HelpService.BOTH}">
+                <br/>
+                <g:render template="${'/help/' + helpService.getMapping()}" />
+            </g:if>
+        </div>
+        <div class="basic center aligned actions">
+            <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email</a>
+        </div>
+    </div>
+</g:elseif>
 
 <style>
     #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox {
@@ -363,22 +384,10 @@
                     displayType: 'block'
                 })
 
+                tooltip.initDynamicPopups('.la-cb-action-ext')
+
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
-
-            $('.button.la-toggle-green-red').on('click', function() {
-                let $button = $(this);
-                let $icon = $button.find('.icon');
-
-                if ($button.hasClass("inactive")) {
-                    $button.removeClass('inactive').addClass('active')
-                    $icon.removeClass("slash");
-                }
-                else {
-                    $button.removeClass('active').addClass('inactive')
-                    $icon.addClass("slash");
-                }
-            });
 
             $('#advancedMode-toggle').on('click', function() {
                 let $button = $(this);

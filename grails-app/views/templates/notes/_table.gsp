@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
@@ -6,7 +6,9 @@
         <tr>
             <th class="ten wide" rowspan="2" scope="col">${message(code:'default.note.label')}</th>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+            <th class="two wide center aligned" rowspan="2" scope="col">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.dateCreated.label')}</th>
@@ -36,48 +38,60 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${docctx.sharedFrom}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                <i class="grey alternate share icon"></i>
+                            <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                             </span>
                         </g:if>
 
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
-                            <g:if test="${docctx.isShared}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
-                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="alternate share icon"></i>
-                                    </g:link>
-                                </span>
+                            <g:if test="${editable}">
+                                <g:if test="${docctx.isShared}">
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                        <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
+                                                params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
+                                        <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
+                                                params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
+                                        </g:link>
+                                    </span>
+                                </g:else>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                    <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
-                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="la-share slash icon"></i>
-                                    </g:link>
-                                </span>
+                                %{-- TODO: ERMS-6253 - show shared icon --}%
+                                <g:if test="${docctx.isShared}">
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                        <span class="${Btn.MODERN.SIMPLE} disabled">
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
+                                        </span>
+                                    </span>
+                                </g:if>
                             </g:else>
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                        <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                        <g:if test="${accessService.hasAccessToDocNote(docctx, AccessService.WRITE)}">
+                            <a onclick="JSPC.app.editNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <g:set var="linkParams" value="${[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+%{--                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]'--}%
+                            <g:link controller="note" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                     data-confirm-term-how="delete"
-                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
+                                    params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.readNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="search icon"></i>
                             </a>
                         </g:else>
@@ -89,9 +103,9 @@
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.editNote = function (id) {
+    JSPC.app.editNote = function (dctx) {
         $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
+            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?dctx=' + dctx,
             success: function(result){
                 $('#dynamicModalContainer').empty();
                 $('#modalEditNote').remove();
@@ -106,9 +120,9 @@
             }
         });
     }
-    JSPC.app.readNote = function (id) {
+    JSPC.app.readNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalReadNote').remove();

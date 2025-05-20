@@ -54,7 +54,7 @@ class SubNavTagLib {
             linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
         }
         if (attrs.tooltip) {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
 
         if ((attrs.counts instanceof String && !attrs.counts.isEmpty()) || (attrs.counts instanceof Integer && attrs.counts >= 0) || (attrs.counts instanceof Long && attrs.counts >= 0)) {
@@ -117,11 +117,11 @@ class SubNavTagLib {
             }
         }
         else {
-            if (attrs.instRole && userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
+            if (attrs.instRole && userService.hasFormalAffiliation(contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled" '
                 out << 'role="menuitem">' + linkBody + '</div>'
             }
-//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="tab">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip" data-position="left center" role="tab">' + linkBody + '</div>'
         }
     }
 }

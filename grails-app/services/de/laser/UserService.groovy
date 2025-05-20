@@ -50,21 +50,24 @@ class UserService {
      * @param params the request parameter map
      * @return a list of users, either globally or belonging to a given institution
      */
-    Map<String, Object> getUserMap(Map params) {
+    Map<String, Object> getUserMap(GrailsParameterMap params) {
         // only context org depending
         String baseQuery = 'select distinct u from User u'
         List whereQuery = []
         Map queryParams = [:]
 
-        if (params.org || params.authority) {
+        if (params.org || params.role || params.authority) {
             if (params.org) {
-                whereQuery.add( 'u.formalOrg = :org' )
-                queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
+                whereQuery.add( 'u.formalOrg != null and u.formalOrg.id = :org' )
+                queryParams.put('org', params.long('org'))
             }
-            // params.authority vs params.role ???
             if (params.role) {
-                whereQuery.add( 'u.formalRole = :role' )
-                queryParams.put('role', genericOIDService.resolveOID(params.role) )
+                whereQuery.add( 'u.formalRole != null and u.formalRole.id = :role' )
+                queryParams.put('role', params.long('role'))
+            }
+            if (params.authority) {
+                whereQuery.add( 'u.formalRole != null and u.formalRole.authority = :authority' )
+                queryParams.put('authority', params.authority)
             }
         }
 
@@ -89,6 +92,7 @@ class UserService {
         }
         String query = baseQuery + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username',
         countQuery = 'select count(distinct(u)) from User u' + (whereQuery ? ' where ' + whereQuery.join(' and ') : '')
+
         [count: User.executeQuery(countQuery, queryParams)[0], data: User.executeQuery(query, queryParams, [max: params.max, offset: params.offset])]
     }
 
@@ -98,7 +102,7 @@ class UserService {
      * @param flash the message container
      * @return the new user object or the error messages (null) in case of failure
      */
-    User addNewUser(GrailsParameterMap params, FlashScope flash) {
+    def addNewUser(GrailsParameterMap params, FlashScope flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         User user = new User(params)
         user.enabled = true
@@ -183,31 +187,27 @@ class UserService {
     }
 
     /**
-     * Checks the user's permissions in the given institution or if it is a superuser; is a substitution call for
-     * {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} if not a superuser
-     * @param userToCheck the user to check
+     * Checks the current user's permissions in the given institution
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
-     * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles; having at least ROLE_USER rights), false otherwise
+     * @return true if the given permission is granted to the user in the given institution, false otherwise
      */
-    boolean hasAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true // may the force be with you
-        }
+    boolean hasAffiliation(Org orgToCheck, String instUserRole) {
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
             return false // min restriction fail
         }
-        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+        _checkUserOrgRole(contextService.getUser(), orgToCheck, instUserRole)
     }
 
     /**
-     * Checks the user's permissions in the given institution
-     * @param userToCheck the user to check
+     * Checks the current user's permissions in the given institution
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
      */
-    boolean hasFormalAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
+    boolean hasFormalAffiliation(Org orgToCheck, String instUserRole) {
+        User userToCheck = contextService.getUser()
+
         if (! userToCheck || ! orgToCheck) {
             return false
         }
@@ -215,21 +215,6 @@ class UserService {
             return false
         }
         _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
-    }
-
-    /**
-     * Substitution call for {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}; may be
-     * overridden by {@link Role#ROLE_ADMIN} before
-     * @param userToCheck the user to check
-     * @param orgToCheck the institution to which affiliation should be checked
-     * @param instUserRole the user's role (permission grant) in the institution to be checked
-     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} otherwise
-     */
-    boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        hasFormalAffiliation(userToCheck, orgToCheck, instUserRole)
     }
 
     /**
@@ -269,19 +254,18 @@ class UserService {
     // -- todo: check logic
 
     /**
-     * Checks if the given user belongs as administrator to an institution linked to the given consortium
-     * @param user the user to check
+     * Checks if the current user belongs as administrator to an institution linked to the given consortium
      * @param org the consortium ({@link Org}) whose institutions should be checked
      * @return true if there is at least one institution belonging to the given consortium for which the user has {@link Role#INST_ADM} rights
      */
-    boolean hasComboInstAdmPivileges(User user, Org org) {
-        boolean result = hasFormalAffiliation(user, org, 'INST_ADM')
+    boolean hasComboInstAdmPivileges(Org org) {
+        boolean result = hasFormalAffiliation(org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
         )
         topOrgs.each { top ->
-            if (hasFormalAffiliation(user, top as Org, 'INST_ADM')) {
+            if (hasFormalAffiliation(top as Org, 'INST_ADM')) {
                 result = true
             }
         }
@@ -291,17 +275,18 @@ class UserService {
     // -- todo: check logic
 
     /**
-     * Checks if the given user can be edited by the given editor user
+     * Checks if the given user can be edited by current user
      * @param user the user who should be edited
-     * @param editor the editor whose permissions should be checked
      * @return true if the user is an {@link Role#INST_ADM} of a consortium to which the target institution is belonging, a consortium administrator at all or a superadmin, false otherwise
      */
-    boolean isUserEditableForInstAdm(User user, User editor) {
+    boolean isUserEditableForInstAdm(User user) {
         if (user.formalOrg) {
-            return hasComboInstAdmPivileges(editor, user.formalOrg)
+            // User editor = contextService.getUser()
+            // return hasComboInstAdmPivileges(editor, user.formalOrg)
+            return hasComboInstAdmPivileges(user.formalOrg)
         }
         else {
-            return contextService.isInstAdm_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+            return SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.isInstAdm_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }
     }
 }

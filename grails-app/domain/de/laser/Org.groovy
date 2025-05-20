@@ -1,11 +1,15 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.finance.CostItem
+import de.laser.ui.Icon
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
@@ -13,6 +17,7 @@ import de.laser.properties.OrgProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Platform
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
@@ -44,9 +49,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     @Deprecated
     String gokbId
-    String comment
-    String ipRange
-    String scope
 
     Org createdBy
     Org legallyObligedBy
@@ -55,13 +57,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     boolean eInvoice = false
     boolean isBetaTester = false
 
-    Date retirementDate
+    Date archiveDate
+
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    @RefdataInfo(cat = RDConstants.ORG_STATUS)
-    RefdataValue status
 
     @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
     RefdataValue country
@@ -86,6 +86,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)
     RefdataValue eInvoicePortal
+
+    @RefdataInfo(cat = RDConstants.SUPPORTED_LIBRARY_SYSTEM)
+    RefdataValue supportedLibrarySystem
 
     SortedSet ids
     SortedSet altnames
@@ -122,7 +125,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         altnames:           AlternativeName,
         discoverySystemFrontends: DiscoverySystemFrontend,
         discoverySystemIndices: DiscoverySystemIndex,
-        orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
@@ -142,17 +144,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                url          column:'org_url'
             urlGov          column:'org_url_gov'
       linkResolverBaseURL   column:'org_link_resolver_base_url', type: 'text'
-           comment          column:'org_comment'
-           ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
-             scope          column:'org_scope'
         categoryId          column:'org_cat'
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
+     supportedLibrarySystem column:'org_supported_library_system_rv_fk'
         gokbId              column:'org_gokb_id', type:'text'
-            status          column:'org_status_rv_fk'
-    retirementDate          column:'org_retirement_date'
         isBetaTester        column:'org_is_beta_tester'
+       archiveDate          column:'org_archive_date'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
@@ -167,13 +166,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
        lastUpdatedCascading column:'org_last_updated_cascading'
-
-        orgType             joinTable: [
-                name:   'org_type',
-                key:    'org_id',
-                column: 'refdata_value_id', type:   'BIGINT'
-        ], lazy: false
-
         ids                 sort: 'ns', batchSize: 10
         outgoingCombos      batchSize: 10
         incomingCombos      batchSize: 10
@@ -194,21 +186,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
  linkResolverBaseURL(nullable:true, blank:false)
-      retirementDate(nullable:true)
-             comment(nullable:true, blank:true, maxSize:2048)
-             ipRange(nullable:true, blank:true, maxSize:1024)
+         archiveDate(nullable:true)
            shortcode(nullable:true, blank:true, maxSize:128)
-               scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)
-//        , validator: {RefdataValue val, Org obj, errors ->
-//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
-//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
-//                      return false
-//                  }
-//              })
+    supportedLibrarySystem(nullable:true)
       libraryNetwork(nullable:true)
           funderType(nullable:true)
        funderHskType(nullable:true)
@@ -218,18 +202,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            createdBy(nullable:true)
     legallyObligedBy(nullable:true)
       costConfigurationPreset(nullable:true)
-             orgType(nullable:true)
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
 
+    boolean isArchived() {
+        return archiveDate != null
+    }
+
     /**
-     * Checks if the organisation is marked as deleted
-     * @return true if the status is deleted, false otherwise
+     * Checks if the organisation is marked as deleted/archived
+     * @return true if isArchived(), false otherwise
      */
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_STATUS_DELETED.id == status?.id
+//        return RDStore.ORG_STATUS_DELETED.id == status?.id
+        isArchived() // TODO - remove
     }
 
     /**
@@ -271,6 +259,17 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
+    // TODO: ERMS-6009
+    @Deprecated
+    RefdataValue getOrgType() {
+        if (isCustomerType_Inst()) {
+            RDStore.OT_INSTITUTION
+        }
+        else if (isCustomerType_Consortium()) {
+            RDStore.OT_CONSORTIUM
+        }
+    }
+
     /**
      * Sets for an institution the default customer type, that is ORG_INST_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
@@ -284,6 +283,25 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
         false
+    }
+
+    Map<String, String> getCustomerTypeInfo() {
+        Map<String, String> result = [ id: '', text: '', icon: '' ]
+
+        def oss  = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
+            result.id   = oss.roleValue?.authority
+            result.text = oss.roleValue?.getI10n('authority')
+        }
+
+             if (result.id == CustomerTypeService.ORG_INST_BASIC)       { result.icon = Icon.AUTH.ORG_INST_BASIC }
+        else if (result.id == CustomerTypeService.ORG_INST_PRO)         { result.icon = Icon.AUTH.ORG_INST_PRO }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_BASIC) { result.icon = Icon.AUTH.ORG_CONSORTIUM_BASIC }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_PRO)   { result.icon = Icon.AUTH.ORG_CONSORTIUM_PRO }
+        else if (result.id == CustomerTypeService.ORG_SUPPORT)          { result.icon = Icon.AUTH.ORG_SUPPORT }
+
+//        println result
+        result
     }
 
     /**
@@ -349,10 +367,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
-
-//    boolean isCustomerType_Consortium_or_Support() {
-//        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] // hasPerm(ORG_CONSORTIUM_BASIC)
-//    }
 
     boolean isCustomerType_Support() {
         this.getCustomerType() == CustomerTypeService.ORG_SUPPORT
@@ -517,6 +531,19 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Gets all identifiers of this institution belonging to the given namespace
+     * @param idtype the namespace string to which the requested identifiers belong
+     * @return a {@link List} of {@link Identifier}s belonging to the given namespace
+     */
+    List<Identifier> getNonEmptyIdentifiersByType(String idtype) {
+
+        Identifier.executeQuery(
+                "select id from Identifier id join id.ns ns where id.org = :org and lower(ns.ns) = :idtype and id.value != null and id.value != '' and id.value != 'Unknown'",
+                [org: this, idtype: idtype.toLowerCase()]
+        )
+    }
+
+    /**
      * Gets all organisations matching at least partially to the given query string
      * @param params the parameter map containing the query string
      * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
@@ -573,7 +600,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves the general contact persons of this organisation
      * @param onlyPublic should only the public contacts being retieved?
-     * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s marked as general contacts of this organisation
      */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
         if (onlyPublic) {
@@ -648,22 +675,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                     queryParams
             )
         }
-    }
-
-    /**
-     * Gets all type reference values attributed to this organisation
-     * @return a {@link List} of {@link RefdataValue}s assigned to this organisation
-     */
-    List<RefdataValue> getAllOrgTypes() {
-        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
-    }
-
-    /**
-     * Gets all type reference value ids attributed to this organisation
-     * @return a {@link List} of reference data IDs assigned to this organisation
-     */
-    List getAllOrgTypeIds() {
-        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     /**
@@ -809,8 +820,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
     }
 
-    boolean isInfoAccessibleFor(Org ctx) {
-        if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
+    boolean isInfoAccessible() {
+        if (this.isCustomerType_Inst()) {
+            Org ctx = BeanStore.getContextService().getOrg()
             return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
         }
         return false

@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
 
-<laser:htmlStart message="copyElementsIntoObject.survey" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.survey" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -26,7 +26,7 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')}
+                        <i class="${Icon.SYM.DATE}"></i> ${message(code: 'subscription.periodOfValidity.label')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -37,10 +37,10 @@
                         ${message(code: 'copyElementsIntoObject.attachements.label')}
                     </div>
                     <div class="description">
-                        <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')}<br />
-                        <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')}<br />
-                        <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')}<br />
-                    %{--                        <i class="${Icons.WORKFLOW} icon"></i>                  ${message(code: 'workflow.plural')}--}%
+                        <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')}<br />
+                        <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')}<br />
+                        <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')}<br />
+                    %{--                        <i class="${Icon.WORKFLOW}"></i>                  ${message(code: 'workflow.plural')}--}%
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -51,7 +51,7 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="${Icons.ORG} icon"></i> ${message(code: 'consortium.subscriber')}
+                            <i class="${Icon.ORG}"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
             </ui:complexSubNavItem>
@@ -62,7 +62,7 @@
                         ${message(code: 'properties')}
                     </div>
                     <div class="description">
-                        <i class="tags icon"></i> ${message(code: 'properties')}
+                        <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
                     </div>
                 </div>
             </ui:complexSubNavItem>

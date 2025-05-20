@@ -6,7 +6,6 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
@@ -66,7 +65,7 @@ class ApiOAMonitor {
                         "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
                             sub  : sub,
                             orgs : orgs,
-                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -82,12 +81,18 @@ class ApiOAMonitor {
      */
     static private List<Org> getAccessibleOrgs() {
 
+//        List<Org> orgs = OrgSetting.executeQuery(
+//                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+//                        "and (o.status is null or o.status != :deleted)", [
+//                key    : OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
+//                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
+//                deleted: RefdataValue.getByValueAndCategory('Deleted', 'org.status') // TODO: erms-6224 - removed o.status != 'deleted'
+//        ])
+        // TODO: erms-6238
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue and o.archiveDate is null", [
                 key    : OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
-                deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                rdValue: RDStore.YN_YES
         ])
 
         orgs
@@ -146,17 +151,18 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.type         = org.orgType?.collect{ it.value }
-            result.status       = org.status?.value
+            result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
+//            result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
+            result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
 
             // References
 
-            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.Address
-            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
+            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address
+            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.addressbook.Contact
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
             //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // de.laser.PersonRole
+            //) // de.laser.addressbook.PersonRole
 
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
@@ -198,7 +204,7 @@ class ApiOAMonitor {
             // RefdataValues
 
             result.form                 = sub.form?.value
-            result.isSlaved             = sub.isSlaved ? 'Yes' : 'No'
+            result.isSlaved             = sub.instanceOf ? 'Yes' : 'No' // todo: ERMS-6219
             result.isMultiYear          = sub.isMultiYear ? 'Yes' : 'No'
             result.resource             = sub.resource?.value
             result.status               = sub.status?.value
@@ -251,7 +257,7 @@ class ApiOAMonitor {
 
             if (sub._getCalculatedType() in [Subscription.TYPE_PARTICIPATION]) {
                 List<Org> validOwners = getAccessibleOrgs()
-                List<Org> subSubscribers = sub.getAllSubscribers()
+                List<Org> subSubscribers = sub.getSubscriber() ? [sub.getSubscriber()] : [] // erms-5393
                 //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }
                 filtered = sub.costItems.findAll{ it.owner in validOwners && (it.owner in subSubscribers || it.isVisibleForSubscriber) }
             }
@@ -275,7 +281,9 @@ class ApiOAMonitor {
         if (!org ) {
             return null
         }
-        if (org.status?.value == 'Deleted') {
+//        if (org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
+        // TODO: erms-6238
+        if (org.isArchived()) {
             return []
         }
 
@@ -284,7 +292,7 @@ class ApiOAMonitor {
         List<Subscription> tmp = OrgRole.executeQuery(
                 'select distinct(oo.sub) from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)', [
                         org: org,
-                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
         log.debug ("found ${tmp.size()} subscriptions .. processing")
@@ -309,9 +317,9 @@ class ApiOAMonitor {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.wekb.Package
 
-            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.Provider
+            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.wekb.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []

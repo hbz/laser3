@@ -7,6 +7,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -53,7 +54,7 @@ class PendingChangeService extends AbstractLockableService {
                     'where oo.org = :context and oo.roleType = :roleType and s.instanceOf is null '+
                     'and (pcc.settingValue = :prompt or (pcc.settingValue = :accept and pcc.withNotification = true) or (pcc.settingValue = null and pcc.withNotification = true)) ' +
                     'order by s.name, s.startDate desc',
-                    [context: configMap.contextOrg, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA, prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT]))
+                    [context: configMap.contextOrg, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT]))
         }
         else {
             subscriptionPackages.addAll(SubscriptionPackage.executeQuery('select sp from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription s join s.orgRelations oo ' +
@@ -114,7 +115,7 @@ class PendingChangeService extends AbstractLockableService {
                     'and oo.org = :context and oo.roleType = :roleType and s.instanceOf = null ' +
                     'and ie.tipp = tipp and ie.status != :removed '+
                     'group by pkg, tic.event, s',
-                    [context: configMap.contextOrg, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA, titleRemoved: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED])
+                    [context: configMap.contextOrg, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, titleRemoved: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED])
             */
             sql.rows("select or_sub_fk, count(tic_id) as count, tic_event from title_change "+
                     "join title_instance_package_platform on tic_tipp_fk = tipp_id "+
@@ -124,7 +125,7 @@ class PendingChangeService extends AbstractLockableService {
                     "where tic_event = :titleRemoved and or_org_fk = :context and or_roletype_fk = :roleType and sub_parent_sub_fk is null and ie_status_rv_fk != :removed "+
                     "group by tipp_pkg_fk, tic_event, or_sub_fk, sub_name, sub_start_date "+
                     "order by sub_name, sub_start_date desc",
-                    [titleRemoved: PendingChangeConfiguration.TITLE_REMOVED, context: configMap.contextOrg.id, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA.id, removed: RDStore.TIPP_STATUS_REMOVED.id]).each { GroovyRowResult row ->
+                    [titleRemoved: PendingChangeConfiguration.TITLE_REMOVED, context: configMap.contextOrg.id, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM.id, removed: RDStore.TIPP_STATUS_REMOVED.id]).each { GroovyRowResult row ->
                 Subscription subscription = Subscription.get(row['or_sub_fk'])
                 //Set<Map> changes = pending.containsKey(subscription) ? pending.get(subscription) : []
                 //changes << [count: row['count'], event: row['tic_event']]
@@ -140,7 +141,7 @@ class PendingChangeService extends AbstractLockableService {
                     "where tic_event = :titleDeleted and or_org_fk = :context and or_roletype_fk = :roleType and sub_parent_sub_fk is null and ie_status_rv_fk != :deleted "+
                     "group by tipp_pkg_fk, tic_event, or_sub_fk, sub_name, sub_start_date "+
                     "order by sub_name, sub_start_date desc",
-                    [titleDeleted: PendingChangeConfiguration.TITLE_DELETED, context: configMap.contextOrg.id, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA.id, deleted: RDStore.TIPP_STATUS_DELETED.id]).each { GroovyRowResult row ->
+                    [titleDeleted: PendingChangeConfiguration.TITLE_DELETED, context: configMap.contextOrg.id, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM.id, deleted: RDStore.TIPP_STATUS_DELETED.id]).each { GroovyRowResult row ->
                 Subscription subscription = Subscription.get(row['or_sub_fk'])
                 //Set<Map> changes = pending.containsKey(subscription) ? pending.get(subscription) : []
                 //changes << [count: row['count'], event: row['tic_event']]
@@ -343,7 +344,7 @@ class PendingChangeService extends AbstractLockableService {
         List pending = [], notifications = []
         Sql sql = GlobalService.obtainSqlConnection()
         try {
-        Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
+        Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIUM.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
         Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] }
         Map<Long, String> acceptedStatus = [(RDStore.PENDING_CHANGE_ACCEPTED.id): RDStore.PENDING_CHANGE_ACCEPTED.getI10n("value"), (RDStore.PENDING_CHANGE_REJECTED.id): RDStore.PENDING_CHANGE_REJECTED.getI10n("value"), (RDStore.PENDING_CHANGE_PENDING.id): RDStore.PENDING_CHANGE_PENDING.getI10n("value")]
         Object[] retObj = RefdataValue.findAllByOwnerAndValueInList(RefdataCategory.findByDesc(RDConstants.SUBSCRIPTION_STATUS), ['Terminated', 'Expired', 'Rejected', 'Publication discontinued', 'No longer usable', 'Deferred']).collect { RefdataValue rdv -> rdv.id } as Object[]
@@ -354,7 +355,7 @@ class PendingChangeService extends AbstractLockableService {
             String subscribedPackagesQuery = "select pcc_sp_fk as subPkg, sp_pkg_fk as pkg, sp_sub_fk as sub, sp_date_created, pcc_setting_key_enum as key, case when pcc_setting_value_rv_fk = :prompt then true else false end as prompt, pcc_with_notification as with_notification from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and or_roletype_fk = any(:roleTypes)"
             if(configMap.consortialView)
                 subscribedPackagesQuery += " and (pcc_setting_value_rv_fk = :prompt or pcc_with_notification = true) and sub_parent_sub_fk is null"
-            List subscribedPackages = sql.rows(subscribedPackagesQuery, [retired: retired, context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER.id] as Object[]), prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT.id])
+            List subscribedPackages = sql.rows(subscribedPackagesQuery, [retired: retired, context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIUM.id,RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER.id] as Object[]), prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT.id])
             if(!configMap.consortialView) {
                 subscribedPackages.addAll(sql.rows("select sp_id as subPkg, sp_pkg_fk as pkg, sp_sub_fk as sub, sp_date_created, auc_reference_field as key, true as with_notification, null as prompt from subscription_package join org_role on sp_sub_fk = or_sub_fk join subscription on or_sub_fk = sub_id join audit_config on auc_reference_id = sub_parent_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and auc_reference_field = any(:settingKeys) and sp_sub_fk = sub_id", [retired: retired, context: configMap.contextOrg.id, settingKeys: sql.connection.createArrayOf('varchar', PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }  as Object[])]))
             }
@@ -508,7 +509,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param entry the subscription data
      * @param status the possible subscription status
      * @param locale the locale to use for message constants
-     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
+     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention()}
      * @deprecated not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated
@@ -600,7 +601,7 @@ class PendingChangeService extends AbstractLockableService {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp tipp where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.status != :removed) and tipp.pkg = :pkg and pc.msgToken = :eventType group by pc.msgToken', [sub: sp.subscription, pkg: sp.pkg, removed: RDStore.TIPP_STATUS_REMOVED, eventType: PendingChangeConfiguration.TITLE_REMOVED]))
             }
-            //pendingTitleCounts.addAll(sql.rows("select count(id) as count, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on sp_pkg_fk = tipp_pkg_fk join org_role on or_sub_fk = sp_sub_fk join subscription on sp_sub_fk = sub_id where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and pc_msg_token = :removed and exists(select ie_id from issue_entitlement where ie_tipp_fk = pc_tipp_fk and ie_subscription_fk = sp_sub_fk and ie_status_rv_fk != :ieRemoved) and sp_sub_fk = :subId group by pc_msg_token", [context: contextOrg.id, roleTypes: connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIA.id, RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id] as Object[]), subId: sp.subscription.id, removed: PendingChangeConfiguration.TITLE_REMOVED, ieRemoved: RDStore.TIPP_STATUS_REMOVED.id]))
+            //pendingTitleCounts.addAll(sql.rows("select count(id) as count, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on sp_pkg_fk = tipp_pkg_fk join org_role on or_sub_fk = sp_sub_fk join subscription on sp_sub_fk = sub_id where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and pc_msg_token = :removed and exists(select ie_id from issue_entitlement where ie_tipp_fk = pc_tipp_fk and ie_subscription_fk = sp_sub_fk and ie_status_rv_fk != :ieRemoved) and sp_sub_fk = :subId group by pc_msg_token", [context: contextOrg.id, roleTypes: connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIUM.id, RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id] as Object[]), subId: sp.subscription.id, removed: PendingChangeConfiguration.TITLE_REMOVED, ieRemoved: RDStore.TIPP_STATUS_REMOVED.id]))
              */
             acceptedTitleCounts.each { row ->
                 switch(row[1]) {

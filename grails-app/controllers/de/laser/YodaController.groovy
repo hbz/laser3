@@ -5,24 +5,22 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
-import de.laser.remote.ElasticsearchSource
+import de.laser.remote.Wekb
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
@@ -30,6 +28,10 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
@@ -47,7 +49,6 @@ import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.SecurityFilterChain
 
 import javax.servlet.Filter
-import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -78,6 +79,7 @@ class YodaController {
     FormService formService
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
+    PackageService packageService
     ProviderService providerService
     def quartzScheduler
     RenewSubscriptionService renewSubscriptionService
@@ -98,7 +100,7 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-        result 
+        result
     }
 
     /**
@@ -114,7 +116,8 @@ class YodaController {
                 'dataSource',
                 ConfigDefaults.DATASOURCE_DEFAULT + '.password',
                 ConfigDefaults.DATASOURCE_STORAGE + '.password',
-                ConfigMapper.WEKB_API_PASSWORD[0]
+                ConfigMapper.WEKB_API_PASSWORD[0],
+                ConfigMapper.DOCUMENT_STORAGE_KEY[0]
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
@@ -253,6 +256,16 @@ class YodaController {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    def profilerCurrent() {
+        Map result = [:]
+
+        EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( SystemActivityProfiler.CACHE_KEY_ACTIVE_USER )
+        result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> ttl1800.get(u) }.sort { it[1] }
+
+        render view: '/yoda/profiler/current', model: result
+    }
+
     /**
      * Dumps the registered counts of users over time
      * @return a list of graphs showing when how many users were recorded
@@ -326,7 +339,7 @@ class YodaController {
         result.labels = labels
         result.activity = activityMatrix
 
-        result
+        render view: '/yoda/profiler/activity', model: result
     }
 
     /**
@@ -397,7 +410,7 @@ class YodaController {
         }
         result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
 
-        result
+        render view: '/yoda/profiler/loadtime', model: result
     }
 
     /**
@@ -435,9 +448,9 @@ class YodaController {
                 ordered[uri] = count
             }
         }
-        result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
+        result.globalTimelineOrder = ordered.sort{ it.key }
 
-        result
+        render view: '/yoda/profiler/timeline', model: result
     }
 
     /**
@@ -481,11 +494,20 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.isInstUser_or_ROLEADMIN() != ([''] as String[])) {
-                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()' //  + da.isInstUser_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.isInstUser_or_ROLEADMIN().toList()[0]
+                            if (da.isInstUser() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser()' //  + da.isInstUser().toList()
+                                mInfo.debug.perm        = da.isInstUser().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstEditor() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor()' //  + da.isInstEditor().toList()
+                                mInfo.debug.perm        = da.isInstEditor().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                            }
+                            if (da.isInstAdm() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm()' //  + da.isInstAdm().toList()
+                                mInfo.debug.perm        = da.isInstAdm().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
                             }
                             if (da.isInstEditor_or_ROLEADMIN() != ([''] as String[])) {
                                 mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()' //  + da.isInstEditor_or_ROLEADMIN().toList()
@@ -499,17 +521,20 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.isInstUser_denySupport_or_ROLEADMIN() != ([''] as String[])) {
-                                mInfo.debug.test        = 'isInstUser_denySupport_or_ROLEADMIN()' //  + da.isInstUser_denySupport_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.isInstUser_denySupport_or_ROLEADMIN().toList()[0]
+                            if (da.isInstUser_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser_denySupport()' //  + da.isInstUser_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstUser_denySupport().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.isInstEditor_denySupport_or_ROLEADMIN() != ([''] as String[])) {
-                                mInfo.debug.test        = 'isInstEditor_denySupport_or_ROLEADMIN()' //  + da.isInstEditor_denySupport_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.isInstEditor_denySupport_or_ROLEADMIN().toList()[0]
+                            if (da.isInstEditor_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor_denySupport()' //  + da.isInstEditor_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstEditor_denySupport().toList()[0]
                                 mInfo.debug.affil       = 'INST_EDITOR'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstAdm_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm_denySupport()' //  + da.isInstAdm_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstAdm_denySupport().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
                             }
                             if (da.isInstAdm_denySupport_or_ROLEADMIN() != ([''] as String[])) {
                                 mInfo.debug.test        = 'isInstAdm_denySupport_or_ROLEADMIN()' //  + da.isInstAdm_denySupport_or_ROLEADMIN().toList()
@@ -520,13 +545,13 @@ class YodaController {
 
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
-                                if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
+                                if (da.ctrlService() == 1) {
                                     mInfo.refactoring = 'done'
                                 }
                             }
-                            if (da.wtc()) {
-                                mInfo.wtc = da.wtc()
-                                if (da.wtc() == DebugInfo.WITH_TRANSACTION) {
+                            if (da.withTransaction()) {
+                                mInfo.withTransaction = da.withTransaction()
+                                if (da.withTransaction() == 1) {
                                     mInfo.refactoring = 'done'
                                 }
                             }
@@ -615,11 +640,13 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Deprecated
     @Secured(['ROLE_YODA'])
-    def getTIPPsWithoutGOKBId() {
-        log.debug("delete TIPPs without GOKb-ID")
-        yodaService.getTIPPsWithoutGOKBId()
+    def cleanupIssueEntitlements() {
+        log.debug("purge unnecessary titles ...")
+        executorService.execute ({
+            yodaService.cleanupIssueEntitlements()
+        })
+        redirect action: "systemThreads"
     }
 
     /**
@@ -651,7 +678,7 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageTempUsageFiles() {
-        File dir = new File(GlobalService.obtainFileStorageLocation())
+        File dir = new File(GlobalService.obtainTmpFileLocation())
         List<File> tempFiles = dir.listFiles()
         //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
         [tempFiles: tempFiles]
@@ -665,17 +692,17 @@ class YodaController {
     def deleteTempFile() {
         if(params.containsKey('filename')) {
             if(!params.filename.contains('..') && !params.filename.contains('\\') && !params.filename.contains('/')) {
-                File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+                File f = new File(GlobalService.obtainTmpFileLocation() + '/' + params.filename)
                 try {
                     f.delete()
                 }
                 catch (IOException e) {
-                    log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+                    log.error("unable to delete file: ${GlobalService.obtainTmpFileLocation() + '/' + params.filename}")
                 }
             }
         }
         else if(params.containsKey('emptyDir')) {
-            File f = new File(GlobalService.obtainFileStorageLocation())
+            File f = new File(GlobalService.obtainTmpFileLocation())
             f.deleteDir()
             f.mkdir()
         }
@@ -694,8 +721,7 @@ class YodaController {
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.executeQuery
         ]
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
+        Map allPlatforms = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
@@ -853,6 +879,25 @@ class YodaController {
     }
 
     /**
+     * Triggers the regeneration of sort titles for the given package
+     */
+    @Secured(['ROLE_YODA'])
+    def regenerateSortTitles() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            de.laser.wekb.Package pkg = de.laser.wekb.Package.get(params.pkg)
+            executorService.execute({
+                Thread.currentThread().setName("RegenerateSortTitles")
+                packageService.regenerateSortTitles(pkg)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect action: 'systemThreads'
+    }
+
+    /**
      * Call to reload all title instance data from the specified we:kb instance.
      * Beware that no local holdigs will be triggered, only the global level is going to be updated!
      * @see de.laser.remote.GlobalRecordSource
@@ -929,7 +974,7 @@ class YodaController {
             executorService.execute({
                 Thread.currentThread().setName("GlobalDataUpdate_Provider")
                 globalSourceSyncService.reloadData('Org')
-                yodaService.expungeRemovedComponents(Org.class.name)
+                yodaService.expungeRemovedComponents(Provider.class.name)
             })
         }
         else {
@@ -997,9 +1042,14 @@ class YodaController {
      * @return redirects back to the dashboard
      */
     @Secured(['ROLE_YODA'])
-    def reloadwekbNews() {
-        log.info('--> reloadwekbNews')
-        wekbNewsService.updateCache()
+    def manageWekbNews() {
+        log.info('--> manageWekbNews: ' + params.cmd)
+        if (params.cmd == 'update') {
+            wekbNewsService.updateCache()
+        }
+        else if (params.cmd == 'clear') {
+            wekbNewsService.clearCache()
+        }
         redirect controller: 'myInstitution', action: 'dashboard'
     }
 
@@ -1012,20 +1062,6 @@ class YodaController {
         Map<String, Object> result = [editable: true]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list([sort: 'id'])
-
-        result
-    }
-
-    /**
-     * Call to list all ElasticSearch sources. Those indices are storing data of this app's database;
-     * not to confound with APISources which establish connection to we:kb indices!
-     */
-    @Secured(['ROLE_YODA'])
-    def manageESSources() {
-        Map<String, Object> result = [:]
-        log.debug("manageESSources ..")
-        result.sources = ElasticsearchSource.list()
-        result.editable = true
 
         result
     }
@@ -1117,91 +1153,6 @@ class YodaController {
             dataloadService.updateFTIndex(params.name)
         }
         redirect(action: 'manageFTControl')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def newESSource() {
-        log.debug("manageGlobalSources ..")
-        redirect action:'manageGlobalSources'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def deleteGlobalSource() {
-        GlobalRecordSource.removeSource(params.long('id'))
-        redirect(action:'manageGlobalSources')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def newGlobalSource() {
-        Map<String, Object> result=[:]
-        log.debug("manageGlobalSources ..")
-
-        result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
-                identifier:params.identifier,
-                name:params.name,
-                type:params.type,
-                haveUpTo:null,
-                uri:params.uri,
-                editUri:params.editUri,
-                listPrefix:params.listPrefix,
-                fullPrefix:params.fullPrefix,
-                principal:params.principal,
-                credentials:params.credentials,
-                rectype:params.int('rectype'))
-        result.newSource.save()
-
-        redirect action:'manageGlobalSources'
-    }
-
-    /**
-     * Moves the Nationaler Statistikserver credentials from the OrgProperty into the OrgSettings structure
-     */
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def migrateNatStatSettings() {
-        Org contextOrg = contextService.getOrg()
-
-        List<OrgProperty> opList = OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf and op.tenant = :context and op.isPublic = false', [
-                orgConf: PropertyDefinition.ORG_CONF,
-                context: contextOrg
-        ])
-
-        opList.each { OrgProperty op ->
-            if (op.type.name == 'API Key') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-            else if (op.type.name == 'RequestorID') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-        }
-
-        OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '+
-                'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
-                [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]).each{
-            it.delete()
-        }
-
-        redirect action:'dashboard'
     }
 
     /**
@@ -1491,130 +1442,6 @@ class YodaController {
         result.candidates = [OrgProperty: opp, SubscriptionProperty: spp, LicenseProperty: lpp, PersonProperty: ppp]
 
         render view: 'databaseMigration', model: result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def cleanUpSurveys() {
-        Map<String, Object> result = [:]
-
-        List<SurveyConfig> subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
-        int count = 0
-        List resultMap = []
-        subSurveys.each { surConfig ->
-
-
-            def parentSubscription = surConfig?.subscription
-            def parentSubChilds = subscriptionService.getCurrentValidSubChilds(parentSubscription)
-            def parentSuccessorSubscription = surConfig?.subscription?._getCalculatedSuccessorForSurvey()
-            //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
-            parentSubChilds.each { sub ->
-                if (sub._getCalculatedSuccessorForSurvey()) {
-                    sub.getAllSubscribers().each { org1 ->
-
-                        def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
-                        if(surveyResult?.size() > 0) {
-                            count++
-                            def newMap = [:]
-                            //println(count + ": ${sub.name} (${sub.id}) [${org1.name}]" + surveyResult)
-                            newMap.surveyResult = surveyResult?.id ?: ""
-                            newMap.subName = sub.name
-                            newMap.subId = sub.id
-                            newMap.orgName = org1.name
-                            newMap.sortName = org1?.sortname
-                            newMap.propertiesSize = surveyResult?.size()
-                            newMap.info = 'Nachfolger Lizenz vorhanden'
-                            //println("")
-                            resultMap << newMap
-                        }else{
-                            count++
-                            def newMap = [:]
-                            //println(count + ": LEER : ${sub.name} (${sub.id}) [${org1.name}]" + surConfig)
-                            newMap.surveyResult = 'Kein Umfrage'
-                            newMap.subName = sub.name
-                            newMap.subId = sub.id
-                            newMap.orgName = org1.name
-                            newMap.sortName = org1?.sortname
-                            newMap.propertiesSize = 0
-                            newMap.info = 'Nachfolger Lizenz vorhanden'
-                            //println("")
-                            resultMap << newMap
-                        }
-
-                    }
-
-                } else {
-                   /* if (property?.isRefdataValueType()) {
-                        if (sub?.propertySet?.find {
-                            it?.type?.id == property?.id
-                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-
-                            sub?.getAllSubscribers().each { org ->
-                                def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
-                                if(surveyResult?.size() > 0) {
-                                    count++
-                                    def newMap = [:]
-                                    println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
-                                    newMap.surveyResult = surveyResult?.id ?: ""
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = surveyResult?.size()
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }else{
-                                    count++
-                                    def newMap = [:]
-                                    println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
-                                    newMap.surveyResult = 'Kein Umfrage'
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = 0
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }
-
-                            }
-                        }
-                    }*/
-                }
-            }
-
-        }
-
-        response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        List titles = [
-
-        ]
-        List rows = []
-        resultMap.each { newMap ->
-            List row = []
-
-            row.add(newMap.subName)
-            row.add(newMap.subId)
-            row.add(newMap.sortName)
-            row.add(newMap.orgName)
-            row.add(newMap.propertiesSize)
-            row.add(newMap.info)
-            row.add(newMap.surveyResult)
-
-            rows.add(row)
-        }
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles,rows,','))
-        }
-        out.close()
-
-        result
-
-        redirect action: 'dashboard'
     }
 
     /**

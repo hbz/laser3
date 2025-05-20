@@ -27,8 +27,9 @@ dataSources.storage.url      = 'jdbc:postgresql://localhost:5432/laser_storage'
 dataSources.storage.username = 'laser'
 dataSources.storage.password = 'laser'
 
-deployBackupLocation 	= '/tmp/laserDeployBackups'    // database backups (before deploys)
-documentStorageLocation = '/tmp/laserDocumentStorage'  // uploaded documents
+deployBackupLocation 	= '/tmp/backups'    // database backups (before deploys)
+documentStorageLocation = '/tmp/documents'  // uploaded documents
+documentStorageKey      = 'todo'            // uploaded documents key
 
 financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
@@ -48,7 +49,7 @@ indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
-laserSystemId = 'LAS:eR' // 'LAS:eR-DEV', 'LAS:eR-QA', 'LAS:eR-Productive'
+laserSystemId = 'LAS:eR' // 'LAS:eR-DEV', 'LAS:eR-QA', 'LAS:eR-TEST', 'LAS:eR-Productive'
 
 muleJobActive = false
 
@@ -66,14 +67,14 @@ reporting.elasticSearch.indices.platforms  = 'wekbplatforms'
 
 showDebugInfo  = true
 showStatsInfo  = true
-showSystemInfo = true
 
-statsApiUrl         = 'https://sushi.xy.z'
+statsApiUrl         = 'https://sushi'
 statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
-systemInsightEmails = admin1@localhost,admin2@localhost,admin3@localhost
+systemInsightEmails = 'admin1@localhost,admin2@localhost,admin3@localhost'
 
 wekbApiUsername = 'user'
 wekbApiPassword = 'password'
+wekbServerURL   = 'http://localhost2:8080'

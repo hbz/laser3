@@ -4,12 +4,22 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
+import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -33,6 +43,36 @@ class FilterService {
 
     // FilterService.Result fsr = filterService.getXQuery(paramsClone, ..)
     // if (fsr.isFilterSet) { paramsClone.filterSet = true }
+
+    static Map<String, Map> PLATFORM_FILTER_AUTH_FIELDS = ['shibbolethAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.shibboleth.supported'],
+                                                              'openAthens': [rdcat: RDConstants.Y_N, label: 'platform.auth.openathens.supported'],
+                                                              'ipAuthentication': [rdcat: RDConstants.IP_AUTHENTICATION, label: 'platform.auth.ip.supported'],
+                                                              'passwordAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.userPass.supported'],
+                                                              'mailDomain': [rdcat: RDConstants.Y_N, label: 'platform.auth.mailDomain.supported'],
+                                                              'refererAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.referer.supported'],
+                                                              'ezProxy': [rdcat: RDConstants.Y_N, label: 'platform.auth.ezProxy.supported'],
+                                                              'hanServer': [rdcat: RDConstants.Y_N, label: 'platform.auth.hanServer.supported'],
+                                                              'otherProxies': [rdcat: RDConstants.Y_N, label: 'platform.auth.other.proxies']]
+    static Map<String, Map> PLATFORM_FILTER_ACCESSIBILITY_FIELDS = ['accessPlatform': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPlatform'],
+                                                                    'viewerForPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForPdf'],
+                                                                    'viewerForEpub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForEpub'],
+                                                                    'playerForAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForAudio'],
+                                                                    'playerForVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForVideo'],
+                                                                    'accessibilityStatementAvailable': [rdcat: RDConstants.Y_N, label: 'platform.accessibility.accessibilityStatementAvailable'],
+                                                                    'accessEPub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessEPub'],
+                                                                    'accessPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPdf'],
+                                                                    'accessAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessAudio'],
+                                                                    'accessVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessVideo'],
+                                                                    'accessDatabase': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessDatabase']]
+    static Map<String, Map> PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS = ['individualDesignLogo': [rdcat: RDConstants.Y_N, label: 'platform.additional.individualDesignLogo'],
+                                                                         'fullTextSearch': [rdcat: RDConstants.Y_N, label: 'platform.additional.fullTextSearch']]
+    static Map<String, Map> PACKAGE_FILTER_GENERIC_FIELDS = ['curatoryGroup' : [label: 'package.curatoryGroup.label'],
+                                                             'automaticUpdates': [label: 'package.source.automaticUpdates'],
+                                                             'paymentType': [label: 'package.paymentType.label'],
+                                                             'contentType': [label: 'package.content.type.label'],
+                                                             'openAccess': [label: 'package.openAccess.label'],
+                                                             'ddc': [label: 'package.ddc.label'],
+                                                             'archivingAgency': [label: 'package.archivingAgency.label']]
 
     /**
      * Subclass for generic parameter containing:
@@ -79,18 +119,7 @@ class FilterService {
             query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
-        if (params.orgType) {
-            query << " exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
-            queryParams << [orgType: Params.getLongList(params, 'orgType')]
-        }
-        if (params.orgStatus) {
-            query << "o.status.id in (:orgStatus)"
-            queryParams.orgStatus = Params.getLongList(params, 'orgStatus')
-        }
-        else {
-            query << "o.status.id != :orgStatus"
-            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
-        }
+
         if (params.orgRole) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
              queryParams << [orgRole : params.long('orgRole')]
@@ -166,6 +195,14 @@ class FilterService {
             queryParams << [serverAccessYes  : RDStore.YN_YES]
         }
 
+        if (params.isBetaTester) {
+            if (params.long('isBetaTester') == RDStore.YN_YES.id) {
+                query << "o.isBetaTester is true"
+            } else {
+                query << "o.isBetaTester is false"
+            }
+        }
+
         if (params.isLegallyObliged in ['yes', 'no']) {
             query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
         }
@@ -216,17 +253,13 @@ class FilterService {
         int hashCode = params.hashCode()
         boolean isFilterSet = false
 
-        ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
+        ArrayList<String> query = []
+        Map<String, Object> queryParams = [:]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-        }
-        if (params.orgType) {
-            query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
-            queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
         if (params.region) {
             query << "o.region.id in (:region)"
@@ -267,10 +300,10 @@ class FilterService {
             String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
             if(params.invertDirection) {
                 subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org = :context and oo.roleType in (:subscrRoles) and ooCons.org.id = o.id and ooCons.roleType = :consType"
-                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg()]
             }
             else
-                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+                queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg()]
             String subQueryBase = subQuery
             if (params.subStatus) {
                 subQuery +=  " and (sub.status in (:subStatus)" // ( closed in line 281; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -305,13 +338,75 @@ class FilterService {
             }
 
             subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            query << subQuery
+        }
+
+        if (params.sub && (params.subRunTimeMultiYear || params.subRunTime)) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', true)
+
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', false)
+            }
+            query << subQuery + ' )'
+        }
+
+        if (params.sub && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), sub: params.sub]
+            query << subQuery
+        }
+
+        if(params.subs && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+            String subQuery = ""
+
+            if(params.hasNotSubscription) {
+                subQuery = " not"
+            }
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            query << subQuery
+        }
+
+        if (params.subs && (params.subRunTimeMultiYear || params.subRunTime)) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs) "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', true)
+
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', false)
+            }
+            query << subQuery + ' )'
+        }
+
+        if (params.subs && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
+            String subQuery = ""
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
+
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
             query << subQuery
         }
 
         if (params.filterPvd) {
             String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select pvr from ProviderRole pvr where pvr.subscription = sub and pvr.provider.id in (:filterPvd)) "
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), filterPvd: Params.getLongList(params, 'filterPvd')]
             String subQueryBase = "not exists (select oo2.id from OrgRole oo2 join oo2.sub sub2 join sub2.orgRelations ooCons2 where oo2.org.id = o.id and oo2.roleType in (:subscrRoles) and ooCons2.org = :context and ooCons2.roleType = :consType)"
             if (params.subStatus) {
                 subQuery +=  " and (sub.status in (:subStatus)" // ( closed in line 322; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
@@ -344,9 +439,9 @@ class FilterService {
             isFilterSet = true
         }
 
-        if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : params.long('customerType')]
+        if (params.customerType) {
+            query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id in (:customerType))"
+            queryParams << [customerType : Params.getLongList(params,'customerType')]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
@@ -424,6 +519,11 @@ class FilterService {
                 query << "t.status.id = :statusId"
                 queryParams << [statusId : params.long('taskStatus')]
             }
+        }
+        if (params.taskObject) {
+             if (params.taskObject in ['license', 'org', 'provider', 'subscription', 'surveyConfig', 'tipp', 'vendor']) {
+                 query << ('t.' + params.taskObject + ' != null' as String)
+             }
         }
         if (params.endDateFrom && sdFormat) {
             query << "t.endDate >= :endDateFrom"
@@ -624,6 +724,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkSubscriptionSurvey) {
+            query += " and surConfig.subscriptionSurvey = :checkSubscriptionSurvey"
+            queryParams << [checkSubscriptionSurvey: true]
+            isFilterSet = true
+        }
+
         if(params.checkInvoicingInformation) {
             query += " and surConfig.invoicingInformation = :checkInvoicingInformation"
             queryParams << [checkInvoicingInformation: true]
@@ -791,6 +897,12 @@ class FilterService {
             isFilterSet = true
         }
 
+        if(params.checkSubscriptionSurvey) {
+            query += "surConfig.subscriptionSurvey = :checkSubscriptionSurvey"
+            queryParams << [checkSubscriptionSurvey: true]
+            isFilterSet = true
+        }
+
         if(params.checkInvoicingInformation) {
             query += "surConfig.invoicingInformation = :checkInvoicingInformation"
             queryParams << [checkInvoicingInformation: true]
@@ -923,10 +1035,6 @@ class FilterService {
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
-        if (params.orgType) {
-            base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
-            queryParams << [orgType : params.long('orgType')]
-        }
         if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"
             queryParams << [region : Params.getLongList(params, 'region')]
@@ -983,12 +1091,27 @@ class FilterService {
             base_qry += " and surveyOrg.finishDate is not null"
         }
 
+        if (params.discoverySystemsFrontend) {
+            base_qry += "and exists (select dsf from DiscoverySystemFrontend as dsf where dsf.org.id = surveyOrg.org.id and dsf.frontend.id in (:frontends))"
+            queryParams << [frontends : Params.getLongList(params, 'discoverySystemsFrontend')]
+        }
+        if (params.discoverySystemsIndex) {
+            base_qry += "and exists (select dsi from DiscoverySystemIndex as dsi where dsi.org.id = surveyOrg.org.id and dsi.index.id in (:indices))"
+            queryParams << [indices : Params.getLongList(params, 'discoverySystemsIndex')]
+        }
+
         if (params.filterPropDef) {
                 PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
-                base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
-                queryParams.put('propDef', pd)
-                if (params.filterProp) {
-                    if (pd.isRefdataValueType()) {
+
+                if (pd.descr == PropertyDefinition.ORG_PROP) {
+                    def psq = propertyService.evalFilterQuery(params, '', 'surveyOrg.org', queryParams)
+                    base_qry += ' and ' + psq.query.split(' and', 2)[1]
+                    queryParams << psq.queryParams
+                }else {
+                    base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
+                    queryParams.put('propDef', pd)
+                    if (params.filterProp) {
+                        if (pd.isRefdataValueType()) {
                             List<String> selFilterProps = params.filterProp.split(',')
                             List filterProp = []
                             selFilterProps.each { String sel ->
@@ -1006,49 +1129,124 @@ class FilterService {
                                 base_qry += " surResult.refValue in (:prop) "
                                 queryParams.put('prop', filterProp)
                             }
-                    }
-                    else if (pd.isLongType()) {
+                        } else if (pd.isLongType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.longValue = null "
                             } else {
                                 base_qry += " and surResult.longValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isStringType()) {
+                        } else if (pd.isStringType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.stringValue = null "
                             } else {
                                 base_qry += " and lower(surResult.stringValue) like lower(:prop) "
                                 queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                             }
-                    }
-                    else if (pd.isBigDecimalType()) {
+                        } else if (pd.isBigDecimalType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.decValue = null "
                             } else {
                                 base_qry += " and surResult.decValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isDateType()) {
+                        } else if (pd.isDateType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.dateValue = null "
                             } else {
                                 base_qry += " and surResult.dateValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
-                    }
-                    else if (pd.isURLType()) {
+                        } else if (pd.isURLType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
                                 base_qry += " and surResult.urlValue = null "
                             } else {
                                 base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
+                        }
+                    }
+                    base_qry += ')'
+                }
+        }
+
+        if(params.chartFilter){
+            List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
+            propList.eachWithIndex {PropertyDefinition prop, int i ->
+                if (prop.isRefdataValueType()) {
+                    def refDatas = SurveyResult.executeQuery("select sr.refValue.id from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.refValue is not null and sr.type = :propType group by sr.refValue.id", [propType: prop, surveyConfig: surveyConfig])
+                    refDatas.each {
+                        if(params.chartFilter == "${prop.getI10n('name')}: ${RefdataValue.get(it).getI10n('value')}") {
+                            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and surResult.refValue = :refValue) '
+                            queryParams.put('propDef', prop)
+                            queryParams.put('refValue', RefdataValue.get(it))
+                        }
                     }
                 }
-                base_qry += ')'
+                if (prop.isLongType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.longValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isStringType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry +=  " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.stringValue is not null or surResult.stringValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                  }
+                else if (prop.isBigDecimalType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.decValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isDateType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.dateValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isURLType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.urlValue is not null or surResult.urlValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+            }
+
+            if(surveyConfig.vendorSurvey){
+                List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])
+
+                vendors.each {Vendor vendor ->
+                    if(params.chartFilter == vendor.name.replace('"', '')){
+                        base_qry += " and exists (select svr from SurveyVendorResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.vendor = :vendor) "
+                        queryParams.put('vendor', vendor)
+                    }
+                }
+            }
+
+            if(surveyConfig.subscriptionSurvey){
+                List<Subscription> subscriptions = SurveyConfigSubscription.executeQuery("select scv.subscription from SurveyConfigSubscription scv where scv.surveyConfig = :surveyConfig order by scv.subscription.name asc", [surveyConfig: surveyConfig])
+
+                subscriptions.each {Subscription subscription ->
+                    if(params.chartFilter == subscription.name.replace('"', '')){
+                        base_qry += " and exists (select svr from SurveySubscriptionResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.subscription = :subscription) "
+                        queryParams.put('subscription', subscription)
+                    }
+                }
+            }
+
+            if(surveyConfig.packageSurvey){
+                List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
+
+                packages.each {Package pkg ->
+                    if(params.chartFilter == pkg.name.replace('"', '')){
+                        base_qry += " and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg = :pkg) "
+                        queryParams.put('pkg', pkg)
+                    }
+                }
+            }
         }
 
         if (params.filterPropDefAllMultiYear) {
@@ -1057,18 +1255,58 @@ class FilterService {
             queryParams.put('refValue', RDStore.YN_YES)
         }
 
-        if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+
+        if(params.subs && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
             String subQuery = " and "
-            if(params.hasSubscription) {
-                subQuery = subQuery
-            }
+
             if(params.hasNotSubscription) {
                 subQuery = subQuery + " not"
             }
 
-            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = surveyOrg.surveyConfig.subscription)"
-            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
-            base_qry = base_qry + subQuery
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in :subs)"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            base_qry += subQuery
+        }
+
+        if (params.subs && (params.subRunTimeMultiYear || params.subRunTime)) {
+            String subQuery = " and "
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs) "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            if (params.subRunTimeMultiYear && !params.subRunTime) {
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', true)
+
+            }else if (!params.subRunTimeMultiYear && params.subRunTime){
+                subQuery += " and sub.isMultiYear = :subRunTimeMultiYear "
+                queryParams.put('subRunTimeMultiYear', false)
+            }
+            base_qry += subQuery + ' )'
+        }
+
+        if (params.subs && !((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))) {
+            String subQuery = " and "
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf in (:subs))"
+
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIUM, context: contextService.getOrg(), subs: params.subs]
+            base_qry += subQuery
+        }
+
+
+        if (params.surveyVendors) {
+            base_qry += ' and exists (select svr from SurveyVendorResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.vendor.id in (:vendors)) '
+            queryParams << [vendors : Params.getLongList(params, 'surveyVendors')]
+        }
+
+        if (params.surveyPackages) {
+            base_qry += ' and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg.id in (:pkgs))'
+            queryParams << [pkgs : Params.getLongList(params, 'surveyPackages')]
+        }
+
+        if (params.surveySubscriptions) {
+            base_qry += ' and exists (select ssr from SurveySubscriptionResult as ssr where ssr.surveyConfig = surveyOrg.surveyConfig and ssr.participant = surveyOrg.org and ssr.subscription.id in (:subs))'
+            queryParams << [subs : Params.getLongList(params, 'surveySubscriptions')]
         }
 
 
@@ -1138,13 +1376,6 @@ class FilterService {
         }
         else {
             base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription in (:subscriptions) "
-            /*if (params.mode != 'advanced') {
-                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-
-                base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
-                qry_params.startDate = date_filter
-                qry_params.endDate = date_filter
-            }*/
         }
 
         if (params.status == RDStore.TIPP_STATUS_REMOVED.id.toString()) {
@@ -1202,7 +1433,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             Set<String> subjectQuery = []
             params.list('subject_references').each { String subReference ->
-                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                //subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                subjectQuery << "tipp.subjectReference = '${subReference}'"
             }
             base_qry += " and (${subjectQuery.join(" or ")}) "
             filterSet = true
@@ -1316,61 +1548,150 @@ class FilterService {
         result
     }
 
+    Map<String,Object> getIssueEntitlementSubsetQuery(Map params) {
+        log.debug 'getIssueEntitlementSubsetQuery'
+        Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetArguments(params)
+        String query = "select new map(ie.id as ieID, tipp.id as tippID) from IssueEntitlement ie join ie.tipp tipp "
+
+        result.query = query + "where ${clauses.arguments} order by ${params.sort} ${params.order}"
+        result.queryParams = clauses.queryParams
+
+        result
+    }
+
+    Map<String, Object> getIssueEntitlementSubsetArguments(Map params) {
+        Map<String, Object> result = [:], queryParams = [:]
+        Set<String> queryArgs = []
+
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.subscriptions) {
+            queryArgs << 'ie.subscriptions in (:subscriptions)'
+            queryParams.subscriptions = params.subscriptions
+        }
+        else {
+            queryArgs << 'ie.subscription = :subscription'
+            queryParams.subscription = params.subscription
+        }
+
+        if (params.asAt && params.asAt.length() > 0) {
+            queryArgs << 'ie.accessStartDate >= :asAt'
+            queryArgs << 'ie.accessEndDate <= :asAt'
+            queryParams.asAt = sdf.parse(params.asAt)
+        }
+
+        if(params.get('ieStatus') instanceof List) {
+            queryArgs << 'ie.status in (:ieStatus)'
+            queryParams.ieStatus = Params.getRefdataList(params, 'ieStatus')
+        }
+        else if (params.containsKey('ieStatus')) {
+            queryArgs << 'ie.status = :ieStatus'
+            queryParams.ieStatus = RefdataValue.get(params.ieStatus)
+        }
+        else {
+            queryArgs << 'ie.status != :ieStatus'
+            queryParams.ieStatus = RDStore.TIPP_STATUS_REMOVED
+        }
+
+        if (params.titleGroup) {
+            if(params.titleGroup == 'notInGroups'){
+                queryArgs << "not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie)"
+            }else {
+                queryArgs << "exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup = :titleGroup and iegi.ie = ie)"
+                queryParams.titleGroup = params.titleGroup
+            }
+        }
+        String arguments = queryArgs.join(' and ')
+        result.queryParams = queryParams
+        result.arguments = arguments
+        result
+    }
+
+    Map<String, Object> getIssueEntitlementSubsetSQLQuery(Map params) {
+        log.debug 'getIssueEntitlementSubsetSQLQuery'
+        String query = "select ie_id, tipp_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_id = any(:tippIDs) "
+        Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetSQLArguments(params)
+        result.query = query + "and ${clauses.arguments} order by tipp_sort_name"
+        result.queryParams = clauses.queryParams
+        result.arrayParams = clauses.arrayParams
+
+        result
+    }
+
+    Map<String, Object> getIssueEntitlementSubsetSQLArguments(Map params) {
+        Map<String, Object> result = [:], queryParams = [:], arrayParams = [:]
+        Set<String> queryArgs = []
+
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.tippIDs)
+            arrayParams.tippIDs = params.tippIDs
+
+        if (params.subscriptions) {
+            queryArgs << 'ie_subscription_fk = any(:subscriptions)'
+            arrayParams.subscriptions = params.subscriptions.id
+        }
+        else {
+            queryArgs << 'ie_subscription_fk = :subscription'
+            queryParams.subscription = params.subscription.id
+        }
+
+        if (params.asAt && params.asAt.length() > 0) {
+            queryArgs << 'ie_access_start_date >= :asAt'
+            queryArgs << 'ie_access_end_date <= :asAt'
+            queryParams.asAt = sdf.parse(params.asAt)
+        }
+
+        if (params.ieStatus) {
+            queryArgs << 'ie_status_rv_fk = any(:ieStatus)'
+            arrayParams.ieStatus = Params.getLongList(params, 'ieStatus')
+        }
+
+        if (params.titleGroup) {
+            if(params.titleGroup == 'notInGroups'){
+                queryArgs << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)"
+            }else {
+                queryArgs << "exists ( select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                queryParams.titleGroup = params.titleGroup.id
+            }
+        }
+
+        String arguments = queryArgs.join(' and ')
+        result.arguments = arguments
+        result.queryParams = queryParams
+        result.arrayParams = arrayParams
+        result
+    }
+
     /**
      * Processes the given filter parameters and generates a query to retrieve permanent titles
      * @param params the filter parameter map
      * @param owner the org whose be the owner of permanent titles
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner) {
-        log.debug 'getPermanentTitlesQuery'
+    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner, Set<Subscription> subsWithInheritance) {
+        log.debug "getPermanentTitlesQuery: ${params.toMapString()}"
 
         int hashCode = params.hashCode()
 
         Map<String, Object> result = [:]
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
-        String base_qry
+        String base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
         Map<String,Object> qry_params = [owner: owner]
-        boolean filterSet = false
-        Date date_filter
-        if (params.asAt && params.asAt.length() > 0) {
-            date_filter = sdf.parse(params.asAt)
-            result.as_at_date = date_filter
-            result.editable = false
+        if(subsWithInheritance) {
+            base_qry = " from PermanentTitle as pt join pt.issueEntitlement ie join pt.tipp tipp where (pt.owner = :owner or pt.subscription in (:subsWithInheritance)) "
+            qry_params.subsWithInheritance = subsWithInheritance
         }
         if (params.filter) {
-            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
-            if (date_filter) {
-                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                // qry_params.add(deleted_ie);
-                base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
-                qry_params.startDate = date_filter
-                qry_params.endDate = date_filter
-            }
-            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(pt.tipp.name) like :title ) or ((lower(pt.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(pt.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-            qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
-            filterSet = true
-        }
-        else {
-            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
         }
 
-        if (params.status == RDStore.TIPP_STATUS_REMOVED.id.toString()) {
-            base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
-            qry_params.status = params.long('status')
-        }
-        else if (params.status) {
-            base_qry += " and ie.status.id in (:status) "
-            qry_params.status = Params.getLongList(params, 'status')
-            filterSet = true
-        }
-        else if (params.notStatus != '' && params.notStatus != null){
-            base_qry += " and ie.status.id != :notStatus "
-            qry_params.notStatus = params.notStatus
+        if (params.status) {
+            base_qry += " and ie.status in (:status) "
+            qry_params.status = Params.getRefdataList(params, 'status')
         }
         else {
             base_qry += " and ie.status = :current "
@@ -1380,34 +1701,26 @@ class FilterService {
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and tipp.pkg.id = :pkgId "
             qry_params.pkgId = params.long('pkgfilter')
-            filterSet = true
         }
 
         if (params.ddcs) {
             base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
             qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
-            filterSet = true
         }
 
         if (params.languages) {
             base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
             qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
-            filterSet = true
         }
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-            Set<String> subjectQuery = []
-            params.list('subject_references').each { String subReference ->
-                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-            }
-            base_qry += " and (${subjectQuery.join(" or ")}) "
-            filterSet = true
+            base_qry += " and tipp.subjectReference in (:subjectReferences) "
+            qry_params.subjectReferences = params.list('subject_references')
         }
 
         if (params.series_names && params.series_names != "" && params.list('series_names')) {
-            base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
+            base_qry += " and lower(tipp.seriesName) in (:series_names) "
+            qry_params.series_names = params.list('series_names').collect { String seriesName -> seriesName.toLowerCase() }
         }
 
         if(params.summaryOfContent) {
@@ -1415,9 +1728,14 @@ class FilterService {
             qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
         }
 
-        if(params.ebookFirstAutorOrFirstEditor) {
-            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        if(params.first_author) {
+            base_qry += " and lower(tipp.firstAuthor) like :firstAuthor "
+            qry_params.firstAuthor = "%${params.first_author.trim().toLowerCase()}%"
+        }
+
+        if(params.first_editor) {
+            base_qry += " and lower(tipp.firstEditor) like :firstEditor "
+            qry_params.firstEditor = "%${params.first_editor.trim().toLowerCase()}%"
         }
 
         if(params.dateFirstOnlineFrom) {
@@ -1430,36 +1748,36 @@ class FilterService {
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
         }
 
-        // todo: ERMS-5517 > multiple values @ currentPermanentTitles
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
         if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
-            qry_params.identifier = "${params.identifier}"
-            filterSet = true
+            base_qry += " and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            qry_params.identifier = "%${params.identifier}%"
+        }
+
+        if (params.provider) {
+            base_qry += " and tipp.pkg.provider.id in (:provider) "
+            qry_params.provider = Params.getLongList(params, 'provider')
         }
 
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
             base_qry += "and lower(tipp.publisherName) in (:publishers) "
-            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
-            filterSet = true
+            qry_params.publishers = params.list('publishers').collect { String publisherName -> publisherName.toLowerCase() }
         }
 
 
         if (params.title_types && params.title_types != "" && params.list('title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
-            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
+            qry_params.title_types = params.list('title_types').collect { String titleType -> titleType.toLowerCase() }
         }
 
         if (params.medium) {
-            base_qry += " and tipp.medium.id in (:medium) "
-            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium')  // ?
-            filterSet = true
+            base_qry += " and tipp.medium in (:medium) "
+            qry_params.medium = Params.getRefdataList(params, 'medium')
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
@@ -1471,7 +1789,6 @@ class FilterService {
 
         result.query = base_qry
         result.queryParams = qry_params
-        result.filterSet = filterSet
 
         if (params.hashCode() != hashCode) {
             log.debug 'GrailsParameterMap was modified @ getPermanentTitlesQuery()'
@@ -1560,7 +1877,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             String q = ' ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
-                q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                //q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                q += " tipp.subjectReference = '"+subRef.trim()+"' "
                 if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     q += 'or'
             }
@@ -1571,6 +1889,18 @@ class FilterService {
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             qry_parts << " lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if(params.first_author) {
+            qry_parts << " lower(tipp.firstAuthor) like :first_author "
+            qry_params.first_author = "%${params.first_author.toLowerCase()}%"
+            filterSet = true
+        }
+
+        if(params.first_editor) {
+            qry_parts << " lower(tipp.firstEditor) like :first_editor "
+            qry_params.first_editor = "%${params.first_editor.toLowerCase()}%"
             filterSet = true
         }
 
@@ -1607,6 +1937,12 @@ class FilterService {
         if (params.identifier) {
             qry_parts << " ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
+            filterSet = true
+        }
+
+        if (params.provider) {
+            qry_parts << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
+            qry_params.provider = Params.getLongList(params, 'provider')
             filterSet = true
         }
 
@@ -1660,6 +1996,159 @@ class FilterService {
     }
 
     /**
+     * Note: this query includes NO sorting because sorting should be done in subsequent queries in order to save performance!
+     * Use this query ONLY for fetching IssueEntitlements after because only a part of the filter settings are being treated here!
+     * @param params
+     * @return
+     */
+    Map<String,Object> getTippSubsetQuery(Map params) {
+        log.debug 'getTippSubsetQuery'
+        Map<String, Object> result = [:], clauses = getTippSubsetArguments(params)
+        String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
+        result.query = query+" ${clauses.arguments} "
+        if(!params.containsKey('noSort'))
+            result.query += "order by ${params.sort} ${params.order}, tipp.dateFirstOnline, tipp.dateFirstInPrint"
+        result.queryParams = clauses.queryParams
+        result
+    }
+
+    Map<String, Object> getTippSubsetArguments(Map params) {
+        Map<String, Object> result = [:], queryParams = [:]
+        Set<String> queryArgs = []
+        if(params.packages) {
+            queryArgs << 'tipp.pkg in (:packages)'
+            queryParams.packages = params.packages
+        }
+        if(params.platforms) {
+            queryArgs << 'tipp.platform in (:platforms)'
+            queryParams.platforms = params.platforms
+        }
+        if(params.get('tippStatus') instanceof List) {
+            queryArgs << 'tipp.status in (:tippStatus)'
+            queryParams.tippStatus = Params.getRefdataList(params, 'tippStatus')
+        }
+        else if(params.containsKey('tippStatus')) {
+            queryArgs << 'tipp.status = :tippStatus'
+            queryParams.tippStatus = RefdataValue.get(params.tippStatus)
+        }
+        else {
+            queryArgs << 'tipp.status != :tippStatus'
+            queryParams.tippStatus = RDStore.TIPP_STATUS_REMOVED
+        }
+        if(params.filter) {
+            //deactivated because of performance reasons; query would take 11 seconds instead of millis
+            //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
+            queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
+            queryParams.filter = "%${params.filter.trim().toLowerCase()}%"
+        }
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        //ERMS-5972
+        if (params.asAt) {
+            queryArgs << " ( ( :asAt >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :asAt <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+            queryParams.asAt = sdf.parse(params.asAt)
+        }
+        if (params.ddcs) {
+            queryArgs << " exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
+            queryParams.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') //move to getRefdataList()
+        }
+        if (params.languages) {
+            queryArgs << " exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
+            queryParams.languages = Params.getLongList_forCommaSeparatedString(params, 'languages') //move to getRefdataList()
+        }
+        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
+            String q = ' ( '
+            listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
+                //q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                q += " tipp.subjectReference = '"+subRef.trim()+"' "
+                if(i < listReaderWrapper(params, 'subject_references').size()-1)
+                    q += 'or'
+            }
+            q += ' ) '
+            queryArgs << q
+        }
+        if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
+            queryArgs << " tipp.seriesName in (:series_names) "
+            queryParams.series_names = listReaderWrapper(params, 'series_names').collect { ""+it+"" }
+        }
+
+        if (params.first_author && params.first_author != "" && listReaderWrapper(params, 'first_author')) {
+            queryArgs << " lower(tipp.firstAuthor) like :first_author "
+            queryParams.first_author = "${params.first_author.toLowerCase()}"
+        }
+
+        if (params.first_editor && params.first_editor != "" && listReaderWrapper(params, 'first_editor')) {
+            queryArgs << " lower(tipp.firstEditor) like :first_editor "
+            queryParams.first_editor = "${params.first_editor.toLowerCase()}"
+        }
+
+        if(params.summaryOfContent) {
+            queryArgs << " lower(tipp.summaryOfContent) like :summaryOfContent "
+            queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+        }
+
+        if(params.ebookFirstAutorOrFirstEditor) {
+            queryArgs << " (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        }
+
+        if(params.dateFirstOnlineFrom) {
+            queryArgs << " (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
+            queryParams.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+
+        }
+        if(params.dateFirstOnlineTo) {
+            queryArgs << " (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
+            queryParams.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+        }
+
+        if(params.yearsFirstOnline) {
+            queryArgs << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            queryParams.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
+        }
+
+        if(params.openAccess) {
+            String openAccessString = " (tipp.openAccess in (:openAccess) "
+            Set<RefdataValue> openAccess = listReaderWrapper(params, 'openAccess').collect { String key -> RefdataValue.get(key) }
+            if(RDStore.GENERIC_NULL_VALUE in openAccess) {
+                openAccess.remove(RDStore.GENERIC_NULL_VALUE)
+                openAccessString += 'or tipp.openAccess = null'
+            }
+            openAccessString += ')'
+            queryArgs << openAccessString
+            queryParams.openAccess = openAccess
+        }
+
+        if (params.provider) {
+            queryArgs << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
+            queryParams.provider = Params.getLongList_forCommaSeparatedString(params, 'provider')
+        }
+
+        if (params.publishers) {
+            queryArgs << " lower(tipp.publisherName) in (:publishers) "
+            queryParams.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
+        }
+
+        if (params.coverageDepth) {
+            queryArgs << " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
+            queryParams.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
+        }
+
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
+            queryArgs << " lower(tipp.titleType) in (:title_types) "
+            queryParams.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
+        }
+
+        if (params.medium) {
+            queryArgs << " tipp.medium.id in (:medium) "
+            queryParams.medium = Params.getLongList_forCommaSeparatedString(params, 'medium') // move to getRefdataValue
+        }
+        String arguments = queryArgs.join(' and ')
+        result.queryParams = queryParams
+        result.arguments = arguments
+        result
+    }
+
+    /**
      * Prepares the SQL query for title retrieval, assembling the columns necessary, departing from the given type of entitlement (= which table and set of columns to fetch)
      * currently existing config parameters:
      * <ul>
@@ -1680,6 +2169,7 @@ class FilterService {
      *  params: params,
      *  subJoin: subJoin]
      */
+    @Deprecated
     Map<String, Object> prepareTitleSQLQuery(Map configMap, String entitlementInstance, Sql sql) {
         String query = "", join = "", subJoin = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         List whereClauses = []
@@ -1737,14 +2227,13 @@ class FilterService {
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
-                    Org contextOrg = contextService.getOrg()
-                    if(contextOrg.isCustomerType_Consortium())
+                    if(contextService.getOrg().isCustomerType_Consortium())
                         consFilter = "and sub_parent_sub_fk is null"
                     subFilter = "exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter})"
                     //temp; should be enlarged later to configMap.subStatus
                     List<Object> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     params.subStatus = connection.createArrayOf('bigint', subStatus.toArray())
-                    params.contextOrg = contextOrg.id
+                    params.contextOrg = contextService.getOrg().id
                 }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
@@ -2065,6 +2554,47 @@ class FilterService {
         [query: query, join: join, where: whereClauses.join(' and '), order: orderClause, params: params, subJoin: subJoin]
     }
 
+    Map<String, Object> getWekbPlatformFilterParams(GrailsParameterMap params) {
+        Map<String, Object> queryParams = [componentType: "Platform"]
+
+        if(params.q) {
+            queryParams.name = params.q
+        }
+
+        if(params.provider) {
+            queryParams.provider = params.provider
+        }
+
+        if(Params.getLongList(params, 'platStatus')) {
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
+        }
+        else if(!params.filterSet) {
+            queryParams.status = "Current"
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
+        }
+
+        Set<String> refdataListParams = PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()+PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()+PLATFORM_FILTER_AUTH_FIELDS.keySet()+['statisticsFormat']
+        refdataListParams.each { String refdataListParam ->
+            if (params.containsKey(refdataListParam)) {
+                queryParams.put(refdataListParam, Params.getRefdataList(params, refdataListParam).collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value })
+            }
+        }
+        if (params.counterSupport) {
+            queryParams.counterSupport = params.list('counterSupport')
+        }
+        if(params.counterAPISupport) {
+            queryParams.counterAPISupport = params.list('counterAPISupport')
+        }
+        if (params.curatoryGroup) {
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+        queryParams
+    }
+
     /**
      * Helper method for a shorthand of parameter list reading.
      * Note that also lists are being delivered with only one entry
@@ -2086,6 +2616,9 @@ class FilterService {
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
         else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
             result = params[key]
+        }
+        else if(params[key] instanceof String && params[key].contains(',')) {
+            result = params[key].split(',')
         }
         else result = [params[key]]
         result

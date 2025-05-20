@@ -1,13 +1,13 @@
-<%@ page import="de.laser.PermanentTitle" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 <g:set var="counter" value="${(offset ?: 0) + 1}"/>
 <laser:serviceInjection/>
 
-<g:set var="ptOwner" value="${institution ?: contextService.getOrg()}"/>
+<g:set var="ptOwner" value="${contextService.getOrg()}"/>
 
 <g:if test="${tipps}">
     <div class="ui fluid card">
         <div class="content">
-            <div class="ui accordion la-accordion-showMore">
+            <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                 <g:each in="${tipps}" var="tipp">
                     <div class="ui raised segments la-accordion-segments">
 

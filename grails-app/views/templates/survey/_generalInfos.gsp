@@ -1,7 +1,7 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
 
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextService.getOrg())}"/>
 <div class="ui stackable grid">
     <div class="eleven wide column">
         <div class="la-inline-lists">
@@ -9,7 +9,7 @@
             <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">
                 <dl>
                     <dt class="control-label">
-                        ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                        ${message(code: 'surveyOrg.ownerComment.label', args: [contextService.getOrg().sortname])}
                     </dt>
                     <dd><ui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
 
@@ -18,25 +18,6 @@
 
             <div class="ui card">
                 <div class="content">
-
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledStartDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                                              overwriteEditable="${false}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledEndDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                                              overwriteEditable="${false}"/></dd>
-
-                        </dl>
-                    </g:if>
 
                     <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                         <dl>
@@ -47,9 +28,9 @@
                                 <ui:xEditable owner="${surveyUrl}" field="url" type="text" overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyUrl.urlComment}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${surveyUrl.urlComment}">
-                                        <i class="info circle icon"></i>
+                                        <i class="${Icon.TOOLTIP.INFO}"></i>
                                     </span>
                                 </g:if>
                                 <ui:linkWithIcon href="${surveyUrl.url}"/>
@@ -166,16 +147,19 @@
                 <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
             </g:if>
         </div>
+
+%{--        <g:if test="${surveyConfig.invoicingInformation}">
+            <g:link class="${Btn.SIMPLE} left floated"
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[viewTab: 'invoicingInformation']}">
+                ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}
+            </g:link>
+        </g:if>--}%
+
     </div>
 </div>
 
-<g:if test="${surveyConfig.invoicingInformation}">
-    <g:link class="ui button"
-            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-            params="${parame+[viewTab: 'invoicingInformation']}">
-        ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}
-    </g:link>
-</g:if>
+
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

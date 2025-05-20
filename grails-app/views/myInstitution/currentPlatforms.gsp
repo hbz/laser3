@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.wekb.Platform; de.laser.storage.RDStore" %>
+<laser:htmlStart message="menu.my.platforms" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.platforms" class="active" />
@@ -49,27 +49,30 @@
                     </g:if>
                 </td>
                 <%--<td>
-                    <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
+                    <g:each in="${platformInstance.getContextOrgAccessPoints(contextService.getOrg())}" var="oap" >
                         <g:link controller="accessPoint" action="edit_${oap.accessMethod.value.toLowerCase()}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                     </g:each>
                 </td>--%>
                 <td>
                     <g:if test="${subscriptionMap.get('platform_' + platformInstance.id)}">
-                        <ul class="la-simpleList">
                             <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                                <li>
                                     <%
                                         String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = period ? '('+period+')' : ''
                                     %>
-                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    <div class="la-flexbox">
+                                        <g:if test="${subscriptionMap.get('platform_' + platformInstance.id).size() > 1}">
+                                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                        </g:if>
+                                        <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    </div>
                                     <%--
                                     <g:if test="${sub.packages}">
-                                        <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
+                                        <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextService.getOrg(), platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
-                                                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
-                                                    <i class="icon la-thumbtack slash scale la-list-icon"></i>
+                                                <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
+                                                    <i class="${Icon.SIG.INHERITANCE_OFF} la-list-icon"></i>
                                                 </span>
                                                 <g:link controller="accessPoint" action="edit_${orgap.accessMethod.value.toLowerCase()}"
                                                         id="${orgap.id}">${orgap.name} (${orgap.accessMethod.getI10n('value')})</g:link>
@@ -77,9 +80,7 @@
                                         </g:each>
                                     </g:if>
                                     --%>
-                                </li>
                             </g:each>
-                        </ul>
                     </g:if>
                 </td>
                 <td class="center aligned">

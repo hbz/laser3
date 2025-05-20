@@ -1,11 +1,9 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
-
-<laser:serviceInjection/>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
 <laser:htmlStart message="menu.institutions.addressbook" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+    <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.addressbook" class="active"/>
 </ui:breadcrumbs>
 
@@ -14,58 +12,41 @@
         <ui:exportDropdownItem>
             <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.ADDRESSBOOK]"/>
         </ui:exportDropdownItem>
-        <%--
-        <g:if test="${filterSet == true}">
-            <ui:exportDropdownItem>
-                <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
-                    <g:message code="default.button.exports.xls"/>
-                </g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item js-open-confirm-modal" params="${params+[format: 'csv']}" action="addressbook"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
-                    <g:message code="default.button.exports.csv"/>
-                </g:link>
-            </ui:exportDropdownItem>
-        </g:if>
-        <g:else>
-            <ui:exportDropdownItem>
-                <g:link class="item" params="${params+[exportXLS: true]}" action="addressbook"><g:message code="default.button.exports.xls"/></g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item" params="${params+[format: 'csv']}" action="addressbook"><g:message code="default.button.exports.csv"/></g:link>
-            </ui:exportDropdownItem>
-        </g:else>
-        --%>
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="address card outline icon"></i><g:message
-                    code="person.create_new.contactPersonForProvider.label"/></a>
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForProvider.label"/></a>
-
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="address card outline icon"></i><g:message
-                    code="person.create_new.contactPersonForVendor.label"/></a>
-
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForVendor.label"/></a>
-            <g:if test="${institution.isCustomerType_Consortium()}">
-                <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="address card outline icon"></i><g:message
-                        code="person.create_new.contactPersonForInstitution.label"/></a>
-
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForInstitution.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProvider');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForProvider.label"/>
+            </a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForVendor.label"/>
+            </a>
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution');">
+                    <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForInstitution.label"/>
+                </a>
             </g:if>
+            <%--<a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForPublic.label"/>
+            </a>--%>
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="address card outline icon"></i><g:message
-                    code="person.create_new.contactPersonForPublic.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/>
+            </a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/>
+            </a>
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');">
+                    <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/>
+                </a>
+            </g:if>
+            <%--<a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/>
+            </a>--%>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="map marked alternate icon"></i><g:message code="address.add.addressForPublic.label"/></a>
-
+            <div class="divider"></div>
         </g:if>
 
         <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -103,7 +84,7 @@
         <div class="two fields">
             <div class="field">
                 <label for="function"><g:message code="person.function.label"/></label>
-                <select id="function" name="function" multiple="" class="ui dropdown search">
+                <select id="function" name="function" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
@@ -113,7 +94,7 @@
 
             <div class="field">
                 <label for="position"><g:message code="person.position.label"/></label>
-                <select id="position" name="position" multiple="" class="ui dropdown search">
+                <select id="position" name="position" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
@@ -126,14 +107,16 @@
             <label>${message(code: 'person.filter.contactArt')}</label>
 
             <div class="inline fields la-filter-inline">
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <label for="showOnlyContactPersonForInstitution">${message(code: 'person.contactPersonForInstitution.label')}</label>
-                        <input id="showOnlyContactPersonForInstitution" name="showOnlyContactPersonForInstitution" type="checkbox"
-                               <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
-                               tabindex="0">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="showOnlyContactPersonForInstitution">${message(code: 'person.contactPersonForInstitution.label')}</label>
+                            <input id="showOnlyContactPersonForInstitution" name="showOnlyContactPersonForInstitution" type="checkbox"
+                                   <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
                     </div>
-                </div>
+                </g:if>
 
                 <div class="inline field">
                     <div class="ui checkbox">
@@ -159,33 +142,27 @@
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-        ${message(code: 'org.prsLinks.label')} <span class="ui circular label">${num_visiblePersons}</span>
+        ${message(code: 'org.prsLinks.label')} <ui:bubble count="${num_visiblePersons}" grey="true"/>
     </a>
-
-    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
-        ${message(code: 'org.prsLinks.adresses.label')}
-    </a>--%>
-
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-        ${message(code: 'org.addresses.label')} <span class="ui circular label">${num_visibleAddresses}</span>
+        ${message(code: 'org.addresses.label')} <ui:bubble count="${num_visibleAddresses}" grey="true"/>
     </a>
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             offset        : personOffset,
             showContacts  : true,
-            showAddresses : true,
             showOptions : true,
             tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts']
     ]}"/>
@@ -198,7 +175,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
@@ -214,7 +191,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

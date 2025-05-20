@@ -4,6 +4,7 @@ import de.laser.annotations.UnstableFeature
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.NativeSqlException
+import de.laser.helper.DatabaseInfo
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -62,7 +63,7 @@ class GlobalService {
      * If there is no directory at the specified path, it will be created
      * @return a path to the temporary export save location
      */
-    static String obtainFileStorageLocation() {
+    static String obtainTmpFileLocation() {
         String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
         File folder = new File(dir)
         if (!folder.exists()) {
@@ -80,7 +81,8 @@ class GlobalService {
         DataSource dataSource = BeanStore.getDataSource()
         Sql sql = new Sql(dataSource)
         List<GroovyRowResult> activeConnections = sql.rows("select count(*) from pg_stat_activity where datname = current_database() and state != 'idle' and usename ilike '%laser%'")
-        if(activeConnections[0]['count'] < 40)
+        int max = Integer.valueOf(DatabaseInfo.getMaxConnections())
+        if (activeConnections[0]['count'] < (max * 0.65)) // 65%
             sql
         else {
             throw new NativeSqlException("too many active connections, please wait until connections are free!")

@@ -1,17 +1,23 @@
-<laser:htmlStart message="menu.admin.mergeVendors" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn" %>
+<laser:htmlStart message="menu.admin.mergeVendors" />
+
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb message="menu.admin.mergeVendors" class="active"/>
+    </ui:breadcrumbs>
 
     <ui:h1HeaderWithIcon message="menu.admin.mergeVendors" />
 
     <g:if test="${mergeResult}">
         <g:if test="${mergeResult.status == vendorService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
         </g:if>
         <g:else>
             <g:if test="${mergeResult.status == vendorService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
             </g:if>
             <g:if test="${mergeResult.status == vendorService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
         </g:else>
     </g:if>
@@ -58,7 +64,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6"><g:submitButton name="validate" class="ui button primary" value="Gewählte Lieferanten zusammenführen"/></td>
+                    <td colspan="6"><g:submitButton name="validate" class="${Btn.PRIMARY}" value="Gewählte Library Supplier zusammenführen"/></td>
                 </tr>
             </tfoot>
         </table>

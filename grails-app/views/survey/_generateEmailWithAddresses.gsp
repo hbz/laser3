@@ -1,5 +1,5 @@
 <!-- __generateEmailWithAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.addressbook.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: '_generateEmailWithAddresses_ajaxModal'}"/>
@@ -16,7 +16,7 @@
                 <label><g:message code="person.function.label" /></label>
             </div>
             <div>
-                <ui:select class="ui dropdown search"
+                <ui:select class="ui dropdown clearable search"
                               name="prsFunctionMultiSelect2"
                               multiple=""
                               from="${rdvAllPersonFunctions}"
@@ -30,7 +30,7 @@
                 <label><g:message code="person.position.label" /></label>
             </div>
             <div>
-                <ui:select class="ui dropdown search"
+                <ui:select class="ui dropdown clearable search"
                               name="prsPositionMultiSelect2"
                               multiple=""
                               from="${rdvAllPersonPositions}"
@@ -65,14 +65,14 @@
                             class="myTargetsNeu" style="width: 100%;">${mailText}</g:textArea>
             </div>
 
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToClipboard()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
             </button>
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToEmailProgram()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
             </button>
             <g:if test="${submitButtonValue == 'ReminderMail'}">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button left floated">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE} left floated">
                     ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                 </button>
             </g:if>

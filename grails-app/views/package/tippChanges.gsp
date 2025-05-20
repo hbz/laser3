@@ -1,5 +1,5 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
-<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
+<%@ page import="de.laser.remote.Wekb; de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
@@ -50,24 +50,22 @@
 
                     <div class="la-title">${message(code: 'default.details.label')}</div>
 
-                    <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
+                    <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                             data-content="${message(code: 'laser')}"
                             target="_blank"
                             controller="tipp" action="show"
                             id="${tipp.id}">
-                        <i class="book icon"></i>
+                        <i class="${Icon.TIPP}"></i>
                     </g:link>
 
-                    <g:each in="${apisources}" var="gokbAPI">
                         <g:if test="${tipp.gokbId}">
                             <a role="button"
-                               class="ui icon tiny blue button la-popup-tooltip la-delay"
+                               class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                data-content="${message(code: 'wekb')}"
-                               href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-                               target="_blank"><i class="la-gokb  icon"></i>
+                               href="${Wekb.getURL() + '/public/tippContent/?id=' + tipp.gokbId}"
+                               target="_blank"><i class="${Icon.WEKB}"></i>
                             </a>
                         </g:if>
-                    </g:each>
                 </g:if>
             </td>
             <td>
@@ -84,11 +82,11 @@
                 </g:else>
 
                 <g:if test="${oldValue != null || newValue != null}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}"></i>
                 </g:if>
                 <g:elseif test="${entry.targetProperty}">
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}"></i>
                 </g:elseif>
 

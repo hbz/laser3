@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.storage.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.storage.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <laser:render template="/myInstitution/reporting/details/details_top" />
@@ -6,7 +6,6 @@
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)}}"/>
-<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <div class="ui segment" id="reporting-detailsTable">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -58,7 +57,7 @@
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <%
                                 print esRecords.get(pkg.id as String).identifiers.collect { identifier ->
-                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.Package')
+                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.wekb.Package')
                                     String namespace = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched(identifier.namespaceName ?: identifier.namespace)
                                     return namespace + ':' + identifier.value
                                 }.join(',<br/>')
@@ -196,7 +195,7 @@
                                 <%
                                     String cgType
                                     if (curatoryGroup.type) {
-                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
+                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
                                         cgType = '(' + cgType + ')'
                                     }
                                 %>
@@ -231,8 +230,8 @@
                                 <ui:wekbIconLink type="package" gokbId="${pkg.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
-                                    <i class="icon times grey"></i>
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
+                                    <i class="${Icon.SYM.NO} grey"></i>
                                 </span>
                             </g:else>
                         </g:if>

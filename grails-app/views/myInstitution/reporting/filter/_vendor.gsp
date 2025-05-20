@@ -1,9 +1,9 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="vendor-filter-tab-1">${message(code:'vendor.plural')}</a>
-            <a class="item" data-tab="vendor-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+            <a class="item" data-tab="vendor-filter-tab-help"> ? %{--<i class="${Icon.UI.HELP}"></i>--}%</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="vendor-filter-tab-1">

@@ -1,7 +1,6 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
-<laser:render template="/templates/flyouts/help/subscription_show"/>
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
         <laser:serviceInjection />
         <g:set var="own" value="${financialData.own}"/>
@@ -36,7 +35,7 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.export.csv')}
                         </g:link>
                     </ui:exportDropdownItem>
                 </g:if>
@@ -53,7 +52,7 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
+                                 params="${params+[format:'csv',sub:subscription.id]}">${message(code:'finance.export.csv')}
                         </g:link>
                     </ui:exportDropdownItem>
                 </g:else>
@@ -63,8 +62,17 @@
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
                     <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
+                        <g:if test="${costItemElements}">
+                            <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment" message="financials.enrichment.menu" />
+                        </g:if>
+                        <g:else>
+                            <ui:actionsDropdownItemDisabled message="financials.enrichment.menu" tooltip="${message(code:'financials.enrichment.menu.disabled')}" />
+                        </g:else>
+                        <div class="divider"></div>
+                        <%-- merged into myInstitution/financeImport as of ERMS-6441
                         <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
-                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+                        --%>
+                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.subFinanceImport" />
                         <ui:actionsDropdownItem controller="subscription" action="compareSubMemberCostItems" params="${[id:subscription.id]}" message="subscription.details.compareSubMemberCostItems.label" />
                     </g:if>
                 </ui:actionsDropdown>
@@ -98,18 +106,45 @@
             <laser:render template="/subscription/subscriptionTransferInfo" model="${[calculatedSubList: successor + [subscription] + previous]}"/>
         </g:if>
 
-        <g:if test="${editable && subscription.getConsortia()?.id == contextService.getOrg().id}">
+        <g:if test="${editable && subscription.getConsortium()?.id == contextService.getOrg().id}">
             <laser:render template="/templates/flyouts/subscriptionMembers" model="[subscription: subscription]"/>
         </g:if>
         <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions}">
-            <laser:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
+            <laser:render template="/subscription/message" model="${[subscription: subscription]}"/>%{-- ERMS-6070 --}%
         </g:if>
 
-        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
+        <g:if test="${afterEnrichment}">
+            <g:if test="${wrongSeparator}">
+                <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+            </g:if>
+            <g:else>
+                <g:if test="${matchCounter > 0}">
+                    <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
+                </g:if>
+                <g:else>
+                    <ui:msg showIcon="true" class="warning" message="financials.enrichment.emptyResult" args="[totalRows]"/>
+                </g:else>
+                <g:if test="${missing || wrongIdentifiers}">
+                    <ui:msg showIcon="true" class="error">
+                        <g:if test="${missing}">
+                            <p><g:message code="financials.enrichment.missingPrices"/></p>
+                        </g:if>
+                        <g:if test="${wrongIdentifiers}">
+                            <p><g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/></p>
+                            <p><g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link></p>
+                        </g:if>
+                    </ui:msg>
+                </g:if>
+            </g:else>
+        </g:if>
+
+        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles,missing:missing]" />
 
         <laser:render template="/subscription/financeImportTemplate" />
+
+        <laser:render template="/finance/financeEnrichment" />
 
         <g:render template="/clickMe/export/js"/>
 

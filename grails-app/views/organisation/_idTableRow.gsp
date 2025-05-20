@@ -1,25 +1,25 @@
-<%@page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
         <g:if test="${showGlobalUid}">
             <g:message code="globalUID.label" />
-            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'globalUID.desc')}">
-                <i class="grey question circle icon"></i>
+            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'globalUID.desc')}">
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         </g:if>
         <g:elseif test="${showWekbId}">
             <g:message code="org.wekbId.label" />
-            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'org.wekbId.desc')}">
-                <i class="grey question circle icon"></i>
+            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'org.wekbId.desc')}">
+                <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         </g:elseif>
         <g:else>
             ${id.ns.getI10n('name') ?: id.ns.ns}
 
             <g:if test="${id.ns.getI10n('description')}">
-                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${id.ns.getI10n('description')}">
-                    <i class="grey question circle icon"></i>
+                <span data-position="top left" class="la-popup-tooltip" data-content="${id.ns.getI10n('description')}">
+                    <i class="${Icon.TOOLTIP.HELP}"></i>
                 </span>
             </g:if>
         </g:else>
@@ -30,7 +30,7 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <ui:linkWithIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
+            <ui:linkWithIcon href="${Wekb.getURL()}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
             ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}
@@ -43,18 +43,18 @@
         <td>${id.note}</td>
         <td>
             <g:if test="${editable}">
-                <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
+                <button class="${Btn.MODERN.SIMPLE}" onclick="JSPC.app.IdContoller.editIdentifier(${id.id});"
                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                    <i aria-hidden="true" class="write icon"></i>
+                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                 </button>
                 <g:link controller="ajax"
                         action="deleteIdentifier"
-                        class="ui button la-modern-button icon red js-open-confirm-modal"
+                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         params='${[owner: "${orgInstance.class.name}:${orgInstance.id}", target: "${id.class.name}:${id.id}"]}'
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [id?.ns?.ns+": "+id.value])}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE} icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
             </g:if>
         </td>

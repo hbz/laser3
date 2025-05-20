@@ -8,8 +8,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
- 
-import de.laser.utils.DateUtils
+
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -20,8 +19,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-
-import java.text.SimpleDateFormat
 
 /**
  * This controller is responsible for the license related calls
@@ -44,7 +41,6 @@ class LicenseController {
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
     LicenseService licenseService
-    OrgTypeService orgTypeService
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
     SubscriptionService subscriptionService
@@ -62,9 +58,9 @@ class LicenseController {
     /**
      * Shows the given license
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404()
     def show() {
@@ -81,19 +77,19 @@ class LicenseController {
         prf.setBenchmark('tasks')
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.license)
 
 
         prf.setBenchmark('properties')
 
             // create mandatory LicensePrivateProperties if not existing
 
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, contextService.getOrg())
 
             mandatories.each { pd ->
                 //TODO [ticket=2436]
-                if (!LicenseProperty.findWhere(owner: result.license, type: pd, tenant: result.institution, isPublic: false)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, result.institution)
+                if (!LicenseProperty.findWhere(owner: result.license, type: pd, tenant: contextService.getOrg(), isPublic: false)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, contextService.getOrg())
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors.toString())
@@ -109,7 +105,7 @@ class LicenseController {
                 if(childLics) {
                     String localizedName = LocaleUtils.getLocalizedAttributeName('name')
                     String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"
-                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics,context:result.institution] )
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics, context:contextService.getOrg()] )
                     result.memberProperties = memberProperties
                 }
             }
@@ -121,7 +117,7 @@ class LicenseController {
             // -- private properties
 
             result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
 
@@ -144,42 +140,49 @@ class LicenseController {
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
 
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
-        result.existingLicensorIdList = []
-
         workflowService.executeCmdAndUpdateResult(result, params)
 
         List bm = prf.stopBenchmark()
         result.benchMark = bm
-        if(params.export) {
-            result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
-            result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
-            result.prop_desc = PropertyDefinition.LIC_PROP
-            result.memberLicenses = License.findAllByInstanceOf(result.license)
-            result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
-            result.entry = result.license
-            result.tasks = taskService.getTasksForExport((User) result.user, (Org) result.institution, (License) result.license)
-            result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
-            result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
+        switch(params.export) {
+            case 'onix':
+                String xmlString = licenseService.generateOnixPLDocument(result.license, contextService.getOrg())
+                if(xmlString) {
+                    response.setContentType("application/xml")
+                    response.setHeader("Content-disposition", "attachment;filename=\"${escapeService.escapeString(result.license.reference)}\"_ONIX-PL.xml")
+                    response.outputStream << xmlString.bytes
+                }
+                break
+            case 'pdf':
+                result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), License.class.name)
+                result.allPropDefGroups = result.license.getCalculatedPropDefGroups(contextService.getOrg())
+                result.prop_desc = PropertyDefinition.LIC_PROP
+                result.memberLicenses = License.findAllByInstanceOf(result.license)
+                result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                result.entry = result.license
+                result.tasks = taskService.getTasksForExport((User) result.user, (License) result.license)
+                result.documents = docstoreService.getDocumentsForExport(contextService.getOrg(), (License) result.license)
+                result.notes = docstoreService.getNotesForExport(contextService.getOrg(), (License) result.license)
 
-            byte[] pdf = PdfUtils.getPdf(
-                    result,
-                    PdfUtils.PORTRAIT_FIXED_A4,
-                    customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
-            )
-            response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
-            response.setContentType('application/pdf')
-            response.outputStream.withStream { it << pdf }
+                byte[] pdf = PdfUtils.getPdf(
+                        result,
+                        PdfUtils.PORTRAIT_FIXED_A4,
+                        customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+                break
+            default: result
         }
-        else result
   }
 
     /**
      * Gets the tasks connected to this license
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def tasks() {
@@ -203,9 +206,9 @@ class LicenseController {
      * Call to delete the given license; a parameter specifies whether the deletion should be executed or not
      * @return the view showing the attached object to the given license
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def delete() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_EDIT)
@@ -223,9 +226,9 @@ class LicenseController {
     /**
      * Creates a new member license to the given consortial license if it not exists
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def processAddMembers() {
         log.debug( params.toMapString() )
@@ -234,7 +237,6 @@ class LicenseController {
         if (!result) {
             response.sendError(401); return
         }
-        result.institution = contextService.getOrg()
 
         License licenseCopy
             if (contextService.getOrg().isCustomerType_Consortium()) {
@@ -243,7 +245,6 @@ class LicenseController {
                     licenseCopy = institutionsService.copyLicense(
                             result.license, [
                                 lic_name: "${result.license.reference}",
-                                isSlaved: "true",
                                 copyStartEnd: true
                             ],
                             InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)
@@ -263,9 +264,9 @@ class LicenseController {
      * Processes a linking between one or more subscriptions. Depending on the call level,
      * the action redirects to the appropriate table
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
@@ -274,13 +275,13 @@ class LicenseController {
         Set<Subscription> allSubscriptions = []
         String action
         if(result.license.instanceOf) {
-            result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, result.institution, result.tableConfig))
+            result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, contextService.getOrg(), result.tableConfig))
             allSubscriptions.addAll(result.entries.collect { row -> (Subscription) row[0] })
             result.allSubscriptions = allSubscriptions
             action = 'linkMemberLicensesToSubs'
         }
         else {
-            result.putAll(subscriptionService.getMySubscriptions(params, result.user, result.institution))
+            result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
             allSubscriptions.addAll(result.allSubscriptions)
             action = 'linkLicenseToSubs'
         }
@@ -290,11 +291,11 @@ class LicenseController {
             if(params.subscription == "all") {
                 allSubscriptions.each { Subscription s->
                     boolean linkPossible
-                    if(result.institution.isCustomerType_Inst()) {
+                    if(contextService.getOrg().isCustomerType_Inst()) {
                         linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
                     }
                     else {
-                        linkPossible = result.institution.isCustomerType_Consortium()
+                        linkPossible = contextService.getOrg().isCustomerType_Consortium()
                     }
                     if(linkPossible)
                         subscriptionService.setOrgLicRole(s,newLicense,unlink)
@@ -318,14 +319,14 @@ class LicenseController {
     /**
      * Opens possible subscriptions to link to the given license; the parent level is being considered
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     @Check404()
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+        result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
         result.tableConfig = ['showLinking']
         result.linkedSubscriptions = Links.executeQuery('select l.destinationSubscription from Links l where l.sourceLicense = :license and l.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
         result
@@ -334,9 +335,9 @@ class LicenseController {
     /**
      * Shows all subscriptions linked to the current license
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404()
     def linkedSubs() {
@@ -347,7 +348,7 @@ class LicenseController {
         result.subscriptions = []
         result.putAll(licenseControllerService.setSubscriptionFilterData(params))
 
-        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == contextService.getOrg().id) {
             result.subscriptionsForFilter = []
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
@@ -367,13 +368,14 @@ class LicenseController {
             ArrayList<Long> filteredOrgIds = _getOrgIdsForFilter()
 
             result.validSubChilds.each { sub ->
-                List<Org> subscr = sub.getAllSubscribers()
                 def filteredSubscr = []
-                subscr.each { Org subOrg ->
+                Org subOrg = sub.getSubscriber() // erms-5393
+                if (subOrg) {
                     if (filteredOrgIds.contains(subOrg.id)) {
                         filteredSubscr << subOrg
                     }
                 }
+
                 if (filteredSubscr) {
                     if(params.list("subscription").contains(sub.id) || !params.list("subscription")) {
                         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -427,9 +429,9 @@ class LicenseController {
     /**
      * Lists the member licenses to the given consortial license
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404()
     def members() {
@@ -490,16 +492,16 @@ class LicenseController {
     /**
      * Opens possible subscriptions to link to the given license; the member level is being considered
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     @Check404()
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
         result.linkedSubscriptions = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
-        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, contextService.getOrg(), result.tableConfig))
         result
     }
 
@@ -515,7 +517,7 @@ class LicenseController {
         if (contextService.getOrg().isCustomerType_Consortium())
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
 
-        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, result.institution as Org)
+        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, contextService.getOrg())
         if (fsr.isFilterSet) { tmpParams.filterSet = true }
 
         if (tmpParams.filterPropDef) {
@@ -534,9 +536,9 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404()
     def notes() {
@@ -553,9 +555,9 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404()
     def documents() {
@@ -571,27 +573,12 @@ class LicenseController {
     }
 
     /**
-     * Call to delete the given document
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}")
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
-    }
-
-    /**
      * Call to open the workflows linked to the given license
      * @see de.laser.workflow.WfChecklist
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -603,14 +590,14 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyLicense() {
         Map<String,Object> result = [:]
         result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
+
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
@@ -658,7 +645,7 @@ class LicenseController {
 
                     //Copy References
                     result.sourceObject.orgRelations.each { OrgRole or ->
-                        if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = result.targetObject
@@ -704,9 +691,9 @@ class LicenseController {
     /**
      * Controller menu for copying components of the given license into another license
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def copyElementsIntoLicense() {
         Map<String, Object> result = licenseService.getCopyResultGenerics(params)
@@ -762,7 +749,7 @@ class LicenseController {
      * Call for a single user to copy private properties into a consortial participation instance
      * @return the reduced license element copy view
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
     })

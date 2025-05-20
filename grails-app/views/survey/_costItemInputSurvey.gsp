@@ -14,7 +14,12 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
-<g:hiddenField name="selectedPkg" value="${selectedPkg}"/>
+<g:if test="${selectPkg == "true"}">
+    <g:hiddenField name="selectPkg" value="${selectPkg}"/>
+</g:if>
+<g:if test="${selectSubscription == "true"}">
+    <g:hiddenField name="selectSubscription" value="${selectSubscription}"/>
+</g:if>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -39,7 +44,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
+                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown clearable "
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -64,7 +69,7 @@
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
             <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
-                          class="ui dropdown"
+                          class="ui dropdown clearable"
                           from="${costItemStatus}"
                           optionKey="id"
                           optionValue="value"
@@ -115,7 +120,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                <g:select class="ui dropdown calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
+                <g:select class="ui dropdown clearable calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                           from="${CostItem.TAX_TYPES}"
                           optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
                           optionValue="${{ it.display ? it.taxType.getI10n("value") + " (" + it.taxRate + "%)" : it.taxType.getI10n("value") }}"
@@ -145,14 +150,14 @@
     </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 </div><!-- three fields -->
-<g:if test="${selectedPkg}">
-    <div class="field ">
+<g:if test="${selectPkg == "true"}">
+    <div class="field">
         <div class="one fields la-forms-grid">
             <fieldset class="sixteen wide field">
                 <div class="field">
                     <label>${message(code: 'package.label')}</label>
                     <g:if test="${surveyConfig.surveyPackages}">
-                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
+                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable search"
                                   from="${surveyConfig.surveyPackages}"
                                   optionValue="${{ it.pkg.name }}"
                                   optionKey="${{ it.pkg.id }}"
@@ -165,7 +170,27 @@
     </div>
 </g:if>
 
-<div class="field ">
+<g:if test="${selectSubscription == "true"}">
+    <div class="field">
+        <div class="one fields la-forms-grid">
+            <fieldset class="sixteen wide field">
+                <div class="field">
+                    <label>${message(code: 'subscription.label')}</label>
+                    <g:if test="${surveyConfig.surveySubscriptions}">
+                        <g:select name="newSurveyConfigSubscription" id="newSurveyConfigSubscription_${idSuffix}" class="ui dropdown clearable search"
+                                  from="${surveyConfig.surveySubscriptions}"
+                                  optionValue="${{ it.subscription.name }}"
+                                  optionKey="${{ it.id }}"
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                  value="${selectedSurveyConfigSubscriptionID}"/>
+                    </g:if>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</g:if>
+
+<div class="field">
     <div class="two fields la-forms-grid">
         <ui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
                           value="${costItem?.startDate}"/>
@@ -201,7 +226,14 @@
         ciec: $("#ciec_${idSuffix}"),
         costElems: $("#newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
-        percentOnOldPrice: $("#percentOnOldPrice"),
+        <%
+            if(bulkCostItems){
+                println 'percentOnOldPrice: $("#percentOnOldPrice"),'
+                println        'percentOnSurveyPrice: $("#percentOnSurveyPrice"),'
+                println   'processSurveyCostItemsBulk_del_btn: $("#processSurveyCostItemsBulk_del_btn"),'
+            }
+        %>
+
         elementChangeable: false,
         costItemElementConfigurations: {
         <%
@@ -314,9 +346,16 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
+                if(JSPC.app.finance${idSuffix}.percentOnOldPrice && JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
-                } else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                }
+                else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                }
+                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice && JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() >= 0) {
+                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                }
+                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn && JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
                     JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                 }
                 else {

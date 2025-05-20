@@ -1,9 +1,9 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+<g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/actions" />
 
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
@@ -19,7 +19,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
+<g:elseif test="${contextService.isInstEditor( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
         <g:if test="${actionName == 'addressbook'}">
@@ -40,8 +40,8 @@
     </g:if>
 </g:else>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: provider, owntp: 'provider', institution: institution]]}" />
+<g:if test="${contextService.isInstEditor()}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: provider, owntp: 'provider']]}" />
 </g:if>
 
 

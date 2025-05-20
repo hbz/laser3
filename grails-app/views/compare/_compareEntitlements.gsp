@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform" %>
 <laser:serviceInjection/>
 <ui:greySegment>
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">

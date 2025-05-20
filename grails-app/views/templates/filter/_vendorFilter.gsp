@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -21,8 +21,8 @@
                 <div class="field">
                     <label for="nameContains">
                         <g:message code="org.search.vendor.contains"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.vendor.contains.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.vendor.contains.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
@@ -39,7 +39,7 @@
                     <%
                         List<Map> isMyXOptions = []
 
-                        if (actionName == 'list') {
+                        if (actionName == 'list'  || showAllIsMyXOptions) {
                             isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
                             isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
                             isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.vendors')}"])}" ])
@@ -67,8 +67,8 @@
                 <div class="field">
                     <label for="privateContact">
                         <g:message code="contact.name"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.contact.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
@@ -140,7 +140,7 @@
                     <label for="qp_supportedLibrarySystems">${message(code: 'vendor.ordering.supportedLibrarySystems.label')}</label>
                     <select name="qp_supportedLibrarySystems" id="qp_supportedLibrarySystems" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
                             <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.id) ? 'selected=selected"' : ''%> value="${sls.id}">
                                 ${sls.getI10n("value")}
                             </option>
@@ -212,6 +212,9 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equals('')}">
+                <div class="field"></div>
+            </g:if>
 
         </g:each>
     <g:if test="${numberOfFields > 1}">
@@ -222,11 +225,19 @@
 
 <div class="field la-field-right-aligned">
 
-        <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+    <g:if test="${surveyConfig && participant && controllerName == 'survey'}">
+        <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: params.viewTab]}"/>
+        <g:set var="participant" value="${participant}"/>
+    </g:if>
+    <g:elseif test="${surveyConfig}">
+        <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, viewTab: params.viewTab]}"/>
+    </g:elseif>
+
+    <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="${parame}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -241,7 +252,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

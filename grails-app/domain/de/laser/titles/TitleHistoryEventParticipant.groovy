@@ -1,6 +1,6 @@
 package de.laser.titles
 
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 
 /**
  * This class represents a participant {@link TitleInstancePackagePlatform} of a {@link TitleHistoryEvent}

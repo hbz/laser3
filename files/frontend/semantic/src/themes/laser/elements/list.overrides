@@ -33,6 +33,7 @@
     opacity: 1;
   }
 }
+
 // Show Buttons only on hover
 .la-timeLineSegment-contact .row{
   .button {
@@ -156,4 +157,9 @@ dd {
     >.item {
         list-style-type: square;
     }
+}
+
+.ui.selection.list.la-dashboard .list>.item,
+.ui.selection.list.la-dashboard>.item {
+        color: @linkColor;
 }

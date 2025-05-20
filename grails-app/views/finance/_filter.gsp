@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
@@ -65,7 +65,7 @@
                     <div class="field">
                         <g:set var="subStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBSCRIPTION_STATUS])}" scope="request"/>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
-                        <ui:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
+                        <ui:select id="filterSubStatus" class="ui fluid dropdown search clearable" name="filterSubStatus"
                                       from="${subStatus}"
                                       optionKey="id"
                                       optionValue="value"
@@ -80,8 +80,8 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
-                        <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'financials.title.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <div class="ui search selection dropdown <g:if test="${ciTitles}">allowAdditions</g:if>" id="filterCITitle">
@@ -121,18 +121,12 @@
             <div class="three fields">
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
-                    <%--<div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
-                        <input type="hidden" name="filterCIBudgetCode">
-                        <i class="dropdown icon"></i>
-                        <input type="text" class="search">
-                        <div class="default text"><g:message code="default.select.all.label"/></div>
-                    </div>--%>
                     <g:select id="filterCIBudgetCode" class="ui multiple dropdown search selection"
                               multiple="multiple"
                               name="filterCIBudgetCode"
                               from="${budgetCodes}"
                               optionKey="id" optionValue="value"
-                              value="${filterPresets?.filterCIBudgetCode}"
+                              value="${filterPresets?.filterCIBudgetCode?.id}"
                               noSelection="${['':message(code:'default.select.all.label')]}" />
                 </div>
 
@@ -170,7 +164,7 @@
 
                 <div class="field">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
-                    <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
+                    <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown clearable search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
                         <g:set var="costItemElementsForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_ELEMENT])}" scope="request"/>
                         <g:each in="${costItemElementsForFilter}" var="rdv">
@@ -183,7 +177,7 @@
 
                 <div class="field">
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
-                    <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
+                    <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown clearable search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
                         <g:set var="costItemStatusForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_STATUS])}" scope="request"/>
                         <g:each in="${costItemStatusForFilter-RDStore.COST_ITEM_DELETED+RDStore.GENERIC_NULL_VALUE}" var="rdv">
@@ -237,7 +231,7 @@
                 <div class="field">
                     <div class="ui checkbox">
                         <label for="filterCIUnpaid"><g:message code="financials.costItemUnpaid"/></label>
-                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${params.filterCIUnpaid}">checked="checked"</g:if>>
+                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${filterPresets?.filterCIUnpaid}">checked="checked"</g:if>>
                     </div>
                 </div>
             </div>
@@ -254,7 +248,7 @@
                         }
                         taxTypesList.add([key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"])
                     %>
-                    <g:select id="filterCITaxType" class="ui dropdown selection search"
+                    <g:select id="filterCITaxType" class="ui dropdown clearable selection search"
                               name="filterCITaxType"
                               from="${taxTypesList}"
                               optionKey="${{it.key}}"
@@ -264,7 +258,7 @@
                 </div>
                 <div class="field">
                     <label for="filterCICurrency"><g:message code="default.currency.label"/></label>
-                    <g:select id="filterCICurrency" class="ui dropdown selection search"
+                    <g:select id="filterCICurrency" class="ui dropdown clearable selection search"
                               name="filterCICurrency"
                               from="${currenciesList}"
                               optionKey="${{it.id}}"
@@ -272,10 +266,26 @@
                               value="${filterPresets?.filterCICurrency?.id}"
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
+            </div>
+            <div class="three fields">
+                <div class="field">
+                    <label>${g.message(code: 'financials.costInformationDefinition')}</label>
+                    <ui:dropdown name="filterCIIDefinition"
+                                 class="filterCIIDefinition clearable"
+                                 from="${costInformationDefinitions}"
+                                 iconWhich="${Icon.PROP.IS_PRIVATE}"
+                                 optionKey="${{genericOIDService.getOID(it)}}"
+                                 optionValue="${{ it.getI10n('name') }}"
+                                 noSelection="${message(code: 'default.select.choose.label')}"/>
+                </div>
+                <div class="field" id="filterCIIValueWrapper">
+                    <label></label>
+                    <select id="filterCIIValue" name="filterCIIValue" multiple="multiple" class="ui fluid multiple search selection dropdown"></select>
+                </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}?reset=true" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}?reset=true" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
-                    <input type="submit" name="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                    <input type="submit" name="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
 
@@ -311,8 +321,8 @@
                     values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${genericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
                     minCharacters = 1; //due to high amount of data
                     break;
-                case 'filterCISPkg':
-                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${genericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
+                case 'filterCIPkg':
+                    values = [<g:each in="${filterPresets?.filterCIPkg}" var="ciPkg" status="i">'${ciPkg.id}'<g:if test="${i < filterPresets.filterCIPkg.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterSubProviders':
                     values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
@@ -387,11 +397,38 @@
             }
         });
     }
+        $(".filterCIIDefinition").change(function() {
+            $("#filterCIIValueWrapper").empty();
+            let url = '<g:createLink controller="ajaxJson" action="getPropValues"/>' + '?oid=' + $(this).dropdown('get value');
+            <g:if test="${fixedSubscription}">
+                url += '&subscription=${fixedSubscription.id}'
+            </g:if>
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $("#filterCIIValueWrapper").append('<label></label><select id="filterCIIValue" name="filterCIIValue" multiple="multiple" class="ui fluid multiple search selection dropdown"></select>');
+                    $.each(data, function (key, entry) {
+                        let filterCIIValue = null;
+                        <g:if test="${filterPresets?.filterCIIValue}">
+                            filterCIIValue = ${filterPresets?.filterCIIValue};
+                        </g:if>
+                        if(entry.value == filterCIIValue)
+                            $("#filterCIIValue").append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        else
+                            $("#filterCIIValue").append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    });
+                    $("#filterCIIValue").dropdown();
+                }
+            });
+        });
 
-        <g:if test="${params.filterCIUnpaid}">
+        <g:if test="${filterPresets?.filterCIUnpaid}">
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
         JSPC.app.setupDropdowns();
+        <g:if test="${filterPresets?.filterCIIDefinition}">
+            $(".filterCIIDefinition").dropdown("set selected","${genericOIDService.getOID(filterPresets?.filterCIIDefinition)}");
+        </g:if>
 
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year',
@@ -407,6 +444,12 @@
                     }
                 }
             },
+        });
+        $("#filterCIUnpaid").change(function() {
+            if($(this).is(":checked"))
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
+            else
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
         $("#filterCIUnpaid").change(function() {
             if($(this).is(":checked"))

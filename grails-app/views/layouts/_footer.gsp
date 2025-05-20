@@ -1,31 +1,5 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
-<style>
-        /** inline style here with intention:
-            flex layout helps footer to stick at bottom when main high not high enough
-            but would make a bug when using the sidebars at all the other sides without the footer
-         */
-        .pusher {
-            flex: 1;
-        }
-        body {
-          display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-        }
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
 
-        main {
-          flex: 1;
-        }
-        .pushable>.pusher {
-            overflow-y: visible!important;
-            overflow-x: visible!important;
-            min-height: auto!important;
-        }
-        .la-js-verticalNavi {
-            display: block!important;
-        }
-
-</style>
 <footer class="ui inverted vertical footer segment la-footer">
     <div class="ui container">
 
@@ -99,21 +73,21 @@
 
                <div class="ui inverted link list">
                    <div class="item">
-                       <i class="universal access icon"></i>
+                       <icon:universalAccess />
                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
                             ${message(code: 'landingpage.footer.4.link1')}
                        </a>
                    </div>
                 <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
                    <div class="item">
-                        <i class="universal access icon"></i>
+                        <icon:universalAccess />
                        <g:link controller="public" action="wcagFeedbackForm" class="content">
                            ${message(code: 'landingpage.footer.4.link2')}
                        </g:link>
                    </div>
                 </g:if>
                    <div class="item">
-                       <i class="universal access icon"></i>
+                       <icon:universalAccess />
                         <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
                             ${message(code: 'landingpage.footer.4.link4')}
                         </g:link>
@@ -125,9 +99,9 @@
                 <div class="ui inverted link list">
                     <g:set var="gitUrl" value="${AppUtils.getMeta('git.remote.origin.url')?.replace('.git', '')}" />
 
-                    <a target="_blank" class="item" href="${gitUrl}/releases">
+                    <g:link target="_blank" class="item" controller="public" action="releases">
                         Version: ${AppUtils.getMeta('info.app.version')}
-                    </a>
+                    </g:link>
 
                     <g:if test="${AppUtils.getMeta('git.branch')}">
                         <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.branch')}">
@@ -153,3 +127,47 @@
         </div>
     </div>
 </footer>
+<style>
+/** inline style here with intention:
+    flex layout helps footer to stick at bottom when main high not high enough
+    but would make a bug when using the sidebars at all the other sides without the footer
+ */
+.pusher {
+    flex: 1;
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+}
+.la-login {
+    flex: 3!important; /* 3/4 of height of main */
+    display: flex!important;
+    height: 100vh;
+}
+
+img.la-hero-image {
+    max-height: 100%;
+    min-width: 100%;
+    object-fit: cover;
+    vertical-align: bottom;
+}
+.pushable>.pusher {
+    overflow-y: visible!important;
+    overflow-x: visible!important;
+    min-height: auto!important;
+}
+.la-eye-catcher {
+    flex: 1!important; /* 1/4 of height of main */
+}
+.la-js-verticalNavi {
+    display: block!important;
+}
+</style>

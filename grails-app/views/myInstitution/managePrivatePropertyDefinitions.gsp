@@ -1,11 +1,8 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
-
-<laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
-
-    <g:set var="entityName" value="${message(code: 'org.label')}" />
+<%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation; de.laser.finance.CostInformationDefinition" %>
+<laser:htmlStart message="menu.institutions.private_props" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
@@ -18,7 +15,7 @@
         <laser:render template="actions"/>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" type="${contextService.getOrg().getCustomerType()}" />
 
     <laser:render template="nav" />
 
@@ -32,14 +29,108 @@
                     String active = ""
                     if (desc == entry.key) { active = "active" }
                 %>
-                <div class="${active} title">
-                    <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" /> (${entry.value.size()})
-                </div>
-                <div class="${active} content">
-                    <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-js-responsive-table la-table compact table">
-                            <thead>
+                <g:if test="${entry.key == CostInformationDefinition.COST_INFORMATION}">
+                    <div class="${active} title">
+                        <i class="dropdown icon"></i>
+                        <g:message code="costInformationDefinition.label" /> (${entry.value.size()})
+                    </div>
+                    <div class="${active} content">
+                        <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
+                            <table class="ui celled la-js-responsive-table la-table compact table">
+                                <thead>
+                                <tr>
+                                    <th>${message(code:'default.name.label')}</th>
+                                    <th>${message(code:'propertyDefinition.expl.label')}</th>
+                                    <th>${message(code:'default.type.label')}</th>
+                                    <th>${message(code:'propertyDefinition.count.label')}</th>
+                                    <g:if test="${editable || changeProperties}">
+                                        <th class="center aligned">
+                                            <ui:optionsIcon />
+                                        </th>
+                                    </g:if>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <g:each in="${entry.value}" var="cif">
+                                        <tr>
+                                            <td>
+                                                <ui:xEditable owner="${cif}" field="name_${languageSuffix}" />
+                                            </td>
+                                            <td>
+                                                <ui:xEditable owner="${cif}" field="expl_${languageSuffix}" type="textarea" />
+                                            </td>
+                                            <td>
+                                                ${PropertyDefinition.getLocalizedValue(cif.type)}
+                                                <g:if test="${cif.type == RefdataValue.class.name}">
+                                                    <g:set var="refdataValues" value="${[]}"/>
+                                                    <g:each in="${RefdataCategory.getAllRefdataValues(cif.refdataCategory)}"
+                                                            var="refdataValue">
+                                                        <g:if test="${refdataValue.getI10n('value')}">
+                                                            <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                                        </g:if>
+                                                    </g:each>
+                                                    <br />
+                                                    (${refdataValues.join('/')})
+                                                </g:if>
+                                            </td>
+                                            <td>
+                                            <%-- TODO once cost item filter is set up, attach it here! --%>
+                                                <div class="ui circular label">
+                                                    ${cif.countOwnUsages()}
+                                                </div>
+                                            </td>
+                                            <td class="x">
+                                                <g:if test="${editable}">
+                                                    <g:if test="${cif.countUsages()==0}">
+                                                        <g:link action="managePrivatePropertyDefinitions"
+                                                                params="[cmd:'delete', deleteIds: cif?.id, instanceType: CostInformationDefinition.class.name]"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: cif, field: "name_de")])}"
+                                                                data-confirm-term-how="delete"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                            <i class="${Icon.CMD.DELETE}"></i>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                            <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                                    data-xcg-pd="${cif.class.name}:${cif.id}"
+                                                                    data-xcg-type="${cif.type}"
+                                                                    data-xcg-rdc="${cif.refdataCategory}"
+                                                                    data-xcg-debug="${cif.getI10n('name')}">
+                                                                <i class="${Icon.CMD.REPLACE}"></i>
+                                                            </button>
+                                                        </span>
+                                                    </g:else>
+                                                </g:if>
+                                                <g:elseif test="${changeProperties && cif.countOwnUsages() > 0}">
+                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                                data-xcg-pd="${cif.class.name}:${cif.id}"
+                                                                data-xcg-type="${cif.type}"
+                                                                data-xcg-rdc="${cif.refdataCategory}"
+                                                                data-xcg-debug="${cif.getI10n('name')}"
+                                                        ><i class="${Icon.CMD.REPLACE}"></i></button>
+                                                    </span>
+                                                </g:elseif>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                </tbody>
+                            </table>
+                        </g:form>
+                    </div>
+                </g:if>
+                <g:else>
+                    <div class="${active} title">
+                        <i class="dropdown icon"></i>
+                        <g:message code="propertyDefinition.${entry.key}.label" /> (${entry.value.size()})
+                    </div>
+                    <div class="${active} content">
+                        <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
+                            <table class="ui celled la-js-responsive-table la-table compact table">
+                                <thead>
                                 <tr>
                                     <th></th>
                                     <th>${message(code:'default.name.label')}</th>
@@ -47,28 +138,36 @@
                                     <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <g:if test="${editable || changeProperties}">
-                                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                        <th class="center aligned">
+                                            <ui:optionsIcon />
+                                        </th>
                                     </g:if>
                                 </tr>
-                            </thead>
-                            <tbody>
+                                </thead>
+                                <tbody>
                                 <g:each in="${entry.value}" var="pd">
+                                    <g:set var="multipleOccurrenceError" value="${multiplePdList && multiplePdList.contains(pd.id) && !pd.multipleOccurrence}" />
+
                                     <tr>
                                         <td>
-                                            <g:if test="${pd.isHardData}">
-                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                    <i class="check circle icon green"></i>
+                                            <g:if test="${pd.mandatory}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                    <i class="${Icon.PROP.MANDATORY}"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                    <i class="redo icon orange"></i>
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                                 </span>
                                             </g:if>
-
                                             <g:if test="${pd.isUsedForLogic}">
-                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                    <i class="ui icon red cube"></i>
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                    <i class="${Icon.PROP.LOGIC}"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${multipleOccurrenceError}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrenceError.tooltip', args:[pd.id])}">
+                                                    <i class="icon exclamation circle red"></i>
                                                 </span>
                                             </g:if>
                                         </td>
@@ -96,16 +195,12 @@
 
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
                                                     <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">
-                                                        <div class="ui blue circular label">
-                                                            ${pd.countOwnUsages()}
-                                                        </div>
+                                                        <ui:bubble count="${pd.countOwnUsages()}" />
                                                     </g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
                                                     <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">
-                                                        <div class="ui blue circular label">
-                                                            ${pd.countOwnUsages()}
-                                                        </div>
+                                                        <ui:bubble count="${pd.countOwnUsages()}" />
                                                     </g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
@@ -120,70 +215,90 @@
                                             <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                        <i class="star icon"></i>
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                        <i class="${Icon.PROP.MANDATORY_NOT.replaceAll('yellow', '')}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
-                                                        <i class="la-star slash icon"></i>
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                        <i class="${Icon.PROP.MANDATORY.replaceAll('yellow', '')}"></i>
                                                     </g:link>
                                                 </g:else>
-                                                <g:if test="${!multiplePdList?.contains(pd.id)}">
-                                                    <g:if test="${pd.multipleOccurrence}">
+                                                <g:if test="${pd.multipleOccurrence}">
+                                                    <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="ui icon orange button la-modern-button la-popup-tooltip la-delay">
-                                                            <i class="redo slash icon"></i>
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                            <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
-                                                            <i class="la-redo slash icon"></i>
-                                                        </g:link>
+                                                        <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                            <icon:placeholder /><%-- Hidden Fake Button --%>
+                                                        </div>
                                                     </g:else>
                                                 </g:if>
+                                                <g:else>
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"
+                                                            params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                        <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>
+                                                    </g:link>
+                                                </g:else>
+%{--                                                <g:if test="${!multiplePdList?.contains(pd.id)}">--}%
+%{--                                                    <g:if test="${pd.multipleOccurrence}">--}%
+%{--                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"--}%
+%{--                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">--}%
+%{--                                                            <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>--}%
+%{--                                                        </g:link>--}%
+%{--                                                    </g:if>--}%
+%{--                                                    <g:else>--}%
+%{--                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"--}%
+%{--                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">--}%
+%{--                                                            <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>--}%
+%{--                                                        </g:link>--}%
+%{--                                                    </g:else>--}%
+%{--                                                </g:if>--}%
                                                 <g:if test="${pd.countUsages()==0}">
                                                     <g:link action="managePrivatePropertyDefinitions"
-                                                            params="[cmd:'delete', deleteIds: pd?.id]"
+                                                            params="[cmd:'delete', deleteIds: pd?.id, instanceType: PropertyDefinition.class.name]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [fieldValue(bean: pd, field: "name_de")])}"
                                                             data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                             role="button"
                                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                                        <i class="${Icon.CMD.DELETE}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                        <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                                 data-xcg-pd="${pd.class.name}:${pd.id}"
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
                                                                 data-xcg-debug="${pd.getI10n('name')}">
-                                                            <i class="exchange icon"></i>
+                                                            <i class="${Icon.CMD.REPLACE}"></i>
                                                         </button>
                                                     </span>
                                                 </g:else>
                                             </g:if>
                                             <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')}"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:elseif>
                                         </td>
                                     </tr>
                                 </g:each>
-                            </tbody>
-                        </table>
-                    </g:form>
-                </div>
+                                </tbody>
+                            </table>
+                        </g:form>
+                    </div>
+                </g:else>
             </g:each>
         </div>
      </g:if>
@@ -193,39 +308,40 @@
     <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
         <g:form class="ui form" action="managePrivatePropertyDefinitions" >
-            <g:field type="hidden" name="cmd" value="add" />
+            <input type="hidden" name="cmd" value="add"/>
 
             <div class="field required">
-                <label class="property-label" for="pd_name">Name <g:message code="messageRequiredField" /></label>
+                <label for="pd_name">Name <g:message code="messageRequiredField" /></label>
                 <input type="text" name="pd_name" id="pd_name" />
             </div>
 
             <div class="field">
-                <label class="property-label" for="pd_expl">${message(code:'propertyDefinition.expl.label')}</label>
+                <label for="pd_expl">${message(code:'propertyDefinition.expl.label')}</label>
                 <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
             </div>
 
             <div class="fields">
 
                 <div class="field six wide required">
-                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
+                    <label for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-                        if (institution.isCustomerType_Inst_Pro()) {
+                        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
                         }
                         availablePrivDescs.each { String pd ->
                             availablePrivateDescr[pd] = message(code:"propertyDefinition.${pd}.label")
                         }
+                        availablePrivateDescr[CostInformationDefinition.COST_INFORMATION] = message(code:"costInformationDefinition.label")
                     %>
-                    <g:select name="pd_descr" id="pd_descr" class="ui dropdown" optionKey="key" optionValue="value"
+                    <g:select name="pd_descr" id="pd_descr" class="ui dropdown clearable" optionKey="key" optionValue="value"
                         from="${availablePrivateDescr.entrySet()}" noSelection="${[null:message(code:'default.select.choose.label')]}"/>
                 </div>
 
-                <div class="field five wide required">
-                    <label class="property-label" for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
-                    <g:select class="ui dropdown"
+                <div class="field five wide required propertyDefinitionField">
+                    <label for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
+                    <g:select class="ui dropdown clearable"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                         noSelection="${[null:message(code:'default.select.choose.label')]}"
@@ -233,8 +349,8 @@
                         id="pd_type" />
                 </div>
 
-                <div class="field four wide">
-                    <label class="property-label">Optionen</label>
+                <div class="field four wide propertyDefinitionField">
+                    <label>Optionen</label>
 
                     <g:checkBox type="text" name="pd_mandatory" /> ${message(code:'default.mandatory.tooltip')}
                     <br />
@@ -243,36 +359,23 @@
 
             </div>
 
-            <div class="fields">
-                <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
-                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
-
-                    <div class="ui grid" style="margin-top:1em">
-                        <div class="ten wide column">
-                            <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
-
-                                <p class="hidden" data-prop-def-desc="${cat.key}">
-                                    Häufig verwendete Kategorien: <br />
-
-                                    <%
-                                        List catList =  cat.value?.take(3)
-                                        catList = catList.collect { entry ->
-                                            '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')
-                                        }
-                                        println catList.join('<br />')
-                                    %>
-
-                                </p>
-                            </g:each>
-                        </div>
-                        <div class="six wide column">
-                            <br />
-                            <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
-                                <i class="icon window maximize outline"></i> Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
-                            </a>
-                        </div>
-                    </div><!-- .grid -->
+            <div id="refdataFormWrapper" class="propertyDefinitionField">
+                <div class="field">
+                    <label for="rdCatSelector"><g:message code="refdataCategory.label" /></label>
+                    <select class="ui search selection dropdown la-not-clearable" id="rdCatSelector" name="refdatacategory">
+                        <g:each in="${RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())}" var="rdc">
+%{--                            <option value="">${message(code:'default.select.choose.label')}</option>--}%
+                            <option value="${rdc.id}"${rdc.desc == RDConstants.Y_N_U ? ' selected' : ''}>${rdc.getI10n('desc')}</option>
+                        </g:each>
+                    </select>
+                </div>
+                <div class="field">
+                    %{-- TODO: AJAX --}%
+                    <label><g:message code="refdataValue.plural" /></label>
+                    <g:each in="${RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())}" var="rdc">
+                        <g:set var="h1ag352df" value="${RefdataValue.executeQuery('select value_' + LocaleUtils.getCurrentLang() + ' from RefdataValue where owner.id = ' + rdc.id + ' order by value_' + LocaleUtils.getCurrentLang())}"/>
+                        <textarea style="display: none" class="rdCatValues" id="rdCatValues_${rdc.id}">${h1ag352df.join(', ')}</textarea>
+                    </g:each>
                 </div>
             </div>
 
@@ -283,27 +386,35 @@
 
     $('#pd_descr').change(function() {
         $('#pd_type').trigger('change');
+        if($(this).val() == '${CostInformationDefinition.COST_INFORMATION}') {
+            $('.propertyDefinitionField').hide();
+        }
+        else {
+            $('.propertyDefinitionField').show();
+            $('#pd_type').trigger('change');
+        }
     });
 
     $('#pd_type').change(function() {
         var selectedText = $( "#pd_type option:selected" ).val();
         if( selectedText == "${RefdataValue.name}") {
-            $("#remoteRefdataSearchWrapper").show();
-
-            var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
-            if ($pMatch) {
-                $( "p[data-prop-def-desc]" ).addClass('hidden')
-                $pMatch.removeClass('hidden')
-            }
+            $("#refdataFormWrapper").show();
+            $('#rdCatSelector').trigger('change');
         }
         else {
-            $("#remoteRefdataSearchWrapper").hide();
+            $("#refdataFormWrapper").hide();
         }
     });
 
     $('#pd_type').trigger('change');
+    $('#pd_descr').trigger('change');
 
-        c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
+    $('#rdCatSelector').on('change', function() {
+        let rdc = $('#rdCatSelector').dropdown('get value')
+        $('.rdCatValues').hide()
+        $('#rdCatValues_' + rdc).show()
+    });
+
 
     </laser:script>
 

@@ -2,7 +2,9 @@ token,value_de,value_en
 access.choice.remote,Zugangswahl Remote,Access choice remote
 access.limitation,Zugangsbegrenzung,Access limitation
 access.point.type,Access Point Type,Access Point Type
+accessibility.compliance,Accessibility Compliance,Grad der Barrierefreiheit
 address.type,Art der Adresse,Address Type
+agreement,Zustimmung,Agreement
 archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority
 billingTime, Rechnungzeitpunkt, Time of billing
@@ -32,14 +34,36 @@ contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
 content.option.asme,Gewählte Inhaltsoption ASME DC,Chosen content option ASME DC
 content.option.asme.addition,Gewählte Inhaltsoption ASME DC Zuwahl,Chosen content option ASME DC Archive
+content.option.asme.addition.new,Gewählte Inhaltsoption ASME DC Zuwahl NEU,Chosen content option ASME DC Zuwahl NEU
 content.option.london.journals,Gewählte Inhaltsoption RS London Journals,Chosen content option RS London Journals
 cost.configuration,Kostenkonfiguration,Cost configuration
+cost.information.availability.book,Informationsversorgungskosten Bücher,TODO ERMS-6310
+cost.information.availability.database,Informationsversorgungskosten Datenbanken,TODO ERMS-6310
+cost.information.availability.ill,Informationsversorgungskosten für Fernleihe oder Dokumentlieferung,TODO ERMS-6310
+cost.information.availability.journal,Informationsversorgungskosten Zeitschriften (nur lesen),TODO ERMS-6310
+cost.information.availability.other,Informationsversorgungskosten sonstige Medien oder Dienste,TODO ERMS-6310
+cost.information.contracts.contractual,Rahmenvertrag technisch-inhaltlich,TODO ERMS-6310
+cost.information.contracts.library,Überregionale bibliothekarische Dienste,TODO ERMS-6310
+cost.information.contracts.membership,Institutionelle Mitgliedschaften in Verbünden oder erstattungsfähige persönliche Mitgliedschaften in Berufsverbänden o. ä.,TODO ERMS-6310
+cost.information.personnel.infrastructure,Personal Betrieb Infrastrukturen,TODO ERMS-6310
+cost.information.personnel.service,Serviceangebote und Workflows,TODO ERMS-6310
+cost.information.publication.book,Publikationskosten Bücher,TODO ERMS-6310
+cost.information.publication.journal,Publikationskosten Zeitschriftenartikel,TODO ERMS-6310
+cost.information.publication.other,Publikationskosten Sonstiges,TODO ERMS-6310
+cost.information.service.editor,"Universitätsverlag (Betrieb und Wartung technisch, ggf. Anschaffung)",TODO ERMS-6310
+cost.information.service.hardware,"Bibliotheksausstattung und -hardware (Anschaffung, Betrieb, Wartung technisch)",TODO ERMS-6310
+cost.information.service.infrastructure,"Infrastrukturen (Betrieb und Wartung technisch, ggf. Anschaffung)",TODO ERMS-6310
+cost.information.service.software,Software,TODO ERMS-6310
+cost.information.source.own,Eigenmittel der Einrichtung,TODO ERMS-6310
+cost.information.source.central,Zentrale Drittmittel (DM),TODO ERMS-6310
+cost.information.source.decentral,Dezentrale Drittmittel,TODO ERMS-6310
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
 coverage.depth,Umfang,Coverage depth
+curatory.group.type,Kuratorengruppentyp,CuratoryGroup Type
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 dbs.subject.group,DBS Fächergruppe,DBS Subject Group
@@ -65,6 +89,7 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+invoice.interval,Rechnungsintervall,Invoicing interval
 invoice.processing,Rechnungsabwicklung,Invoice Processing
 ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
@@ -94,7 +119,6 @@ license.oa.receiving.modalities,Bezugsmodalitäten,Receiving Modalities
 license.oa.repository,Repositorium,Repository
 license.oa.type,Open Access Typ,Open Access Type
 license.remote.access,License.RemoteAccess,License.RemoteAccess
-license.remote.access2,Remote-Zugriff,Remote Access
 license.statistics.delivery,Statistik Liefermethode,Statistics Delivery
 license.statistics.format,Statistik Auslieferungsformat (Vertrag),Statistics Format (License)
 license.statistics.frequency,Statistik Auslieferungsfrequenz (Vertrag),Statistics Frequency (License)
@@ -114,7 +138,6 @@ oa.publishing.timespan,OA Publikation Zeitspanne,OA publishing timespan
 oa.publishing.report.delivery,OA Publikations-Report Lieferweg,OA publishing report delivery
 oa.responsible.party,OA Zuständigkeit,OA responsible party
 oa.time.moment,OA relevanter Zeitpunkt,OA relevant time moment
-org.status,Status,Status
 org.type,Organisationstyp,Organisation Type
 organisational.role,Organisational Role,Organisational Role
 package.breakable,Package.Breakable,Package.Breakable
@@ -135,7 +158,8 @@ person.position,Position,Person Position
 person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
 provider.status,Anbieter-Status,Provider Status
-provider.link.type,Verknüpfungstyp (Anbieter/Lieferant),Link type (provider/vendor)
+provider.link.type,Verknüpfungstyp (Anbieter/Library Supplier),Link type (provider/library supplier)
+publish.option,Publishoption,publish option
 regions.at,Österreichische Länder,States of Austria
 regions.de,Bundesländer Deutschlands,Federal States of Germany
 regions.ch,Kantone der Schweiz,Cantons of Switzerland
@@ -178,6 +202,7 @@ subscription.type,Subscription Type,Subscription Type
 subscription.kind,Lizenzart,Subscription Kind
 survey.status,Umfrage-Status,Survey Status
 survey.type,Umfrage-Typ,Survey Type
+survey.property.participation,Teilnahme (mit Antwortoptionen),Participation (with response options)
 task.priority,Aufgabenpriorität,Task Priority
 task.status,Aufgabenstatus,Task Status
 tax.type,TaxType,TaxType
@@ -193,19 +218,15 @@ tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
 title.status,TitleInstanceStatus,TitleInstanceStatus
 title.medium,Title Medium,Title Medium
 title.type,Title Type,Title Type
-transform.format,Transform Format,Transform Format
-transform.type,Transform Type,Transform Type
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
-vendor.status,Lieferant-Status,Vendor Status
+vendor.status,Library Supplier-Status,Library Supplier Status
 vendor.ordering.supported.library.system,Unterstützte Bibliothekssysteme,Supported Library Systems
 vendor.ordering.electronic.delivery.delay,elektronischer Benachrichtigungskanal,Electronic notification channel
 vendor.invoicing.format,Elektronisches Rechnungsformat,Electronic invoice format
 vendor.invoicing.dispatch,Rechnungsübermittlungsweg,Invoice dispatch
-workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.workflow.state,Verfügbarkeit,Availability
 workflow.workflow.status,Status,Status
 workflow.workflow.target.role,Verfügbar für folgende Nutzer,Usable by customer type
 workflow.workflow.target.type,Verfügbar für folgende Objekte,Usable for object type

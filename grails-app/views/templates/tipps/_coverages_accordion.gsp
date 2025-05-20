@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 %{-- BOOK  --}%
 <g:if test="${(tipp.titleType == 'monograph')}">
     %{-- IE  --}%
@@ -10,7 +11,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessStartDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -27,7 +28,7 @@
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
                                           field="accessEndDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -46,7 +47,7 @@
 
             <div class="description">
 
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                               date="${tipp.dateFirstInPrint}"/>
@@ -57,7 +58,7 @@
 
             <div class="description">
                 <span class='ui grey horizontal divider la-date-devider'></span>
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                               date="${tipp.dateFirstOnline}"/>
@@ -86,10 +87,12 @@
                     }
                     paramData.putAll(params)
                 %>
-                <g:each in="${ie.coverages}" var="covStmt" status="counterCoverage">
-                    <laser:render template="/templates/tipps/coverageStatement_accordion"
-                                  model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
-                </g:each>
+                <div id="coverageWrapper_${ie.id}">
+                    <g:each in="${ie.coverages}" var="covStmt" status="counterCoverage">
+                        <laser:render template="/templates/tipps/coverageStatement_accordion"
+                                      model="${[covStmt: covStmt, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
+                    </g:each>
+                </div>
             </div>
 %{--            <div class="five wide column">
                 <div class="ui list la-label-list">
@@ -100,7 +103,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessStartDate"/>
-                                <i class="grey question circle icon la-popup-tooltip la-delay"
+                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip"
                                    data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                             </g:if>
                             <g:else>
@@ -118,7 +121,7 @@
                             <g:if test="${editable}">
                                 <ui:xEditable owner="${ie}" type="date"
                                               field="accessEndDate"/>
-                                <i class="grey question circle icon la-popup-tooltip la-delay"
+                                <i class="${Icon.TOOLTIP.HELP} icon la-popup-tooltip"
                                    data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                             </g:if>
                             <g:else>
@@ -131,12 +134,6 @@
                 </div>
             </div>--}%
         </div>
-%{--        <g:if test="${editable}">
-            <br/>
-            <g:link action="addCoverage" params="${paramData + [issueEntitlement: ie.id]}"
-                    class="ui compact icon button positive tiny"><i class="ui icon plus"
-                                                                    data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
-        </g:if>--}%
     </g:if>
 
     %{-- TIPP  --}%
@@ -162,7 +159,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessStartDate"/>
-                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                     </g:if>
                     <g:else>
@@ -179,7 +176,7 @@
                     <g:if test="${editable}">
                         <ui:xEditable owner="${ie}" type="date"
                                       field="accessEndDate"/>
-                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                        <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                     </g:if>
                     <g:else>
@@ -199,7 +196,7 @@
 
         <div class="description">
 
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                           date="${tipp.dateFirstOnline}"/>

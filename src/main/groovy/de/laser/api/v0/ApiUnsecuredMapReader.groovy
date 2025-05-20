@@ -1,21 +1,18 @@
 package de.laser.api.v0
 
-import de.laser.Address
-import de.laser.Combo
-import de.laser.ElectronicBilling
-import de.laser.ElectronicDeliveryDelayNotification
-import de.laser.InvoiceDispatch
-import de.laser.LibrarySystem
+import de.laser.addressbook.Address
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
 import de.laser.License
 import de.laser.Org
-import de.laser.OrgSubjectGroup
-import de.laser.Package
-import de.laser.Platform
-import de.laser.Provider
-import de.laser.ProviderLink
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.Invoice
 import de.laser.finance.PriceItem
@@ -92,11 +89,12 @@ class ApiUnsecuredMapReader {
         result.gokbId       = org.gokbId
         result.name         = org.name
         result.sortname     = org.sortname
-        result.status       = org.status?.value
+//        result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
+        result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-        result.type        = org.orgType?.collect{ it.value }
+        result.type        = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -423,7 +421,7 @@ class ApiUnsecuredMapReader {
         //result.softwareProvider     = pform.softwareProvider?.value
 
         // References
-        result.provider = getProviderStubMap(pform.provider) // de.laser.Provider
+        result.provider = getProviderStubMap(pform.provider) // de.laser.wekb.Provider
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
 
         ApiToolkit.cleanUp(result, true, true)
@@ -467,14 +465,14 @@ class ApiUnsecuredMapReader {
         // References
         Map<String, Object> queryParams = [provider:provider]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.provider = :provider and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(provider.ids) // de.laser.Identifier
         result.packages     = ApiCollectionReader.getPackageCollection(provider.packages)
         result.platforms    = ApiCollectionReader.getPlatformCollection(provider.platforms)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
         result.invoicingVendors    = ApiCollectionReader.getVendorCollection(provider.invoicingVendors.vendor)
 
         result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.ProviderProperty
@@ -503,9 +501,9 @@ class ApiUnsecuredMapReader {
         result.lastUpdated           = ApiToolkit.formatInternalDate(vendor._getCalculatedLastUpdated())
         result.homepage              = vendor.homepage
         result.researchPlatformForEbooks = vendor.researchPlatformForEbooks
-        result.prequalificationVOLInfo = vendor.prequalificationVOLInfo
+        result.prequalificationInfo = vendor.prequalificationInfo
         Set<String> boolFields = ['webShopOrders', 'ediOrders', 'xmlOrders', 'paperInvoice', 'managementOfCredits', 'processingOfCompensationPayments', 'individualInvoiceDesign',
-                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalificationVOL']
+                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalification']
         result.putAll(ApiToolkit.readBoolValues(vendor, boolFields))
 
         result.retirementDate      = vendor.retirementDate ? ApiToolkit.formatInternalDate(vendor.retirementDate) : null
@@ -521,13 +519,13 @@ class ApiUnsecuredMapReader {
         // References
         Map<String, Object> queryParams = [vendor:vendor]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
         result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages.pkg)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
 
         result.properties   = ApiCollectionReader.getPropertyCollection(vendor, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
 

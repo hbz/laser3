@@ -1,9 +1,9 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
     <%
-        boolean checkedEditable = workflowService.hasUserPerm_edit()
+        boolean checkedEditable = workflowService.hasWRITE()
     %>
 
     <g:set var="clistInfo" value="${clist.getInfo()}" />
@@ -13,22 +13,27 @@
 
         <g:if test="${checkedEditable}">
             <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-                <div class="ui message positive" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui success message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.ok')}
                 </div>
             </g:if>
             <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
-                <div class="ui message negative" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                <div class="ui error message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     ${message(code: 'workflow.edit.error')}
+                </div>
+            </g:elseif>
+            <g:elseif test="${status == WorkflowService.OP_STATUS_FORBIDDEN}">
+                <div class="ui error message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                    ${message(code: 'default.noPermissions')}
                 </div>
             </g:elseif>
             <g:else>
                 <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     <div class="content">
-                        <i class="hand point right outline icon"></i>
+                        <icon:pointingHand />
                         Ihre Änderungen werden direkt/ohne explizites Speichern wirksam.
                         <br />
-                        <i class="hand point right outline icon"></i>
+                        <icon:pointingHand />
                         Bei einer Kopie werden Informationen aus den Feldern
                         <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
                         nicht übernommen.
@@ -118,7 +123,7 @@
 
                     <div class="row">
                         <div class="two wide column wf-centered">
-                            <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)}"></i>
+                            <i class="${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)} large"></i>
                         </div>
                         <div class="ten wide column">
 
@@ -173,36 +178,36 @@
                         <div class="four wide column wf-centered">
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                                    <div class="ui icon blue button compact la-modern-button"
-                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
+                                    <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                                    <div class="${Btn.MODERN.SIMPLE} compact"
+                                         data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${ti > 0}">
-                                        <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
+                                        <div class="${Btn.MODERN.SIMPLE} compact"
+                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                     <g:if test="${ti < cpoints.size()-1}">
-                                        <div class="ui icon blue button compact la-modern-button"
-                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow down"></i>
+                                        <div class="${Btn.MODERN.SIMPLE} compact"
+                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </div>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                 </g:else>
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-%{--                                <div class="ui icon negative button la-modern-button"--}%
-%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icons.CMD_DELETE} icon"></i>--}%
+%{--                                <div class="${Btn.MODERN.NEGATIVE}"--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="${Icon.CMD.DELETE}"></i>--}%
 %{--                                </div>--}%
-                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
                                         data-confirm-term-how="delete"
                                         data-callback="workflowFlyoutCmd"
@@ -210,7 +215,7 @@
                                         data-key="${WfChecklist.KEY}:${clist.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </div>
                             </g:if>
 
@@ -249,16 +254,16 @@
                                     <input type="hidden" name="target" value="${clistInfo.target.class.name}:${clistInfo.target.id}" />
                                 </div>
                                 <div class="field">
-                                    <input type="submit" class="ui button green" name="save" value="Neue Aufgabe hinzufügen">
+                                    <input type="submit" class="${Btn.POSITIVE}" name="save" value="Neue Aufgabe hinzufügen">
                                 </div>
                             </g:form>
                         </div>
 
                         <div class="four wide column wf-centered">
-                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                            <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                            <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
 
-                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
+                            <div class="${Btn.MODERN.SIMPLE} compact" id="cpFormToggle"><i class="${Icon.CMD.ADD}"></i></div>
                         </div>
                     </div><!-- .row -->
 

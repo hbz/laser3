@@ -1,7 +1,7 @@
-<%@ page import="de.laser.helper.Icons; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorWithPermsBasic" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+<g:if test="${isInstEditorWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -75,7 +75,9 @@
                 <th>${message(code: 'accessPoint.ip.format.input')}</th>
                 <th>${message(code: 'accessPoint.ip.format.range')}</th>
                 <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
-                <th>${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -85,12 +87,12 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+                        <g:if test="${isInstEditorWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                                    class="ui negative icon button"
+                                    class="${Btn.ICON.NEGATIVE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -99,7 +101,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -110,9 +112,9 @@
                     <div class="ui form">
                         <div class="field">
                             <label for="ipv4_ip">${message(code: 'accessPoint.ip.data')}
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                <span class="la-long-tooltip la-popup-tooltip"
                                       data-content="${message(code: "accessPoint.ip.input")}">
-                                    <i class="grey question circle icon"></i></span>
+                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                             </label>
 
                             <g:if test="${autofocus == true}">
@@ -122,7 +124,7 @@
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="submit" class="ui button" value="${message(code: 'accessPoint.button.add')}"/>
+                        <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
             </div>
@@ -138,7 +140,9 @@
             <th>${message(code: 'accessPoint.ip.format.input')}</th>
             <th>${message(code: 'accessPoint.ip.format.range')}</th>
             <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
-            <th>${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -148,12 +152,12 @@
                 <td>${accessPointData.ipRange}</td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+                    <g:if test="${isInstEditorWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                                class="ui negative icon button"
+                                class="${Btn.ICON.NEGATIVE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -162,7 +166,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorWithPermsBasic}">
         <div class="ui divider"></div>
 
         <div class="content">
@@ -173,9 +177,9 @@
                 <div class="ui form">
                     <div class="field">
                         <label for="ipv6_ip">${message(code: 'accessPoint.ip.data')}
-                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                            <span class="la-long-tooltip la-popup-tooltip"
                                   data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="grey question circle icon la-popup"></i></span>
+                                <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>
                         </label>
 
                         <g:if test="${autofocus == true}">
@@ -185,7 +189,7 @@
                             <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="submit" class="ui button"
+                    <input type="submit" class="${Btn.SIMPLE}"
                            value="${message(code: 'accessPoint.button.add')}"/>
                 </div>
             </g:form>

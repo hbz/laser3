@@ -1,10 +1,9 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+<g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
-
+        <laser:render template="/templates/sidebar/actions" />
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
         <g:if test="${editable}">
@@ -54,19 +53,10 @@
             </g:elseif>
         </g:if>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <g:if test="${actionName in ['show']}">
-                <div class="divider"></div>
-                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
-                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
-                </g:link>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.org')}</g:link>
-            </g:if>
-        </sec:ifAnyGranted>
+        <g:render template="actions_roleAdminOptions" />
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
+<g:elseif test="${contextService.isInstEditor( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
 
@@ -114,15 +104,8 @@
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <g:if test="${actionName in ['show']}">
-                <div class="divider"></div>
-                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
-                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
-                </g:link>
-            </g:if>
-        </sec:ifAnyGranted>
+
+        <g:render template="actions_roleAdminOptions" />
     </ui:actionsDropdown>
 </g:elseif>
 <g:else>
@@ -144,8 +127,8 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
+<g:if test="${contextService.isInstEditor()}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org']]}" />
 </g:if>
 
 

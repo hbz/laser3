@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
@@ -106,7 +106,7 @@
                                value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
                         <g:select
                                 from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                class="ui dropdown"
+                                class="ui dropdown clearable"
                                 optionKey="id"
                                 optionValue="${{ it.getI10n('value') }}"
                                 name="subStatus"
@@ -125,8 +125,7 @@
             </table>
 
             <div class="la-float-right">
-                <button type="submit"
-                        class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
+                <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.renew')}</button>
             </div>
             <br />
 

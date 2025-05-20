@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyLinks;de.laser.survey.SurveyInfo;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyLinks;de.laser.survey.SurveyInfo;de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <ui:modal id="surveyLinks" text="${message(code: 'surveyLinks.link.button')}" msgSave="${message(code: 'default.button.link.label')}">
@@ -7,13 +7,13 @@
             <div class="ui grid">
                 <div class="row">
                     <div class="six wide column">
-                        ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
-                        <i class="info circle icon blue"></i>
+                        ${message(code: 'surveyLinks.link.info')} <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'surveyLinks.link.info.tooltip')}">
+                        <i class="${Icon.TOOLTIP.INFO} blue"></i>
                     </span>
                     </div>
                     <div class="ten wide column">
-                        <g:select class="ui dropdown" name="linkSurvey"
-                                      from="${SurveyInfo.executeQuery("from SurveyInfo s where s.status in (:status) and s != :surveyInfo and s.owner = :owner and s.id not in (select sl.targetSurvey.id from SurveyLinks sl where sl.sourceSurvey.id = :surveyInfo) and s.id not in (select sl.sourceSurvey.id from SurveyLinks sl where sl.targetSurvey.id = :surveyInfo) order by s.name", [status: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_SURVEY_STARTED], surveyInfo: surveyInfo, owner: contextOrg])}"
+                        <g:select class="ui dropdown clearable" name="linkSurvey"
+                                      from="${SurveyInfo.executeQuery("from SurveyInfo s where s.status in (:status) and s != :surveyInfo and s.owner = :owner and s.id not in (select sl.targetSurvey.id from SurveyLinks sl where sl.sourceSurvey.id = :surveyInfo) and s.id not in (select sl.sourceSurvey.id from SurveyLinks sl where sl.targetSurvey.id = :surveyInfo) order by s.name", [status: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_SURVEY_STARTED], surveyInfo: surveyInfo, owner: contextService.getOrg()])}"
                                       optionKey="id"
                                       optionValue="${{ it.name + ' - ' + it.type.getI10n('value') + ' - ' + ' (' + (it.startDate ? g.formatDate(date: it.startDate,format: message(code: 'default.date.format.notime')) : '') + (it.endDate ? " - " + g.formatDate(date: it.endDate,format: message(code: 'default.date.format.notime')) : '') + ')' }}"
                                       required=""/>

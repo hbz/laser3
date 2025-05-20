@@ -6,9 +6,9 @@ import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import de.laser.stats.SushiCallError
+import de.laser.stats.CounterCheck
 import de.laser.utils.DateUtils
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
@@ -16,6 +16,8 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
@@ -155,7 +157,7 @@ class StatsSyncService {
      * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more
@@ -213,14 +215,13 @@ class StatsSyncService {
      * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more
      */
     @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
-        ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
         BasicHttpClient http
@@ -234,7 +235,7 @@ class StatsSyncService {
                 }
             }
             else {
-                http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+                http = new BasicHttpClient(Wekb.getSushiSourcesURL())
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
                         if(incremental) {
@@ -1110,7 +1111,7 @@ class StatsSyncService {
      * @return the JSON response map
      */
     Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], checkParams = [org: ci.customer, platform: ci.platform]
         try {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
@@ -1130,6 +1131,7 @@ class StatsSyncService {
                         else {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
+                            CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                         }
                     }
                     else if(json != null) {
@@ -1155,7 +1157,10 @@ class StatsSyncService {
                     result.header = reader["Report_Header"]
                 else {
                     log.error("server response: ${resp?.status()} - ${reader}")
-                    result.error = resp?.status()
+                    if(reader?.containsKey('Code'))
+                        result.error = reader["Code"]
+                    else
+                        result.error = resp?.status()
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
@@ -1170,10 +1175,8 @@ class StatsSyncService {
             log.error("stack trace: ", e)
         }
         if(result.containsKey('error')) {
-            if(result.error.hasProperty('code') && result.error in ([2000 ,2010, 2020])) {
-                SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: 'key pair error')
-                if(!sce.save())
-                    log.error(sce.getErrors().getAllErrors().toListString())
+            if(result.error && result.error in ([2000 ,2010, 2020])) {
+                CounterCheck.construct([platform: ci.platform, url: url, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: result.error, errToken: "default.stats.error.${result.error}"])
             }
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
@@ -1190,7 +1193,7 @@ class StatsSyncService {
      * @return the response body or an error map upon failure
      */
     Map<String, Object> fetchXMLData(String url, CustomerIdentifier ci, requestBody) {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], checkParams = [org: ci.customer, platform: ci.platform]
 
         BasicHttpClient http
         try  {
@@ -1206,9 +1209,7 @@ class StatsSyncService {
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
                     if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
                         log.warn("wrong key pair")
-                        SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text())
-                        if(!sce.save())
-                            log.error(sce.getErrors().getAllErrors().toListString())
+                        CounterCheck.construct([platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), errToken: '401'])
                         result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: 401]
                     }
                     else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
@@ -1228,6 +1229,7 @@ class StatsSyncService {
                         //lsc.missingPeriods.remove(wasMissing)
                         GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                         result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text(), code: resp.code()]
+                        CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                     }
                 }
                 else {
@@ -1258,6 +1260,7 @@ class StatsSyncService {
         if(result.containsKey('error')) {
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
+            sysEventPayload.ci = ci.id
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
         }
         result

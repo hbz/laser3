@@ -79,31 +79,8 @@
 </h1>
 
 <div style="border: 1px solid black;">
-    <g:if test="${participant}">
-        <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
-        <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
-        <table>
-            <tbody>
-            <tr>
-                <td>
-                    <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
-                    ${choosenOrg?.libraryType?.getI10n('value')}
-                </td>
-                <td>
-                    <g:if test="${choosenOrgCPAs}">
-                        <g:each in="${choosenOrgCPAs}" var="gcp">
-                            %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
-                            <g:render template="/templates/cpa/person_details"  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
-                        </g:each>
-
-                    </g:if>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </g:if>
-
+<g:render template="/survey/participantInfos"/>
     <dl>
         <dt>
             <g:message code="surveyInfo.comment.label"/>
@@ -127,10 +104,8 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
-                                                                                surveyResults      : surveyResults,
-                                                                                institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                participant: participant,
+                                                                                ownerView: ownerView]"/>
 </g:if>
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
@@ -139,7 +114,7 @@
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
                                                                            visibleProviders: providerRoles,
-                                                                           institution: institution,
+                                                                           participant: participant,
                                                                            ownerView: ownerView]"/>
 </g:if>
 
@@ -149,10 +124,8 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
-                                                                                surveyResults      : surveyResults,
-                                                                                institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                participant: participant,
+                                                                                ownerView: ownerView]"/>
 
     <g:render template="/templates/survey/export/entitlementSurveyPDF" model="[countSelectedIEs: countSelectedIEs,
                                                                                sumListPriceSelectedIEsEUR: sumListPriceSelectedIEsEUR,

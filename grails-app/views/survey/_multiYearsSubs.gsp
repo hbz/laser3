@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:if test="${listMuliYearsSub && listMuliYearsSub.size() > 0}">
     <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
         <thead>
@@ -43,17 +44,17 @@
                 <td>
                     <g:if test="${nextSubs && nextSubs[i]}">
                         <g:if test="${actionName == 'compareMembersOfTwoSubs'}">
-                            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: nextSubs[i].id]}">
+                            <g:link class="${Btn.SIMPLE} openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: nextSubs[i].id]}">
                                 <g:message code="surveyInfo.transferParticipants"/>
                             </g:link>
                             <br>
                             <br>
                         </g:if>
 
-                        <g:if test="${countMultiYearMembers > 0 && parentSuccessorSubscription != nextSubs[i]}">
+                        <g:if test="${parentSuccessorSubscription != nextSubs[i]}">
                             <g:link controller="survey" action="$actionName"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: nextSubs[i].id]"
-                                    class="ui button ">
+                                    class="${Btn.SIMPLE}">
                                 <g:message code="default.select2.label" args="[message(code: 'renewalEvaluation.parentSuccessorSubscription')]"/>
                             </g:link>
                         </g:if>
@@ -62,7 +63,7 @@
                         <g:if test="${(i == 0) || (nextSubs && nextSubs[i - 1])}">
                         <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
                                 params="${[surveyConfig: surveyConfig.id, sourceSubId: ((nextSubs && i > 0) ? nextSubs[i - 1].id : parentSubscription.id)]}"
-                                class="ui button ">
+                                class="${Btn.SIMPLE}">
                             <g:message code="renewalEvaluation.newSub"/>
                         </g:link>
                         </g:if>
@@ -85,7 +86,7 @@
                 <g:message code="renewalEvaluation.parentSuccessorSubscription"/>:
                 <g:link controller="survey" action="renewSubscriptionConsortiaWithSurvey" id="${surveyInfo.id}"
                         params="[surveyConfig: surveyConfig.id, sourceSubId: surveyConfig.subscription.id]"
-                        class="ui button ">
+                        class="${Btn.SIMPLE}">
                     <g:message code="renewalEvaluation.newSub"/>
                 </g:link>
             </h3>
@@ -94,7 +95,7 @@
 
         <g:if test="${parentSuccessorSubscription}">
             <br>
-            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
+            <g:link class="${Btn.SIMPLE} openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
                 <g:message code="surveyInfo.transferParticipants"/>
             </g:link>
             <br>
@@ -104,7 +105,7 @@
             <br>
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: surveyConfig.id]"
-                    class="ui button ">
+                    class="${Btn.SIMPLE}">
                 <g:message code="renewalEvaluation.newSub.change"/>
             </g:link>
         </g:if>
@@ -131,7 +132,6 @@ console.log($(this).attr('href'))
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();

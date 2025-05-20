@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
 
-<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
+<laser:htmlStart message="currentSurveys.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>
@@ -63,7 +63,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.owner.label')}</label>
-                <g:select class="ui dropdown" name="owner"
+                <g:select class="ui dropdown clearable" name="owner"
                               from="${allConsortia}"
                               optionKey="id"
                               optionValue="name"
@@ -107,7 +107,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <ui:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown clearable" name="type"
                            from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                            optionKey="id"
                            optionValue="value"
@@ -123,7 +123,7 @@
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.filter')}</label>
                             <input id="checkMandatory" name="mandatory" type="checkbox"
                                    <g:if test="${params.mandatory}">checked=""</g:if>
                                    tabindex="0">
@@ -132,7 +132,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.filter')}</label>
                             <input id="checkNoMandatory" name="noMandatory" type="checkbox"
                                    <g:if test="${params.noMandatory}">checked=""</g:if>
                                    tabindex="0">
@@ -174,6 +174,15 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubscriptionSurvey">${message(code: 'surveyconfig.subscriptionSurvey.label')}</label>
+                            <input id="checkSubscriptionSurvey" name="checkSubscriptionSurvey" type="checkbox"
+                                   <g:if test="${params.checkSubscriptionSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -181,8 +190,8 @@
 
         <div class="field la-field-right-aligned">
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -240,7 +249,9 @@
                 <th><g:message code="surveyInfo.finishedDate"/></th>
             </g:if>
 
-            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
 
         </thead>
@@ -259,9 +270,16 @@
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey ${Icons.SURVEY} icon la-list-icon"></i>
+                                <i class="grey ${Icon.SURVEY} la-list-icon"></i>
+                            </span>
+                        </g:if>
+
+                        <g:if test="${surveyConfig.invoicingInformation}">
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                  data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                                <i class="dollar icon la-list-icon"></i>
                             </span>
                         </g:if>
 
@@ -278,9 +296,9 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -297,25 +315,25 @@
 
                 <td class="center aligned">
 
-                    <uiSurvey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <uiSurvey:finishIcon participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <uiSurvey:finishDate participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 
                 <td class="x">
 
                     <g:if test="${editable}">
-                            <span class="la-popup-tooltip la-delay"
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>

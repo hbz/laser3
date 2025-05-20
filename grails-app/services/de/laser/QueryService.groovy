@@ -38,9 +38,10 @@ class QueryService {
      * @param contextUser the user whose due objects should be retrieved
      * @return a list of objects with upcoming due dates
      */
-    List getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
+    List getDueObjectsCorrespondingUserSettings(User contextUser) {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
+        Org contextOrg = contextUser.formalOrg
 
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES || contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES) {
             def endDateFrom =                (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? today : null
@@ -56,9 +57,8 @@ class QueryService {
         }
 
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_TASKS)==RDStore.YN_YES) {
-            dueObjects.addAll( taskService.getTasksByResponsibles(
+            dueObjects.addAll( taskService.getTasksByResponsibility(
                     contextUser,
-                    contextOrg,
                     [query:" and t.status = :open and t.endDate <= :endDate",
                      queryParams:[open: RDStore.TASK_STATUS_OPEN,
                                   endDate: _computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_TASKS)]]) )

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
-<laser:htmlStart message="platforms.all_platforms.label" serviceInjection="true" />
+<%@ page import="de.laser.wekb.Platform; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.wekb.Package; de.laser.Org; de.laser.storage.RDStore" %>
+<laser:htmlStart message="platforms.all_platforms.label" />
 
 	<ui:breadcrumbs>
 		<ui:crumb message="platforms.all_platforms.label" class="active" />
@@ -10,16 +10,7 @@
 			<ui:messages data="${flash}" />
 
 			<g:if test="${error}">
-				<div class="ui icon error message">
-					<i class="exclamation triangle icon"></i>
-					<i class="close icon"></i>
-					<div class="content">
-						<div class="header">
-							${message(code: 'message.attention')}
-						</div>
-						<p>${error}</p>
-					</div>
-				</div>
+				<ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}" text="${error}" />
 			</g:if>
 			<g:else>
 				<laser:render template="/templates/filter/platformFilter"/>
@@ -55,8 +46,8 @@
 									</g:if>
 									<g:else>
 										${record.name}
-										<a target="_blank" href="${editUrl ? editUrl + '/public/platformContent?id=' + record.uuid : '#'}">
-											<i title="we:kb Link" class="external alternate icon"></i>
+										<a target="_blank" href="${baseUrl + '/public/platformContent?id=' + record.uuid}">
+											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:else>
 								</th>
@@ -80,15 +71,15 @@
 									</g:if>
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
-										<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
-											<i title="we:kb Link" class="external alternate icon"></i>
+										<a target="_blank" href="${baseUrl + '/public/orgContent?id=' + record.providerUuid}">
+											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:elseif>
 								</td>
 								<td class="center aligned">
 									<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
-										<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
-											<i class="icon yellow star"></i>
+										<span class="la-popup-tooltip" data-content="${message(code: 'menu.my.platforms')}">
+											<i class="${Icon.SIG.MY_OBJECT} yellow"></i>
 										</span>
 									</g:if>
 								</td>

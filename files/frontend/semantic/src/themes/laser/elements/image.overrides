@@ -1,0 +1,7 @@
+/*******************************
+         Theme Overrides
+*******************************/
+    .la-markdown img.image:not(.la-js-questionMark):hover {
+        cursor: pointer;
+        border-color: #fbbd08;
+    }

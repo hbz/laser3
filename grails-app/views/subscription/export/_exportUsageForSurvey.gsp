@@ -1,20 +1,19 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.wekb.Platform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
-    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
+    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
     if(!subscribedPlatforms) {
-        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscriberSub", [subscriberSub: subscriberSub])
+        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
-    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []
     Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if (queryResult) {
             List records = queryResult.result
             if(records[0]) {
@@ -30,7 +29,7 @@
             }
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
             if(ci?.value) {
-                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscription], false)
             }
             else if(ci) {
                 dummyCIs << ci
@@ -48,13 +47,16 @@
 <ui:modal id="individuallyExportModal" modalSize="large" text="${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}" refreshModal="true" hideSubmitButton="true">
     <g:if test="${reportTypes}">
         <g:if test="${revision == AbstractReport.COUNTER_4}">
-            <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+            <ui:msg class="info" showIcon="true" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" hideClose="true"/>
         </g:if>
-        <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
+        <g:form action="exportRenewalEntitlements" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>
-            <g:hiddenField name="exportForImport" value="true"/>
+            <g:hiddenField name="tab" value="usage"/>
+            <g:hiddenField name="exportConfig" value="${de.laser.ExportService.EXCEL}"/>
             <g:each in="${params.keySet()}" var="param">
-                <g:hiddenField name="${param}" value="${params.get(param)}"/>
+                <g:if test="${!(param in ['tab', 'subTab', 'status'])}">
+                    <g:hiddenField name="${param}" value="${params.get(param)}"/>
+                </g:if>
             </g:each>
             <div class="four fields" id="filterDropdownWrapper">
                 <g:if test="${platformInstanceRecords.size() > 1}">
@@ -90,7 +92,7 @@
                 <div class="field"></div>
                 <div class="field"></div>
                 <div class="field la-field-right-aligned">
-                    <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
+                    <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
                 </div>
             </div>
         </g:form>
@@ -141,7 +143,7 @@
                 platforms: platforms,
                 multiple: false,
                 customer: '${subscriber.globalUID}',
-                subscription: ${subscriberSub.id}
+                subscription: ${subscription.id}
             }
         }).done(function(response) {
             $('.dynFilter').remove();
@@ -154,7 +156,7 @@
         $('#localLoadingIndicator').progress();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
-            url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
+            url: "<g:createLink action="exportRenewalEntitlements"/>",
             data: fd,
             type: 'POST',
             processData: false,
@@ -171,7 +173,7 @@
         let percentage = 0;
         setTimeout(function() {
             $.ajax({
-                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport']"/>"
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateExport']"/>"
             }).done(function(response){
                 percentage = response.percent;
                 $('#localLoadingIndicator div.label').text(response.label);

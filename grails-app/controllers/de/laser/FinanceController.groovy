@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.BudgetCode
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
@@ -12,10 +13,13 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.mozilla.universalchardet.UniversalDetector
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.math.RoundingMode
@@ -33,6 +37,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
+    ContextService contextService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
@@ -51,9 +56,9 @@ class FinanceController  {
      * the cost items listed in them depends on the perspective taken and specified in the parameter map.
      * To see the decision tree, view {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         log.debug("FinanceController::index() ${params}")
@@ -65,7 +70,7 @@ class FinanceController  {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
-            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org: contextService.getOrg()])
             result.idSuffix = 'bulk'
             result
         }
@@ -81,17 +86,52 @@ class FinanceController  {
      * and specified in the parameter map, see {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)} for
      * the decision tree
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
+                        }
+                        if(result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Set<CostItem> missing = CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)', [parent: result.subscription, owner: contextService.getOrg(), element: pickedElement])
+                result.missing = missing
+            }
             result.financialData = financeService.getCostItemsForSubscription(params,result)
+            SortedSet<RefdataValue> assignedCostItemElements = new TreeSet<RefdataValue>()
+            assignedCostItemElements.addAll(CostItemElementConfiguration.executeQuery('select cie from CostItem ci join ci.costItemElement cie join ci.sub s where ci.owner = :org and s.instanceOf = :subscription order by cie.value_'+ LocaleUtils.getCurrentLang()+' asc',[org: contextService.getOrg(), subscription: result.subscription]))
+            result.assignedCostItemElements = assignedCostItemElements
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status  ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
-            if (result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) {
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
@@ -108,7 +148,7 @@ class FinanceController  {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriberRespConsortia(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                if (result.institution.isCustomerType_Inst_Pro()) {
+                if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                     if(result.subscription.instanceOf)
                         result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.subscr.count}"
                     else
@@ -118,19 +158,19 @@ class FinanceController  {
                     result.currentCostItemCounts = result.financialData.subscr.count
                 }
             }
-            result.checklistCount = workflowService.getWorkflowCount(result.subscription, result.institution)
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscription).size()
+            result.checklistCount = workflowService.getWorkflowCount(result.subscription, contextService.getOrg())
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.institution)
-            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.institution)
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, contextService.getOrg())
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, contextService.getOrg())
 
             result.ciTitles = result.financialData.ciTitles
             result.budgetCodes = result.financialData.budgetCodes
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
-            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org: contextService.getOrg()])
             result.idSuffix = 'bulk'
             result
         }
@@ -148,18 +188,13 @@ class FinanceController  {
      * can only display the currently visible (= active) tab!
      * @return the financial data tab(s), as Excel worksheet or CSV export file
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
-        if (!userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) {
-            flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(params,result) : financeService.getCostItems(params,result)
         result.cost_item_tabs = [:]
         if(result.dataToDisplay.contains("own")) {
@@ -172,22 +207,7 @@ class FinanceController  {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-        String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
-        /*if(params.exportXLS) {
-            SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            try {
-                workbook.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                workbook.dispose()
-            }
-            catch (IOException e) {
-                log.error("A request was started before the started one was terminated")
-            }
-        }
-        */
+        String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(contextService.getOrg().name)+"_financialExport"
         if(params.fileformat == 'xlsx') {
             if (params.filename) {
                 filename =params.filename
@@ -229,21 +249,16 @@ class FinanceController  {
                            message(code: 'default.status.label'), message(code: 'default.currency.label'), message(code: 'financials.costInBillingCurrency'),"EUR",
                            message(code: 'financials.costInLocalCurrency')])
             if(["own","cons"].indexOf(viewMode) > -1)
-                titles.addAll(message(code: 'financials.taxRate'), [message(code:'default.currency.label'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
+                titles.addAll(message(code: 'financials.taxRate'), message(code:'default.currency.label'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax'))
             titles.addAll([message(code: 'financials.costItemElement'), message(code: 'default.description.label'),
                            message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
+            Set<CostInformationDefinition> costItemDefinitions = CostItem.executeQuery('select ci.costInformationDefinition from CostItem ci where ci.owner = :ctx', [ctx: contextService.getOrg()])
+            titles.addAll(costItemDefinitions.getAt(LocaleUtils.getLocalizedAttributeName('name')))
             SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-            LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-            OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
-                List<Org> orgs = subscribers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                subscribers.put(it.sub,orgs)
+            Map<CostItem, BudgetCode> costItemGroups = CostItem.executeQuery('select cig.costItem, cig.budgetCode from CostItemGroup cig join cig.budgetCode bc where bc.owner = :ctx', [ctx: contextService.getOrg()]).collectEntries { row ->
+                [row[0], row[1]]
             }
-            CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
                 csv {
                     response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}_${viewMode}.csv\"")
@@ -411,6 +426,15 @@ class FinanceController  {
                                 //order number
                                 cellnum++
                                 row.add(ci.order ? ci.order.orderNumber : "")
+                                costItemDefinitions.each { CostInformationDefinition costInformationDefinition ->
+                                    cellnum++
+                                    if(ci.costInformationDefinition == costInformationDefinition) {
+                                        if(ci.costInformationDefinition.type == RefdataValue.class.name)
+                                            row.add(ci.costInformationRefValue.getI10n('value'))
+                                        else row.add(ci.costInformationStringValue)
+                                    }
+                                    else row.add("")
+                                }
                                 //rownum++
                                 rowData.add(row)
                             }
@@ -471,9 +495,9 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal and sets the edit parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -483,7 +507,7 @@ class FinanceController  {
         Set<String> pickedSubscriptions = []
         JSON.parse(params.preselectedSubscriptions).each { String ciId ->
             CostItem ci = CostItem.get(Long.parseLong(ciId))
-            pickedSubscriptions << "'${genericOIDService.getOID(ci.sub)}'"
+            pickedSubscriptions << ci.sub.id
         }
         result.pickedSubscriptions = pickedSubscriptions
         result.idSuffix = "new"
@@ -493,9 +517,9 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal, sets the edit parameters and prefills the form values with the existing cost item data
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -512,9 +536,9 @@ class FinanceController  {
     /**
      * Same call as {@link #editCostItem}, but instead of a modal, the editing is done in a new view
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     Object showCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -537,18 +561,18 @@ class FinanceController  {
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
      * submitted in the modal
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        params.status = [result.costItem.sub.status.id.toString()]
+        params.status = result.costItem.sub ? [result.costItem.sub.status.id] : [RDStore.SUBSCRIPTION_CURRENT.id]
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
-        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.isCustomerType_Inst_Pro()
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortium() && contextService.getOrg().id != result.costItem.sub?.getConsortium().id
+        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == contextService.getOrg().id && contextService.getOrg().isCustomerType_Inst_Pro()
         result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy", offset: params.offset])
         result.mode = "copy"
@@ -559,9 +583,9 @@ class FinanceController  {
     /**
      * Call to delete a given cost item
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteCostItem() {
         CostItem ci = CostItem.get(params.id)
@@ -573,9 +597,9 @@ class FinanceController  {
     /**
      * Call to process the submitted form values in order to create or update a cost item
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def createOrUpdateCostItem() {
         Map<String,Object> ctrlResult = financeService.createOrUpdateCostItem(params)
@@ -591,9 +615,9 @@ class FinanceController  {
     /**
      * Call to import cost items submitted from the import post processing view
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
@@ -616,9 +640,9 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
@@ -630,9 +654,9 @@ class FinanceController  {
     /**
      * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCostItemsBulk() {
         Map<String,Object> ctrlResult = financeService.processCostItemsBulk(params)

@@ -1,11 +1,11 @@
-<%@ page import="de.laser.helper.Icons; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.addressbook.PersonRole; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${consortium}">
     <table class="ui compact table">
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code: 'consortium')}"></i>
+                    <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'consortium')}"></i>
                     <g:link controller="organisation" action="show" id="${consortium.id}">
                         ${consortium.name}
                     </g:link>
@@ -14,11 +14,11 @@
         </tr>
         <g:if test="${(Person.getPublicByOrgAndFunc(consortium, 'General contact person') || (Person.getPublicByOrgAndFunc(consortium, 'Technical Support')) || (Person.getPublicByOrgAndFunc(consortium, 'Service Support')) || (Person.getPublicByOrgAndFunc(consortium, 'Metadata Contact')) ||
                 Person.getPublicByOrgAndObjectResp(consortium, roleObject, roleRespValue) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg) ||
-                Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg))}">
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
+                Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue))}">
             <tr>
                 <td colspan="3" style="padding-bottom:0;">
                 <%-- public --%>
@@ -33,12 +33,12 @@
                                     <g:each in="${Person.getPublicByOrgAndFunc(consortium, 'General contact person')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                 </div>
 
@@ -49,7 +49,7 @@
                                                         func,
                                                         RDStore.CCT_EMAIL
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -65,12 +65,12 @@
                                     <g:each in="${techSupports}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                 </div>
 
@@ -81,7 +81,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -93,12 +93,12 @@
                                     <g:each in="${serviceSupports}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                 </div>
 
@@ -109,7 +109,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -121,12 +121,12 @@
                                     <g:each in="${metadataContacts}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                 </div>
 
@@ -137,7 +137,7 @@
                                                         func,
                                                         RDStore.CCT_EMAIL
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -150,12 +150,12 @@
                                     <g:each in="${Person.getPublicByOrgAndObjectResp(consortium, roleObject, roleRespValue)}" var="resp">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                 </div>
 
@@ -166,7 +166,7 @@
                                                         resp,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -182,23 +182,23 @@
                 <%-- public --%>
 
                 <%-- private --%>
-                    <g:if test="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg) ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg)}">
+                    <g:if test="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue)}">
                         <div class="ui segment la-timeLineSegment-contact">
                             <div class="la-timeLineGrid">
                                 <div class="ui grid">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                 </div>
 
@@ -209,7 +209,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -219,15 +219,15 @@
                                         </div>
                                     </g:each>
                                 <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                 </div>
 
@@ -238,7 +238,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -247,15 +247,15 @@
                                             </div>
                                         </div>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                 </div>
 
@@ -266,7 +266,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -275,15 +275,15 @@
                                             </div>
                                         </div>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
                                             <div class="thirteen wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                 </div>
 
@@ -294,7 +294,7 @@
                                                         func,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -304,16 +304,16 @@
                                         </div>
                                     </g:each>
                                 <%--</g:if>--%>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg)}"
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue)}"
                                             var="resp">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
                                             <div class="twelve wide column">
-                                                <div class="ui  label">
+                                                <div class="ui label">
                                                     ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                 </div>
 
@@ -324,7 +324,7 @@
                                                         resp,
                                                         [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                 )}" var="contact">
-                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                    <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false

@@ -6,6 +6,7 @@ import de.laser.storage.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.local.SubscriptionReport
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -137,9 +138,9 @@ class ReportingLocalService {
                 else if (params.query == 'timeline-package') {
                     String hql = 'select pkg from Package pkg where pkg.id in (:idList) order by pkg.sortname, pkg.name'
 
-                    result.list      = idList      ? de.laser.Package.executeQuery( hql, [idList: idList] ) : []
-                    result.plusList  = plusIdList  ? de.laser.Package.executeQuery( hql, [idList: plusIdList] ) : []
-                    result.minusList = minusIdList ? de.laser.Package.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.list      = idList      ? de.laser.wekb.Package.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? de.laser.wekb.Package.executeQuery( hql, [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? de.laser.wekb.Package.executeQuery( hql, [idList: minusIdList] ) : []
                     result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
                 }
                 else {

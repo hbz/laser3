@@ -1,10 +1,9 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/documents/table"
                       model="${[instance: subscription, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
         </div>
@@ -31,8 +30,8 @@
                 <input type="text" id="upload_file_placeholder" readonly="readonly" placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
-                <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                    <i class="attach icon"></i>
+                <div class="${Btn.ICON.SIMPLE}" style="padding-left:30px; padding-right:30px">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
         </div>
@@ -44,7 +43,7 @@
                 List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
             %>
             <g:select from="${documentTypes}"
-                      class="ui dropdown fluid"
+                      class="ui dropdown clearable fluid"
                       optionKey="value"
                       optionValue="${{ it.getI10n('value') }}"
                       name="doctype"
@@ -63,7 +62,7 @@
 
         <div class="ui error message"></div>
 
-        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
     </g:form>
 
@@ -80,7 +79,7 @@
             <tr>
                 <g:if test="${editable}">
                     <th class="center aligned">
-                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                     </th>
                 </g:if>
 
@@ -96,7 +95,9 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -109,7 +110,7 @@
                             <%-- This whole construct is necessary for that the form validation works!!! --%>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
+                                    <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                 </div>
                             </div>
                         </td>
@@ -121,16 +122,7 @@
                         </td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                            <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"
-                                      class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="grey la-thumbtack-regular icon"></i>
-                                </span>
-                            </g:if>
-
-                            <ui:customerTypeProIcon org="${subscr}" />
+                            <ui:customerTypeOnlyProIcon org="${subscr}" />
                         </td>
                         <g:if test="${params.showMembersSubWithMultiYear}">
                             <td>${sub.referenceYear}</td>
@@ -148,10 +140,10 @@
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -183,8 +175,35 @@
             $("#allMembers").val(false);
         }
         JSPC.app.setSelectedSubscriptionIds();
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    });
 
     $("input[name=selectedSubs]").checkbox({
         onChange: function() {
@@ -252,4 +271,7 @@
         }
     });
 
+    <g:if test="${selectionCache.keySet().size() > 0}">
+        JSPC.app.setSelectedSubscriptionIds();
+    </g:if>
 </laser:script>

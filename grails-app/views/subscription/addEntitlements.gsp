@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform; de.laser.IssueEntitlementGroup" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; grails.converters.JSON; de.laser.storage.RDStore; de.laser.wekb.Platform; de.laser.IssueEntitlementGroup" %>
 
-<laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
+<laser:htmlStart message="subscription.details.addEntitlements.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -14,12 +14,15 @@
 
 <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" floated="true">
     <laser:render template="iconSubscriptionIsChild"/>
-<ui:xEditable owner="${subscription}" field="name"/>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+
+<div id="downloadWrapper"></div>
+
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
@@ -73,20 +76,6 @@
     </g:form>
 </ui:modal>
 
-<div id="downloadWrapper"></div>
-
-<ui:tabs actionName="${actionName}">
-    %{-- num_tipp_rows instead of countAllTipps because otherwise, there are misleading counts --}%
-    <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'allTipps']"
-                 text="${message(code: "subscription.details.addEntitlements.allTipps")}" tab="allTipps"
-                 counts="${num_tipp_rows}"/>
-    <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'selectedTipps']"
-                 text="${message(code: "subscription.details.addEntitlements.selectedTipps")}" tab="selectedTipps"
-                 counts="${countSelectedTipps}"/>
-</ui:tabs>
-
 <div class="ui segment">
 
 <g:form action="processAddEntitlements" class="ui form">
@@ -97,23 +86,28 @@
             <g:if test="${blockSubmit}">
                 <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
             </g:if>
-            <a class="ui left floated button" id="processButton" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+            <a class="${Btn.SIMPLE} left floated" id="processButton" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
                 ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-            <button type="submit" name="process" id="processButton2" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+            <button type="submit" name="process" id="processButton2" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="${Btn.SIMPLE} right floated">
                 ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
         </div>
 
         <div class="field"></div>
 
-        <g:if test="${institution.isCustomerType_Consortium()}">
+        <%-- meaningless since the control of the title distribution via inheritance!
+        cases:
+        a) title of consortium = title of members: either holding entire or holding partial with inheritance activated
+        b) title of consortium != title of members: process title enrichment at _each_ member individually
+        <g:if test="${institution.isCustomerType_Consortium() && !auditService.getAuditConfig(subscription, 'holdingSelection')}">
             <div class="field">
                 <div class="ui right floated checkbox toggle">
-                    <g:checkBox name="withChildren" value="${withChildren}"/>
+                    <g:checkBox name="withChildren" />
                     <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
                 </div>
             </div>
         </g:if>
+        --%>
         <div class="ui blue large label">
             <g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
         </div>
@@ -137,7 +131,7 @@
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:if test="${allPerpetuallyBought}">
-            <ui:msg message="${message(code: allPerpetuallyBought)}" noClose="true"/>
+            <ui:msg message="${message(code: allPerpetuallyBought)}" hideClose="true"/>
         </g:if>
         <g:if test="${tipps}">
             <g:if test="${editable && !allPerpetuallyBought}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
@@ -152,8 +146,8 @@
                         <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}"
                              data-tippId="${tipp.id}" data-index="${counter}">
                             <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
-                                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
+                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo()}.join(',')}"
                                       data-position="left center" data-variation="tiny">
                                     <i class="star icon"></i>
                                 </span>
@@ -228,25 +222,25 @@
                                     <div class="right aligned wide column">
                                     </div>
 
-                                    <div class="ui icon blue button la-modern-button">
-                                        <i class="ui angle double down icon"></i>
+                                    <div class="${Btn.MODERN.SIMPLE}">
+                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
                                     <g:if test="${editable && participantPerpetualAccessToTitle.size() == 0}">
                                         <g:if test="${!blockSubmit}">
-                                            <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                            <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                                     action="processAddEntitlements"
                                                     params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
                                                     data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                                <i class="plus icon"></i>
+                                                <i class="${Icon.CMD.ADD}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <div class="la-popup-tooltip la-delay"
+                                            <div class="la-popup-tooltip"
                                                  data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                                                <g:link class="ui icon disabled button la-popup-tooltip la-delay"
+                                                <g:link class="${Btn.ICON.SIMPLE} disabled"
                                                         action="processAddEntitlements"
                                                         params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
-                                                    <i class="plus icon"></i>
+                                                    <i class="${Icon.CMD.ADD}"></i>
                                                 </g:link>
                                             </div>
                                         </g:else>
@@ -297,8 +291,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageNote}">
                                             <div class="item">
-                                                <i class="grey icon quote right la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'default.note.label')}"></i>
+                                                <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
 
                                                 <div class="content">
                                                     <div class="header">
@@ -313,8 +306,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.coverageDepth}">
                                             <div class="item">
-                                                <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                 <div class="content">
                                                     <div class="header">
@@ -329,8 +321,7 @@
                                         </g:if>
                                         <g:if test="${covStmt.embargo}">
                                             <div class="item">
-                                                <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'tipp.embargo')}"></i>
+                                                <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                 <div class="content">
                                                     <div class="header">
@@ -350,7 +341,7 @@
 
                             <g:if test="${uploadPriceInfo || preselectCoverageDates}">
                                 <div class="seven wide column">
-                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                     <div class="ui la-segment-with-icon">
@@ -410,10 +401,10 @@
                     <g:if test="${blockSubmit}">
                         <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
                     </g:if>
-                    <a class="ui left floated button" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+                    <a class="${Btn.SIMPLE} left floated" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
                         ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-                    <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+                    <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="${Btn.SIMPLE} right floated">
                         ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
                 </div>
             </g:if>
@@ -421,11 +412,6 @@
 
         <br>
         <br>
-
-
-        <%
-            params.remove("kbartPreselect")
-        %>
         <ui:paginate controller="subscription"
                         action="addEntitlements"
                         params="${params + [pagination: true]}"
@@ -494,33 +480,11 @@
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-gokbId"), $(this).prop('checked'));
     });
 
-    $(".ieOverwrite td").click(function() {
-        $(".ieOverwrite").trigger("change");
-    });
-
-    $(".ieOverwrite").change(function() {
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="updateIssueEntitlementSelect" />",
-            data: {
-                sub: ${subscription.id},
-                key: $(this).parents("tr").attr("data-gokbId"),
-                referer: "${actionName}",
-                coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
-                prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),
-                propValue: $(this).val() ? $(this).val() : $(this).find("input").val()
-            }
-        }).done(function(result){
-
-        }).fail(function(xhr,status,message){
-            console.log("error occurred, consult logs!");
-        });
-    });
-
     $('.kbartExport').click(function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="addEntitlements" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportPossibleEntitlements" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

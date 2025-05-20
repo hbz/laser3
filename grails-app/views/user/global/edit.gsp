@@ -1,5 +1,5 @@
-<%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
-<laser:htmlStart message="user.edit.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
+<laser:htmlStart message="user.edit.label" />
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
@@ -70,7 +70,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.password.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'user.newPassword.text')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'user.newPassword.text')}">
                                         </div>
                                     </div>
                                 </g:form>
@@ -79,7 +79,7 @@
                                     <div class="ui two fields">
                                         <div class="ui field">
                                             <label>${message(code:'user.username.label')}</label>
-                                            <input type="submit" class="ui button orange" value="${message(code:'menu.user.forgottenUsername.send')}">
+                                            <input type="submit" class="${Btn.SIMPLE} orange" value="${message(code:'menu.user.forgottenUsername.send')}">
                                         </div>
                                     </div>
                                 </g:form>
@@ -91,16 +91,14 @@
                 <g:if test="${contextService.getUser().isYoda() || contextService.getUser().isAdmin()}">
                     <div class="ui card">
                         <div class="ui content">
-                            <h2 class="ui dividing orange header">
-                                <i class="exclamation triangle small icon"></i>
-                                <span class="content">${message(code: 'default.adminsOnly.label')}</span>
-                            </h2>
+                            <ui:cardLabelAdminOnly />
+
                             <div class="ui form">
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.enabled.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
-%{--                                            <i class="grey question circle icon"></i>--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
+%{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
@@ -108,8 +106,8 @@
                                 <div class="ui field">
                                     <label>
                                         ${message(code:'user.accountExpired.label')}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
-                                            <i class="grey question circle icon"></i>
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
@@ -117,8 +115,8 @@
                                 <div class="ui field">
                                     <label>
                                         ${message(code:'user.accountLocked.label')}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
-                                            <i class="grey question circle icon"></i>
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.locked')}">
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
                                     <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
@@ -126,19 +124,19 @@
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
 %{--                                        ${message(code:'user.passwordExpired.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
-%{--                                            <i class="grey question circle icon"></i>--}%
+%{--                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.passwordExpired')}">--}%
+%{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
 %{--                                        </span>--}%
 %{--                                    </label>--}%
 %{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%
 %{--                                </div>--}%
                                 <div class="ui field">
-                                    <label>${message(code:'user.lastLogin.label')}</label>
-                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
-                                </div>
-                                <div class="ui field">
                                     <label>${message(code:'user.invalidLoginAttempts.label')}</label>
                                     <p>${user.invalidLoginAttempts ?: 0}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'user.lastLogin.label')}</label>
+                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
                                 </div>
                                 <div class="ui field">
                                     <label>${message(code:'default.lastUpdated.label')}</label>
@@ -170,9 +168,7 @@
                                 <div class="ui content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="warning" icon="exclamation" noClose="true">
-                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
-                                    </ui:msg>
+                                    <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
 
                                     <div class="ui form">
                                         <g:form controller="${controllerName}" action="setAffiliation" class="ui form" method="get">
@@ -208,7 +204,7 @@
                                             </div>
 
                                             <div class="field">
-                                                <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                                <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.membership.add.button')}</button>
                                             </div>
                                         </g:form>
                                     </div><!-- .form -->
@@ -228,7 +224,9 @@
                                     <thead>
                                         <tr>
                                             <th>${message(code:'default.role.label')}</th>
-                                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                            <th class="center aligned">
+                                                <ui:optionsIcon />
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -237,13 +235,13 @@
                                                 <td>${rl.role.authority}</td>
                                                 <td class="x">
                                                     <g:if test="${editable}">
-                                                        <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
-                                                                class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                        <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.id}",role:"${rl.role.id}"]}'
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                 role="button"
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
                                                                 data-confirm-term-how="unlink"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline icon"></i>
+                                                            <i class="${Icon.CMD.DELETE}"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </td>
@@ -255,19 +253,19 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <g:form class="ui form" controller="ajax" action="addUserRole">
-                                                        <input type="hidden" name="user" value="${user.class.name}:${user.id}"/>
+                                                        <input type="hidden" name="user" value="${user.id}"/>
                                                         <div class="ui fields">
                                                             <div class="field">
                                                                 <g:select from="${Role.findAllByRoleType('global')}"
-                                                                          class="ui dropdown fluid"
+                                                                          class="ui dropdown clearable fluid"
                                                                           name="role"
-                                                                          optionKey="${{ it.class.name + ':' + it.id }}"
+                                                                          optionKey="${{ it.id }}"
                                                                           optionValue="${{ it.getI10n('authority') }}"
                                                                           noSelection="${['': message(code: 'default.select.choose.label')]}"
                                                                 />
                                                             </div>
                                                             <div class="field">
-                                                                <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                                                <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'user.role.add')}"/>
                                                             </div>
                                                         </div>
                                                     </g:form>

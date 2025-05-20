@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Params; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <laser:render template="breadcrumb" model="${[vendor: vendor]}"/>
 
@@ -37,7 +37,7 @@
         <div class="two fields">
             <div class="field">
                 <label for="function"><g:message code="person.function.label"/></label>
-                <select id="function" name="function" multiple="" class="ui dropdown search">
+                <select id="function" name="function" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
@@ -47,7 +47,7 @@
 
             <div class="field">
                 <label for="position"><g:message code="person.position.label"/></label>
-                <select id="position" name="position" multiple="" class="ui dropdown search">
+                <select id="position" name="position" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
@@ -59,30 +59,29 @@
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-        ${message(code: 'org.prsLinks.label')} <span class="ui circular label">${num_visiblePersons}</span>
+        ${message(code: 'org.prsLinks.label')} <ui:bubble count="${num_visiblePersons}" grey="true"/>
     </a>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-        ${message(code: 'org.addresses.label')}  <span class="ui circular label">${num_visibleAddresses}</span>
+        ${message(code: 'org.addresses.label')} <ui:bubble count="${num_visibleAddresses}" grey="true"/>
     </a>
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             restrictToVendor : vendor,
             showContacts: true,
-            showAddresses: true,
             showOptions : true,
-            tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
+            tmplConfigShow: ['lineNumber', 'name', 'function', 'position', 'showContacts']
     ]}"/>
 
     <ui:paginate action="addressbook" controller="vendor" params="${params+[tab: 'contacts']}"
@@ -92,7 +91,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
@@ -107,7 +106,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, vendor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&vendor='+vendor+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&vendor='+vendor+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

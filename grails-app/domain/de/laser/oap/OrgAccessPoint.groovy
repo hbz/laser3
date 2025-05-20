@@ -109,11 +109,11 @@ class OrgAccessPoint extends AbstractBase {
 
     /**
      * Gets all platforms for this access point which are not linked to any subscription
-     * @return a {@link List} of {@link de.laser.Platform}s not linked anywhere
+     * @return a {@link List} of {@link de.laser.wekb.Platform}s not linked anywhere
      */
     def getNotLinkedPlatforms()
     {
-        List currentSubIds = BeanStore.getOrgTypeService().getCurrentSubscriptionIds(org)
+        List currentSubIds = BeanStore.getSubscriptionService().getCurrentSubscriptionIds(org)
         // TODO check if this is enough
         if (!currentSubIds){
             return
@@ -148,22 +148,6 @@ class OrgAccessPoint extends AbstractBase {
         // Get not active subscriptions for the access point org
         String hql = "select sub from Subscription sub join sub.orgRelations as orgrel where orgrel.org.id = ${org.id} and sub.status not in (:status) and not exists (select 1 from OrgAccessPointLink oapl where oapl.subscription = sub and oapl.active = true) order by sub.name asc"
         Subscription.executeQuery(hql, [status: statusList])
-    }
-
-    /**
-     * Used in _apLinkContent.gsp
-     * Checks if the access point has an active link
-     * @return true if there is at least one active access point
-     */
-    boolean hasActiveLink() {
-        boolean active = false
-        def oapps = this.oapp
-        oapps.each {
-            if (it.active){
-                active = true
-            }
-        }
-        active
     }
 
     /**

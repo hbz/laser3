@@ -19,4 +19,12 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1729238598216-2") {
         addNotNullConstraint(columnDataType: "varchar(255)", columnName: "usr_email", tableName: "user", validate: "true")
     }
+
+    changeSet(author: "klober (generated)", id: "1729238598216-3") {
+        dropForeignKeyConstraint(baseTableName: "dashboard_due_date", constraintName: "fk2de8a86474c97df9")
+    }
+
+    changeSet(author: "klober (generated)", id: "1729238598216-4") {
+        dropColumn(columnName: "das_responsible_org_fk", tableName: "dashboard_due_date")
+    }
 }

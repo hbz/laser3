@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
     <div class="field required">
         <label for="title">
@@ -62,7 +63,7 @@
         <label for="license">
             Art der Lizenz <g:message code="messageRequiredField" />
         </label>
-        <select id="license" class="ui dropdown search many-to-one required "  required="required" name="license">
+        <select id="license" class="ui dropdown clearable search required"  required="required" name="license">
             <option value="">Bitte auswählen</option>
 
 
@@ -108,7 +109,7 @@
 
 
 
-    <a href="#" class="ui button modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
+    <a href="#" class="${Btn.SIMPLE} modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
     <input type="submit" class="ui button green" name="save" value="Anlegen" onclick="event.preventDefault(); $('#modalCreateTask').find('form').submit()">
 </g:form>
 

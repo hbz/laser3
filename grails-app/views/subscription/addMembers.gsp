@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
 
-<laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" />
 <%
     String lang = LocaleUtils.getCurrentLang()
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + lang
@@ -41,12 +41,14 @@
 
         <div class="ui divider"></div>
 
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
-
+        <div class="ui message la-clear-before">
+            <div class="header">
+                ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}
+            </div>
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
-            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
             <br>
 
             <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
@@ -56,10 +58,10 @@
             <div class="ui action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
+                <input type="file" name="selectSubMembersWithImport" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
                        style="display: none;">
-                <div class="ui icon button">
-                    <i class="attach icon"></i>
+                <div class="${Btn.ICON.SIMPLE}">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
             </div>
             <g:if test="${members}">
@@ -67,7 +69,7 @@
                     <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
                 </div>
             </g:if>
-        </ui:msg>
+        </div>
 
 
         <laser:render template="/templates/filter/orgFilterTable"
@@ -87,7 +89,7 @@
                     <div class="field">
                         <label for="subStatus"><g:message code="subscription.status.label"/></label>
                         <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
-                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown clearable"
                                   optionKey="id"
                                   optionValue="${{ it.getI10n('value') }}"
                                   name="subStatus"
@@ -100,7 +102,7 @@
                             <div class="grouped fields">
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}s" value="no">
+                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics_${subscription.id}" value="no">
                                         <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
                                     </div>
                                 </div>
@@ -109,8 +111,8 @@
                                         <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics_${subscription.id}" value="all" checked="checked">
                                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                                     </div>
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                                        <i class="grey question circle icon la-popup"></i>
+                                    <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'myinst.separate_lics_all.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                     </span>
                                 </div>
                                 <div class="field">
@@ -144,22 +146,32 @@
                         <div class="field">
                             <g:if test="${validPackages}">
                                 <div class="grouped fields">
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
-                                            <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
+                                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
+                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
+                                                <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
-                                            <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                        <div class="field">
+                                            <g:select class="ui search multiple dropdown"
+                                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                      from="${validPackages}" name="packageSelection_${subscription.id}" value=""
+                                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                                         </div>
-                                        <g:select class="ui search multiple dropdown"
-                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                  from="${validPackages}" name="packageSelection_${subscription.id}" value=""
-                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
-                                    </div>
+                                        <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                            <div class="field">
+                                                <div class="ui checkbox">
+                                                    <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
+                                                    <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </g:else>
                                 </div>
                             </g:if>
                             <g:else>
@@ -224,9 +236,9 @@
                                                                            name="generateSlavedLics_${nextSub.id}" value="all" checked="checked">
                                                                     <label for="generateSlavedLics1_${nextSub.id}">${message(code: 'myinst.separate_lics_all')}</label>
                                                                 </div>
-                                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                                <span class="la-long-tooltip la-popup-tooltip"
                                                                       data-content="${message(code: 'myinst.separate_lics_all.expl')}">
-                                                                    <i class="grey question circle icon la-popup"></i>
+                                                                    <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                                                                 </span>
                                                             </div>
 
@@ -277,16 +289,18 @@
                                                                 </div>
 
                                                                 <div class="field">
-                                                                    <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
-                                                                        <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
-                                                                               name="linkWithEntitlements_${nextSub.id}">
-                                                                        <label for="linkWithEntitlements"><g:message
-                                                                                code="myinst.addMembers.withEntitlements"/></label>
-                                                                    </div>
-                                                                    <g:select class="ui search multiple dropdown"
-                                                                              optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                                              from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
-                                                                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    <g:if test="${nextSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                                                        <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
+                                                                            <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
+                                                                                   name="linkWithEntitlements_${nextSub.id}">
+                                                                            <label for="linkWithEntitlements"><g:message
+                                                                                    code="myinst.addMembers.withEntitlements"/></label>
+                                                                        </div>
+                                                                        <g:select class="ui search multiple dropdown"
+                                                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                                                  from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
+                                                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    </g:if>
                                                                 </div>
                                                             </div>
                                                         </g:if>
@@ -303,26 +317,26 @@
 
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.addToSubWithMultiYear_${nextSub.id}').checkbox({
-     fireOnInit : true,
-     onChecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('enable');
-       var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('enable');
-       $childCheckbox2.checkbox('check');
+                                        fireOnInit : true,
+                                        onChecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('enable');
+                                           var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('enable');
+                                           $childCheckbox2.checkbox('check');
 
-     },
-     onUnchecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('uncheck');
-       $childCheckbox.checkbox('disable');
+                                        },
+                                        onUnchecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('uncheck');
+                                           $childCheckbox.checkbox('disable');
 
-        var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('uncheck');
-       $childCheckbox2.checkbox('disable');
+                                            var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('uncheck');
+                                           $childCheckbox2.checkbox('disable');
 
-     }
-});
+                                        }
+                                    });
                                 </laser:script>
                             </g:each>
                         </div>
@@ -354,7 +368,7 @@
                                             <input type="url" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
                                         <g:elseif test="${prop.isRefdataValueType()}">
-                                            <ui:select class="ui dropdown search memberPropertyDropdown" name="propValue${i}"
+                                            <ui:select class="ui dropdown clearable search memberPropertyDropdown" name="propValue${i}"
                                                        from="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: prop.refdataCategory])}"
                                                        optionKey="id"
                                                        optionValue="value"
@@ -384,20 +398,19 @@
         </g:if>
 
         <br />
+
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
             </div>
             <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         </g:if>
     </g:form>
 
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
-            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
-                <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-            </ui:msg>
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true" message="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
     </g:if>
 </g:if>
 

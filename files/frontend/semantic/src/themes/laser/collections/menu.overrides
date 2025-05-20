@@ -42,7 +42,19 @@
   top: 50px;
   z-index: @la-contextBarZIndex;
   background-color: @laDecorationColor;
-  box-shadow: none;
+  &.la-local {
+    box-shadow: 0px 6px 0px 0px @yellow;
+  }
+  &.la-dev {
+    box-shadow: 0px 6px 0px 0px @green;
+  }
+  &.la-qa {
+    box-shadow: 0px 6px 0px 0px @red;
+
+  }
+  &.la-test{
+    box-shadow: 0px 6px 0px 0px @blue;
+  }
   .item {
     padding:0;
   }
@@ -81,12 +93,6 @@
   .la-cb-action.item {
     .toggle .icon {
       color: #fff !important;
-    }
-    .la-toggle-green-red.active {
-      background-color: #98b500 !important;
-    }
-    .la-toggle-green-red.inactive {
-      background-color: #D95F3D !important;
     }
   }
 

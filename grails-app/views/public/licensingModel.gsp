@@ -1,5 +1,5 @@
-<%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
-<laser:htmlStart text="Plan ">
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
+<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}">
     <style>
         .ui.table thead tr:first-child > th {
             top: 48px !important;
@@ -86,13 +86,13 @@
         .mk-userMeeting:before {
             content: "\f51c";
         }
-
     </style>
 
-</laser:htmlStart> %{-- </head><body>--}%
+</laser:htmlStart>
+
 <div class="ui stackable grid">
     <div class="eleven wide column">
-        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Das LAS:eR Lizenzmodell</h1>
+        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="${Icon.LASER} blue la-object"></i> Das LAS:eR Lizenzmodell</h1>
         <table class="ui large structured la-table table">
             <thead>
             <tr>
@@ -105,7 +105,7 @@
             <tr>
                 <th class="two wide center aligned" colspan="2">
                     <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
-                    Beratung vereinbaren<i class="right arrow icon"></i>
+                        Beratung vereinbaren <icon:arrow />
                     </a>
                 </th>
             </tr>
@@ -134,20 +134,20 @@
                         </div>
                     </td>
                     <td class="four wide center aligned">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="four wide center aligned warning">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg1 == 'asService' }">
-                            <button id="${mpg1}" class="ui icon blue button la-modal">
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg1 == 'community' }">
-                            <button id="${mpg1}" class="ui icon blue button la-modal">
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                     </td>
@@ -180,22 +180,22 @@
 
                      </td>
                     <td class="four wide center aligned warning">
-                        <i class="large green checkmark icon"></i>
+                        <i class="${Icon.SYM.YES} green large"></i>
                     </td>
                     <td class="center aligned">
                         <g:if test="${mpg2 === 'management'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'organisation'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                         <g:if test="${mpg2 === 'reporting'}">
-                            <button id="${mpg2}" class="ui icon blue button la-modal" >
-                                ${message(code:'licensingModel.button.watch')} <i class="film icon"></i>
+                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                                ${message(code:'licensingModel.button.watch')} <icon:video />
                             </button>
                         </g:if>
                     </td>
@@ -206,37 +206,41 @@
 
     </div>
     <aside class="five wide column la-sidekick">
-
     </aside>
 </div>
+
     <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
         <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management','organisation', 'reporting']}">
 
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
                     $.modal({
-                        title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
+                        title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo">Animation wiederholen</button>',
                         class: 'large',
                         closeIcon: true,
-                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'showcase', file: "${mpg5}.gif")}"/>',
+                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'media', file: "showcase/${mpg5}.gif")}"/>',
                         actions: [{
                             text: '${message(code:"default.button.close.label")}',
                             class: 'green'
                         }]
                     }).modal('show');
-                    if ($('.la-animatedGif-img').length) {
-                          var gifSrc, srcGif;
-                          $('.la-animatedGif-img').each(function () {
-                            gifSrc = $(this).attr("src");
-                            $(this).attr("data-gif", gifSrc);
-                          });
+                        if ($('.la-animatedGif-img').length) {
+                            var gifSrc, srcGif;
+                            $('.la-animatedGif-img').each(function () {
+                                gifSrc = $(this).attr("src");
+                                $(this).attr("data-gif", gifSrc);
+                            });
                         }
 
                         $('.la-animatedGif-redo').on("click", function () {
-                          srcGif = $(this).parent().next().find('.la-animatedGif-img ').attr("data-gif");
-                          $(this).parent().next().find('.la-animatedGif-img ').attr("src", srcGif);
+                            let $img = $(this).parent().next().find('.la-animatedGif-img');
+                            let srcGif = $img.attr("data-gif");
+
+                            if (srcGif) {
+                                $img.attr("src", srcGif + "?t=" + new Date().getTime());
+                            }
+                        });
                     });
-                });
             </laser:script>
 
         </g:if>

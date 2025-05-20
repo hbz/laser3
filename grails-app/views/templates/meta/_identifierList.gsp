@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Vendor; de.laser.Provider; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <table class="ui table">
@@ -9,7 +9,9 @@
 
     <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
         <th>${message(code: 'default.note.label')}</th>
-        <th>%{--${message(code: 'default.actions.label')}--}%</th>
+        <th class="center aligned">
+            <ui:optionsIcon />
+        </th>
     </g:if>
     </tr>
 </thead>
@@ -21,8 +23,8 @@
                 <td>
                     ${namespace}
                     <g:if test="${ident instanceof Identifier && ident.ns.getI10n('description')}">
-                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${ident.ns.getI10n('description')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="top right" class="la-popup-tooltip" data-content="${ident.ns.getI10n('description')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                 </td>
@@ -32,7 +34,7 @@
                             <ui:xEditable owner="${ident}" field="value"/>
                         </g:if>
                         <g:else>
-                            <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+                            <span class="js-copyTrigger js-copyTopic la-popup-tooltip"
                                       data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                     <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                     <span class="js-copyTopic">${ident.value}</span>
@@ -40,7 +42,7 @@
                         </g:else>
                         %{--
                         <g:if test="${ident.ns.urlPrefix}">
-                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icons.LINK_EXTERNAL} icon"></i></a>
+                            <a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icon.LNK.EXTERNAL}"></i></a>
                         </g:if>
                         --}%
                         <g:if test="${ident.getURL()}">
@@ -48,7 +50,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <span class="js-copyTrigger la-popup-tooltip la-delay"
+                        <span class="js-copyTrigger la-popup-tooltip"
                                       data-position="top right" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                             <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                             <span class="js-copyTopic">${ident}</span>
@@ -89,7 +91,7 @@
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:if test="${!ident.instanceOf}">
                                         <g:if test="${! AuditConfig.getConfig(ident)}">
-                                            <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                               controller="ajax"
                                                               action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
@@ -104,18 +106,18 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash"></i>
+                                                <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                             </ui:remoteLink>
-                                            <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
                                                               controller="ajax" action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
                                                                        ownerClass: "${object.class}",
@@ -129,45 +131,45 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="thumbtack icon"></i>
+                                                <i class="${Icon.SIG.INHERITANCE}"></i>
                                             </ui:remoteLink>
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD_DELETE} icon"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:else>
                                 </g:if>
                                 <g:elseif test="${ident.instanceOf}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                                    <ui:auditIcon type="auto" />
                                 </g:elseif>
                                 <g:else>
-                                    <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:else>
                             </g:if>
                             <g:else>
-                                <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:else>
                         </g:if>
                         <g:elseif test="${ident instanceof Identifier && ident.instanceOf}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.audit.target.inherit.auto')}" data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>
+                            <ui:auditIcon type="auto" />
                         </g:elseif>
                     </td>
                 </g:if><%-- hidden if org[type=institution] --%>

@@ -3,7 +3,7 @@
 <div class="ui segment hidden" id="reporting-dtc-wrapper">
 
     <span class="ui top attached label" style="border-radius: 0; text-align: center">
-        <i class="ui icon th"></i> ${message(code:'reporting.details.dtc.label')}
+        <i class="icon th"></i> ${message(code:'reporting.details.dtc.label')}
     </span>
 
     <div class="ui form" style="margin-top: 3em !important;">

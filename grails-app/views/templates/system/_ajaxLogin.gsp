@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <div id="ajaxLoginModal" class="ui coupled modal">
 
@@ -25,14 +25,14 @@
             </div>
 
             <div class="field">
-                <input type="submit" class="ui button" value="${message(code: "menu.user.login")}"/>
+                <input type="submit" class="${Btn.SIMPLE}" value="${message(code: "menu.user.login")}"/>
             </div>
         </form>
     </div>
 
     <div class="actions">
         <p>
-            <g:link controller="home" action="index" class="ui button"><g:message code="ajaxLogin.modal.loginLink"/></g:link>
+            <g:link controller="home" action="index" class="${Btn.SIMPLE}"><g:message code="ajaxLogin.modal.loginLink"/></g:link>
         </p>
     </div>
 

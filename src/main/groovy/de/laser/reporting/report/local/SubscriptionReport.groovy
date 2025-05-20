@@ -6,7 +6,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
@@ -46,7 +46,7 @@ class SubscriptionReport {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
-            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+            if (sub.getConsortium().id == BeanStore.getContextService().getOrg().id) {
                 return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
             }
             else {
@@ -320,7 +320,7 @@ class SubscriptionReport {
                     List<List<Long>> pkgIdLists = []
 
                     timeline.eachWithIndex { s, i ->
-                        pkgIdLists.add(de.laser.Package.executeQuery(
+                        pkgIdLists.add(de.laser.wekb.Package.executeQuery(
                                 'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
                                 [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
                         ))
@@ -685,17 +685,6 @@ class SubscriptionReport {
                 }
                 else if (params.query == 'member-libraryType') {
                     processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
-                }
-                else if (params.query == 'member-orgType') {
-
-                    BaseQuery.handleGenericRefdataQuery(
-                            params.query,
-                            'select p.id, p.value_de, count(*) from Org o join o.orgType p where o.id in (:idList) group by p.id, p.value_de order by p.value_de',
-                            'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
-                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
-                            idList,
-                            result
-                    )
                 }
                 else if (params.query == 'member-region') {
                     processSimpleMemberRefdataQuery(params.query, 'region', idList, result)

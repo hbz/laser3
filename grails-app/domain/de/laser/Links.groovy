@@ -146,13 +146,13 @@ class Links {
     String toString() {
         String source = null, destination = null
         if(sourceSubscription)
-            source = "source: ${sourceSubscription}"
+            source = "source: ${sourceSubscription} ${sourceSubscription.id}"
         else if(sourceLicense)
-            source = "source: ${sourceLicense}"
+            source = "source: ${sourceLicense} ${sourceLicense.id}"
         if(destinationSubscription)
-            destination = "destination: ${destinationSubscription}"
+            destination = "destination: ${destinationSubscription} ${destinationSubscription.id}"
         else if(destinationLicense)
-            destination = "destination: ${destinationLicense}"
+            destination = "destination: ${destinationLicense} ${destinationLicense.id}"
         "${source} -> ${linkType.value} -> ${destination}"
     }
 

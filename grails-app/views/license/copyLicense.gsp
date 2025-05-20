@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CopyElementsService;" %>
-<laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; de.laser.CopyElementsService;" %>
+<laser:htmlStart message="myinst.copyLicense" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
@@ -22,34 +22,32 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 
 <div class="ui tablet stackable steps la-clear-before">
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')} <br />
-                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
-                <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
-                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
-                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
-                <i class="${Icons.ORG} icon"></i>               ${message(code: 'subscription.organisations.label')} <br />
-                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')} <br />
-                <i class="exchange icon"></i>                   ${message(code: 'license.linkedObjects')}
+                <i class="${Icon.SYM.DATE}"></i>                ${message(code: 'subscription.periodOfValidity.label')} <br />
+                <i class="${Icon.SYM.STATUS}"></i>              ${message(code: 'license.status.label')} <br />
+                <i class="${Icon.SYM.URL}"></i>                 ${message(code: 'default.url.label')} <br />
+                <i class="${Icon.ATTR.LICENSE_CATEGORY}"></i>   ${message(code: 'license.licenseCategory.label')} <br />
+                <i class="${Icon.SYM.IS_PUBLIC}"></i>           ${message(code: 'license.isPublicForApi.label')} <br />
+                <i class="${Icon.ORG}"></i>                     ${message(code: 'subscription.organisations.label')} <br />
+                <i class="${Icon.IDENTIFIER}"></i>              ${message(code: 'default.identifiers.label')} <br />
+                <i class="${Icon.SYM.LINKED_OBJECTS}"></i>      ${message(code: 'license.linkedObjects')}
             </div>
         </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
-        <i class="icon"></i>
         <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK} icon"></i>          ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -59,7 +57,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i> ${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>

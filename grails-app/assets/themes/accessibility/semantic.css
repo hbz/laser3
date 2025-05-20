@@ -3,7 +3,7 @@
  * https://github.com/fomantic/Fomantic-UI
  * https://fomantic-ui.com/
  *
- * Copyright 2024 Contributors
+ * Copyright 2025 Contributors
  * Released under the MIT license
  * https://opensource.org/licenses/MIT
  *
@@ -1131,7 +1131,7 @@ body ::-webkit-scrollbar-track {
 body ::-webkit-scrollbar-thumb {
   cursor: pointer;
   border-radius: 5px;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0, 0, 0, 0.8);
   -webkit-transition: color 0.2s ease;
   transition: color 0.2s ease;
 }
@@ -1151,7 +1151,7 @@ body .ui {
   scrollbar-track-color: #e6e6e6;
   scrollbar-arrow-color: #e6e6e6;
   /* firefox: first color thumb, second track */
-  scrollbar-color: rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.1);
+  scrollbar-color: rgba(0, 0, 0, 0.8) rgba(0, 0, 0, 0.1);
   scrollbar-width: thin;
 }
 
@@ -1317,20 +1317,36 @@ aside.ui.accordion .title:not(.ui) {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background-color: #f1ebe5;
 }
 
-.landingpage .hidden.menu {
-  display: none;
+.landingpage .ui.grid {
+  margin: 0;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu {
   border-radius: 0 !important;
   border: none !important;
+  margin: 0!important;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-local {
+  box-shadow: 0px 6px 0px 0px #FBBD08;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-dev {
+  box-shadow: 0px 6px 0px 0px #98B500;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-qa {
+  box-shadow: 0px 6px 0px 0px #BB1600;
+}
+
+.landingpage .ui.inverted.menu.la-top-menu.la-test {
+  box-shadow: 0px 6px 0px 0px #004678;
 }
 
 .landingpage .logo {
-  height: 50px;
+  height: auto;
   width: 144px;
   padding-right: 2rem;
 }
@@ -1396,10 +1412,6 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 @media only screen and (max-width: 700px) {
-  .landingpage .ui.fixed.menu {
-    display: none !important;
-  }
-
   .landingpage .masthead.segment {
     min-height: 350px;
   }
@@ -1412,6 +1424,16 @@ aside.ui.accordion .title:not(.ui) {
   .landingpage .masthead h2 {
     margin-top: 0.5em;
     font-size: 14px;
+  }
+
+  .landingpage .masthead .ui.ui.ui.ui.massive.button {
+    font-size: 1.3rem;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .landingpage {
+    min-height: auto;
   }
 }
 
@@ -1494,6 +1516,10 @@ aside.ui.accordion .title:not(.ui) {
 
 .la-flexbox {
   display: flex;
+}
+
+.la-justifyContent-spaceBetween {
+  justify-content: space-between;
 }
 
 .la-inline-flexbox {
@@ -1645,10 +1671,6 @@ i.icon.la-list-icon:before {
   hyphens: auto;
 }
 
-.la-hide-context-orgMenu {
-  padding-top: 60px;
-}
-
 .la-show-context-orgMenu {
   padding-top: 105px;
 }
@@ -1660,9 +1682,9 @@ i.icon.la-list-icon:before {
 /* new buttons */
 
 .ui table td.x {
-  text-align: right;
   margin-right: 0;
   white-space: nowrap;
+  text-align: center!important;
 }
 
 .js-gost {
@@ -1951,6 +1973,10 @@ i.icon.la-list-icon:before {
   height: 1px;
   width: 1px;
   overflow: hidden;
+}
+
+.la-display-none {
+  display: none;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Button
@@ -6748,6 +6774,22 @@ i.icon.la-list-icon:before {
  ----------------*/
 
 /*---------------
+     Neutral
+ ----------------*/
+
+.ui.buttons .button.la-modern-button,
+.ui.button.la-modern-button {
+  color: #004678;
+  background-color: transparent;
+}
+
+.ui.buttons .button.la-modern-button:hover,
+.ui.button.la-modern-button:hover {
+  background-color: #004678;
+  color: #FFFFFF;
+}
+
+/*---------------
     Negativ
 ----------------*/
 
@@ -6819,7 +6861,151 @@ i.icon.la-list-icon:before {
   color: #FFFFFF;
 }
 
-a i.circular.la-gokb:hover {
+/*---------------
+    TEAL
+----------------*/
+
+.ui.teal.buttons .button.la-modern-button,
+.ui.teal.button.la-modern-button {
+  color: #00B5AD;
+  background-color: transparent;
+}
+
+.ui.teal.buttons .button.la-modern-button:hover,
+.ui.teal.button.la-modern-button:hover {
+  background-color: #00B5AD;
+  color: #FFFFFF;
+}
+
+/*---------------
+    OLIVE
+----------------*/
+
+.ui.olive.buttons .button.la-modern-button,
+.ui.olive.button.la-modern-button {
+  color: #B5CC18;
+  background-color: transparent;
+}
+
+.ui.olive.buttons .button.la-modern-button:hover,
+.ui.olive.button.la-modern-button:hover {
+  background-color: #B5CC18;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREEN
+----------------*/
+
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: #98B500;
+  background-color: transparent;
+}
+
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
+}
+
+/*---------------
+    VIOLET
+----------------*/
+
+.ui.violet.buttons .button.la-modern-button,
+.ui.violet.button.la-modern-button {
+  color: #76007A;
+  background-color: transparent;
+}
+
+.ui.violet.buttons .button.la-modern-button:hover,
+.ui.violet.button.la-modern-button:hover {
+  background-color: #76007A;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PURPLE
+----------------*/
+
+.ui.purple.buttons .button.la-modern-button,
+.ui.purple.button.la-modern-button {
+  color: #2185d0;
+  background-color: transparent;
+}
+
+.ui.purple.buttons .button.la-modern-button:hover,
+.ui.purple.button.la-modern-button:hover {
+  background-color: #2185d0;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PINK
+----------------*/
+
+.ui.pink.buttons .button.la-modern-button,
+.ui.pink.button.la-modern-button {
+  color: #E03997;
+  background-color: transparent;
+}
+
+.ui.pink.buttons .button.la-modern-button:hover,
+.ui.pink.button.la-modern-button:hover {
+  background-color: #E03997;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BROWN
+----------------*/
+
+.ui.brown.buttons .button.la-modern-button,
+.ui.brown.button.la-modern-button {
+  color: #6b1d1d;
+  background-color: transparent;
+}
+
+.ui.brown.buttons .button.la-modern-button:hover,
+.ui.brown.button.la-modern-button:hover {
+  background-color: #6b1d1d;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREY
+----------------*/
+
+.ui.grey.buttons .button.la-modern-button,
+.ui.grey.button.la-modern-button {
+  color: #767676;
+  background-color: transparent;
+}
+
+.ui.grey.buttons .button.la-modern-button:hover,
+.ui.grey.button.la-modern-button:hover {
+  background-color: #767676;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BLACK
+----------------*/
+
+.ui.black.buttons .button.la-modern-button,
+.ui.black.button.la-modern-button {
+  color: #1B1C1D;
+  background-color: transparent;
+}
+
+.ui.black.buttons .button.la-modern-button:hover,
+.ui.black.button.la-modern-button:hover {
+  background-color: #1B1C1D;
+  color: #FFFFFF;
+}
+
+a i.circular.la-wekb:hover {
   color: #FFFFFF;
   text-decoration: none;
   background-color: #004678;
@@ -6855,6 +7041,31 @@ a i.circular.la-gokb:hover {
 .la-debugInfos {
   position: fixed;
   z-index: 103;
+}
+
+.ui.button.la-js-addListValue {
+  margin-bottom: 1em;
+}
+
+a#showSystemInfo {
+  bottom: 45px;
+  right: 10px;
+}
+
+a#showDebugInfo {
+  bottom: 45px;
+  right: 55px;
+}
+
+div#system-profiler {
+  bottom: 10px;
+  right: 10px;
+}
+
+button.la-scrollTopButton {
+  position: fixed;
+  bottom: 88px;
+  right: 0;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Container
@@ -7221,6 +7432,14 @@ a i.circular.la-gokb:hover {
     width: 1440px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Login Card in Mobiles */
+
+@media only screen and (max-width: 768px) {
+  #login .ui.card {
+    margin-top: 80px;
   }
 }
 /*!
@@ -28437,7 +28656,7 @@ body[class*="vendor"] .ui.icon.header .icon.la-object {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Vendor"] .la-objectIsMine,
@@ -28448,7 +28667,7 @@ body[class*="vendor"] .la-objectIsMine {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Provider"] .ui.icon.header .icon.la-object,
@@ -28564,6 +28783,25 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
 
 .la-orgRelations {
   font-weight: normal;
+}
+
+/* -----------------------------------
+         Header in Card with Add Icon
+    ----------------------------------- */
+
+.ui.card > .content > .header.la-flexbox,
+.ui.cards > .card > .content > .header.la-flexbox {
+  display: flex;
+}
+
+.ui.card > .content > .header.la-justifyContent-spaceBetween,
+.ui.cards > .card > .content > .header.la-justifyContent-spaceBetween {
+  justify-content: space-between;
+}
+
+.ui.card > .content > .header h2,
+.ui.cards > .card > .content > .header h2 {
+  font-size: 1rem;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Icon
@@ -37704,7 +37942,7 @@ i.icon.hand.pointer.outline.slash {
   font-family: 'icomoon';
 }
 
-i.icon.pencil.alternate.slash {
+i.icon.write.slash {
   font-family: 'icomoon';
 }
 
@@ -37760,7 +37998,7 @@ i.icon.la-noChange {
 
 /**/
 
-i.icon.la-gokb {
+i.icon.la-wekb {
   font-family: 'icomoon';
 }
 
@@ -37858,11 +38096,19 @@ i.icon.la-sparkles {
   font-family: 'icomoon';
 }
 
+i.icon.la-survey {
+  font-family: 'icomoon';
+}
+
+i.icon.la-check-double {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
 
-i.icon.pencil.alternate.slash:before {
+i.icon.write.slash:before {
   content: "\e902";
 }
 
@@ -37918,7 +38164,7 @@ i.icon.la-replace:before {
 
 /**/
 
-i.icon.la-gokb:before {
+i.icon.la-wekb:before {
   content: "\e90e";
 }
 
@@ -38025,6 +38271,14 @@ i.icon.la-sparkles:before {
   content: "\e920";
 }
 
+i.icon.la-survey:before {
+  content: "\e922";
+}
+
+i.icon.la-check-double.slash:before {
+  content: "\e923";
+}
+
 /*******************************
            Laser Icons
 *******************************/
@@ -38041,14 +38295,16 @@ i.icon.la-sparkles:before {
   text-transform: none;
 }
 
-.la-header-with-icon .la-clone {
-  vertical-align: super;
+/* Very Light Grey */
+
+i.la-light-grey.icon {
+  color: #e8e8e8 !important;
 }
 
 /* Light Grey */
 
-i.la-light-grey.icon {
-  color: #e8e8e8 !important;
+i.la-lighter-grey.icon {
+  color: #c9c9c9 !important;
 }
 
 i.inverted.la-light-grey.icon {
@@ -38222,6 +38478,10 @@ i.icon.la-objectIsMine.fixed {
   z-index: 100;
   left: 0;
   right: 0;
+}
+
+i.bordered.icon.la-checkButton {
+  box-shadow: #004678 0px 0px 0px 0.2em inset;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Image
@@ -38560,6 +38820,15 @@ img.ui.bordered.image {
 /*******************************
          Theme Overrides
 *******************************/
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+.la-markdown img.image:not(.la-js-questionMark):hover {
+  cursor: pointer;
+  border-color: #fbbd08;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Input
  * https://github.com/fomantic/Fomantic-UI/
@@ -42869,11 +43138,10 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   padding-right: 0.2em;
   padding-top: 0.9em;
   padding-bottom: 0.9em;
-  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #004678;
   vertical-align: super;
-  margin: 0 1.142857em;
+  margin: 0 0 2em 1.142857em;
 }
 
 .ui.label.la-annual-rings .ui.tiny.label {
@@ -43110,13 +43378,14 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-server-label {
   position: fixed;
   bottom: 0;
-  left: 0;
+  right: 0;
   top: 0;
   margin: 0 !important;
   border-radius: 0 !important;
   z-index: 999;
   padding: 0.2em;
   font-size: 2.5rem;
+  width: 1.5vw;
 }
 
 /* Label for survey types */
@@ -44463,6 +44732,11 @@ dd {
 
 .ui.list.la-titleAccordionList > .item {
   list-style-type: square;
+}
+
+.ui.selection.list.la-dashboard .list > .item,
+.ui.selection.list.la-dashboard > .item {
+  color: #015591;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Loader
@@ -47402,7 +47676,7 @@ dd {
 
 aside.la-metabox {
   position: absolute !important;
-  width: inherit;
+  width: 100%;
   margin: 0 !important;
 }
 
@@ -52125,19 +52399,19 @@ legend {
 .ui.celled.grid {
   width: 100%;
   margin: 1em 0;
-  box-shadow: 0 0 0 1px #D4D4D5;
+  box-shadow: 0 0 0 1px #d3dae3;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  box-shadow: 0 -1px 0 0 #D4D4D5;
+  box-shadow: 0 -1px 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  box-shadow: -1px 0 0 0 #D4D4D5;
+  box-shadow: -1px 0 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -52458,7 +52732,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -52504,7 +52778,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -52550,7 +52824,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {
@@ -53159,7 +53433,7 @@ legend {
 
 .la-timeLineGrid {
   border-left: 2px dashed #dcdcdc;
-  margin-left: 25px;
+  margin-left: 3px;
 }
 
 .la-timeLineGrid h2.ui.header {
@@ -55822,6 +56096,22 @@ Floated Menu / Item
   /* -- todo -- */
 }
 
+#contextBar.la-local {
+  box-shadow: 0px 6px 0px 0px #FBBD08;
+}
+
+#contextBar.la-dev {
+  box-shadow: 0px 6px 0px 0px #98B500;
+}
+
+#contextBar.la-qa {
+  box-shadow: 0px 6px 0px 0px #BB1600;
+}
+
+#contextBar.la-test {
+  box-shadow: 0px 6px 0px 0px #004678;
+}
+
 #contextBar .la-menue-button {
   color: #FFFFFF;
   background-color: transparent!important;
@@ -55874,14 +56164,6 @@ Floated Menu / Item
 
 #contextBar .la-cb-action.item .toggle .icon {
   color: #fff !important;
-}
-
-#contextBar .la-cb-action.item .la-toggle-green-red.active {
-  background-color: #98b500 !important;
-}
-
-#contextBar .la-cb-action.item .la-toggle-green-red.inactive {
-  background-color: #D95F3D !important;
 }
 
 #contextBar .la-cb-action.item > .button,
@@ -60908,29 +61190,11 @@ Floated Menu / Item
     Sortable
 ---------------*/
 
-/* change classnames bec. of existing sort function in LAS:eR */
-
 /* Sorted */
 
 .ui.sortable.table thead th.sorted {
   background: #F2F2F2;
   color: #515151;
-}
-
-.ui.sortable.table thead th.sortable:after {
-  content: '\f0dc';
-  color: #767676;
-  display: inline;
-}
-
-.ui.sortable.table thead th.asc:after {
-  content: "\f0d8";
-  color: #1B1C1D;
-}
-
-.ui.sortable.table thead th.desc:after {
-  content: "\f0d7";
-  color: #1B1C1D;
 }
 
 .ui.sortable.table > thead > tr > th {
@@ -63643,7 +63907,7 @@ a.ui.basic.inverted.black.card:hover,
     height: auto !important;
     margin: 1em 1em;
     padding: 0 !important;
-    width: calc(100% - 2em) !important;
+    width: 100% !important;
   }
 }
 
@@ -63994,6 +64258,22 @@ a.inverted.ui.card:hover,
 .la-padding-left-07em {
   padding-top: 1em;
   padding-left: 0.7em;
+}
+
+#login .card.la-local {
+  box-shadow: 0px 4px 0px 0px #FBBD08;
+}
+
+#login .card.la-dev {
+  box-shadow: 0px 4px 0px 0px #98B500;
+}
+
+#login .card.la-qa {
+  box-shadow: 0px 4px 0px 0px #BB1600;
+}
+
+#login .card.la-test {
+  box-shadow: 0px 4px 0px 0px #004678;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Comment
@@ -66986,6 +67266,40 @@ a.inverted.ui.card:hover,
 .ui.accordion.la-namedetails:not(.styled) .title ~ .content {
   padding: 0;
 }
+
+.la-accordion-altName .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center {
+  margin: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list .list > .item,
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list > .item {
+  padding: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item .content {
+  flex-grow: 1;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.button {
+  display: inline-block !important;
+  padding: 0.78571429em 0.78571429em 0.78571429em !important;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Calendar
  * https://github.com/fomantic/Fomantic-UI/
@@ -67440,7 +67754,7 @@ a.inverted.ui.card:hover,
   background: #FFFFFF;
   border-radius: 0.21428571rem;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
-  border: 1px solid #D4D4D5;
+  border: 1px solid #2e3948;
 }
 
 /* --------------
@@ -68458,6 +68772,14 @@ table tr td div.willBeReplacedStrong {
 
 .la-multi-sources:nth-child(n+2) {
   margin-top: 30px;
+}
+
+.la-checkAllArea {
+  margin-top: 4em;
+}
+
+.la-checkAllArea input[type=checkbox] {
+  vertical-align: baseline!important;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Dimmer
@@ -72102,6 +72424,83 @@ body.pushable > .pusher {
 /*******************************
          Theme Overrides
 *******************************/
+
+/* -- flyouts / markdown -- */
+
+#help-content.la-markdown > .content {
+  padding-top: 70px;
+}
+
+#help-content.la-markdown > .basic.actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #DCDDDE;
+}
+
+.la-markdown img {
+  max-width: 100%;
+}
+
+/* todo .. fix markup and remove */
+
+.ui.flyout:not(.la-markdown) {
+  padding: 50px 0 10px 0;
+  overflow: scroll;
+}
+
+.la-markdown ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+.la-markdown ol li {
+  position: relative;
+  padding-left: 1.8em;
+}
+
+.la-markdown ol li::before {
+  content: counter(list-item);
+  position: absolute;
+  left: 0;
+  width: 1.3em;
+  height: 1.3em;
+  background: #fa820a;
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.3em;
+}
+
+.la-markdown ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.la-markdown ul li {
+  position: relative;
+  padding-left: 1.8em;
+}
+
+.la-markdown ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 1.3em;
+  height: 1.3em;
+  background: #767676;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.3em;
+}
+
+.ui.flyout .ui.message {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  width: auto;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Modal
  * https://github.com/fomantic/Fomantic-UI/

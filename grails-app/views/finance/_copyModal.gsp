@@ -26,7 +26,7 @@
                         <label for="newLicenseeTargets">Für folgende Einrichtungen kopieren</label>
                         <g:select name="newLicenseeTargets" id="newLicenseeTargets" class="ui search dropdown" multiple="multiple"
                                   from="${validSubChilds}"
-                                  optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
+                                  optionValue="${{it?.name ? (it.getSubscriber() ? it.getSubscriber() : '') : it.label}}"
                                   optionKey="${{Subscription.class.name + ':' + it?.id}}"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                                   value="${Subscription.class.name + ':' + it?.id}" />

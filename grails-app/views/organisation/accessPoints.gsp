@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
+<laser:htmlStart message="org.nav.accessPoints" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:controlButtons>
@@ -31,7 +31,7 @@
     <laser:render template="breadcrumb"
                 model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-    <ui:h1HeaderWithIcon text="${orgInstance.name}">
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 
@@ -57,8 +57,8 @@
          data-tab="${accessPointType.value}">
 
         <g:if test="${editable}">
-        <g:link action="create" controller="accessPoint" class="ui right floated icon button" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
-            <i class="plus icon"></i>
+        <g:link action="create" controller="accessPoint" class="${Btn.ICON.SIMPLE} right floated" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
+            <i class="${Icon.CMD.ADD}"></i>
         </g:link>
         <br>
         <br>
@@ -82,7 +82,9 @@
                 </g:else>
                 <th class="two wide">${message(code: 'default.notes.label')}</th>
                 <g:if test="${editable}">
-                    <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
+                    <th class="two wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </tr>
             </thead>
@@ -166,27 +168,26 @@
 
                             <g:link controller="accessPoint"
                                     action="edit_${accessPoint.accessMethod.value.toLowerCase()}"
-                                    id="${accessPoint.id}" class="ui icon button blue la-modern-button"
+                                    id="${accessPoint.id}" class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
 
                             <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
-                                        class="ui negative icon button la-modern-button js-open-confirm-modal"
+                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                <span class="la-long-tooltip la-popup-tooltip"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <span class="ui negative icon button la-modern-button disabled"><i class="${Icons.CMD_DELETE} icon"></i>
-                                    </span>
+                                    <span class="${Btn.MODERN.NEGATIVE} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
                                 </span>
                             </g:else>
 

@@ -11,6 +11,7 @@ class ConfigDefaults {
     public static final String DATASOURCE_DEFAULT              = 'dataSource'
     public static final String DATASOURCE_STORAGE              = 'dataSources.storage'
 
+    public static final String SETUP_COST_INFORMATION_DEFINITION_CSV   = 'setup/CostInformationDefinition.csv'
     public static final String SETUP_REFDATA_CATEGORY_CSV      = 'setup/RefdataCategory.csv'                       // -> BootstrapService
     public static final String SETUP_REFDATA_VALUE_CSV         = 'setup/RefdataValue.csv'
     public static final String SETUP_PROPERTY_DEFINITION_CSV   = 'setup/PropertyDefinition.csv'

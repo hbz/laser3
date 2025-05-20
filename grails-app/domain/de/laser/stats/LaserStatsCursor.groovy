@@ -1,7 +1,7 @@
 package de.laser.stats
 
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.exceptions.CreationException
 
 /**

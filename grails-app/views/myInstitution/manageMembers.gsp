@@ -1,10 +1,10 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
     <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
-<laser:htmlStart text="${title}" serviceInjection="true" />
+<laser:htmlStart text="${title}" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${title}" class="active"/>
@@ -49,15 +49,24 @@
     </g:if>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${title}" total="${membersCount}" floated="true" />
+<ui:h1HeaderWithIcon text="${title}" total="${membersCount}" floated="true" type="institution" />
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowFilter = [
+            ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
+            ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+            ['property&value', 'subStatus', 'subValidOn'],
+            ['discoverySystemsFrontend', 'discoverySystemsIndex', 'providers', 'subPerpetualAccess']
+        ]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'mailInfos']
 
         if (contextService.getOrg().isCustomerType_Support()) {
-            configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn']]
+            configShowFilter = [
+                ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
+                ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                ['property&value', 'subStatus', 'subValidOn']
+            ]
             configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions']
         }
     %>
@@ -86,7 +95,7 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button js-open-confirm-modal" data-confirm-id="manageMembers"
+            <input type="submit" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="manageMembers"
                    data-confirm-tokenMsg="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="unlink" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>

@@ -1,10 +1,11 @@
 package de.laser
 
-
+import de.laser.addressbook.Contact
 import de.laser.properties.PropertyDefinition
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 
@@ -211,7 +212,7 @@ class OrganisationService {
     /**
      * Helper method to group reader numbers by their key property which is a temporal unit
      * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
-     * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
+     * @param keyProp may be a year or semester; a temporal unit to group the reader numbers by
      * @return the {@link Map} with the grouped result entries
      */
     Map<String,Map<String,ReaderNumber>> groupReaderNumbersByProperty(List<ReaderNumber> readerNumbers,String keyProp) {
@@ -229,12 +230,11 @@ class OrganisationService {
 
     /**
      * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name
-     * @return the ordered {@link List} of {@link Platform}s
+     * @return the ordered {@link List} of {@link de.laser.wekb.Platform}s
      */
     List<Platform> getAllPlatforms() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: Wekb.getURL()], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
@@ -243,12 +243,18 @@ class OrganisationService {
      * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name, to which the context org is subscribed
      * @return the ordered {@link List} of {@link Platform}s
      */
-    List<Platform> getAllPlatformsForContextOrg(Org contextOrg) {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+    List<Platform> getAllPlatformsForContextOrg(Org targetOrg = null) {
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: Wekb.getURL()], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current']),
+                queryParams = [uuids: uuids, context: contextService.getOrg()]
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
-        Platform.executeQuery('select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name', [uuids: uuids, context: contextOrg])
+        String targetOrgFilter = ''
+        if(targetOrg) {
+            targetOrgFilter = 'and exists(select ot from OrgRole ot where ot.sub = oo.sub and ot.org = :targetOrg)'
+            queryParams.targetOrg = targetOrg
+        }
+        String query = "select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context ${targetOrgFilter})) order by p.name, plat.name"
+        Platform.executeQuery(query, queryParams)
     }
 
     /**

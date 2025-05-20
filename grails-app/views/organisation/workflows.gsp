@@ -1,4 +1,4 @@
-<laser:htmlStart message="workflow.plural" serviceInjection="true" />
+<laser:htmlStart message="workflow.plural" />
 
     <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -7,7 +7,7 @@
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org:org]}"/>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon text="${orgInstance.name}">
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 

@@ -1,13 +1,10 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.storage.RDConstants" %>
     <g:if test="${wekbServerUnavailable}">
-        <div class="ui icon error message">
-            <i class="exclamation icon"></i>
-            ${wekbServerUnavailable}
-        </div>
+        <ui:msg class="error" showIcon="true" text="${wekbServerUnavailable}" />
     </g:if>
     <g:else>
         <h2 class="ui header">
-            <g:message code="platform.stats.data.header"/> <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="ui icon la-gokb"></i></g:link>
+            <g:message code="platform.stats.data.header"/> <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip" data-content="we:kb Link"><i class="${Icon.WEKB}"></i></g:link>
         </h2>
         <div class="ui grid">
             <div class="eight wide column">

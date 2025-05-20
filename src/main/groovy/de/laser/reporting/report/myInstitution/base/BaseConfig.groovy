@@ -3,15 +3,15 @@ package de.laser.reporting.report.myInstitution.base
 import de.laser.ContextService
 import de.laser.License
 import de.laser.Org
-import de.laser.Package
-import de.laser.PackageVendor
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.config.CostItemXCfg
@@ -71,8 +71,6 @@ class BaseConfig {
 
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
-
-    static String RDJT_GENERIC_ORG_TYPE         = 'orgType'
 
     static String CI_GENERIC_CUSTOMER_TYPE      = 'customerType'
     static String CI_GENERIC_LEGAL_INFO         = 'legalInfo'
@@ -259,13 +257,7 @@ class BaseConfig {
         Locale locale = LocaleUtils.getCurrentLocale()
         String ck = 'reporting.customImpl.'
 
-        if (key == RDJT_GENERIC_ORG_TYPE) {
-            return [
-                    label: messageSource.getMessage('org.orgType.label', null, locale),
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
-            ]
-        }
-        else if (key == CI_GENERIC_CUSTOMER_TYPE) {
+        if (key == CI_GENERIC_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
@@ -289,15 +281,15 @@ class BaseConfig {
                             [   id: 1,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.1', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.1', null, localeEn),
-                            ],  // ui icon green check circle
+                            ],  // icon green check circle
                             [   id: 2,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.2', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.2', null, localeEn),
-                            ],  // ui icon grey outline circle
+                            ],  // icon grey outline circle
                             [   id: 3,
                                 value_de: messageSource.getMessage(ck + 'legalInfo.3', null, localeDe),
                                 value_en: messageSource.getMessage(ck + 'legalInfo.3', null, localeEn),
-                            ]   // ui icon red question mark
+                            ]   // icon red question mark
                     ]]
         }
         else if (key == CI_GENERIC_ANNUAL) {
@@ -345,17 +337,6 @@ class BaseConfig {
                         ]}
             ]
         }
-//        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
-//            return [
-//                    label: messageSource.getMessage('provider.label', null, locale),
-//                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
-//                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
-//                            id: it.id,
-//                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-//                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-//                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
-//            ]
-//        }
         else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),
@@ -587,16 +568,16 @@ class BaseConfig {
     }
 
     static String getIcon(String objKey) {
-        String icon = 'question'
+        String icon = Icon.SYM.UNKOWN
 
-             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book' }
-        else if (objKey == KEY_LICENSE)         { icon = Icons.LICENSE }
-        else if (objKey == KEY_ORGANISATION)    { icon = Icons.ORG }
-        else if (objKey == KEY_PACKAGE)         { icon = Icons.PACKAGE }
-        else if (objKey == KEY_PLATFORM)        { icon = Icons.PLATFORM }
-        else if (objKey == KEY_PROVIDER)        { icon = Icons.PROVIDER }
-        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icons.SUBSCRIPTION }
-        else if (objKey == KEY_VENDOR)          { icon = Icons.VENDOR }
+             if (objKey == KEY_ISSUEENTITLEMENT){ icon = 'book icon' }
+        else if (objKey == KEY_LICENSE)         { icon = Icon.LICENSE }
+        else if (objKey == KEY_ORGANISATION)    { icon = Icon.ORG }
+        else if (objKey == KEY_PACKAGE)         { icon = Icon.PACKAGE }
+        else if (objKey == KEY_PLATFORM)        { icon = Icon.PLATFORM }
+        else if (objKey == KEY_PROVIDER)        { icon = Icon.PROVIDER }
+        else if (objKey == KEY_SUBSCRIPTION)    { icon = Icon.SUBSCRIPTION }
+        else if (objKey == KEY_VENDOR)          { icon = Icon.VENDOR }
 
         icon
     }

@@ -1,16 +1,17 @@
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 <h3 class="ui dividing header">3.1. Link funktioniert als Button mit Tooltip</h3>
-<a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
-    <i class="icon thumbtack la-js-editmode-icon"></i>
+<a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} la-audit-button" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
+    <i class="${Icon.SIG.INHERITANCE} la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">3.2. Link funktioniert als Button ohne Tooltip</h3>
-<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="public" action="wcagTest" params="" class="ui icon positive button">
-    <i aria-hidden="true" class="checkmark icon"></i>
+<g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="public" action="wcagTest" params="" class="${Btn.ICON.POSITIVE}">
+    <i aria-hidden="true" class="${Icon.SYM.YES}"></i>
 </g:link>
 
 
 <h3 class="ui dividing header">3.3. Button mit Text und für den Accessibility-Tree verstecktem Icon</h3>
-<button class="ui  button blue"> Filter
-        <i class="cocktail icon"></i>
+<button class="${Btn.SIMPLE}"> Filter
+        <i class="filter icon"></i>
         <span aria-label="Anzahl der gesetzten Filter" class="ui circular label">111</span>
 </button>
 
@@ -48,10 +49,10 @@
                         controller= 'public'
                         action='wcagTest'
                         data-content="Wert wird nicht vererbt"
-                        class="ui icon mini button la-audit-button la-audit-button la-popup-tooltip la-delay meinToggleButton"
+                        class="${Btn.ICON.SIMPLE_TOOLTIP} mini la-audit-button meinToggleButton"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        <i aria-hidden="true" class="la-js-editmode-icon ${Icon.SIG.INHERITANCE_OFF}"></i>
 
                     </g:link>
 
@@ -103,11 +104,11 @@
                             controller= 'public'
                             action='wcagTest'
                             data-content="Wert wird nicht vererbt"
-                            class="ui icon mini button la-audit-button la-popup-tooltip la-delay meinToggleButton"
+                            class="${Btn.ICON.SIMPLE_TOOLTIP} mini la-audit-button meinToggleButton"
                             aria-labelledby="wcag_mlbbjc4mb"
                             params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        <i aria-hidden="true" class="la-js-editmode-icon ${Icon.SIG.INHERITANCE_OFF}"></i>
 
                     </g:link>
 

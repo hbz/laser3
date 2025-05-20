@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -21,7 +21,6 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
-            <tr><td>Last quartz heartbeat</td><td>${ConfigMapper.getQuartzHeartbeat()}</td></tr>
         </tbody>
     </table>
 
@@ -32,7 +31,6 @@
         <tbody>
             <tr><td>Build date</td><td> ${AppUtils.getMeta('info.app.build.date')}</td></tr>
             <tr><td>Build host</td><td> ${AppUtils.getMeta('info.app.build.host')}</td></tr>
-            <tr><td>Build profile</td><td> ${AppUtils.getMeta('info.app.build.profile')}</td></tr>
             <tr><td>Build java version</td><td> ${AppUtils.getMeta('info.app.build.javaVersion')}</td></tr>
         </tbody>
     </table>
@@ -88,11 +86,6 @@
                         collations.each { print it + '<br/>' }
                     %>
                 </td>
-            </tr>
-            <tr>
-                <td>Postgresql server</td>
-                <td>${DatabaseInfo.getServerInfo()}</td>
-                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
             </tr>
         <tbody>
     </table>
@@ -196,11 +189,11 @@
             </thead>
             <tbody>
             <tr>
-                <td>ElasticSearch url</td>
+                <td>ElasticSearch (reporting.elasticSearch.url)</td>
                 <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a></td>
             </tr>
             <tr>
-                <td>ElasticSearch indices</td>
+                <td>ElasticSearch (reporting.elasticSearch.indices)</td>
                 <td>
                     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}">
                         <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}" var="k, v">
@@ -210,11 +203,11 @@
                 </td>
             </tr>
             <tr>
-                <td>ElasticSearch apiSource</td>
+                <td>We:kb</td>
                 <td>
-                    <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                    <g:if test="${eshApiSource}">
-                        <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a> (${eshApiSource.name})
+                    <g:set var="wekb_url" value="${Wekb.getURL()}" />
+                    <g:if test="${wekb_url}">
+                        <a href="${wekb_url}" target="_blank">${wekb_url}</a>
                     </g:if>
                 </td>
             </tr>

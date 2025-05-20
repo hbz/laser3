@@ -26,9 +26,12 @@ class UserSetting {
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
+        DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
+        DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),
+        DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS   (RefdataValue, RDConstants.Y_N),
+        DASHBOARD_SHOW_WEKBNEWS                     (RefdataValue, RDConstants.Y_N),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
         LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
-        SHOW_SIMPLE_VIEWS                           (RefdataValue, RDConstants.Y_N),
         SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
 
         REMIND_CC_EMAILADDRESS                      (String),

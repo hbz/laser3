@@ -1,20 +1,20 @@
 <!-- _licPropGroupWrapper -->
-<%@ page import="de.laser.helper.Icons; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.ui.Icon; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 
-<g:set var="propList" value="${propDefGroup.getCurrentProperties(ownObj)}" />
+<g:set var="propList" value="${propDefGroup.getCurrentVisibleProperties(ownObj, contextService.getOrg())}" />
 
 <g:if test="${propList}">
     <div class="content">
         <h2 class="ui header">
-            <g:link controller="license" action="show" id="${ownObj.id}"><i class="${Icons.LICENSE} icon"></i>${ownObj}</g:link>
+            <g:link controller="license" action="show" id="${ownObj.id}"><i class="${Icon.LICENSE}"></i>${ownObj}</g:link>
             (${propDefGroup.name})
 
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType == License.class.name}">
                     <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
-                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="ui icon eye orange"></i>
+                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                            <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                         </span>
                     </g:if>
                 </g:if>

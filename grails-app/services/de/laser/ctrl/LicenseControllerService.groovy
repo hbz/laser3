@@ -4,7 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
@@ -63,7 +62,7 @@ class LicenseControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (License) result.license)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (License) result.license)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -83,11 +82,10 @@ class LicenseControllerService {
 
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
-        result.contextCustomerType = result.institution.getCustomerType()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
-        result.inContextOrg = (result.institution.id in result.license.getAllLicensee().id || (!result.license.instanceOf && result.institution.id == result.license.getLicensingConsortium()?.id))
+        result.inContextOrg = (contextService.getOrg().id in result.license.getAllLicensee().id || (!result.license.instanceOf && contextService.getOrg().id == result.license.getLicensingConsortium()?.id))
 
         if(result.license.instanceOf)
             result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
@@ -99,13 +97,13 @@ class LicenseControllerService {
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.license).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotesCount(result.license, result.contextOrg)
-        result.docsCount       = docstoreService.getDocsCount(result.license, result.contextOrg)
-        result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
+        result.notesCount       = docstoreService.getNotesCount(result.license, contextService.getOrg())
+        result.docsCount        = docstoreService.getDocsCount(result.license, contextService.getOrg())
+        result.checklistCount   = workflowService.getWorkflowCount(result.license, contextService.getOrg())
 
         GrailsParameterMap clone = params.clone() as GrailsParameterMap
         if(!clone.license){
@@ -113,7 +111,7 @@ class LicenseControllerService {
         }
 
         Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
-        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == contextService.getOrg().id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
@@ -135,12 +133,12 @@ class LicenseControllerService {
             if (! result.license.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
                 //perform further check because it may be linked to a subscription and the linking is missing ...
-                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: result.institution, lic: result.license])
+                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: contextService.getOrg(), lic: result.license])
                 if(subLinks) {
                     //substitute missing link upon call
                     log.debug("--- SUBSTITUTING ---")
-                    OrgRole substitute = new OrgRole(org: result.institution, lic: result.license)
-                    if(result.institution.isCustomerType_Consortium()) {
+                    OrgRole substitute = new OrgRole(org: contextService.getOrg(), lic: result.license)
+                    if(contextService.getOrg().isCustomerType_Consortium()) {
                         substitute.roleType = RDStore.OR_LICENSING_CONSORTIUM
                     }
                     else {

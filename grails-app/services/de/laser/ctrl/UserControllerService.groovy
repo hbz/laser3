@@ -30,18 +30,16 @@ class UserControllerService {
      * @return a map containing the context user and his permissions
      */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
-        User contextUser = contextService.getUser()
-        Map<String, Object> result = [
-                orgInstance: contextService.getOrg(),
-                editor:      contextUser
-        ]
-        SwissKnife.setPaginationParams(result, params, contextUser)
+        Map<String, Object> result = [ orgInstance: contextService.getOrg() ]
+
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User)
         }
         else {
-            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
+            result.editable = contextService.isInstAdm_or_ROLEADMIN()
         }
         result
     }
@@ -52,18 +50,14 @@ class UserControllerService {
      * @return a map containing the context user and his permissions
      */
     Map<String, Object> getResultGenericsERMS3067(GrailsParameterMap params) {
-
-        Map<String, Object> result = [
-                orgInstance: contextService.getOrg(),
-                editor:      contextService.getUser()
-        ]
+        Map<String, Object> result = [ orgInstance: contextService.getOrg() ]
 
         if (params.get('uoid')) {
             result.user = genericOIDService.resolveOID(params.uoid)
-            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User)
         }
         else {
-            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
+            result.editable = contextService.isInstAdm_or_ROLEADMIN()
         }
         result
     }

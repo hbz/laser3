@@ -5,6 +5,7 @@ import de.laser.ctrl.UsageControllerService
 import de.laser.utils.SwissKnife
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.mail.MailTemplate; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
@@ -26,7 +26,9 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
-                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -40,7 +42,7 @@
                         <g:if test="${template.owner}">${template.owner.name}</g:if>
                     </td>
                     <td>
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                        <button type="button" class="${Btn.ICON.SIMPLE_TOOLTIP}"
                                 data-mailTemplateTarget="${MailTemplate.class.name}:${template.id}"
                                 data-mailTemplateName="${template.name}"
                                 data-mailTemplateSubject="${template.subject}"
@@ -49,7 +51,7 @@
                                 data-mailTemplateLanguage="${template.language.id}"
                                 data-ui="modal"
                                 data-href="#editMailTemplate"
-                                data-content="Mail Template ändern" data-position="top left"><i class="edit icon"></i></button>
+                                data-content="Mail Template ändern" data-position="top left"><i class="${Icon.CMD.EDIT}"></i></button>
                     </td>
                 </tr>
             </g:each>
@@ -91,7 +93,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
 
@@ -102,7 +104,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
     </g:form>
@@ -146,7 +148,7 @@
                   from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                   optionKey="id"
                   optionValue="${{it.getI10n('value')}}"
-                  class="ui dropdown search many-to-one"
+                  class="ui dropdown clearable search"
                   noSelection="[null: '']"/>
         </div>
 
@@ -157,7 +159,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
 

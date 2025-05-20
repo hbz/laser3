@@ -1,5 +1,5 @@
 <%@ page import="de.laser.*; de.laser.auth.*" %>
-<laser:htmlStart message="menu.institutions.users" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.users" />
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
@@ -14,7 +14,7 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}">
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'admin' : orgInstance.getCustomerType()}">
             <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
         </ui:h1HeaderWithIcon>
 
@@ -32,7 +32,7 @@
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>
 
         <g:if test="${multipleAffiliationsWarning}">
-            <ui:msg class="info" noClose="true" message="user.edit.info" />
+            <ui:msg class="info" hideClose="true" message="user.edit.info" />
         </g:if>
 
         <ui:messages data="${flash}" />

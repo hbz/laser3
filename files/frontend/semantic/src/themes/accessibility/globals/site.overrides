@@ -97,20 +97,30 @@ aside.ui.accordion .title:not(.ui) {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
-    background-color: #f1ebe5;
-    .hidden.menu {
-        display: none;
+    .ui.grid {
+        margin: 0;
     }
     .ui.inverted.menu.la-top-menu {
         //height: 50px;
         border-radius:0 !important;
         border: none !important;
-    }
-    .la-fixed-menu {
-        //height: 50px;
+        margin:0!important;
+        &.la-local {
+            box-shadow: 0px 6px 0px 0px @yellow;
+        }
+        &.la-dev {
+            box-shadow: 0px 6px 0px 0px @green;
+        }
+        &.la-qa {
+            box-shadow: 0px 6px 0px 0px @red;
+
+        }
+        &.la-test{
+            box-shadow: 0px 6px 0px 0px @blue;
+        }
     }
     .logo {
-        height: 50px;
+        height: auto;
         width: 144px;
         padding-right: 2rem;
 
@@ -169,10 +179,6 @@ aside.ui.accordion .title:not(.ui) {
 
 
     @media only screen and (max-width: 700px) {
-        .ui.fixed.menu {
-            display: none !important;
-        }
-
         .masthead.segment {
             min-height: 350px;
         }
@@ -186,6 +192,12 @@ aside.ui.accordion .title:not(.ui) {
             margin-top: 0.5em;
             font-size: 14px;
         }
+        .masthead .ui.ui.ui.ui.massive.button{
+            font-size: 1.3rem;
+        }
+    }
+    @media only screen and (max-width: 1200px) {
+        min-height: auto;
     }
 }
 .ui {
@@ -255,6 +267,9 @@ aside.ui.accordion .title:not(.ui) {
 /* */
 .la-flexbox{
     display:flex;
+}
+.la-justifyContent-spaceBetween{
+    justify-content:space-between;
 }
 .la-inline-flexbox{
     display:inline-flex;
@@ -391,9 +406,6 @@ i.icon.la-list-icon{
     -moz-hyphens: auto;
     hyphens: auto;
 }
-.la-hide-context-orgMenu {
-    padding-top: 60px;
-}
 .la-show-context-orgMenu {
     padding-top: 105px;
 }
@@ -402,9 +414,9 @@ i.icon.la-list-icon{
 }
 /* new buttons */
 .ui table td.x {
-    text-align: right;
     margin-right: 0;
     white-space: nowrap;
+    text-align: center!important;
 }
 .js-gost {
     display: none;
@@ -743,4 +755,7 @@ i.icon.la-list-icon{
     height: 1px;
     width: 1px;
     overflow: hidden;
+}
+.la-display-none {
+    display: none;
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.compareSubMemberCostItems.label"/>
 
 <laser:serviceInjection/>
@@ -41,7 +41,7 @@
     <div class="field" style="text-align: right;">
         <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
             <g:if test="${subscription}">
-                <g:link class="ui button" action="compareSubMemberCostItems" id="${subscription.id}"
+                <g:link class="${Btn.SIMPLE}" action="compareSubMemberCostItems" id="${subscription.id}"
                          params="${params + [showView: showView, showBulkCostItems: 'true']}">
                     ${g.message(code: 'financials.bulkCostItems.show')}
                 </g:link>
@@ -49,7 +49,7 @@
         </g:if>
         <g:else>
             <g:if test="${subscription}">
-                <g:link class="ui button" action="compareSubMemberCostItems" id="${subscription.id}"
+                <g:link class="${Btn.SIMPLE}" action="compareSubMemberCostItems" id="${subscription.id}"
                          params="${params + [showView: showView, showBulkCostItems: 'false']}">
                     ${g.message(code: 'financials.bulkCostItems.hidden')}
                 </g:link>
@@ -110,7 +110,7 @@
 
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
-                    <button class="ui button"
+                    <button class="${Btn.SIMPLE}"
                             type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                 </div>
 
@@ -159,11 +159,13 @@
                                                               optionKey="id"
                                                               optionValue="value"
                                                               value="${selectedCostItemElementID}"
-                                                              class="ui dropdown"
+                                                              class="ui dropdown clearable"
                                                               id="selectedCostItemElementID"/>
             </th>
-            <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                <th class="la-action-info" scope="col" rowspan="3"><g:message code="default.actions.label"/></th>
+            <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                <th class="center aligned" scope="col" rowspan="3">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
         </tr>
         <tr>
@@ -221,15 +223,7 @@
                 </td>
                 <td>
                     <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                    <g:if test="${sub.isSlaved}">
-                        <span data-position="top right" class="la-popup-tooltip la-delay"
-                              data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                            <i class="grey la-thumbtack-regular icon"></i>
-                        </span>
-                    </g:if>
-
-                    <ui:customerTypeProIcon org="${subscr}"/>
+                    <ui:customerTypeOnlyProIcon org="${subscr}"/>
                 </td>
                 <td>
                     <g:if test="${sub.isMultiYear}">
@@ -412,11 +406,11 @@
                                 var="costItemParticipantSub">
                             <g:link controller="finance" action="editCostItem"
                                     params='[sub: "${costItemParticipantSub.sub?.id}", id: "${costItemParticipantSub.id}"]'
-                                    class="ui icon button blue la-modern-button trigger-modal"
+                                    class="${Btn.MODERN.SIMPLE} trigger-modal"
                                     data-id_suffix="edit_${costItemParticipantSub.id}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </g:each>
                     </td>
@@ -507,7 +501,6 @@
                             },
                             detachable: true,
                             autofocus: false,
-                            closable: false,
                             transition: 'scale',
                             onApprove : function() {
                                 $(this).find('.ui.form').submit();

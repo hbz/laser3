@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
-<laser:htmlStart message="package.details" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.wekb.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.wekb.Platform; java.text.SimpleDateFormat; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact" %>
+<laser:htmlStart message="package.details" />
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">
@@ -10,19 +10,10 @@
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
-<ui:modeSwitch controller="package" action="show" params="${params}"/>
-
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" message="package.show.all"/>
     <ui:crumb class="active" text="${packageInstance.name}"/>
 </ui:breadcrumbs>
-
-<%--
-making obsolete package/actions
-<ui:controlButtons>
-    <laser:render template="actions"/>
-</ui:controlButtons>
---%>
 
 <ui:h1HeaderWithIcon>
     <g:if test="${editable}"><span id="packageNameEdit"
@@ -38,7 +29,7 @@ making obsolete package/actions
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
+<ui:objectStatus object="${packageInstance}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
 
@@ -64,7 +55,7 @@ making obsolete package/actions
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.altname}" var="altname">
                                             <div class="item">
-                                                <i class="box open grey icon"></i>
+                                                <i class="${Icon.SYM.ALTNAME} grey"></i>
                                                 <div class="content">${altname}</div>
                                             </div>
                                         </g:each>
@@ -207,9 +198,9 @@ making obsolete package/actions
                                     <div class="ui fluid segment title">
                                         <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         ${packageInstanceRecord.source.name}
-                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
+                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                              data-content="${message(code: 'platform.details')}">
-                                            <i class="ui angle double down icon"></i>
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
                                     <div class="ui fluid segment content">
@@ -263,9 +254,9 @@ making obsolete package/actions
                                                     <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                                 </div>
                                                 <div class="right aligned column">
-                                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
+                                                    <div class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                                          data-content="${message(code: 'platform.details')}">
-                                                        <i class="ui angle double down icon"></i>
+                                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -314,8 +305,8 @@ making obsolete package/actions
                                             <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
-                                            <dt><g:message code="platform.auth.proxy.supported"/></dt>
-                                            <dd>${platformInstanceRecord.proxySupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.proxySupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                            <dt><g:message code="platform.auth.other.proxies"/></dt>
+                                            <dd>${platformInstanceRecord.otherProxies ? RefdataValue.getByValueAndCategory(platformInstanceRecord.otherProxies, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
                                             <dt><g:message code="platform.auth.openathens.supported"/></dt>
@@ -486,7 +477,7 @@ making obsolete package/actions
                                                               institutions: statsWibid
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
-                                        <i class="chart bar outline icon"></i>
+                                        <i class="${Icon.STATS}"></i>
                                     </ui:statsLink>
                                 </dd>
                             </dl>
@@ -505,7 +496,7 @@ making obsolete package/actions
                             <laser:render template="/templates/links/providerLinksAsList"
                                           model="${[providerRoles: [packageInstance],
                                                     roleObject   : packageInstance,
-                                                    roleRespValue: 'Specific package editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_PKG_EDITOR.value,
                                                     showPersons  : true
                                           ]}"/>
                         </div>
@@ -514,9 +505,9 @@ making obsolete package/actions
                         <div class="content">
                             <h2 class="ui header">${message(code: 'vendor.label')}</h2>
                             <laser:render template="/templates/links/vendorLinksAsList"
-                                          model="${[vendorRoles: packageInstance.vendors,
+                                          model="${[vendorRoles  : packageInstance.vendors,
                                                     roleObject   : packageInstance,
-                                                    roleRespValue: 'Specific package editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_PKG_EDITOR.value,
                                                     showPersons  : true
                                           ]}"/>
                         </div>
@@ -534,7 +525,7 @@ making obsolete package/actions
                                                 <tr>
                                                     <td>
                                                         <span class="la-flexbox la-minor-object">
-                                                            <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
+                                                            <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon la-popup-tooltip" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -546,24 +537,21 @@ making obsolete package/actions
                                                                     <div class="row">
                                                                         <div class="two wide column">
                                                                             <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_URL)}" var="prsContact">
-                                                                                <a class="la-break-all" href="${prsContact?.content}" target="_blank"><i class="circular large globe icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}"></i></a>
+                                                                                <a class="la-break-all" href="${prsContact?.content}" target="_blank"><i class="circular large globe icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}"></i></a>
                                                                             </g:each>
                                                                         </div>
                                                                         <div class="twelve wide column">
                                                                             <div class="ui label">${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}</div>
                                                                             <div class="ui header">${person?.getFirst_name()} ${person?.getLast_name()}</div>
-                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                                                    person,
-                                                                                    RDStore.CCT_EMAIL
-                                                                            )}" var="prsContact">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_EMAIL)}" var="prsContact">
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         contact             : prsContact,
                                                                                         tmplShowDeleteButton: false,
                                                                                         overwriteEditable   : false
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
-                                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                                                                <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger"></i>
+                                                                                <span class="la-popup-tooltip" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>
                                                                             </div>--%>

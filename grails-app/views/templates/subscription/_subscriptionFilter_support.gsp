@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -81,14 +81,14 @@
             </div>
             <% /* 2-4 */ %>
             <div class="field">
-                <label for="resource"><g:message code="subscription.resource.label"/></label>
-                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
+                <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
+                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
-                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
-                        value="${resource.id}">
-                        ${resource.getI10n('value')}
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
+                                value="${subKind.id}">
+                            ${subKind.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
@@ -97,21 +97,21 @@
         </div>
 
         <div class="three fields">
-
+            <% /* 3-1 */ %>
             <div class="field">
-                <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
-                <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
+                <label for="resource"><g:message code="subscription.resource.label"/></label>
+                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}">
-                        ${subKind.getI10n('value')}
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
+                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
+                                value="${resource.id}">
+                            ${resource.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
             </div>
-
+            <% /* 3-2 */ %>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -131,13 +131,13 @@
                     </div>
                 </div>
             </div>
-
+            <% /* 3-3 */ %>
             <div class="field"></div>
         </div>
 
         <div class="field la-field-right-aligned">
-            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+            <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
         </div>
 
     </g:form>

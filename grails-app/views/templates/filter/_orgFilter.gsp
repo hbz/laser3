@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -87,7 +87,7 @@
                     <label for="osApiLevel">
                         <g:message code="org.apiLevel.label"/>
                     </label>
-                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown multiple">
+                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown clearable multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${ApiToolkit.getAllApiLevels()}" var="alf">
                             <option <%=(params.list('osApiLevel').contains(alf)) ? 'selected="selected"' : '' %> value="${alf}">
@@ -103,7 +103,7 @@
                     <label for="osServerAccess">
                         <g:message code="org.serverAccess.label"/>
                     </label>
-                    <select id="osServerAccess" name="osServerAccess" multiple="multiple"  class="ui dropdown multiple">
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown clearable multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
                             <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
@@ -148,41 +148,11 @@
                 <div class="field">
                     <label for="privateContact">
                         <g:message code="contact.name"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.contact.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('type')}">
-                <div class="field">
-                    <label for="orgType">${message(code: 'org.orgType.label')}</label>
-                    <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
-                        <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
-                    </g:if>
-                    <ui:select class="ui dropdown search" id="orgType" name="orgType"
-                                  from="${orgTypes}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgType}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('orgStatus')}">
-                <div class="field">
-                    <label for="orgStatus">${message(code: 'default.status.label')}</label>
-                    <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
-                        <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
-                    </g:if>
-                    <select id="orgStatus" name="orgStatus" multiple="" class="ui selection fluid dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${orgStatusSet}" var="orgStatus">
-                            <option <%=Params.getLongList(params, 'orgStatus').contains(orgStatus.id) ? 'selected="selected"' : ''%> value="${orgStatus.id}">${orgStatus.getI10n('value')}</option>
-                        </g:each>
-                    </select>
                 </div>
             </g:if>
 
@@ -193,7 +163,7 @@
                         %{--<g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>--}%
                         <g:set var="orgRoles" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORGANISATIONAL_ROLE])}" scope="request"/>
                     </g:if>
-                    <ui:select class="ui dropdown search" id="orgRole" name="orgRole"
+                    <ui:select class="ui dropdown clearable search" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
                                   optionKey="id"
                                   optionValue="value"
@@ -236,7 +206,7 @@
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
                     <g:set var="countries" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COUNTRY])}" scope="request"/>
-                    <ui:select class="ui dropdown search" id="country" name="country"
+                    <ui:select class="ui dropdown clearable search" id="country" name="country"
                                   from="${countries}"
                                   optionKey="id"
                                   optionValue="value"
@@ -259,7 +229,7 @@
             <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">
                 <div class="field">
                     <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
-                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
+                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob order by lob.sortname')}" scope="request"/>
                     <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${legalObligations}" var="legalObligation">
@@ -268,17 +238,27 @@
                     </select>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('isBetaTester')}">
+                <div class="field">
+                    <label for="isBetaTester">${message(code:'org.isBetaTester.label')}</label>
+                    <ui:select id="isBetaTester" name="isBetaTester"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               class="ui dropdown clearable"
+                               value="${params.isBetaTester}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
                 <div class="field">
                     <label for="customerType">${message(code:'org.customerType.label')}</label>
-                    <ui:select id="customerType" name="customerType"
-                                  from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
-                                  optionKey="id"
-                                  optionValue="authority"
-                                  value="${params.customerType}"
-                                  class="ui dropdown"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"
-                    />
+                    <select id="customerType" name="customerType" multiple="" class="ui dropdown clearable search">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}" var="rr">
+                            <option <%=Params.getLongList(params, 'customerType').contains(rr.id) ? 'selected="selected"' : ''%> value="${rr.id}">${rr.getI10n('authority')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('providers')}">
@@ -407,6 +387,7 @@
 
             <g:if test="${field.equalsIgnoreCase('hasSubscription')}">
                 <div class="field">
+                    <label>${message(code: 'subscription.label')}</label>
                     <div class="inline fields la-filter-inline">
                         <div class="inline field">
                             <div class="ui checkbox">
@@ -427,6 +408,72 @@
             </g:if>
 
 
+            <g:if test="${field.equalsIgnoreCase('surveyVendors')}">
+                <div class="field">
+                    <label for="surveyVendors">${message(code: 'surveyVendors.label')}</label>
+                    <select id="surveyVendors" name="surveyVendors" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveyVendors" value="${de.laser.survey.SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveyVendors}" var="surveyVendor">
+                            <option <%=Params.getLongList(params, 'surveyVendors').contains(surveyVendor.id) ? 'selected="selected"' : '' %> value="${surveyVendor.id}">${surveyVendor.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('surveyPackages')}">
+                <div class="field">
+                    <label for="surveyPackages">${message(code: 'surveyPackages.label')}</label>
+                    <select id="surveyPackages" name="surveyPackages" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveyPackages" value="${SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveyPackages}" var="surveyPackage">
+                            <option <%=Params.getLongList(params, 'surveyPackages').contains(surveyPackage.id) ? 'selected="selected"' : '' %> value="${surveyPackage.id}">${surveyPackage.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('surveySubscriptions')}">
+                <div class="field">
+                    <label for="surveySubscriptions">${message(code: 'surveySubscriptions.selectedSubscriptions')}</label>
+                    <select id="surveySubscriptions" name="surveySubscriptions" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveySubscriptions" value="${SurveyConfigSubscription.executeQuery("select scs.subscription from SurveyConfigSubscription scs where scs.surveyConfig = :surveyConfig order by scs.subscription.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveySubscriptions}" var="surveySubscription">
+                            <option <%=Params.getLongList(params, 'surveySubscriptions').contains(surveySubscription.id) ? 'selected="selected"' : '' %> value="${surveySubscription.id}">${surveySubscription.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('subscriptionAdjustDropdown')}">
+                <ui:greySegment>
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="status">${message(code: 'filter.status')}</label>
+                            <ui:select class="ui search selection fluid dropdown" name="status" id="status"
+                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                                       value="${RDStore.SUBSCRIPTION_CURRENT.id}"
+                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                       onchange="JSPC.app.adjustDropdown()"/>
+                        </div>
+
+                        <div class="field">
+                            <label for="subs">${message(code: 'subscription.label')}</label>
+                            <select id="subs" name="subs" class="ui fluid search selection dropdown multiple" multiple="multiple">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+                            </select>
+                        </div>
+                    </div>
+                </ui:greySegment>
+            </g:if>
+
+            <g:if test="${field.equals('')}">
+                <div class="field"></div>
+            </g:if>
         </g:each>
     <g:if test="${numberOfFields > 1}">
         </div><!-- .fields -->
@@ -436,11 +483,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -455,9 +502,57 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>
 
+<g:if test="${tmplConfigShow && 'subscriptionAdjustDropdown' in tmplConfigShow.flatten()}">
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.adjustDropdown = function () {
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
+
+        url = url + '?'
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
+    var selectedSubIds = [];
+    <g:if test="${params.subs}">
+        <g:each in="${params.list('subs')}" var="sub">
+            <g:if test="${sub instanceof Subscription}">
+                selectedSubIds.push(${sub.id});
+            </g:if>
+        </g:each>
+    </g:if>
+
+    var dropdownSelectedObjects = $('#subs');
+
+    dropdownSelectedObjects.empty();
+    dropdownSelectedObjects.append($('<option></option>').attr('value', '').text("${message(code: 'default.select.choose.label')}"));
+
+    $.ajax({
+            url: url,
+            success: function (data) {
+                $.each(data, function (key, entry) {
+                <g:if test="${params.subs}">
+                    if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
+                       dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                    }else{
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    }
+                </g:if>
+                <g:else>
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                </g:else>
+                   });
+                }
+        });
+    }
+
+    JSPC.app.adjustDropdown();
+
+</laser:script>
+</g:if>
 

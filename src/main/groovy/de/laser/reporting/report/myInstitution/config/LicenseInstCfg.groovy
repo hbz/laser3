@@ -1,9 +1,8 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.License
-import de.laser.Org
-import de.laser.Provider
-import de.laser.Vendor
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class LicenseInstCfg extends BaseConfig {

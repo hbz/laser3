@@ -5,6 +5,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -205,10 +206,10 @@ class ComparisonService {
   }
 
   /**
-   * Builds from a given {@link List} a {@link Map} of {@link TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
+   * Builds from a given {@link List} a {@link Map} of {@link de.laser.wekb.TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
    *
    * @param lists the unified list of {@link IssueEntitlement}s
-   * @return the {@link Map} containing each {@link TitleInstancePackagePlatform} with the {@link Subscription}s containing the entitlements
+   * @return the {@link Map} containing each {@link de.laser.wekb.TitleInstancePackagePlatform} with the {@link Subscription}s containing the entitlements
    * @deprecated currently the only call is commented out
    */
   @Deprecated

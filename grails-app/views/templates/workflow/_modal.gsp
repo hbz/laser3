@@ -1,7 +1,7 @@
 <%@ page import="de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 <laser:serviceInjection />
 
-<g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
+<g:set var="wfEditPerm" value="${workflowService.hasWRITE()}" />
 
 <ui:modal id="wfModal" text="${tmplModalTitle}" msgSave="${message(code:'default.button.save')}" hideSubmitButton="${!wfEditPerm}">
 

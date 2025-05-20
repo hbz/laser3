@@ -1,9 +1,27 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
-<laser:htmlStart message="myinst.currentPermanentTitles.label"/>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle; de.laser.Subscription" %>
+<laser:htmlStart message="myinst.currentPermanentTitles.label" />
+
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <g:if test="${num_tipp_rows < 1000000}">
+            <ui:exportDropdownItem>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
+        <ui:exportDropdownItem>
+            <g:link class="item kbartExport  js-no-wait-wheel" params="${params + [exportKBart: true]}">KBART Export</g:link>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
+
+<div id="downloadWrapper"></div>
 
 <ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
@@ -13,8 +31,8 @@
               model="${[
                       tt_controller:    controllerName,
                       tt_action:        actionName,
-                      tt_tabs:          ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
-                      tt_counts:        [currentTippCounts, plannedTippCounts, expiredTippCounts, deletedTippCounts, allTippCounts]
+                      tt_tabs:          ['currentIEs', null, 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:        [currentTippCounts, null, expiredTippCounts, deletedTippCounts, allTippCounts]
               ]}" />
 
 <div class="ui bottom attached tab active segment">
@@ -24,7 +42,7 @@
 <laser:render template="/templates/filter/tipp_ieFilter"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
-    <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+    <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
 <g:if test="${titles}">
     <div class="ui form">
@@ -33,7 +51,7 @@
                 <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
             </div>
             <div class="field la-field-noLabel">
-                <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                <ui:showMoreCloseButton />
             </div>
         </div>
     </div>
@@ -47,18 +65,18 @@
                     <g:if test="${titles}">
                         <div class="ui fluid card">
                             <div class="content">
-                                <div class="ui accordion la-accordion-showMore">
+                                <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                                     <g:each in="${titles}" var="tipp">
                                         <div class="ui raised segments la-accordion-segments">
                                             <%
                                                 String instanceFilter = ''
-                                                if (institution.isCustomerType_Consortium())
+                                                if (contextService.getOrg().isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: contextService.getOrg(), tipp: tipp])
                                             %>
 
                                             <g:render template="/templates/titles/title_segment_accordion"
-                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+                                                      model="${[ie: null, tipp: tipp, permanentTitle: PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :owner or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and exists(select ac from AuditConfig ac where ac.referenceField = 'holdingSelection' and ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id)))", [owner: contextService.getOrg(), tipp: tipp, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]]}"/>
 
                                             <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                                 <div class="ui stackable grid" data-ajaxTarget="true">
@@ -102,8 +120,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.coverageNote}">
                                                                     <div class="item">
-                                                                        <i class="grey icon quote right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'default.note.label')}"></i>
+                                                                        <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
 
                                                                         <div class="content">
                                                                             <div class="header">
@@ -118,8 +135,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.coverageDepth}">
                                                                     <div class="item">
-                                                                        <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                        <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                         <div class="content">
                                                                             <div class="header">
@@ -134,8 +150,7 @@
                                                                 </g:if>
                                                                 <g:if test="${covStmt.embargo}">
                                                                     <div class="item">
-                                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'tipp.embargo')}"></i>
+                                                                        <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                                         <div class="content">
                                                                             <div class="header">
@@ -154,25 +169,24 @@
                                                     </div>
                                                     <%-- My Area START--%>
                                                     <div class="seven wide column">
-                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                            data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                         <div class="ui la-segment-with-icon">
-
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
-                                                                        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                                         <div class="content">
                                                                             <div class="header">
                                                                                 <g:link controller="subscription"
                                                                                         action="index"
-                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention()}</g:link>
                                                                             </div>
                                                                             <div class="description">
                                                                                 <g:link controller="issueEntitlement"
                                                                                         action="show"
-                                                                                        class="ui tiny button la-margin-top-05em"
+                                                                                        class="${Btn.SIMPLE} tiny la-margin-top-05em"
                                                                                         id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                                                             </div>
                                                                         </div>
@@ -180,6 +194,8 @@
                                                                 </g:each>
                                                             </div>
                                                         </div>
+
+                                                        <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: tipp]}"/>
                                                     </div><%-- My Area END --%>
                                                 </div><%-- .grid --%>
                                             </div><%-- .segment --%>
@@ -190,7 +206,7 @@
                         </div><%-- .card --%>
                     </g:if>
                     <div class="ui clearing segment la-segmentNotVisable">
-                        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                        <ui:showMoreCloseButton />
                     </div>
                 </g:if>
                 <g:else>
@@ -210,5 +226,24 @@
 </g:if>
 
 </div>
+
+<g:render template="/clickMe/export/js"/>
+
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="exportPermanentTitles" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
+</laser:script>
 
 <laser:htmlEnd/>

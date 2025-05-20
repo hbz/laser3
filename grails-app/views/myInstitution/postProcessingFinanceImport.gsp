@@ -1,8 +1,8 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
-<laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
+<laser:htmlStart message="myinst.financeImport.post.title" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
     <ui:crumb message="menu.institutions.financeImport" class="active"/>
 </ui:breadcrumbs>
 <br />
@@ -159,7 +159,7 @@
                             </g:each>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <td>
-                                    <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
+                                    <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM])}">
                                         ${message(code:'myinst.financeImport.post.visible')} <g:checkBox name="visibleForSubscriber${r}" class="visibleForSubscriber" checked="true"/>
                                     </g:if>
                                 </td>
@@ -174,9 +174,9 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="3">
-                            <input type="submit" class="ui button primary" value="${message(code:'default.button.save.label')}">
-                            <g:link action="financeImport" class="ui button"><g:message code="default.button.back"/></g:link>
+                        <td colspan="8">
+                            <g:link action="financeImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
                         </td>
                     </tr>
                 </tfoot>

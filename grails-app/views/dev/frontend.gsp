@@ -52,9 +52,13 @@
 
 </laser:htmlStart> %{-- </head><body>--}%
 
+<ui:breadcrumbs>
+    <ui:crumb message="menu.devDocs" controller="dev" action="index"/>
+    <ui:crumb text="Frontend for Developers" class="active"/>
+</ui:breadcrumbs>
 
-%{-- help sidebar --}%
-<laser:render template="/templates/flyouts/help/subscription_show"/>
+<ui:h1HeaderWithIcon text="Frontend for Developers" type="dev"/>
+
 <section id="example">
 
     %{-- COLORS  --}%

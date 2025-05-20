@@ -1,6 +1,6 @@
-<%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.wekb.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 
-<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -17,7 +17,7 @@
 
 <laser:render template="nav"/>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
@@ -26,18 +26,14 @@
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
-        <span class="ui blue circular label">
-            ${countPendingChanges}
-        </span>
+        <ui:bubble count="${countPendingChanges}" />
     </g:link>
 
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
             params="[tab: 'acceptedChanges', eventType: params.eventType]"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
         <g:message code="myinst.menu.acceptedChanges.label"/>
-        <span class="ui blue circular label">
-            ${countAcceptedChanges}
-        </span>
+        <ui:bubble count="${countAcceptedChanges}" />
     </g:link>
 
 </div>
@@ -50,9 +46,9 @@
                       name="acceptChangesForPackages" class="ui select search multiple dropdown"
                       optionKey="${{ it.id }}"
                       optionValue="${{ it.pkg.name }}"/>
-            <g:submitButton class="ui button positive" name="acceptAll"
+            <g:submitButton class="${Btn.POSITIVE}" name="acceptAll"
                             value="${message(code: 'pendingChange.takeAll')}"/>
-            <g:submitButton class="ui button negative" name="rejectAll"
+            <g:submitButton class="${Btn.NEGATIVE}" name="rejectAll"
                             value="${message(code: 'pendingChange.rejectAll')}"/>
         </g:form>
     </g:if>
@@ -87,9 +83,7 @@
                         params="[eventType: event, tab: params.tab]"
                         class="item ${params.eventType == event ? 'active' : ''}">
                     <g:message code="subscription.packages.tabs.${event}"/>
-                    <span class="ui circular label">
-                        ${currentCount}
-                    </span>
+                    <ui:bubble count="${currentCount}" grey="true"/>
                 </g:link>
             </g:if>
         </g:each>
@@ -157,24 +151,22 @@
 
                             <div class="la-title">${message(code: 'default.details.label')}</div>
 
-                            <g:link class="ui icon tiny blue button la-popup-tooltip la-delay"
+                            <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                     data-content="${message(code: 'laser')}"
                                     target="_blank"
                                     controller="tipp" action="show"
                                     id="${tipp.id}">
-                                <i class="book icon"></i>
+                                <i class="${Icon.TIPP}"></i>
                             </g:link>
 
-                            <g:each in="${apisources}" var="gokbAPI">
                                 <g:if test="${tipp.gokbId}">
                                     <a role="button"
-                                       class="ui icon tiny blue button la-popup-tooltip la-delay"
+                                       class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                        data-content="${message(code: 'wekb')}"
-                                       href="${gokbAPI.editUrl ? gokbAPI.editUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
-                                       target="_blank"><i class="la-gokb  icon"></i>
+                                       href="${Wekb.getURL() + '/public/tippContent/?id=' + tipp.gokbId}"
+                                       target="_blank"><i class="${Icon.WEKB}"></i>
                                     </a>
                                 </g:if>
-                            </g:each>
                         </g:if>
 
                     </td>
@@ -220,12 +212,12 @@
                     <g:elseif test="${editable && params.tab == 'changes'}">
                         <td>
                             <div class="ui buttons">
-                                <g:link class="ui positive button" controller="pendingChange" action="acceptTitleChange"
+                                <g:link class="${Btn.POSITIVE}" controller="pendingChange" action="acceptTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.accept.label"/></g:link>
                                 <div class="or" data-text="${message(code: 'default.or')}"></div>
-                                <g:link class="ui negative button" controller="pendingChange" action="rejectTitleChange"
+                                <g:link class="${Btn.NEGATIVE}" controller="pendingChange" action="rejectTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.reject.label"/></g:link>

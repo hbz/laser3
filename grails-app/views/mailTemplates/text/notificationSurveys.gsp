@@ -31,6 +31,8 @@ ${escapeService.replaceUmlaute(survey.name)} (<g:formatDate format="${message(co
 <g:message code="email.survey.selection.text2" locale="${language}"/></g:elseif>
 ${linkToSurvey}
 
+<g:message code="email.survey.general.text3" args="${[formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}" locale="${language}"/>
+
 <g:if test="${survey.isMandatory}"><g:if test="${!renewalSurvey}"><g:message code="email.survey.reminder.general.text.isMandatory" locale="${language}"/></g:if></g:if><g:else><g:message code="email.survey.reminder.general.text.isNotMandatory" locale="${language}"/></g:else></g:else></g:else>
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

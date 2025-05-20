@@ -4,11 +4,13 @@ import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.helper.Params
 import de.laser.oap.OrgAccessPointLink
-import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -20,9 +22,10 @@ import org.springframework.context.MessageSource
 @Transactional
 class PackageService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
+    EscapeService escapeService
     GokbService gokbService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
@@ -40,7 +43,7 @@ class PackageService {
      * @param numOfCIs the count of cost items linked either to the subscription package or to titles in them
      * @return a list of conflicts, each of them a map naming the conflict details when unlinking
      */
-    List listConflicts(de.laser.Package pkg,subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
+    List listConflicts(de.laser.wekb.Package pkg, subscription, int numOfPCs, int numOfIEs, int numOfCIs) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> conflict_item_pkg = [name: messageSource.getMessage("subscription.details.unlink.linkedPackage",null,locale),
                                                 details: [['link': grailsLinkGenerator.link(controller: 'package', action: 'show', id: pkg.id), 'text': pkg.name]],
@@ -86,10 +89,6 @@ class PackageService {
     }
 
     def getWekbPackages(GrailsParameterMap params) {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        if (!apiSource) {
-            return null
-        }
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> result = [
                 flagContentGokb : true // gokbService.executeQuery
@@ -104,9 +103,16 @@ class PackageService {
                 [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
         ]
 
-        result.editUrl = apiSource.editUrl
+        result.baseUrl = Wekb.getURL()
 
-        Map<String, Object> queryParams = [componentType: "Package"]
+        Map<String, Object> queryParams
+        if (params.singleTitle) {
+            queryParams = [componentType: "TitleInstancePackagePlatform"]
+            result.filterSet = true
+            queryParams.name = params.singleTitle
+        }
+        else queryParams = [componentType: "Package"]
+
         if (params.q) {
             result.filterSet = true
             queryParams.name = params.q
@@ -118,7 +124,7 @@ class PackageService {
             queryParams.status = params.list('pkgStatus')
         }
         else if(!params.pkgStatus) {
-            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
+            params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value] //, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value //as of ERMS-6370, comments from April 24th and 25th, '25
             queryParams.status = params.pkgStatus
         }
 
@@ -144,11 +150,27 @@ class PackageService {
 
         if (params.ddc) {
             result.filterSet = true
-            Set<String> selDDC = []
-            params.list("ddc").each { String key ->
-                selDDC << RefdataValue.get(key).value
-            }
-            queryParams.ddc = selDDC
+            queryParams.ddc = Params.getRefdataList(params, 'ddc').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.archivingAgency) {
+            result.filterSet = true
+            queryParams.archivingAgency = Params.getRefdataList(params, 'archivingAgency').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.contentType) {
+            result.filterSet = true
+            queryParams.contentType = Params.getRefdataList(params, 'contentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.paymentType) {
+            result.filterSet = true
+            queryParams.paymentType = Params.getRefdataList(params, 'paymentType').collect { RefdataValue rv -> rv.value }
+        }
+
+        if (params.openAccess) {
+            result.filterSet = true
+            queryParams.openAccess = Params.getRefdataList(params, 'openAccess').collect { RefdataValue rv -> rv.value }
         }
 
         if(params.stubOnly)
@@ -156,7 +178,10 @@ class PackageService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map<String, Object> args = [:]
+        if(params.containsKey('my'))
+            args.componentType = "Package"
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), args)
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {
@@ -165,7 +190,20 @@ class PackageService {
         else {
             if (queryCuratoryGroups) {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+                if(params.containsKey('my')) {
+                    Org contextOrg = contextService.getOrg()
+                    String instanceFilter = contextOrg.isCustomerType_Consortium() ? 'and s.instanceOf = null' : ''
+                    Set<String> myPackageWekbIds = Package.executeQuery('select pkg.gokbId from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo join sp.pkg pkg where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.status = :current ' + instanceFilter, [contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM], current: RDStore.SUBSCRIPTION_CURRENT])
+                    List myCuratoryGroups = recordsCuratoryGroups?.findAll { it.status == 'Current' && it.packageUuid in myPackageWekbIds }
+                    //post-filter because we:kb delivers the package UUID in the map as well ==> uniqueness is explicitly given!
+                    Set curatoryGroupSet = []
+                    myCuratoryGroups.each { Map myCG ->
+                        myCG.remove('packageUuid')
+                        curatoryGroupSet << myCG
+                    }
+                    result.curatoryGroups = curatoryGroupSet
+                }
+                else result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.putAll(gokbService.doQuery(result, params, queryParams))
         }
@@ -177,7 +215,7 @@ class PackageService {
      * @param pkg the package whose titles should be retrieved
      * @return a set of database IDs
      */
-    Long getCountOfCurrentTippIDs(de.laser.Package pkg) {
+    Long getCountOfCurrentTippIDs(de.laser.wekb.Package pkg) {
         TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status = :current and tipp.pkg = :pkg',[current: RDStore.TIPP_STATUS_CURRENT, pkg: pkg])[0]
     }
 
@@ -186,32 +224,32 @@ class PackageService {
      * @param pkg the package whose titles should be counted
      * @return a count of non-deleted titles in the package
      */
-    Long getCountOfNonDeletedTitles(de.laser.Package pkg) {
+    Long getCountOfNonDeletedTitles(de.laser.wekb.Package pkg) {
         TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.status != :removed and tipp.pkg = :pkg',[removed: RDStore.TIPP_STATUS_REMOVED, pkg: pkg])[0]
     }
 
     /**
-     * Substitution call for {@link #unlinkFromSubscription(de.laser.Package, java.util.List, de.laser.Org, java.lang.Object)} with a single subscription
-     * @param pkg the {@link de.laser.Package} to be unlinked
+     * Substitution call for {@link #unlinkFromSubscription(Package, java.util.List, de.laser.Org, java.lang.Object)} with a single subscription
+     * @param pkg the {@link Package} to be unlinked
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
      * @param deletePackage should the package be unlinked, too?
      * @return
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
+    boolean unlinkFromSubscription(de.laser.wekb.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
         unlinkFromSubscription(pkg, [subscription.id], contextOrg, deletePackage)
     }
 
     /**
      * Unlinks a subscription from the given package and removes resp. marks as delete every dependent object from that link such as cost items, pending change configurations etc.
      * The unlinking can be done iff no cost items are linked to the (subscription) package
-     * @param pkg the {@link de.laser.Package} to be unlinked
+     * @param pkg the {@link Package} to be unlinked
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
      * @param deletePackage should the package be unlinked, too?
      * @return true if the unlink was successful, false otherwise
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
+    boolean unlinkFromSubscription(de.laser.wekb.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
 
         //Not Exist CostItem with Package
         if(!CostItem.executeQuery('select ci from CostItem ci where ci.sub.id in (:subIds) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, subIds: subList, context: contextOrg])) {
@@ -219,7 +257,7 @@ class PackageService {
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
-            batchUpdateService.clearIssueEntitlements(queryParams)
+            batchQueryService.clearIssueEntitlements(queryParams)
             PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.subscription.id in (:sub) and pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id)", queryParams)
             if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)
@@ -251,7 +289,7 @@ class PackageService {
      * @param confirmed should the deletion really be executed?
      * @return the number of deleted entries
      */
-    int removePackagePendingChanges(de.laser.Package pkg, List subIds, boolean confirmed) {
+    int removePackagePendingChanges(de.laser.wekb.Package pkg, List subIds, boolean confirmed) {
         int count = 0
         List<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: pkg])
         if(confirmed) {
@@ -290,19 +328,22 @@ class PackageService {
      * @return a {@link Map} containing general result data
      */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
-        Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        int relationCheck = SubscriptionPackage.executeQuery('select count(*) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        Map<String, Object> result = [
+                user: contextService.getUser(),
+                contextOrg: contextService.getOrg(),
+                packageInstance: Package.get(params.id)
+        ]
+
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
+        int relationCheck = SubscriptionPackage.executeQuery('select count(*) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPkg = relationCheck > 0
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
         result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
         result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([status: 'FETCH_ALL', linkedPkg: result.packageInstance, count: true], '', result.contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([status: 'FETCH_ALL', linkedPkg: result.packageInstance, count: true], '', contextService.getOrg())
         result.subscriptionCounts = result.packageInstance ? Subscription.executeQuery( "select count(*) " + tmpQ[0], tmpQ[1] )[0] : 0
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

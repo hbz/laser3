@@ -9,6 +9,8 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
@@ -106,7 +108,7 @@ class IssueEntitlementFilter extends BaseFilter {
                         whereParts.add('ie.tipp = tipp and tipp.pkg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key) )
 
-                        filterLabelValue = de.laser.Package.get(params.long(key)).name
+                        filterLabelValue = de.laser.wekb.Package.get(params.long(key)).name
                     }
                     else if (p == 'packageNominalPlatform') {
                         queryParts.add('TitleInstancePackagePlatform tipp')

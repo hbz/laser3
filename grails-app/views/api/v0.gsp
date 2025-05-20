@@ -80,7 +80,10 @@
         }
     </style>
 
-    <asset:stylesheet src="swagger.css"/><laser:javascript src="swagger.js"/>%{-- dont move --}%
+    <asset:stylesheet src="swagger.css"/><laser:javascript src="swagger.js"/> %{-- dont move --}%
+
+    <laser:javascript src="swagger-ui/swagger-ui-bundle.js"/> %{-- js compiler error --}%
+    <laser:javascript src="swagger-ui/swagger-ui-standalone-preset.js"/> %{-- js compiler error --}%
 
     <g:render template="/layouts/favicon" />
 </head>

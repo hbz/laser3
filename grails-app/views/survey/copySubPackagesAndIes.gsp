@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:htmlStart message="copySubPackagesAndIes.titel" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<laser:htmlStart message="copySubPackagesAndIes.titel" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -17,20 +17,20 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br/>
 
-<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -38,21 +38,14 @@
     <g:render template="multiYearsSubs"/>
 
     <g:if test="${isLinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copySubPackagesAndIes.titel')}
-    </h2>
+    </h2>--}%
 
 
     <ui:greySegment>
@@ -84,7 +77,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${parentSubscription.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -119,7 +112,7 @@
                                         <g:link controller="subscription" action="index"
                                                 id="${parentSuccessorSubscription.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -137,7 +130,7 @@
 
         <g:form action="proccessCopySubPackagesAndIes" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
             <div class="ui segment">
                 <div class="field required">
@@ -165,16 +158,21 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+                            <g:if test="${auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                            </g:if>
+                            <g:else>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
-                            <div class="or" data-text="${message(code: 'default.or')}"></div>
-                            <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                                <div class="or" data-text="${message(code: 'default.or')}"></div>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                            </g:else>
                         </div>
                     </div>
                 </div>
@@ -243,12 +241,21 @@
                         <td>
                             <div class="ui middle aligned selection list">
                                 <g:each in="${participant.oldSub?.packages}" var="sp">
-                                    <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
-                                        </g:link>
-                                    </div>
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:if test="${auditService.getAuditConfig(participant.oldSub, 'holdingSelection')}">
+                                                <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
+                                                </g:link>
+                                            </g:else>
+                                        </div>
                                     </div>
                                 </g:each>
                             </div>
@@ -256,12 +263,21 @@
                         <td>
                             <div class="ui middle aligned selection list">
                                 <g:each in="${participant.newSub.packages}" var="sp">
-                                    <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${participant.newSub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
-                                        </g:link>
-                                    </div>
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:if test="${auditService.getAuditConfig(participant.newSub, 'holdingSelection')}">
+                                                <g:link controller="subscription" action="index" id="${participant.newSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="subscription" action="index" id="${participant.newSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
+                                                </g:link>
+                                            </g:else>
+                                        </div>
                                     </div>
                                 </g:each>
                             </div>
@@ -270,7 +286,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link controller="subscription" action="index"
                                         params="${[id: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -280,8 +296,7 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                    <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                         <i class="bordered colored info icon"></i>
                                     </div>
                                 </g:if>
@@ -291,9 +306,8 @@
                                 <br>
                                 <br>
 
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>

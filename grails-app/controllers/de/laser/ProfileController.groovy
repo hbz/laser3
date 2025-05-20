@@ -4,14 +4,11 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.UserSetting.KEYS
-import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.context.MessageSource
 
 /**
  * This controller manages calls to user profiles
@@ -23,11 +20,7 @@ class ProfileController {
     ContextService contextService
     DeletionService deletionService
     FormService formService
-    GenericOIDService genericOIDService
-    MessageSource messageSource
     def passwordEncoder
-    PropertyService propertyService
-    RefdataService refdataService
     UserService userService
 
     /**
@@ -41,64 +34,6 @@ class ProfileController {
         result.availableOrgs  = Org.executeQuery('from Org o order by o.sortname')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
-        result
-    }
-
-    /**
-     * Call to the help page with a collection of basic guidelines to the app
-     */
-    @Secured(['ROLE_USER'])
-    def help() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result
-    }
-
-    @Secured(['ROLE_USER'])
-    def importManuel() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result
-    }
-
-    /**
-     * Call for a listing of public properties and reference data values, i.e. an overview of the controlled lists
-     */
-    @Secured(['ROLE_USER'])
-    def properties() {
-        Map<String, Object>   propDefs = [:]
-        List<RefdataCategory> refDataCats = []
-
-        params.tab = params.tab ?: 'propertyDefinitions'
-
-        if (params.tab == 'propertyDefinitions') {
-            Locale locale = LocaleUtils.getCurrentLocale()
-            String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
-                messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
-            }
-            custPropDefs.each { String it ->
-                List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_' + LocaleUtils.getCurrentLang()]) // NO private properties!
-                propDefs.putAt( it, itResult )
-            }
-        }
-        else {
-            refDataCats = RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())
-        }
-
-        render view: 'properties', model: [
-                editable: false,
-                propertyDefinitions: propDefs,
-                rdCategories: refDataCats
-        ]
-    }
-
-    /**
-     * Call to open the GDPR statement page
-     */
-    @Secured(['ROLE_USER'])
-    def dsgvo() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
         result
     }
 

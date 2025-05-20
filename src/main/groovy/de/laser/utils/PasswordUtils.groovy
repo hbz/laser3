@@ -1,7 +1,6 @@
 package de.laser.utils
 
 import groovy.transform.CompileStatic
-import org.apache.commons.lang3.RandomStringUtils
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -34,14 +33,7 @@ class PasswordUtils {
      * @return an array of chars containing the ranges defined in {@link #USER_PASSWORD_REGEX}
      */
     static char[] getUserPasswordCharacters() {
-        List<String> chars = []
-
-        chars.addAll('A'..'Z')
-        chars.addAll('a'..'z')
-        chars.addAll('0'..'9')
-        chars.addAll('!$%&@#^+*~=:;'.toList())
-
-        chars as char[]
+        RandomUtils.DICT_PASSWORD.toCharArray()
     }
 
     /**
@@ -53,7 +45,7 @@ class PasswordUtils {
         char[] range = getUserPasswordCharacters()
 
         while (! isUserPasswordValid(password)) {
-            password = RandomStringUtils.random(16, 0, range.size() - 1, false, false, range)
+            password = RandomUtils.getRandom(range, 16)
         }
         password
     }

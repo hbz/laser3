@@ -1,7 +1,7 @@
 package de.laser.base
 
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.exceptions.CreationException
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource

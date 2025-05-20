@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License" %>
 <laser:serviceInjection/>
 <div class="content">
     <g:if test="${linkType == 'License'}">
@@ -11,16 +11,16 @@
                 ${surveyInfo.license.reference} (${surveyInfo.license.status.getI10n("value")})
             </g:link>
 
-            <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
-                    <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+            <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+                <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
+                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.license.confirm.dialog")}"
                             data-confirm-term-how="unlink"
                             controller="survey" action="setProviderOrLicenseLink"
                             params="${[unlinkLicense: true, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </span>
             </g:if>
@@ -34,27 +34,27 @@
         </h2>
 
         <g:if test="${surveyInfo.provider}">
-            <g:link controller="organisation" action="show" id="${surveyInfo.provider.id}">
+            <g:link controller="provider" action="show" id="${surveyInfo.provider.id}">
                 ${surveyInfo.provider.name}
             </g:link>
 
-            <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
-                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.button.unlink.label')}">
-                    <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+            <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+                <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
+                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.provider.confirm.dialog")}"
                             data-confirm-term-how="unlink"
                             controller="survey" action="setProviderOrLicenseLink"
                             params="${[unlinkProvider: true, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                        <i class="${Icon.CMD.UNLINK}"></i>
                     </g:link>
                 </span>
             </g:if>
         </g:if>
     </g:elseif>
 
-    <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+    <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui la-vertical buttons">
             <g:if test="${linkType == 'License' && !surveyInfo.license}">
                 <laser:render template="linksProviderOrLicenseModal"

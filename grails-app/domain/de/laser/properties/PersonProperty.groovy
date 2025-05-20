@@ -1,12 +1,12 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly private) to a {@link de.laser.Person}.
+ * The class's name is what it does: a property (implicitly private) to a {@link Person}.
  * Unlike other properties, they are only visible by the owner organisation itself.
  */
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
@@ -15,8 +15,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -35,7 +33,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         id                   column: 'pp_id'
         version              column: 'pp_version'
         stringValue          column: 'pp_string_value', type: 'text'
-        intValue             column: 'pp_int_value'
         longValue            column: 'pp_long_value'
         decValue             column: 'pp_dec_value'
         refValue             column: 'pp_ref_value_rv_fk', index: 'pp_ref_value_idx'
@@ -44,7 +41,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         dateValue            column: 'pp_date_value'
         type                 column: 'pp_type_fk', index: 'pp_type_idx'
         owner                column: 'pp_owner_fk', index:'pp_owner_idx'
-        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_fk'
+        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_idx'
         isPublic             column: 'pp_is_public'
         dateCreated          column: 'pp_date_created'
         lastUpdated          column: 'pp_last_updated'
@@ -53,7 +50,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

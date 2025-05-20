@@ -5,9 +5,13 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.*
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.utils.RandomUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.commons.lang3.RandomStringUtils
 
 /**
  * This service manages data retrieval for the global, context-free reporting
@@ -30,7 +34,7 @@ class ReportingGlobalService {
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
-        result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(24)
+        result.token  = /* params.token ?: */ RandomUtils.getAlphaNumeric(24)
 
         result.cfgQueryList = [:]
         result.cfgDistributionList = [:]
@@ -415,7 +419,7 @@ class ReportingGlobalService {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_VENDOR) {
-                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList])
                     }
                 }
                 else {
@@ -448,7 +452,7 @@ class ReportingGlobalService {
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_SUBSCRIPTION
                     }
                     else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
-                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList]) : []
+                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList]) : []
                     }
                 }
             }

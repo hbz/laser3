@@ -2,7 +2,7 @@ package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
 import de.laser.RefdataValue
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.FilterQueries

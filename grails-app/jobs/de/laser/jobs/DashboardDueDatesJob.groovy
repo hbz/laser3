@@ -32,7 +32,9 @@ class DashboardDueDatesJob extends AbstractJob {
             log.info( 'DashboardDueDates - isUpdateDashboardTableInDatabase and/or isSendEmailsForDueDatesOfAllUsers are disabled in configuration' )
         }
 
-        if (! start('DBDD_JOB_START')) {
+        SystemEvent sysEvent = start('DBDD_JOB_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
@@ -47,6 +49,6 @@ class DashboardDueDatesJob extends AbstractJob {
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop('DBDD_JOB_COMPLETE')
+        stopAndComplete(sysEvent)
     }
 }

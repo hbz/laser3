@@ -5,14 +5,14 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
-import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
 
@@ -80,9 +80,9 @@ class ReportingTagLib {
             out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
             out << ui.select([
-                    class      : "ui fluid search dropdown",
+                    class      : "ui fluid search dropdown clearable",
                     name       : filterName,
-                    id         : getUniqueId(filterName),
+                    id         : getUniqueHtmlID(filterName),
                     from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
                     optionKey  : "id",
                     optionValue: "value",
@@ -95,7 +95,7 @@ class ReportingTagLib {
             out << ui.datepicker([
                     label      : filterLabel,
                     name       : filterName,
-                    id         : getUniqueId(filterName),
+                    id         : getUniqueHtmlID(filterName),
                     placeholder: "filter.placeholder",
                     value      : filterValue,
                     modifiers       : true,
@@ -123,9 +123,9 @@ class ReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         out << ui.select([
-                class      : "ui fluid search dropdown",
+                class      : "ui fluid search dropdown clearable",
                 name       : GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ? filterName + '_virtualFF' : filterName,
-                id         : getUniqueId(filterName),
+                id         : getUniqueHtmlID(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
                 optionValue: "value",
@@ -164,9 +164,9 @@ class ReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         Map<String, Object> map = [
-            class      : 'ui fluid search dropdown',
+            class      : 'ui fluid search dropdown clearable',
             name       : filterName,
-            id         : getUniqueId(filterName),
+            id         : getUniqueHtmlID(filterName),
             from       : customRdv.get('from'),
             optionKey  : 'id',
             optionValue: 'value',
@@ -200,15 +200,15 @@ class ReportingTagLib {
 
             if (prop.type.tenant?.id == tenant.id) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
-                tmp.icons.add( '<i class="' + Icons.PRIVATE_PROPERTY + ' icon la-light-grey"></i>' )
+                tmp.icons.add( '<i class="' + Icon.PROP.IS_PRIVATE + ' la-light-grey"></i>' )
             }
             if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
                 tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
-                tmp.icons.add( '<i class="icon eye slash alternate yellow"></i>' )
+                tmp.icons.add( '<i class="' + Icon.SIG.VISIBLE_OFF + ' yellow"></i>' )
             }
             if (tmp.icons) {
                 result = result + '&nbsp;&nbsp;&nbsp;'
-                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
+                result = result + '<span class="la-popup-tooltip" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
                 result = result + tmp.icons.join('')
                 result = result + '</span>'
             }
@@ -273,7 +273,7 @@ class ReportingTagLib {
         }
     }
 
-    static String getUniqueId(String id) {
-        return id + '-' + RandomStringUtils.randomAlphanumeric(8).toLowerCase()
+    static String getUniqueHtmlID(String id) {
+        return id + '-' + RandomUtils.getHtmlID()
     }
 }

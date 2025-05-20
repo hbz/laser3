@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
-<laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<laser:htmlStart message="manageParticipantSurveys.header" />
 
 <ui:breadcrumbs>
     <ui:crumb message="manageParticipantSurveys.header" class="active"/>
@@ -19,6 +19,8 @@
 <ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${surveyResultsCount}" floated="true" />
 
 <ui:messages data="${flash}"/>
+
+<g:render template="/survey/participantInfos"/>
 
 <ui:filter>
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
@@ -55,7 +57,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <ui:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown clearable" name="type"
                               from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
@@ -69,7 +71,7 @@
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.filter')}</label>
                             <input id="checkMandatory" name="mandatory" type="checkbox"
                                    <g:if test="${params.mandatory}">checked=""</g:if>
                                    tabindex="0">
@@ -78,7 +80,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.filter')}</label>
                             <input id="checkNoMandatory" name="noMandatory" type="checkbox"
                                    <g:if test="${params.noMandatory}">checked=""</g:if>
                                    tabindex="0">
@@ -121,6 +123,15 @@
                         </div>
                     </div>
 
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkSubscriptionSurvey">${message(code: 'surveyconfig.subscriptionSurvey.label')}</label>
+                            <input id="checkSubscriptionSurvey" name="checkSubscriptionSurvey" type="checkbox"
+                                   <g:if test="${params.checkSubscriptionSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -129,43 +140,16 @@
         <div class="field la-field-right-aligned">
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
     </g:form>
 </ui:filter>
 
-<g:if test="${participant}">
-    <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-js-responsive-table la-table compact">
-        <tbody>
-        <tr>
-            <td>
-                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
-                ${choosenOrg?.libraryType?.getI10n('value')}
-            </td>
-            <td>
-                <g:if test="${choosenOrgCPAs}">
-                    <g:set var="oldEditable" value="${editable}"/>
-                    <g:set var="editable" value="${false}" scope="request"/>
-                    <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <laser:render template="/templates/cpa/person_details"
-                                  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
-                    </g:each>
-                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-                </g:if>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</g:if>
 
 
 <div>
@@ -226,7 +210,9 @@
                         ${message(code: 'surveyOrg.reminderMailDate')}
                     </th>
                 </g:if>
-                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
 
             </thead>
@@ -250,12 +236,12 @@
                     <td>
                         <div class="la-flexbox">
                             <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                    <i class="${Icons.SURVEY} icon la-list-icon"></i>
+                                    <i class="${Icon.SURVEY} la-list-icon"></i>
                                 </span>
                             </g:if>
-                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
+                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui">
                                 ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>
@@ -266,9 +252,9 @@
                         </div>
 
                         <g:if test="${surveyInfo.isMandatory}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                <i class="yellow icon exclamation triangle"></i>
+                                <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -291,14 +277,14 @@
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip la-delay"
+                        <span class="la-popup-tooltip"
                               data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                             <g:link controller="survey" action="evaluationParticipant"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </span>
                     </td>
@@ -309,7 +295,7 @@
         </table>
         <g:if test="${editable && params.tab == 'open' && reminder}">
             <div class="eight wide field" style="text-align: left;">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
                     ${message(code: 'openParticipantsAgain.reminder')}
                 </button>
             </div>

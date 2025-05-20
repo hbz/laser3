@@ -1,10 +1,11 @@
+<%@ page import="de.laser.ui.Btn" %>
 <h2 class="ui dividing header">Modale</h2>
 <h4 class="ui header">Modal hat mehrere unterschiedlich lange Tabs</h4>
 
 <div class="html ui top attached segment example">
     <div class="ui top attached label">Atrribut refreshModal="true"</div>
-    <button class="ui green button" onClick="$('#modal1').modal('show');">Öffne Modal</button><br><br>
-    <ui:modal id="modal1" refreshModal="true" message="package.show.linkToSub">
+    <button class="${Btn.POSITIVE}" onClick="$('#modal1').modal('show');">Öffne Modal</button><br><br>
+    <ui:modal id="modal1" refreshModal="true" message="package.show.linkToSub" contentClass="scrolling content">
         <div class="ui top attached stackable tabular la-tab-with-js menu">
 
             <a class="item" data-tab="tab-0">Teb 1</a>
@@ -93,7 +94,7 @@
 
 <div class="html ui top attached segment example">
     <div class="ui top attached label">Atrribut contentClass="scrolling"</div>
-    <button class="ui green button" onClick="$('#modal2').modal('show');">Öffne Modal</button><br><br>
+    <button class="${Btn.POSITIVE}" onClick="$('#modal2').modal('show');">Öffne Modal</button><br><br>
     <ui:modal id="modal2" contentClass="scrolling" message="package.show.linkToSub">
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.addressbook.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
 
@@ -54,7 +54,7 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="${Icons.PACKAGE} icon"></i>
+                                    <i class="${Icon.PACKAGE}"></i>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
@@ -62,12 +62,21 @@
                                 <div>
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
-                                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && fromSurvey != 'true'}">
-                                    <div class="ui checkbox childLevel">
-                                        <g:checkBox name="subscription.takePackageIdsForChild"
-                                                    value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
-                                                    data-action="copy" checked="${true}"/>
-                                    </div>
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && isRenewSub != 'true'}">
+                                    <g:if test="${auditService.getAuditConfig(sourceObject, 'holdingSelection')}">
+                                        <div class="ui disabled read-only checkbox childLevel">
+                                            <g:checkBox name="subscription.takePackageIdsForChild"
+                                                        value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
+                                                        data-action="copy" checked="${true}"/>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui checkbox childLevel">
+                                            <g:checkBox name="subscription.takePackageIdsForChild"
+                                                        value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
+                                                        data-action="copy" checked="${true}"/>
+                                        </div>
+                                    </g:else>
                                     <g:message code="subscription.packages.takeForInstitutions"/>
                                 </g:if>
                             </div>
@@ -94,7 +103,7 @@
                         <div class="la-copyPack-container la-element">
                             <div data-oid="${genericOIDService.getOID(sp)}" class="la-copyPack-item">
                                 <label>
-                                    <i class="${Icons.PACKAGE} icon"></i>
+                                    <i class="${Icon.PACKAGE}"></i>
                                     <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.provider}">(${sp.pkg.provider.name})</g:if>
@@ -126,7 +135,7 @@
                             <div class="la-copyPack-container la-element">
                                 <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                     <g:link action="index" controller="subscription" id="${sourceObject.id}" params="[titleGroup: titleGroup.id]">
-                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
                                     </g:link>
                                     <div class="ui accordion">
@@ -170,7 +179,7 @@
                             <div class="la-copyPack-container la-element">
                                 <div data-oid="${genericOIDService.getOID(titleGroup)}" class="la-copyPack-item">
                                     <g:link action="index" controller="subscription" id="${targetObject.id}" params="[titleGroup: titleGroup.id]">
-                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i> ${titleGroup.name}
                                     </g:link>
                                     <div class="ui accordion">
@@ -214,14 +223,14 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
+                            params="[surveyConfigID: surveyConfig.id]" class="${Btn.SIMPLE_CLICKCONTROL}">
                         <g:message code="renewalEvaluation.back"/>
                     </g:link>
                 </div>
 
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                    <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                    <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}"
                            data-confirm-id="copyElements"
                            data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                            data-confirm-term-how="delete" ${submitDisabled}/>
@@ -230,14 +239,14 @@
         </g:if>
         <g:elseif test="${copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control"
+                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}"
                        value="${message(code: 'default.button.copy.label')}"/>
             </div>
         </g:elseif>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
-                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control"
+                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}"
                        data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete"

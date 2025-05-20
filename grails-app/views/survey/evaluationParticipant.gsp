@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.survey.SurveyOrg; de.laser.survey.SurveyPersonResult; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
 
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -44,7 +44,7 @@
 
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 
@@ -54,62 +54,11 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-        <div class="content">
-            <div class="header"></div>
-            <p>
-                <g:message code="surveyResult.finish.info.consortia"/>.
-            </p>
-        </div>
-    </div>
+    <ui:msg class="success" showIcon="true" hideClose="true" text="${message(code:"surveyResult.finish.info.consortia")}. ${formatDate(format: message(code: 'default.date.format.notime'), date: SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate)}" />
 </g:if>
 
-<g:if test="${participant}">
-
-    <ui:greySegment>
-    <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
-
-    <table class="ui table la-js-responsive-table la-table compact">
-        <tbody>
-        <tr>
-            <td>
-                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
-
-                ${choosenOrg.libraryType?.getI10n('value')}
-            </td>
-            <td>
-                <g:if test="${choosenOrgCPAs}">
-                    <g:set var="oldEditable" value="${editable}"/>
-                    <g:set var="editable" value="${false}" scope="request"/>
-                    <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <laser:render template="/templates/cpa/person_details"
-                                  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
-                    </g:each>
-                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-                </g:if>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-        <div class="ui form">
-            <div class="field">
-                <label>
-                    <g:message code="surveyInfo.comment.label"/>
-                </label>
-                <g:if test="${surveyInfo.comment}">
-                    <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
-                </g:if>
-                <g:else>
-                    <g:message code="surveyConfigsInfo.comment.noComment"/>
-                </g:else>
-            </div>
-        </div>
-
-    </ui:greySegment>
-</g:if>
+    <g:render template="/survey/participantMessage"/>
+    <g:render template="/survey/participantInfos"/>
 
 <laser:render template="/templates/survey/participantView"/>
 

@@ -3,6 +3,7 @@ package de.laser.helper
 import de.laser.ContextService
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
+import de.laser.utils.RandomUtils
 import groovy.transform.CompileStatic
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
@@ -31,7 +32,7 @@ class Profiler {
      * For inner method benches; object not stored
      */
     Profiler() {
-        String cid = USER_BENCHMARK + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString()
+        String cid = USER_BENCHMARK + EhcacheWrapper.SEPARATOR + RandomUtils.getUUID()
         benchCache = contextService.getUserCache(cid)
     }
 

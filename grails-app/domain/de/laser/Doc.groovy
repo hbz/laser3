@@ -3,7 +3,9 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
+import de.laser.utils.RandomUtils
 import org.apache.http.HttpStatus
 
 /**
@@ -13,8 +15,8 @@ import org.apache.http.HttpStatus
  */
 class Doc {
 
-    static final CONTENT_TYPE_STRING              = 0
-    static final CONTENT_TYPE_FILE                = 3
+    public static final CONTENT_TYPE_STRING     = 0
+    public static final CONTENT_TYPE_FILE       = 3
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
@@ -28,11 +30,11 @@ class Doc {
   Integer contentType = CONTENT_TYPE_STRING
   String content
   String uuid 
+  String ckey
   Date dateCreated
   Date lastUpdated
   Org owner         //the context org of the user uploading a document
   String server
-  String migrated
 
   static mapping = {
                 id column:'doc_id'
@@ -41,29 +43,29 @@ class Doc {
    confidentiality column:'doc_confidentiality_rv_fk',  index:'doc_confidentiality_idx'
        contentType column:'doc_content_type',   index:'doc_content_type_idx'
               uuid column:'doc_docstore_uuid',  index:'doc_uuid_idx'
+              ckey column:'doc_ckey'
              title column:'doc_title'
           filename column:'doc_filename'
-          migrated column:'doc_migrated'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
-             owner column:'doc_owner_fk' // todo,       index:'doc_owner_idx'
+             owner column:'doc_owner_fk',       index:'doc_owner_idx'
             server column:'doc_server'
        dateCreated column:'doc_date_created'
        lastUpdated column:'doc_last_updated'
   }
 
   static constraints = {
-            type      (nullable:true)
-      confidentiality (nullable:true)
+    type      (nullable:true)
+    confidentiality (nullable:true)
     content   (nullable:true, blank:false)
     uuid      (nullable:true, blank:false)
+    ckey      (nullable:true, blank:false)
     contentType(nullable:true)
     title     (nullable:true, blank:false)
     filename  (nullable:true, blank:false)
     mimeType  (nullable:true, blank:false)
     owner     (nullable:true)
     server    (nullable:true, blank:false)
-    migrated  (nullable:true, blank:false, maxSize:1)
   }
 
     /**
@@ -76,16 +78,23 @@ class Doc {
         try {
             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
-            output = file.getBytes()
 
-            response.setContentType(mimeType)
-            response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
-            response.setHeader('Content-Length', "${output.length}")
+            if (file.exists()) {
+                File decTmpFile = BeanStore.getFileCryptService().decryptToTmpFile(file, ckey)
+                output = decTmpFile.getBytes()
+                decTmpFile.delete()
 
-            response.outputStream << output
+                response.setContentType(mimeType)
+                response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
+                response.setHeader('Content-Length', "${output.length}")
+
+                response.outputStream << output
+            }
+            else {
+                response.sendError(HttpStatus.SC_NOT_FOUND)
+            }
         } catch(Exception e) {
             log.error(e.getMessage())
-
             response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }
@@ -95,8 +104,12 @@ class Doc {
      */
     def beforeInsert = {
         if (contentType == CONTENT_TYPE_FILE) {
-            uuid = java.util.UUID.randomUUID().toString()
-            log.info('generating new uuid: '+ uuid)
+            uuid = RandomUtils.getUUID()
+            while ( executeQuery('select uuid from Doc where uuid = :uuid', [uuid: uuid]) ) {
+                log.warn('doc.beforeInsert() -> BAZINGA! UUID is already taken')
+                uuid = RandomUtils.getUUID()
+            }
+            log.info('doc.beforeInsert() -> new UUID: ' + uuid)
         }
     }
 

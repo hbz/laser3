@@ -1,4 +1,4 @@
-<%@page import="de.laser.interfaces.CalculatedType; de.laser.storage.RDStore" %>
+<%@page import="de.laser.ui.Icon; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore" %>
 
 
 <g:if test="${data.billingSums}">
@@ -8,13 +8,13 @@
             <g:set var="currency" value="${entry.currency}" />
 
             <g:if test="${entry.currency == RDStore.CURRENCY_USD.value}">
-                <g:set var="iconCurrency" value="dollar sign" />
+                <g:set var="iconCurrency" value="dollar sign icon" />
             </g:if>
             <g:elseif test="${entry.currency == RDStore.CURRENCY_GBP.value}">
-                <g:set var="iconCurrency" value="pound sign" />
+                <g:set var="iconCurrency" value="pound sign icon" />
             </g:elseif>
             <g:else>
-                <g:set var="iconCurrency" value="money bill alternate" />
+                <g:set var="iconCurrency" value="${Icon.FNC.COST_CONFIG}" />
             </g:else>
 
             <g:if test="${entry.currency != RDStore.CURRENCY_EUR.value}">

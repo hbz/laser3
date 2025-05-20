@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
@@ -29,7 +28,7 @@ class SystemService {
 
     public static final int UA_FLAG_EXPIRED_AFTER_MONTHS = 6
     public static final int UA_FLAG_LOCKED_AFTER_INVALID_ATTEMPTS = 5
-    public static final int UA_FLAG_UNLOCKED_AFTER_HOURS = 1
+    public static final int UA_FLAG_UNLOCKED_AFTER_MINUTES = 30
 
     /**
      * Dumps the state of currently active services
@@ -40,9 +39,6 @@ class SystemService {
 
             if (GlobalRecordSource.findAll().size() in [0, GlobalRecordSource.findAllByActive(false).size()]) {
                 checks.globalSync = "NOT active"
-            }
-            if (ApiSource.findAll().size() in [0, ApiSource.findAllByActive(false).size()]) {
-                checks.apiSource = "NOT active"
             }
 
             if (! ConfigMapper.getNotificationsJobActive()) {
@@ -79,7 +75,7 @@ class SystemService {
             result = [
                     status:      'ok',
                     maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
-                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false
+                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL) ? true : false
             ]
         } catch(Exception e) {
             log.error( e.getMessage() )
@@ -211,7 +207,7 @@ class SystemService {
 
         User.executeQuery("select u from User u where u.accountLocked = true and u.username != 'anonymous' order by u.username").each{ User usr ->
             LocalDateTime lastUpdated = DateUtils.dateToLocalDateTime(usr.lastUpdated)
-            if (lastUpdated.isBefore(now.minusHours(UA_FLAG_UNLOCKED_AFTER_HOURS))) {
+            if (lastUpdated.isBefore(now.minusMinutes(UA_FLAG_UNLOCKED_AFTER_MINUTES))) {
                 usr.invalidLoginAttempts = 0
                 usr.accountLocked = false
                 usr.save()
@@ -221,7 +217,7 @@ class SystemService {
         }
 
         if (unlockedAccounts) {
-            log.info '--> flagUserAccountsUnlocked after ' + UA_FLAG_UNLOCKED_AFTER_HOURS + ' hours: ' + unlockedAccounts.size()
+            log.info '--> flagUserAccountsUnlocked after ' + UA_FLAG_UNLOCKED_AFTER_MINUTES + ' minutes: ' + unlockedAccounts.size()
             SystemEvent.createEvent('SYSTEM_UA_FLAG_UNLOCKED', [unlocked: unlockedAccounts])
         }
     }

@@ -1,6 +1,7 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
+<laser:serviceInjection/>
 
-<g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+<g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
     <ui:card message="surveyLinks.label" href="#surveyLinks"
                 editable="${editable && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui small feed content">
@@ -35,16 +36,16 @@
                                     <td>${surveyLink.bothDirection ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</td>
                                     <td class="right aligned">
                                         <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="${message(code: 'default.button.unlink.label')}">
-                                                <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                         data-confirm-tokenMsg="${surveyLink.bothDirection ? message(code: "surveyLinks.bothDirection.unlink.confirm.dialog") : message(code: "surveyLinks.unlink.confirm.dialog")}"
                                                         data-confirm-term-how="unlink"
                                                         controller="survey" action="setSurveyLink"
                                                         params="${[unlinkSurveyLink: surveyLink.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                                    <i class="${Icon.CMD.UNLINK}"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -76,24 +77,15 @@
                             <g:each in="${surveyLinks.sort { it.targetSurvey.name }}" var="surveyLink">
                                 <g:if test="${surveyLink.targetSurvey.status != RDStore.SURVEY_IN_PROCESSING}">
                                     <%
-                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(institution, surveyLink.targetSurvey.surveyConfigs).size() > 0
-                                        boolean existsMultiYearTerm = false
+                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(participant, surveyLink.targetSurvey.surveyConfigs).size() > 0
                                         SurveyConfig targetSurveyConfig = surveyLink.targetSurvey.surveyConfigs[0]
-                                        Subscription sub = targetSurveyConfig.subscription
-                                        if (sub && !targetSurveyConfig.pickAndChoose && targetSurveyConfig.subSurveyUseForTransfer) {
-                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(institution)
-
-                                            if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
-                                                existsMultiYearTerm = true
-                                            }
-
-                                        }
+                                        boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(targetSurveyConfig, participant)
 
                                         String newControllerName = "myInstitution"
                                         String newActionName = "surveyInfos"
                                         Map newParams = [id: surveyLink.targetSurvey.id]
 
-                                        if(controllerName == 'survey' && contextOrg?.id == surveyConfig.surveyInfo.owner.id){
+                                        if(controllerName == 'survey' && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id){
                                             newControllerName = "survey"
                                             newActionName = "evaluationParticipant"
                                             newParams=[id: surveyLink.targetSurvey.id, participant: participant.id]
@@ -113,12 +105,12 @@
                                             </td>
                                             <td>
                                                 <g:if test="${surveyOrgFound}">
-                                                    <g:link class="ui button small la-modern-button" controller="${newControllerName}" action="${newActionName}" target="_blank"
+                                                    <g:link class="${Btn.SIMPLE} small" controller="${newControllerName}" action="${newActionName}" target="_blank"
                                                             params="${newParams}"><g:message code="default.button.show.label"/></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${editable && surveyLink.targetSurvey.status == RDStore.SURVEY_SURVEY_STARTED}">
-                                                        <span class="la-popup-tooltip la-delay"
+                                                        <span class="la-popup-tooltip"
                                                               data-content="${message(code: 'surveyLinks.participateToSurvey')}">
                                                             <g:link class="ui button small la-modern-button js-open-confirm-modal"
                                                                     data-confirm-tokenMsg = "${message(code: 'surveyLinks.participateToSurvey.confirm.dialog')}"

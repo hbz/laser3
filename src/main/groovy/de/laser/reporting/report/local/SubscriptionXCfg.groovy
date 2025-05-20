@@ -107,7 +107,6 @@ class SubscriptionXCfg {
                             default: [
                                     member : [
                                             'member-customerType' :     [ 'generic.org.customerType' ],
-                                            'member-orgType' :          [ 'generic.org.orgType' ],
                                             //'member-legalInfo' : [ '@' ],
                                             'member-libraryNetwork' :   [ 'generic.org.libraryNetwork' ],
                                             'member-libraryType' :      [ 'generic.org.libraryType' ],

@@ -1,13 +1,14 @@
 package de.laser
 
-import de.laser.annotations.DebugInfo
-import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
+import de.laser.finance.CostInformationDefinition
+import de.laser.mail.MailTemplate
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.utils.FileUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
@@ -32,7 +33,7 @@ import org.hibernate.query.NativeQuery
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
-import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 
 /**
@@ -43,15 +44,14 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
     DeletionService deletionService
+    FileCryptService fileCryptService
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
     MailService mailService
     PackageService packageService
     PropertyService propertyService
@@ -72,16 +72,19 @@ class AdminController  {
             database: [
                 default: [
                     dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
-                    dbmVersion : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion : DatabaseInfo.getDbmVersion()
                 ],
                 storage: [
                     dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(),
-                    dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
                 ]
             ],
             events      : SystemEvent.executeQuery(
-                    'select se from SystemEvent se where se.created >= :limit order by se.created desc',
-                    [limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1))]
+                    'select se from SystemEvent se where se.created >= :limit and se.relevance in (:rList) order by se.created desc',
+                    [
+                        limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1)),
+                        rList: [SystemEvent.RELEVANCE.ERROR, SystemEvent.RELEVANCE.WARNING]
+                    ]
             ),
             docStore    : AppUtils.getDocumentStorageInfo()
         ]
@@ -150,7 +153,7 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def testMailSending() {
+    def sendMail() {
         Map<String, Object> result = [:]
 
         result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
@@ -279,7 +282,7 @@ class AdminController  {
      * @see SystemEvent
      */
     @Secured(['ROLE_ADMIN'])
-    def systemEventsLW() {
+    def systemEventsX() {
         Map<String, Object> result = [:]
 
         result.limit = params.long('limit') ?: 30
@@ -390,26 +393,28 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                     defaultCollate   : DatabaseInfo.getDatabaseCollate(),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbMaxConnections : DatabaseInfo.getMaxConnections(),
                     dbStmtTimeout    : DatabaseInfo.getStatementTimeout(),
                     dbSize           : DatabaseInfo.getDatabaseSize(),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions(),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo(),
-                    dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion       : DatabaseInfo.getDbmVersion()
             ],
             storage: [
                     dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                     defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbMaxConnections : DatabaseInfo.getMaxConnections( DatabaseInfo.DS_STORAGE ),
                     dbStmtTimeout    : DatabaseInfo.getStatementTimeout( DatabaseInfo.DS_STORAGE ),
                     dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions( DatabaseInfo.DS_STORAGE ),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo( DatabaseInfo.DS_STORAGE ),
-                    dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
             ]
         ]
 
@@ -511,6 +516,155 @@ class AdminController  {
         result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def simpleShareConfCheck() {
+        log.debug('simpleShareConfCheck')
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def simpleDocsCheck() {
+        log.debug('simpleDocsCheck')
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
+        Map<String, Object> result = [
+                dsPath          : dsl,
+                orphanedDocs    : []
+        ]
+
+        result.orphanedDocs = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ctf' +
+                        ' and not exists (select dc.id from DocContext dc where dc.owner = doc) order by doc.id',
+                [ctf: Doc.CONTENT_TYPE_FILE]
+        )
+
+        if (params.deleteOrphanedDocs) {
+            List<Long> deletedDocs = []
+            result.orphanedDocs.each { doc ->
+                try {
+                    Long did = doc.id
+                    doc.delete()
+                    deletedDocs << did
+                }
+                catch (Exception e) {
+                    log.error 'Error: ' + e.getMessage()
+                }
+            }
+            log.info 'removed orphaned docs: ' + deletedDocs.size()
+            SystemEvent.createEvent('DOCSTORE_DEL_ORPHANED_DOCS', [count: deletedDocs.size(), server: AppUtils.getCurrentServer(), docs: deletedDocs])
+
+            redirect controller: 'admin', action: 'simpleDocsCheck'
+            return
+        }
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def simpleFilesCheck() {
+        log.debug('simpleFilesCheck')
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
+        Map<String, Object> result = [
+           dsPath       : dsl,
+           dsFiles      : [],
+           xxPath       : dsl + '_outdated',
+           xxFiles      : [],
+           validDocs    : [],
+           validFiles       : [],
+           validFilesRaw    : [],
+           invalidFiles     : []
+        ]
+
+        File ds = new File("${result.dsPath}")
+        File xx = new File("${result.xxPath}")
+        if (!xx.exists()) {
+            xx.mkdirs()
+        }
+
+        try {
+            if (ds.exists()) {
+                result.dsFiles = ds.listFiles().collect{it.getName()}
+
+                result.validDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ctf and doc.uuid in (:files)',
+                        [ctf: Doc.CONTENT_TYPE_FILE, files: result.dsFiles]
+                )
+                Set<String> docs    = result.validDocs.findAll{   it.ckey }.collect{ it.uuid as String }
+                Set<String> docsRaw = result.validDocs.findAll{ ! it.ckey }.collect{ it.uuid as String }
+
+                result.dsFiles.each { fn ->
+                    if      (docs.contains(fn))     { result.validFiles << fn }
+                    else if (docsRaw.contains(fn))  { result.validFilesRaw << fn }
+                    else                            { result.invalidFiles << fn }
+                }
+                result.validFiles.toSorted()
+                result.validFilesRaw.toSorted()
+                result.invalidFiles.toSorted()
+            }
+
+            if (xx.exists()) {
+                result.xxFiles = xx.listFiles().collect { it.getName() }
+            }
+        }
+        catch (Exception e) {
+            log.error 'Error: ' + e.getMessage()
+        }
+
+        if (params.encryptRawFiles) {
+            List<String> encryptedFiles = []
+            List<String> ignored = []
+
+            result.validFilesRaw.take(250).each { uuid ->
+                try {
+                    File raw = new File("${result.dsPath}/${uuid}")
+                    Doc doc  = Doc.findByUuidAndContentType(uuid, Doc.CONTENT_TYPE_FILE)
+                    if (raw && doc && !doc.ckey) {
+                        fileCryptService.encryptRawFileAndUpdateDoc(raw, doc)
+                        encryptedFiles << uuid
+                    }
+                    else {
+                        ignored << uuid
+                    }
+                }
+                catch (Exception e) {
+                    log.error 'Error: ' + e.getMessage()
+                }
+            }
+            log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
+            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, ignored: ignored])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
+        }
+
+        if (params.moveOutdatedFiles) {
+            List<String> movedFiles = []
+            String pk = DateUtils.getSDF_yyyyMMdd().format(new Date())
+
+            result.invalidFiles.take(1000).each { uuid ->
+                try {
+                    String pkid = uuid + '-' + pk
+                    File src = new File("${result.dsPath}/${uuid}")
+                    File dst = new File("${result.xxPath}/${pkid}")
+                    if (src.exists() && src.isFile()) {
+                        Files.move(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                        movedFiles << pkid
+                    }
+                }
+                catch (Exception e) {
+                    log.error 'Error: ' + e.getMessage()
+                }
+            }
+            log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
+            SystemEvent.createEvent('DOCSTORE_MOV_OUTDATED_FILES', [count: movedFiles.size(), server: AppUtils.getCurrentServer(), files: movedFiles])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
+        }
+
+        result
+    }
+
     /**
      * Checks the state of the files in the data storage, namely if the files have a database record and if there
      * are files matching the UUIDs from the database and if the database records are attached to an object
@@ -534,19 +688,6 @@ class AdminController  {
         ]
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
 
         // files
 
@@ -584,12 +725,12 @@ class AdminController  {
         )
 
         result.listOfDocsInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsInUseOrphaned << doc
             }
         }
         result.listOfDocsNotInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsNotInUseOrphaned << doc
             }
         }
@@ -611,117 +752,27 @@ class AdminController  {
     }
 
     /**
-     * Searches for a given document context if the file is missing and proposes an alternative based on database record matching
-     */
-    @Secured(['ROLE_ADMIN'])
-    def recoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
-        Doc doc = Doc.get( params.long('docID') )
-
-        if (!fileCheck(doc)) {
-            result.doc = doc
-
-            List docs = Doc.findAllWhere(
-                    status: doc.status,
-                    type: doc.type,
-                    content: doc.content,
-                    contentType: doc.contentType,
-                    title: doc.title,
-                    filename: doc.filename,
-                    mimeType: doc.mimeType,
-                    migrated: doc.migrated,
-                    owner: doc.owner
-            )
-            result.docsToRecovery = docs
-        }
-        result
-    }
-
-    /**
-     * Restores the file by copying back a matched alternative
-     */
-    @Secured(['ROLE_ADMIN'])
-    def processRecoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
-        Doc docWithoutFile = Doc.get( params.long('sourceDoc') )
-        Doc docWithFile = Doc.get( params.long('targetDoc') )
-
-        if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
-
-            Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
-            Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
-            Files.copy(source, target)
-
-            if(fileCheck(docWithoutFile)){
-                flash.message = "Datei erfolgreich wiederhergestellt!"
-            }else{
-                flash.error = "Datei nicht erfolgreich wiederhergestellt!"
-            }
-        }else {
-            flash.error = "Keine Quell-Datei gefunden um Wiederherzustellen!"
-        }
-        redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
-
-    }
-
-    /**
      * Lists all organisations (i.e. institutions, providers, agencies), their customer types, GASCO entry, legal information and API information
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
-        EhcacheWrapper cache = cacheService.getTTL300Cache("/admin/manageOrganisations/")
 
-        if(!params.containsKey('cmd')) {
-            result.filterParams = params.clone()
-            cache.put('orgFilterCache', result.filterParams)
-        }
-        else {
-            if(cache && cache.get('orgFilterCache')) {
-                result.filterParams = cache.get('orgFilterCache')
-            }
-        }
-        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+        // modal params removed
+        GrailsParameterMap fp = params.clone() as GrailsParameterMap
+        fp.removeAll { it.key.startsWith('cmd') }
+        result.filteredParams = fp
 
-        Org target = params.target ? Org.get(params.long('target')) : null
+        SwissKnife.setPaginationParams(result, fp, contextService.getUser())
+
+        Org target = params.cmd_target ? Org.get(params.cmd_target) : null
+
         if (params.cmd == 'changeApiLevel') {
-            if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
-                ApiToolkit.setApiLevel(target, params.apiLevel)
+            if (ApiToolkit.getAllApiLevels().contains(params.cmd_apiLevel)) {
+                ApiToolkit.setApiLevel(target, params.cmd_apiLevel)
             }
-            else if (params.apiLevel == 'Kein Zugriff') {
+            else if (params.cmd_apiLevel == 'Kein Zugriff') {
                 ApiToolkit.removeApiLevel(target)
             }
             target.lastUpdated = new Date()
@@ -738,7 +789,7 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Role customerType = Role.get(params.customerType)
+            Role customerType = Role.get(params.cmd_customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
 
@@ -746,8 +797,6 @@ class AdminController  {
                 OrgSetting oss = (OrgSetting) osObj
                 oss.roleValue = customerType
                 oss.save()
-
-                params.remove('customerType') // unwanted parameter for filter query
             }
             else {
                 OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
@@ -762,32 +811,23 @@ class AdminController  {
                 ApiToolkit.removeApiLevel(target)
             }
         }
-        else if (params.cmd == 'changeGascoEntry') {
-            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
-
-            if (target && option) {
-                def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
-
-                if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                    oss.rdValue = option
-                    oss.save()
-                } else {
-                    OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
-                }
+        else if (params.cmd == 'changeIsBetaTester') {
+            if (target) {
+                target.isBetaTester = (params.long('cmd_isBetaTester') == RDStore.YN_YES.id)
             }
             target.lastUpdated = new Date()
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
             if (target) {
-                target.createdBy = Org.get(params.createdBy)
-                target.legallyObligedBy = Org.get(params.legallyObligedBy)
+                target.createdBy = Org.get(params.cmd_createdBy)
+                target.legallyObligedBy = Org.get(params.cmd_legallyObligedBy)
             }
             target.lastUpdated = new Date()
             target.save()
         }
 
-        FilterService.Result fsr = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(fp)
         List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()
@@ -837,7 +877,7 @@ class AdminController  {
 
         switch (request.method) {
             case 'GET':
-                idnsInstance = (IdentifierNamespace) genericOIDService.resolveOID(params.oid)
+                idnsInstance = IdentifierNamespace.get(params.long('ns'))
 
                 if (params.cmd == 'deleteNamespace') {
                     if (idnsInstance && Identifier.countByNs(idnsInstance) == 0) {
@@ -979,8 +1019,6 @@ SELECT * FROM (
                                     switch(pdFrom.descr) {
                                         case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
                                             break
-                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
-                                            break
                                         case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
                                             break
                                         case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
@@ -1004,12 +1042,24 @@ SELECT * FROM (
         }
 
         Map<String,Object> propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_de']) // NO private properties!
+        String sort = params.containsKey('sort') ? params.sort : 'name_de',
+        order = params.containsKey('order') ? params.order : 'asc'
+        PropertyDefinition.AVAILABLE_PUBLIC_DESCR.each { String it ->
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: sort, order: order]) // NO private properties!
             propDefs.putAt( it, itResult )
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenantIsNull([sort: sort, order: order]) // NO private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
+
+        // ERMS-6306
+        multiplePdList.unique().each {
+            PropertyDefinition pd = PropertyDefinition.get(it)
+            if (! pd.multipleOccurrence) {
+                println 'ERMS-6306 -> #' + pd.id + ' ' + pd.descr + ' - ' + pd.name + ' (' + pd.name_de + '), hardData: ' + pd.isHardData
+            }
+        }
 
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
@@ -1109,9 +1159,11 @@ SELECT * FROM (
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        String sort = params.containsKey('sort') ? params.sort : 'desc_' + LocaleUtils.getCurrentLang()
+
         [
             editable    : true,
-            rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
+            rdCategories: RefdataCategory.findAll(sort: sort),
             attrMap     : attrMap,
             usedRdvList : usedRdvList
         ]
@@ -1139,18 +1191,31 @@ SELECT * FROM (
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
 
-        if (params.create){
-            SystemMessage sm = new SystemMessage(
-                    content_de: params.content_de ?: '',
-                    content_en: params.content_en ?: '',
-                    type: params.type,
-                    isActive: false)
+        SystemMessage sm
+        if (params.cmd == 'create') {
+            sm = new SystemMessage( isActive: false )
+        }
+        else if (params.cmd == 'edit') {
+            sm = SystemMessage.get(params.id)
+        }
+
+        if (sm) {
+            sm.content_de = params.content_de ?: ''
+            sm.content_en = params.content_en ?: ''
+            sm.type = params.type
+            sm.condition = params.condition ?: null
 
             if (sm.save()){
-                flash.message = 'Systemmeldung erstellt'
-            } else {
-                flash.error = 'Systemmeldung wurde nicht erstellt'
+                flash.message = 'Systemmeldung erfolgreich gespeichert'
             }
+            else {
+                if (params.cmd == 'create') {
+                    flash.error = 'Systemmeldung wurde nicht erstellt'
+                } else {
+                    flash.error = 'Systemmeldung konnte nicht gespeichert werden'
+                }
+            }
+            log.debug 'SystemMessage #' + sm.id + ' -> ' + params.cmd
         }
 
         result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
@@ -1158,10 +1223,11 @@ SELECT * FROM (
         result
     }
 
-    /**
-     * Deletes the given {@link SystemMessage}
-     * @param id the system message to delete
-     */
+    @Secured(['ROLE_ADMIN'])
+    def editSystemMessage(Long id) {
+        render template: 'systemMessageModal', model: [msg: SystemMessage.get(id)]
+    }
+
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def deleteSystemMessage(Long id) {
@@ -1211,13 +1277,13 @@ SELECT * FROM (
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                         defaultCollate   : DatabaseInfo.getDatabaseCollate(),
-                        dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                        dbmVersion       : DatabaseInfo.getDbmVersion()
                 ],
                 storage: [
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                         defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
-                        dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                        dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
                 ]
         ]
 
@@ -1304,14 +1370,11 @@ SELECT * FROM (
      * Lists current packages in the we:kb ElasticSearch index.
      * @return Data from we:kb ES
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_ADMIN'])
     def packageLaserVsWekb() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], configMap = params.clone()
         result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, result.user)
+        configMap.putAll(SwissKnife.setPaginationParams(result, params, result.user))
         result.filterConfig = [['q', 'pkgStatus'],
                                ['provider', 'ddc', 'curatoryGroup'],
                                ['curatoryGroupType', 'automaticUpdates']]
@@ -1320,7 +1383,7 @@ SELECT * FROM (
             result.tableConfig << 'yodaActions'
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
-        result.putAll(packageService.getWekbPackages(params.clone()))
+        result.putAll(packageService.getWekbPackages(configMap))
         result
     }
 }

@@ -7,21 +7,331 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
+
+6588    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         500er bei dauerhaften Käufen
+
+6582    15.05.2025  rc-3.5  3.5-RC      David   Feature     Verwaiste/Ungültige Views im Profile-Verzeichnis
+
+6579    15.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter bei "Einrichtungen verwalten" übernahm den Reiter nicht
+
+6571    15.05.2025  rc-3.5  3.5-RC      Andreas Feature     Vereinfachung der Upload-Anleitungen
+
+6574    14.05.2025  rc-3.5  3.5-RC      David   Feature     Build Info wieder einbauen QA
+
+6549    14.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbau der Sicht "Meine dauerhaften Titel"
+
+6572    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Syncfehler behoben
+
+6570    13.05.2025  rc-3.5  3.5-RC      Andreas Bug         Paginierung griff bei we:kb-Filter nicht
+
+6563    12.05.2025  rc-3.5  3.5-RC      David   Feature     "Erstellt durch" bei Anbieter und Library Supplier
+
+6568    09.05.2025  rc-3.5  3.5-RC      Andreas Bug         Lizenztitel konnten als Pro-Nutzer nicht exportiert werden
+
+6564    09.05.2025  rc-3.5  3.5-RC      Andreas Feature     Weitere Einschränkung der möglichen Plattformen
+
+6565    08.05.2025  rc-3.5  3.5-RC      David   Feature     Reiterstruktur/Tab bei Plattform
+
+6553    08.05.2025  rc-3.5  3.5-RC      David   Feature     Hilfe (Beschreibung des Templates) bricht wegen ungesetztem Wert
+
+6443    08.05.2025  rc-3.5  3.5-RC      Andreas Feature     Verfahrensverzeichnisse der Verarbeitungstätigkeiten aktualisiert
+
+6548    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         Filter nach Kontakt-Position nachgereicht
+
+6546    07.05.2025  rc-3.5  3.5-RC      Andreas Bug         irrtümliche Entknüpfung von Titel behoben
+
+6545    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     bessere Darstellung des Hinweistextes
+
+6530    07.05.2025  rc-3.5  3.5-RC      Andreas Feature     Übernahme der Tabelle aus "Alle Pakete"
+
+6544    06.05.2025  rc-3.5  3.5-RC      Andreas Feature     Umbenennung und Bereinigung von Positionstypen
+
+6540    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Schleife nachgereicht
+
+6532    06.05.2025  rc-3.5  3.5-RC      Andreas Bug         Informationsbudgets wurden im Export nur nach Gruppierung vorgeschlagen
+
+6523    05.05.2025  rc-3.5  3.5-RC      David   Bug         Mehrfach vergebene eigene Merkmale werden als "nicht zulässig" definiert
+
+6524    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         CSV-Kostenausgabe schlug fehl
+
+6519    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlerhafter Seitenaufruf nach Löschen einer Einrichtungslizenz
+
+6518    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler im Formular behoben
+
+6517    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         doppelte Library Supplier-Übertragung behoben
+
+6504    02.05.2025  rc-3.5  3.5-RC      Andreas Bug         diverse darstellerische Fehler bei Library Supplier behoben
+
+6513    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Eigene Kostenmerkmale waren nicht löschbar
+
+6502    30.04.2025  rc-3.5  3.5-RC      Andreas Feature     neue Referenzwerte für Discovery-Systeme
+
+6500    30.04.2025  rc-3.5  3.5-RC      Andreas Bug         Konsortiale Elternverträge können nicht mehr mit lokalen Lizenzen verknüpft werden
+
+6485    29.04.2025  rc-3.5  3.5-RC      David   Feature     Dashboard: Aufgaben etc. weiter oben positionieren
+
+6495    25.04.2025  rc-3.5  3.5-RC      David   Feature     Refdata aufräumen
+
+6492    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Kopie von Vertragsmerkmalen lief in Fehler
+
+6491    24.04.2025  rc-3.5  3.5-RC      Andreas Bug         Fehler in der Tabellenüberschrift behoben
+
+6490    24.04.2025  rc-3.5  3.5-RC      Andreas Feature     Anpassung der Upload-Templates für Lizenzen und Kosten
+
+6489    24.04.2025  rc-3.5  3.5-RC      David   Feature     Reporting: neue Felder für Platform
+
+6478    17.04.2025  rc-3.5  3.5-RC      David   Feature     Landingpage und Login-Form zusammenführen
+
+6483    17.04.2025  rc-3.5  3.5-RC      David   Bug         500er Systemmeldung Startseite / Landing Page QA
+
+6441    14.04.2025  rc-3.5  3.5-RC      Andreas Feature     verschiedene Verbesserungen des Kostenmenüs
+
+6466    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsche Anzeige der Merkmale in Vertrags-Kurzübersicht
+
+6463    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         Verknüpfung Anbieter/LS funktionierte nicht
+
+6459    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsches Befüllen des Dropdowns behoben
+
+6457    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Teilnehmer hinzufügen: Lizenzfiltern einbauen
+
+6458    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Kosten editierbar machen während Umfrage
+
+6460    10.04.2025  rc-3.5  3.5-RC      Andreas Feature     Setzen von targetOrg erweitert
+
+6459    10.04.2025  rc-3.5  3.5-RC      Andreas Bug         Aufschlag auf vorhandene Rechnungssumme war nicht möglich
+
+6436    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Teilnehmer übertragen/verlängern während Umfragelaufzeit
+
+6455    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Übertrag bei Verlängerungsumfrage erlauben
+
+6448    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Auswahl Library Supplier auf Teilnehmerebene
+
+6449    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Anzeige Einrichtungen in Umfrage
+
+6445    09.04.2025  rc-3.5  3.5-RC      Andreas Feature     Reduktion der Informationen für Anbieter/Library Supplier auf Minimum
+
+6451    09.04.2025  rc-3.5  3.5-RC      Moe     Feature      Umfrage "meine Merkmale"
+
+6435    08.04.2025  rc-3.5  3.5-RC      Andreas Feature     Download-Wrapper zur Bereitstellung der KBART-Datei versetzt
+
+6384    08.04.2025  rc-3.5  3.5-RC      Andreas Bug         verschiedene Bugs im Titelfilter
+
+6382    08.04.2025  rc-3.5  3.5-RC      David   Feature     Upload-Dateien / documentStorage verschlüsseln
+
+2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
+
+6446    08.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage /Library Supplier
+
+6437    08.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage Rechnungsabwicklung
+
+6427    07.04.2025  rc-3.5  3.5-RC      Andreas Bug         Benennungen bei der Lizenzverknüpfung behoben
+
+6362    03.04.2025  rc-3.5  3.5-RC      Moe     Feature     Merkmal Category A-F ummappen zu Beck: Kategory A-F 
+
+6415/6416    03.04.2025  rc-3.5     3.5-RC      Andreas Bug         Nutzerzahlen waren nicht aufrufbar
+
+6414    31.03.2025  dev     3.5         Moe     Bug         Umfrage Balkendiagramm sortieren
+
+6114    31.03.2025  dev     3.5         Moe     Bug         Kostenanzeige in der Umfrage
+     
+6389    31.03.2025  dev     3.5         Moe     Bug         Filter, die mit Umfragen-Teilnehmer zu tun haben, anpassen
+
+6405    31.03.2025  dev     3.5         Moe     Bug         500er beim Aufrufen der Paketumfrage als Einrichtung
+
+6397    31.03.2025  dev     3.5         Andreas Feature     Neues Umfragemerkmal Vertraulichkeit aufgenommen
+
+5945    31.03.2025  dev     3.5         Andreas Feature     Neues Umfrage- und Lizenzmerkmal ASME Zuwahl neu aufgenommen 
+
+6388    27.03.2025  dev     3.5         Moe     Feature     Paket-Umfrage Verbesserungen
+
+6246    27.03.2025  dev     3.5         Moe     Feature     Inaktive Benutzer nicht mehr benachrichtigen
+
+6399    26.03.2025  dev     3.5         David   Feature     Filter: Unnötige Parameter aus der URL entfernen
+
+6398    26.03.2025  dev     3.5         David   Feature     Generator für Random (UI)IDs, etc.
+
+6370    25.03.2025  dev     3.5         Andreas Feature     Einzeltitelauswahl implementiert
+
+6354    24.03.2025  dev     3.5         Moe     Feature     Kostenupload optimieren - auch bei Umfragen
+
+6391    24.03.2025  dev     3.5         Moe     Bug         500er Umfrage beenden DEV
+
+6389    24.03.2025  dev     3.5         Moe     Feature     Filter, die Umfragen-Teilnehmer zu tun haben, anpassen
+
+6386    24.03.2025  dev     3.5         Moe     Feature     Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
+
+6390    24.03.2025  dev     3.5         Moe     Bug         Umfrage-Benachrichtigung: Startdatum wird als Enddatum ausgewertet
+
+6386    24.03.2025  dev     3.5         Moe     Feature     Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
+
+6359    24.03.2025  dev     3.5         Andreas Feature     Vereinheitlichung der Titlehinzufügeverfahren
+
+6008    21.03.2025  dev     3.5         Moe     Feature     Lieferanten-Umfrage: Export abändern
+
+5966    21.03.2025  dev     3.5         Moe     Feature     Speicheroption renewal auf Auswertungsseite
+
+6387    21.03.2025  dev     3.5         Moe     Bug         Unsauberes Verhalten Merkmalsgruppe (Umfrage)
+
+6407    20.03.2025  dev     3.5         David   Feature     Hervorheben von neuen Anbietern in den we:kb-News
+
+6104    19.03.2025  dev     3.5         Moe     Feature     Verlängerungsabfrage für MJL
+
+6375    19.03.2025  dev     3.5         Andreas Feature     Abschaltung der Library Supplier in der Lizenzdetailsicht
+
+6343    19.03.2025  dev     3.5         David   Feature     Modale Dialoge für Aufgaben überarbeiten
+
+6310    19.03.2025  dev     3.5         Andreas Feature     Kosten mit Merkmalen (Informationsbudget) auszeichbar
+
+6376    18.03.2025  dev     3.5         Moe     Feature     metafilter umfrage Liferanten
+
+6096    17.03.2025  dev     3.5         Moe     Feature     Umfrage ClickMe Excel Option nur relevante Teilnehmer 
+
+6373    17.03.2025  dev     3.5         Andreas Bug         falsches Argument bei der Verknüpfung von Anbietern
+
+6345    17.03.2025  dev     3.5         David   Feature     Testzugriffe in den Dashboard News anzeigen
+
+6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
+
+6160    17.03.2025  dev     3.5         Moe     Bug         Mail versenden nicht Abbrechen wenn ein Fehler im Prozess ist
+
+6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
+
+6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage
+
+6355    14.03.2025  dev     3.5         Moe     Feature     Titelumfrage optimieren
+
+6349    14.03.2025  dev     3.5         Andreas Feature     Bezeichner "Lieferant" in "Library Supplier" umgewandelt
+
+6346    14.03.2025  dev     3.5         Moe     Feature     Speichermöglichkeiten beim Feld "Bemerkung" für Konsortialstellen
+
+6341    14.03.2025  dev     3.5         Andreas Feature     Umstellung aller Template-Dateien auf .csv
+
+5856    14.03.2025  dev     3.5         Andreas Bug         Bugs beim Zusammenführen von Anbietern behoben
+
+6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt
+
+6358    13.03.2025  dev     3.5         Moe     Bug         Falsche Berechnung der Angehackten Titeln bei Titelumfragen
+
+6357    13.03.2025  dev     3.5         Moe     Feature     Reiter in der Titelauswahl bei Titelumfragen anpassen
+
+6356    13.03.2025  dev     3.5         Moe     Feature     Informationskasten anzeigen, wenn man sich in den "Kindumfragen" befindet
+
+6364    13.03.2025  dev     3.5         Moe     Feature     Änderung der Reihenfolge der Funktionen im Zauberstab
+
+6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
+
+6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald
+
+6347    12.03.2025  dev     3.5         Moe     Feature     Spaltenüberschrift bei Kontakten: "Name" soll zu "Nachname / Funktionsbezeichnung" werden (wie beim Anlegen)
+
+6344    12.03.2025  dev     3.5         Moe     Feature     Verbesserung der XRechnung bei Rechnungsstellung in Umfragen
+
+6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
+
+6253    12.03.2025  dev     3.5         Moe     Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
+
+6119    12.03.2025  dev     3.5         Moe     Feature     Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
+
+6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
+
+6353    11.03.2025  dev     3.5         Moe     Feature     Umbau: Merkmale hinzufügen
+
+6351    11.03.2025  dev     3.5         Andreas Bug         Fehlender Import sorgte für 500er beim Aufruf eines Lieferanten
+
+6335    10.03.2025  dev     3.5         Andreas Feature     Massenver-/Entknüpfung von Lizenzen mit Anbietern und Lieferanten implementiert
+
+6342    07.03.2025  dev     3.5         Andreas Bug         Weiterer Bezeichner "Bestand" entfernt
+
+6337    07.03.2025  dev     3.5         Andreas Feature     Erweiterung des Filters unter "Meine Lizenzen" und "Meine Verträge"
+
+6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
+
+6320    07.03.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Plattform" aus der Sicht "Meine Lieferanten"
+
+6212    07.03.2025  dev     3.5         Andreas Bug         verschiedene Bugfixes und Verbesserung der Plattform-Filter
+
 6332    05.03.2025  rc-3.4  3.4.20      Andreas Bug         Filter unter "Paket verknüpfen" nicht einsetzbar
+
+6325    05.03.2025  dev     3.5         David   Bug         Organisationen verwalten (Admin): Filter- und Formular-Parameter
+
+6324    28.02.2025  dev     3.5         Andreas Feature     Umbenennungen bei Identifikatoren
+
+6323    27.02.2025  dev     3.5         David   Feature     Gasco-Eintrag automatisch für Konsortialmanager
+
+6281    27.02.2025  dev     3.5         David   Feature     Sortierung der Kontakte in Anbietermails
 
 6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
 
-6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
+6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale kopieren n andere Lizenz
 
 6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
 
+6305    25.02.2025  dev     3.5         Moe     Bug         einzelner Kontakt Löschbutton löscht nicht
+
+6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
+
+6313    25.02.2025  dev     3.5         Andreas Bug         Bubbles mit Titelzahlen reimplementiert
+
+6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple
+
+6261    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale aufräumen
+
+6227    21.02.2025  dev     3.5         Moe     Feature     "Standardauswahl" für Rechnungskontakte/-adressen sowie bei neuem Kontakttyp Umfragekontakt
+
+6308    21.02.2025  dev     3.5         Andreas Bug         falsche Ausgabe der Entknüpfungsknöpfe
+
+6307    21.02.2025  dev     3.5         Andreas Bug         Absturz bei Kopie von speziellen Lizenzkontakten
+
+6273    21.02.2025  dev     3.5         Andreas Feature     Auswertung der Statistik-Fehlermeldungen vollständig implementiert
+
 6303    20.02.2025  rc-3.4  3.4.19      Andreas Feature     Erweiterter Hinweistext bei fehlenden COUNTER-Statistiken
+
+6300    19.02.2025  dev     3.5         Andreas Bug         Umstellung der Jahressummierung (weitere Commits zu diesem Ticket siehe git-Commithistory)
+
+6292    19.02.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Sortiername"
+
+6283    19.02.2025  dev     3.5         Andreas Feature     Kostenanreicherungsfunktion für Lizenzkosten eingebaut
 
 6289    18.02.2025  rc-3.4  3.4.19      David   Feature     Anonymisierung auf QA erweitern wegen ext. Testnutzern
 
 6274    14.02.2025  rc-3.4  3.4.19      David   Bug         Seltsames Verhalten von 11+ stelligen Zahlen in Merkmalen
+
+6240    14.02.2025  dev     3.5         Andreas Feature     Ersetzen des Bezeichners "Bestand" durch "lizenzierte Titel"
+
+6112    14.02.2025  dev     3.5         Andreas Bug         Ladeverhalten beim Abruf von Titel zur Nutzungsstatistik korrigiert
+
+6278    13.02.2025  dev     3.5         Andreas Feature     Darstellung der Merkmale Vertrags-/Rechnungsabwicklung
+
+6276    13.02.2025  dev     3.5         Andreas Feature     Einbau der Merkmale und weiterer Referenzwerte für Rechnungs-/Vertragsabwicklung
+
+5914    12.02.2025  dev     3.5         Moe     Feature     Export Konfiguration: Bearbeitungsbutton hinzufügen
+
+6025    12.02.2025  dev     3.5         Moe     Feature     Angabe des Kündigungsgrunds bei Verlängerungsumfragen durch Pop-Up
+
+6262    12.02.2025  dev     3.5         Moe     Feature     Eintrag Leitweg-ID unkomfortabel
+
+5906    12.02.2025  dev     3.5         Moe     Feature     Neues Umfragemerkmal "Teilnahme (mit Antwortoptionen)" zur Nutzung für nicht-verpflichtende Umfragen
+
+6271    12.02.2025  dev     3.5         Andreas Bug         falscher Umgang mit dubletten Identifikatoren
+
+6094    12.02.2025  dev     3.5         Andreas Feature     Wiederherstellung des Filters zu verknüpften Lizenzen
+
+6257    11.02.2025  dev     3.5         Andreas Bug         Personen werden abgeräumt, wenn keine Kontakta mehr vorhanden sind
+
+6219    11.02.2025  dev     3.5         David   Feature     Subscription/License.isSlaved() überarbeiten
+
+6203    11.02.2025  dev     3.5         Andreas Feature     Absicherung gegen Leerformulare
+
+--      10.02.2025  dev     3.5         Andreas Bug         veralteten Aufruf von list.size korrigiert
+
+6265    10.02.2025  dev     3.5         Andreas Bug         Regex-Validierung aus EZB-Lizenz-ID entfernt und Beispiellink aktualisiert
+
+6260    10.02.2025  dev     3.5         David   Feature     Meine Workflows
+
+6224    10.02.2025  dev     3.5         David   Feature     Org.status überarbeiten
 
 6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
 
@@ -31,7 +341,25 @@
 
 6234    10.02.2025  rc-3.4  3.4.19      Andreas Bug         500er bei der Ausgabe von Lizenzen im Export der Einrichtungen behoben
 
+6238    07.02.2025  dev     3.5         David   Feature     API: Umbau ERMS-6223/ERMS-6224 abfangen
+
+6253    05.02.2025  dev     3.5         David   Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
+
+6255    04.02.2025  dev     3.5         David   Bug         Erstellen von Aufgaben in DEV nicht immer möglich
+
+6210    31.01.2025  dev     3.5         David   Feature     Reporting: Skalierbare Charts
+
 6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
+
+6223    24.01.2025  dev     3.5         David   Feature     Organisationsverlinkungen entfernen
+
+6220    23.01.2025  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
+
+6218    23.01.2025  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
+
+6216    23.01.2025  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
+
+6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
 6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
@@ -41,7 +369,31 @@
 
 6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
-6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+5673    21.01.2025  dev     3.5         David   Feature     We:kb-News / Titeländerungen
+
+5998    21.01.2025  dev     3.5         David   Feature     Rechteprüfung: Workflows
+
+--      21.01.2025  dev     3.5         Andreas Bug         Darstellungsfehler in der Lizenzübersicht behoben
+
+6062    21.01.2025  dev     3.5         Andreas Feature     Kosten werden bei automatischer Verlängerung nicht mehr mit übertragen
+
+6197    20.01.2025  dev     3.5         Andreas Bug         Filterfelder wurden nicht vorbelegt
+
+6196    20.01.2025  dev     3.5         David   Feature     Icons für Einrichtungen/Konsortialmanager
+
+6180    20.01.2025  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
+
+5920    20.01.2025  dev     3.5         David   Feature     Dashboard "verschönern"
+
+6199    17.01.2025  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
+
+6195    17.01.2025  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
+
+5106    17.01.2025  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
+
+6128    16.01.2025  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
+
+6179    16.01.2025  dev     3.5         Andreas Feature     Anpassungen und Neuerungen bei den Nutzerzahlen
 
 6140    15.01.2025  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
 
@@ -49,13 +401,35 @@
 
 6187    15.01.2025  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
+6178    14.01.2025  dev     3.5         Andreas Feature     Dashboard-Aufforderung zur Aktualisierung der Nutzerzahlen
+
+6120    14.01.2025  dev     3.5         David   Feature     Neuer Message-Typ "Dashboard"
+
+6004    13.01.2025  dev     3.5         Andreas Feature     neues Merkmal "GASCO-Zusatzinformationen" aufgenommen und in Flyout eingebunden
+
 --      13.01.2025  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
+
+6175    13.01.2025  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
+
+5393    08.01.2025  dev     3.5         David   Feature     getAllSubscribers in Lizenzen überdenken
 
 6002    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
 
 --      07.01.2025  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
 
 6095    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
+
+6170    03.01.2025  dev     3.5         Andreas Bug         Ladefehler bei der manuellen Verlängerung behoben
+
+5938    03.01.2025  dev     3.5         Andreas Feature     Statistikkontakt eingebunden und Kontaktmöglichkeit per Flyout erstellt
+
+6075    23.12.2024  dev     3.5         Andreas Feature     Umstellung der Exports auf mehrstufiges Ladeverfahren
+
+6068    23.12.2024  dev     3.5         Andreas Feature     Tests und Anpassungen der Titelverwaltung, hieran geknüpfte Bugfixes
+
+6048    23.12.2024  dev     3.5         Andreas Feature     Umsetzung der neuen Regeln zur Titelverwaltung
+
+5937    23.12.2024  dev     3.5         Andreas Feature     Titelverwaltung auf neue Struktur umgestellt, mehrstufiges Laden der Bestandstitel
 
 6159    19.12.2024  rc-3.4  3.4.16      David   Feature     Anzahl der Datenbankverbindungen erhöhen
 
@@ -67,7 +441,19 @@
 
 6154    19.12.2024  rc-3.4  3.4.16      Andreas Feature     Pro-Nutzer können jetzt ihre Merkmale in konsortiale Verträge kopieren
 
+5917    17.12.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien
+
 6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
+
+6106    12.12.2024  dev     3.5         Andreas Bug         Korrektur der Darstellung der Nutzerzahlen
+
+6132    06.12.2024  dev     3.5         Andreas Feature     Caching der angehakten Elemente in Lizenzverwaltung eingebaut
+
+6060    06.12.2024  dev     3.5         Andreas Feature     Abschalten des Einrichtungskontaktfilters für Einrichtungen
+
+6103    29.11.2024  dev     3.5         Andreas Bug         diverse darstellerische Bugs behoben
+
+5917    27.11.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien
 
 6101    27.11.2024  rc-3.4  3.4.16      Moe     Bug         Umfrage Export Renewal falsche Preise bei MJL
 
@@ -87,7 +473,21 @@
 
 6083    19.11.2024  rc-3.4  3.4.15      Andreas Bug         Kommentare zu vorhandenen Verknüpfungen konnten nicht abgespeichert werden
 
+5977    19.11.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
+
+6070    15.11.2024  dev     3.5         David   Feature     Refactoring: contextOrg durch contextService.getOrg() ersetzen
+
 6065    14.11.2024  rc-3.4  3.4.15      Moe     Bug         Export Zuordnung
+
+6067    13.11.2024  dev     3.5         David   Feature     Refactoring: MyInstitution-Parameter
+
+6066    13.11.2024  dev     3.5         Andreas Feature     Yoda-getriggertes Menü zur paketweisen Neuerzeugung von Sortiertitel eingefügt
+
+6027    11.11.2024  dev     3.5         David   Feature     Flyout: (Mail-)content mit Sprachauswahl
+
+6059    08.11.2024  dev     3.5         David   Feature     CuratoryGroup.type als RefdataCategory anlegen
+
+6009    08.11.2024  dev     3.5         David   Feature     Org.orgType entfernen
 
 6058    08.11.2024  rc-3.4  3.4.14      Andreas Bug         Gesamttitelliste + Statistik: keine Markierung der Titel
 
@@ -111,6 +511,12 @@
 
 6036    31.10.2024  rc-3.4  3.4.13      Moe     Bug         Lizenzübertrag aus Lizenzumfrage: Umfrage-Lieferanten wird übersprungen
 
+6041    30.10.2024  dev     3.5         David   Feature     Controller: ROLE_ADMIN-Ausnahmen entfernen
+
+5977    30.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
+
+5973    30.10.2024  dev     3.5         Andreas Feature     Tilgung von raw(), wo nicht zwingend erforderlich
+
 --      29.10.2024  rc-3.4  3.4.13      Moe     Feature     neue Refdatas
 
 6035    29.10.2024  rc-3.4  3.4.13      Moe     Bug         Random-Rechnungskontakt in Einrichtungsinfos Ergbenisreiter Lizenzumfrage
@@ -119,7 +525,21 @@
 
 6038    28.10.2024  rc-3.4  3.4.13      Moe     Bug         Titelgruppen mit selben Name  
 
+5977    25.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
+
+6034    25.10.2024  dev     3.5         Andreas Feature     unnötige Menüpunkte im Adressbuch ausgegraut
+
+6032    24.10.2024  dev     3.5         David   Bug         500er beim Aufruf einer Einrichtung als Konsortialstelle
+
+5976    24.10.2024  dev     3.5         David   Feature     Rechteprüfung: Anmerkungen
+
+6017    24.10.2024  dev     3.5         David   Feature     Neue Addressbook-Komponente
+
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
+
+6028    18.10.2024  dev     3.5         David   Feature     DashboardDueDate.responsibleOrg
+
+5971    18.10.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
 
 6029    18.10.2024  rc-3.4  3.4.12      Andreas Bug         Tippfehler in Referenzwert behoben
 
@@ -130,6 +550,12 @@
 6021    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Lizenzen im "Meine Lizenzen pro Einrichtung" wiederhergestellt
 
 6019    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Identifikatoren im Titelexport ergänzt
+
+6011    10.10.2024  dev     3.5         David   Feature     Update auf Grails 6.2.1
+
+5967    09.10.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController (Download)
+
+5927    09.10.2024  dev     3.5         David   Feature     JoinTable Org.orgType zum Fremdschlüssel umbauen
 
 6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
 
@@ -145,21 +571,55 @@
 
 5987    30.09.2024  rc-3.4  3.4.10      Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
 
+5971    26.09.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
+
+5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
+
+5876    23.09.2024  dev     3.5         David   Feature     Kontextabhängige Hilfe -> technische Umsetzung
+
 5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
+
+5955    20.09.2024  dev     3.5         Andreas Feature     Upload von Requestor-IDs
 
 5956    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Anzeige der Statistik-Abrufinformationen
 
 5950    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Trennung der Adress- und Postfachdaten
 
+5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
+
 5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
 
 5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
 
+--      16.09.2024  dev     3.5         Ingrid Bug          Merkmale verwalten: Korrektur des durchgestrichenen Icons für Mehrfachsetzung; Vereinheitlichung der Anzeige (current state  vs go-to state)
+
+5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
+
+5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen
+
+5779    16.09.2024  dev     3.5         Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
+
+5932    13.09.2024  rc-3.4  3.4         Ingrid Bug          Auswahl von eigenen Merkmalen bei Adresskontakten nicht möglich
+
 5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
+5930    12.09.2024  dev     3.5         Ingrid Feature      Deutlichere Markierung der Systeme und zusätzliches System 
+
+--      12.09.2024  dev     3.5         Ingrid Feature      Anderes Icon für Umfragen
+
+5801    12.09.2024  dev     3.5         Andreas Feature     Lizenzimport unterstützt jetzt auch Identifikatoren
 
 5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
 
+5716    10.09.2024  dev     3.5         Andreas Feature     Verträge können im ONIX-PL-XML-Format exportiert werden
+
+5921    10.09.2024  dev     3.5         David   Feature     Merkmale/Referenzwerte .. dies und das
+
+5907    09.09.2024  dev     3.5         David   Bug         PropertyStore/RDStore: Slf4j-Logger wird nicht richtig initialisiert
+
 --      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
+
+5911    05.09.2024  dev     3.5         Andreas Bug         Methodenaufruf korrigiert
 
 5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
 
@@ -182,6 +642,8 @@
 5864    13.08.2024  rc-3.4  3.4.6       Andreas Feature     feingliedrige Aufschlüsselung der Nutzerzahl-Summen im Excel-Export
 
 5863    13.08.2024  rc-3.4  3.4.6       Andreas Bug         inkorrekte Auslesung der Anbieter/Lieferantenkontakte beim PDF-Export
+
+5861    13.08.2024  dev     3.5         David   Feature     Refactoring: wekb-Package
 
 5860    13.08.2024  rc-3.4  3.4.6       David   Bug         Admin > Referenzwerte verwalten
 
@@ -241,6 +703,8 @@
 
 5803    09.07.2024  rc-3.4  3.4.1       Andreas Bug         E-Mail-Betreff führt auch den Namen der Umfrage mit auf
 
+5784    08.07.2024  dev     3.5         David   Feature     Icon-Handling verbessern
+
 5793    05.07.2024  rc-3.4  3.4.1       Andreas Bug         inkorrekte Verarbeitung des Anbieterfilters
 
 5698    04.07.2024  rc-3.4  3.4.1       Ingrid  Bug         Design der Buttons anpassen
@@ -254,6 +718,8 @@
 5785    01.07.2024  rc-3.4  3.4.1       Andreas Bug         verschiedene Ausbesserungen
 
 #### day of release 3.4
+
+5669    27.06.2024  rc-3.4  3.4         Ingrid  Feature     Änderung des Modals für "Kontakt hinzufügen"
 
 5783    27.06.2024  rc-3.4  3.4         Andreas Bug         Adresskopiermodal verarbeitete Befehle falsch
 
@@ -314,6 +780,8 @@
 5728    04.06.2024  dev     3.4         Andreas Feature     neue Referenzwerte und Merkmale aufgenommen
 
 5684    04.06.2024  dev     3.4         Moe     Feature    Umfrage-Ersteller: Mail Spam Reduzieren
+
+4912    03.06.2024  dev     3.4         Ingrid  Feature    Laser Plans Tabelle designen und an prominenter Stelle anzeigen lassen
 
 5019    03.06.2024  dev     3.4         Moe     Feature    Lieferant in Umfrage auswählen
 
@@ -615,6 +1083,8 @@
 
 5520    12.01.2024  rc-3.3  3.3.5       David   Bug         Vertrag anlegen als neuer Kundentyp
 
+5491    10.01.2024  rc-3.4              Ingrid  Feature     Adressexport: Schließen des Modals verbessern
+
 5512    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Teilnehmerkosten vergleichen
 
 5488    09.01.2024  rc-3.3  3.3.3       Moe     Bug         Kostenausschütung rundet Preise ohne dies zu wollen
@@ -648,6 +1118,8 @@
 5489    03.01.2024  rc-3.3  3.3.3       David   Bug         Alle Pakete: Filter Kuratorengruppentyp liefert keine Ergebnisse
 
 5490    02.01.2024  rc-3.3  3.3.3       David   Bug         404 Übersicht Referenzwerte
+
+5459    14.12.2023  rc-3.4              Ingrid  Feature     Neues Kontextmenue verhält sich jetzt responsible
 
 5485    13.12.2023  rc-3.3  3.3.3       David   Bug         Alle Einrichtungen > Filter: Status geht verloren
 
@@ -1071,7 +1543,7 @@
 
 5168    27.07.2023  dev     3.3         David   Feature     Wekb-News in Laser anzeigen
 
---      26.07.2023  rc-3.2  3.2       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
+--      26.07.2023  rc-3.2  3.2         Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
 5208    26.07.2023  rc-3.2  3.2         Andreas Feature     Export einer einzelnen Lizenz in PDF
 

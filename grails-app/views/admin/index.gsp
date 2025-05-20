@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
 
 <laser:htmlStart text="${message(code:'menu.admin')} ${message(code:'default.dashboard')}" />
 
@@ -58,8 +58,8 @@
         </thead>
         <tbody>
             <tr>
-                <td>App Id/Version</td>
-                <td colspan="2">${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')}</td>
+                <td>App Id/Version/Build</td>
+                <td colspan="2">${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')}</td>
             </tr>
             <tr>
                 <td>Configuration file</td>
@@ -89,7 +89,30 @@
 <br />
 <br />
 
-    <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
+<table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <thead>
+        <tr>
+            <th>ServiceCheck</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <g:each in="${systemService.serviceCheck()}" var="systemCheck">
+            <tr>
+                <td>${systemCheck.key}</td>
+                <td>
+                    <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('active') ? 'green' : 'red'}"></i> ${systemCheck.value}
+                </td>
+            </tr>
+        </g:each>
+    </tbody>
+</table>
+
+<br />
+<br />
+
+<g:if test="${events}">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
         <tr>
             <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
@@ -110,8 +133,8 @@
                     case 'warning'  : tdClass = 'warning'; break
                     case 'error'    : tdClass = 'error'; break
                 }
-                if (el.hasChanged) {
-                    tdClass += ' sf_underline'
+                if (! el.hasChanged) {
+                    tdClass += ' sf_simple'
                 }
             %>
             <tr>
@@ -127,5 +150,6 @@
         </g:each>
         </tbody>
     </table>
+</g:if>
 
 <laser:htmlEnd />

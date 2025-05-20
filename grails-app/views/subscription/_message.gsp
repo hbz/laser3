@@ -1,15 +1,18 @@
-<%@ page import="de.laser.interfaces.CalculatedType;" %>
-<g:set var="checkCons" value="${contextOrg.id == subscription.getConsortia()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />
+<%@ page import="de.laser.ui.Icon; de.laser.interfaces.CalculatedType;" %>
+<laser:serviceInjection/>
+<g:set var="checkCons" value="${contextService.getOrg().id == subscription.getConsortium()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />%{-- ERMS-6070 subFinancialData --}%
 
 <g:if test="${checkCons}">
 
-<div class="ui negative message">
+<div class="ui error message">
     <div class="header">
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
-        <g:each in="${subscription.getAllSubscribers()}" var="subscr">
-            <span class="ui label"><g:link controller="organisation" action="show" id="${subscr.id}">${subscr.getDesignation()}</g:link></span>.
-        </g:each>
+        <g:if test="${subscription.getSubscriber()}">
+            <span class="ui label">
+                <ui:customerTypeIcon org="${subscription.getSubscriber()}" /><g:link controller="organisation" action="show" id="${subscription.getSubscriber().id}">${subscription.getSubscriber().getDesignation()}</g:link>
+            </span>.
+        </g:if>
     </div>
     <p>
         <g:if test="${checkCons}">
@@ -33,18 +36,11 @@
 </div>
 
     <g:if test="${subscription.comment}">
-        <div class="ui icon info message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'subscription.details.internalComment')}
-                </div>
 
-                <p>
-                    ${subscription.comment}
-                </p>
-            </div>
-        </div>
+        <ui:msg class="info" showIcon="true" hideClose="true" header="${message(code: 'subscription.details.internalComment')}">
+            ${subscription.comment}
+        </ui:msg>
+
     </g:if>
 
 </g:if>

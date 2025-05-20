@@ -1,8 +1,9 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.remote.ApiSource
+
 import de.laser.ContextService
-import de.laser.Platform
+import de.laser.remote.Wekb
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -39,16 +40,28 @@ class PlatformExport extends BaseDetailsExport {
                                     'ipAuthentication'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'shibbolethAuthentication'      : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'passwordAuthentication'        : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'proxySupported'                : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
+                                    'otherProxies'                  : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'statisticsFormat'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'statisticsUpdate'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterCertified'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'counterR3Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR4Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR4SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5Supported'            : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterR5SushiApiSupported'    : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-property'                    : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ]
+                                    'x-property'                    : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ],
+
+                                    'accessPlatform'                    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementAvailable'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessibilityStatementUrl'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'accessAudio'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessVideo'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessPdf'                     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessEPub'                    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'accessDatabase'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'playerForAudio'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'playerForVideo'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'viewerForPdf'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    'viewerForEpub'                 : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                             ]
                     ]
             ]
@@ -56,12 +69,12 @@ class PlatformExport extends BaseDetailsExport {
 
     static List<String> ES_SOURCE_FIELDS = [
 
-            "uuid", "providerUuid",
-            "altname",
-            "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
-            "statisticsFormat", "statisticsUpdate", "counterCertified",
-            "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
-            "lastUpdatedDisplay"
+            'uuid', 'providerUuid',
+            'altname',
+            'ipAuthentication', 'shibbolethAuthentication', 'passwordAuthentication', 'otherProxies',
+            'statisticsFormat', 'statisticsUpdate', 'counterCertified',
+            'counterR4Supported', 'counterR4SushiApiSupported', 'counterR5Supported', 'counterR5SushiApiSupported',
+            'lastUpdatedDisplay'
     ]
 
     /**
@@ -126,9 +139,9 @@ class PlatformExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(plt.id)) {
-                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
-                            if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
+                            String wekb = Wekb.getURL()
+                            if (wekb) {
+                                prop = wekb + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }
                         }
                     }

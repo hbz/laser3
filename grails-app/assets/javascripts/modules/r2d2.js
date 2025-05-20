@@ -173,7 +173,7 @@ r2d2 = {
                         $('#ajaxLoginModal').modal('hide');
                     }
                     else if (json.error) {
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + json.error + '</div>');
                     }
                     else {
                         $('#loginMessage').html(xhr.responseText);
@@ -183,21 +183,21 @@ r2d2 = {
                     if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
-                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
+                        $('#loginMessage').html('<div class="ui error message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
                     }
                     else {
                         var responseText = xhr.responseText;
                         if (responseText) {
                             var json = $.parseJSON(responseText);
                             if (json.error) {
-                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                                $('#loginMessage').html('<div class="ui error message">' + json.error + '</div>');
                                 return;
                             }
                         }
                         else {
                             responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')';
                         }
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + responseText + '</div>');
                     }
                 }
             })
@@ -212,13 +212,17 @@ r2d2 = {
             var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
             var html = $(element).html();
             var $temp = $("<input>");
+            var dontShow;
+            $(element).hasClass('la-display-none') ? dontShow = true : dontShow = false;
             $("body").append($temp);
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
+            dontShow ?  $(element).css('display','inline'): $(element).addClass('');
             $(element).html(JSPC.dict.get('copied', JSPC.config.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
+                dontShow ? $(element).css('display','none') : $(element).addClass('');
             }, 2000); // change the HTML after 2 seconds
             $temp.remove();
         });
@@ -231,6 +235,7 @@ r2d2 = {
             function(){ $(this).removeClass('alternate') },
             function(){ $(this).addClass('alternate') }
         )
+
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
@@ -256,7 +261,16 @@ r2d2 = {
             return html;
         };
 
-        // spotlight
+        // ----- filter -----
+
+        $('.la-filter').on( 'submit.laser', function() {
+            let fields = $(this).find('input[type=text], input[type=hidden], select');
+            let emptyFields = fields.filter(function(){ return !this.value; });
+            // remove unused filter params
+            emptyFields.attr('disabled', 'disabled');
+        });
+
+        // ----- spotlight -----
 
         $('.ui.search.spotlight').search({
             error : {
@@ -436,35 +450,50 @@ r2d2 = {
                 if ($(this).attr('data-format') && value) {
                     if($(this).attr('data-format') === 'YYYY') {
                         if(! (value.match(/^\d{4}$/) ) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                     else {
                         if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                 }
-                // custom validate functions via ui:xEditable validation="xy"
+                // custom validate functions via ui:xEditable.validation."xy"
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
                     if (dVal.includes('notEmpty')) {
                         if($.trim(value) == '') {
-                            return "Das Feld darf nicht leer sein";
+                            return  JSPC.dict.get('xEditable.validation.notEmpty', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('url')) {
                         var regex = /^(https?|ftp):\/\/(.)*/;
                         var test = regex.test($.trim(value)) || $.trim(value) == ''
                         if (! test) {
-                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            //return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            return  JSPC.dict.get('xEditable.validation.url', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('email')) {
                         let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
                         if(!test) {
-                            return "Bitte geben Sie eine gültige Mailadresse ein!"
+                            return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
+                        }
+                    }
+                    if (dVal.includes('leitwegID')) {
+                        let regex = /^([0-9]{2,12})+-+([a-zA-Z0-9]{0,30})+-+([0-9]{2,2})+$/
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.leit', JSPC.config.language)
+                        }
+                    }
+                    if (dVal.includes('number')) {
+                        let regex =  /^[0-9]+$/;
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.number', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('datesCheck')) {
@@ -482,12 +511,13 @@ r2d2 = {
                             endDate = Date.parse(JSPC.helper.formatDate(endDateInput));
                             console.log(startDate+" "+endDate);
                             if(startDate > endDate)
-                                return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
+                                return  JSPC.dict.get('xEditable.validation.endDateNotBeforStartDate', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('maxlength')) {
                         if(value.length > $(this).attr("data-maxlength")) {
-                            return "Der eingegebene Wert ist zu lang! Es dürfen maximal "+$(this).attr("data-maxlength")+" Zeichen eingegeben werden.";
+                            return   JSPC.dict.get('xEditable.validation.tooLong', JSPC.config.language)
+
                         }
                     }
                 }
@@ -530,7 +560,7 @@ r2d2 = {
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
-            tpl: '<select class="ui search selection dropdown"></select>',
+            tpl: '<select class="ui search selection dropdown clearable "></select>',
             validate: function(value) {
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
@@ -551,22 +581,12 @@ r2d2 = {
         // boolean values are only allowed to be 0 or 1, so clearable is not suitable
         // role values are not allowed to be null, so clearable is not suitable
         $(ctxSel + ' .xEditableBoolean, ' + ctxSel + ' .xEditableRole').editable({
-            tpl: '<select class="ui search selection dropdown"></select>',
+            tpl: '<select class="ui search selection dropdown clearable"></select>',
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
         }).on('shown', function(e, obj) {
             obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
-        });
-
-        $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.config.language,
-            format:   JSPC.config.dateFormat,
-            url: function(params) {
-                var hidden_field_id = $(this).data('hidden-id');
-                $("#" + hidden_field_id).val(params.value);
-                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
         });
     },
 
@@ -580,7 +600,7 @@ r2d2 = {
         //tooltip
         tooltip.init(ctxSel);
 
-        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[href*='mailto'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $('html').css('cursor', 'wait');
         });
 
@@ -591,7 +611,8 @@ r2d2 = {
 
         // close ui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
-            $(this).parent().hide();
+            $(this).parent().transition('fade');
+
         });
 
         // modals
@@ -601,6 +622,11 @@ r2d2 = {
             if (! href) {
                 href = $(this).attr('href')
             }
+            let keyboardHandler = function(e) {
+                if (e.keyCode === 27) {
+                    $(href + '.ui.modal').modal('hide');
+                }
+            };
             $(href + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
@@ -610,13 +636,12 @@ r2d2 = {
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 detachable: true,
                 autofocus: false,
-                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
@@ -628,21 +653,16 @@ r2d2 = {
                         focusElement: '',
                         escCallback:''
                     });
-                    keyboardHandler = function (e) {
-                        if (e.keyCode === 27) {
-                            $(this).modal('hide');
-                        }
-                    }
-                    this.addEventListener('keyup', keyboardHandler);
+                    document.addEventListener('keyup', keyboardHandler);
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 onHide : function() {
-                    this.removeEventListener('keyup', keyboardHandler);
+                    document.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });
@@ -656,7 +676,7 @@ r2d2 = {
             }
         );
         $('.la-js-closeAll-showMore').on('click', function () {
-            $('.accordion.la-accordion-showMore .la-accordion-segments .segment.content').each(function (i, e) {
+            $('.accordion.la-accordion-showMore.la-js-showMoreCloseArea .la-accordion-segments .segment.content').each(function (i, e) {
                 if ($(e).hasClass("active")) {
                     $('.la-accordion-showMore').accordion("close", i);
                 }
@@ -709,34 +729,22 @@ r2d2 = {
 
         // DROPDOWN
 
-        // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
         // simple dropdown
-        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
-            selectOnKeydown: false,
-            clearable: true
+        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
+            selectOnKeydown: false
         });
-        // all dropdowns but dropdowns la-not-clearable
-        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
-            selectOnKeydown: false,
-            clearable: false
-        });
-
-        // all search dropdowns but la-not-clearable at user/create view
         // search dropdown
-        $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
-            clearable: true,
             message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)}
         });
 
         // FILTER
-        // special: stuff on change
         // simple dropdown
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             selectOnKeydown: false,
-            clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -746,7 +754,6 @@ r2d2 = {
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
-            clearable: true,
             message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
@@ -756,12 +763,14 @@ r2d2 = {
             allowAdditions: true,
             forceSelection: false,
             hideAdditions: false,
-            clearable: true,
             message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
+
+
+
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
@@ -841,33 +850,19 @@ r2d2 = {
                 }
                 var $jscb = $('#js-confirmation-button')
 
-                switch (how) {
-                    case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.config.language) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
-                        break;
-                    case "unlink":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.config.language) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
-                        break;
-                    case "unset":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unset', JSPC.config.language) + '<i aria-hidden="true" class="eraser icon"></i>');
-                        break;
-                    case "share":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.config.language) + '<i aria-hidden="true" class="la-share icon"></i>');
-                        break;
-                    case "inherit":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.inherit', JSPC.config.language) + '<i aria-hidden="true" class="thumbtack icon"></i>');
-                        break;
-                    case "ok":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.ok', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "concludeBinding":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.config.language) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "clearUp":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.config.language) + '<i aria-hidden="true" class="shower icon"></i>');
-                        break;
-                    default:
-                        $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
+                let map = {
+                    'delete'            : JSPC.icons.CMD.DELETE,
+                    'unlink'            : JSPC.icons.CMD.UNLINK,
+                    'unset'             : JSPC.icons.CMD.ERASE,
+                    'share'             : JSPC.icons.SIG.SHARED_OBJECT_ON,
+                    'inherit'           : JSPC.icons.SIG.INHERITANCE,
+                    'ok'                : JSPC.icons.SYM.YES,
+                    'concludeBinding'   : JSPC.icons.SYM.YES
+                }
+                if (map[how]) {
+                    $jscb.html(JSPC.dict.get('confirm.dialog.' + how, JSPC.config.language) + '<i aria-hidden="true" class="' + map[how] + '"></i>');
+                } else {
+                    $('').html('Entfernen<i aria-hidden="true" class="' + JSPC.icons.SYM.NO + '"></i>');
                 }
 
                 var remoteLink = $(elem).hasClass('la-js-remoteLink')
@@ -1043,7 +1038,7 @@ r2d2 = {
     helper : {
 
         focusFirstFormElement: function (elem) {
-            console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
+            // console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
 
             let ffe = $(elem).find('input:not([disabled]):not([type=hidden]), textarea:not([disabled]):not([type=hidden])').first();
             if (ffe) {

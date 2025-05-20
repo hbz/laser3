@@ -1,14 +1,14 @@
 <ui:modal id="modalEditNote" text="${message(code:'template.editNote')}" isEditModal="true">
 
-    <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'editNote', id:noteInstance?.id]" method="post">
+    <g:form id="edit_note" class="ui form" url="[controller: 'note', action: 'editNote', params:[dctx: docContext.id]]" method="post">
         <div class="field">
             <label for="title">${message(code:'default.title.label')}:</label>
-            <input type="text" id="title" name="title" value="${noteInstance?.title}"/>
+            <input type="text" id="title" name="title" value="${noteInstance.title}"/>
         </div>
         <div class="field">
             <div class="field">
                 <label for="content">${message(code:'default.content.label')}:</label>
-                <div id="content">${raw(noteInstance?.content)}</div>
+                <div id="content">${raw(noteInstance.content)}</div>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
                     wysiwyg.initEditor('#modalEditNote #content');

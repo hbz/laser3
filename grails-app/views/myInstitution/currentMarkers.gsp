@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.Vendor;de.laser.Package;de.laser.Platform;de.laser.Provider;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.wekb.TitleInstancePackagePlatform" %>
 
-<laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.markers" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.markers" class="active"/>
@@ -8,7 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
-<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
+<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
 
 <ui:filter simple="true">
     <form id="markerFilterForm" class="ui form">
@@ -25,15 +25,15 @@
 
             </div>
             <div class="field la-field-right-aligned">
-%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>--}%
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+%{--                <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>--}%
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </form>
 </ui:filter>
 
-<ui:msg class="info" noClose="true">
-    <i class="ui icon hand point right"></i> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
+<ui:msg class="info" hideClose="true">
+    <icon:pointingHand /> <strong>Hinweis:</strong> Ihre persönlichen Beobachtungslisten sind für andere Nutzer Ihrer Einrichtung nicht sichtbar.
 </ui:msg>
 
 <g:each in="${myMarkedObjects}" var="objCat">
@@ -44,27 +44,29 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="${Icons.ORG} icon grey la-list-icon"></i> ???
+                            <i class="${Icon.ORG} grey la-list-icon"></i>
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
-                            <i class="${Icons.PACKAGE} icon grey la-list-icon"></i> ${message(code:'package.label')}
+                            <i class="${Icon.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof Platform}">
-                            <i class="${Icons.PLATFORM} icon grey la-list-icon"></i> ${message(code:'platform.label')}
+                            <i class="${Icon.PLATFORM} grey la-list-icon"></i> ${message(code:'platform.label')}
                         </g:elseif>
                         <g:if test="${objCat.value.first() instanceof Provider}">
-                            <i class="${Icons.PROVIDER} icon grey la-list-icon"></i> ${message(code:'provider.label')}
+                            <i class="${Icon.PROVIDER} grey la-list-icon"></i> ${message(code:'provider.label')}
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Vendor}">
-                            <i class="${Icons.VENDOR} icon grey la-list-icon"></i> ${message(code:'vendor')}
+                            <i class="${Icon.VENDOR} grey la-list-icon"></i> ${message(code:'vendor')}
                         </g:elseif>
                         <g:elseif test="${objCat.value.first() instanceof TitleInstancePackagePlatform}">
-                            <i class="icon grey book la-list-icon"></i> ${message(code:'title')}
+                            <i class="${Icon.TIPP} grey la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
-                    <th class="three wide"></th>
+                    <th class="three wide">${message(code:'org.customerType.label')}</th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
-                    <th class="one wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -77,9 +79,7 @@
                                 <g:link controller="org" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
                             <td>
-                                <g:each in="${obj.orgType}" var="ot">
-                                    ${ot.getI10n('value')}
-                                </g:each>
+                                ${obj.getCustomerTypeI10n()}
                             </td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentOrgIdList}">

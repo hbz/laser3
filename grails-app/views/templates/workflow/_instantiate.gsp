@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
 
 <%
     Set<WfChecklist> wfTemplateList = WfChecklist.getAllTemplatesByOwnerAndObjType(contextService.getOrg(), target)
@@ -42,10 +42,10 @@
                         <input type="text" name="${fieldName}" id="${fieldName}_1" value="${wfcl?.description}" />
                     </div>
 
-                    <div class="field">
+                    <div class="field required">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
                         <label for="${fieldName}_1">Anzahl der Einträge (kann später geändert werden)</label>
-                        <input type="number" name="${fieldName}" id="${fieldName}_1" value="3" min="1" max="10" />
+                        <input type="number" name="${fieldName}" id="${fieldName}_1" value="3" min="1" max="10" required="required" />
                     </div>
 
                     <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
@@ -84,7 +84,7 @@
 
                         <div class="ui message info" style="margin-top:1.5em;text-align:left;font-size:14px;font-weight:normal;display:block">
                             <div class="content">
-                                <i class="hand point right outline icon"></i>
+                                <icon:pointingHand />
                                 Bei einer Kopie werden Informationen aus den Feldern
                                 <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
                                 nicht übernommen.

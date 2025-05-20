@@ -45,18 +45,16 @@ class DatabaseInfo {
      * @return a {@link Map} containing server_version and server_encoding
      */
     static Map<String, String> getServerInfo(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
-
+        Sql sql = getSql(dsIdentifier)
         try {
             [
                 server_version : (sql.firstRow('show server_version').values().join(',') ?: 'unkown'),
                 server_encoding: (sql.firstRow('show server_encoding').values().join(',') ?: 'unkown')
             ]
         } catch (Exception e) {
-            log.error e.getMessage()
             [ server_version: 'unkown', server_encoding: 'unkown' ]
         }
+        finally { sql.close() }
     }
 
     /**
@@ -65,11 +63,12 @@ class DatabaseInfo {
      * @return a {@link List} of processes currently running, see <a href="https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-ACTIVITY-VIEW">pg_stat_activity()</a> for the row structure
      */
     static List<Map<String, Object>> getDatabaseActivity(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
-
-        List<GroovyRowResult> rows = sql.rows( 'select * from pg_stat_activity where datname = current_database() order by pid')
-        rows.collect{getGroovyRowResultAsMap(it) }
+        Sql sql = getSql(dsIdentifier)
+        try {
+            List<GroovyRowResult> rows = sql.rows( 'select * from pg_stat_activity where datname = current_database() order by pid')
+            rows.collect{getGroovyRowResultAsMap(it) }
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -78,8 +77,11 @@ class DatabaseInfo {
      * @return the collation (lc_collate) of the database
      */
     static String getDatabaseCollate(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        (new Sql(dataSource)).firstRow('show LC_COLLATE').get('lc_collate') as String
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.firstRow('select datcollate from pg_database where datname = current_database()').get('datcollate') as String // postgresql16+
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -88,9 +90,12 @@ class DatabaseInfo {
      * @return a formatted string containing the cancels due to conflicts in the database, see <a href="https://www.postgresql.org/docs/current/monitoring-stats.html#MONITORING-PG-STAT-DATABASE-CONFLICTS-VIEW">pg_stat_database_conflicts()</a> for more
      */
     static String getDatabaseConflicts(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        GroovyRowResult row = (new Sql(dataSource)).firstRow('select * from pg_stat_database_conflicts where datname = current_database()')
-        row.findAll { it.key.startsWith('confl_') }.collect { it -> it.key.replace('confl_', '') + ':' + it.value }.join(', ')
+        Sql sql = getSql(dsIdentifier)
+        try {
+            GroovyRowResult row = sql.firstRow('select * from pg_stat_database_conflicts where datname = current_database()')
+            row.findAll { it.key.startsWith('confl_') }.collect { it -> it.key.replace('confl_', '') + ':' + it.value }.join(', ')
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -99,8 +104,11 @@ class DatabaseInfo {
      * @return the size of the requested database
      */
     static String getDatabaseSize(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        (new Sql(dataSource)).firstRow('select pg_size_pretty(pg_database_size(current_database())) as dbsize').get('dbsize') as String
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.firstRow('select pg_size_pretty(pg_database_size(current_database())) as dbsize').get('dbsize') as String
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -117,19 +125,22 @@ class DatabaseInfo {
      * @return a {@link List} of rows containing the queries of the given database
      */
     static Map<String, List> getDatabaseStatistics(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
-
         Map<String, List> result = [:]
-        if (sql.firstRow("select 1 from information_schema.tables where table_catalog = current_database() and table_schema = 'public' and table_name = 'pg_stat_statements'")) {
-            String hql = """
-                select queryid, calls, total_time, min_time, max_time, mean_time, query from pg_stat_statements where queryid is not null 
-                and query not like '%pg_%' and query not in ('BEGIN', 'COMMIT', 'SELECT \$1')
-                """
 
-            result.calls = sql.rows(hql + " order by calls desc limit 15").collect{getGroovyRowResultAsMap(it) }
-            result.maxTime = sql.rows(hql + " order by max_time desc limit 15").collect{getGroovyRowResultAsMap(it) }
+        Sql sql = getSql(dsIdentifier)
+        try {
+            if (sql.firstRow("select 1 from information_schema.tables where table_catalog = current_database() and table_schema = 'public' and table_name = 'pg_stat_statements'")) {
+                String hql = """
+                    select queryid, calls, total_time, min_time, max_time, mean_time, query from pg_stat_statements where queryid is not null 
+                    and query not like '%pg_%' and query not in ('BEGIN', 'COMMIT', 'SELECT \$1')
+                    """
+
+                result.calls = sql.rows(hql + " order by calls desc limit 15").collect{getGroovyRowResultAsMap(it) }
+                result.maxTime = sql.rows(hql + " order by max_time desc limit 15").collect{getGroovyRowResultAsMap(it) }
+            }
         }
+        finally { sql.close() }
+
         result
     }
 
@@ -139,16 +150,28 @@ class DatabaseInfo {
      * @return a {@link List} of rows containing the user-defined functions in the given database
      */
     static List<Map<String, Object>> getDatabaseUserFunctions(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
+        Sql sql = getSql(dsIdentifier)
+        try {
+            List<GroovyRowResult> rows = sql.rows( "select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines where routine_type = 'FUNCTION' and specific_schema = 'public' order by function")
+            rows.collect{getGroovyRowResultAsMap(it) }
+        }
+        finally { sql.close() }
+    }
 
-        List<GroovyRowResult> rows = sql.rows( "select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines where routine_type = 'FUNCTION' and specific_schema = 'public' order by function")
-        rows.collect{getGroovyRowResultAsMap(it) }
+    static String getMaxConnections(String dsIdentifier = DS_DEFAULT) {
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.firstRow('show max_connections')[0] as String
+        }
+        finally { sql.close() }
     }
 
     static String getStatementTimeout(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        (new Sql(dataSource)).firstRow('show statement_timeout')[0] as String
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.firstRow('show statement_timeout')[0] as String
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -157,65 +180,69 @@ class DatabaseInfo {
      * @return a {@link List} of tables defined in the given database
      */
     static List<Map<String, Object>> getAllTablesWithCollations(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
+        Sql sql = getSql(dsIdentifier)
+        try {
+            List<GroovyRowResult> rows = sql.rows("""
+                select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name,
+                    (select indexname from pg_indexes where tablename = table_name and indexdef like concat('% INDEX ', column_name, '_idx ON ', table_schema, '.', table_name, ' %')) as index_name
+                from information_schema.columns
+                where data_type in ('text', 'character varying') and table_schema = 'public'
+                order by table_schema, table_name, column_name;
+                """)
 
-        List<GroovyRowResult> rows = sql.rows("""
-            select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name,
-                (select indexname from pg_indexes where tablename = table_name and indexdef like concat('% INDEX ', column_name, '_idx ON ', table_schema, '.', table_name, ' %')) as index_name
-            from information_schema.columns
-            where data_type in ('text', 'character varying') and table_schema = 'public'
-            order by table_schema, table_name, column_name;
-            """)
-
-        rows.collect{getGroovyRowResultAsMap(it) }
+            rows.collect{getGroovyRowResultAsMap(it) }
+        }
+        finally { sql.close() }
     }
 
     static List<List> getAllTablesWithGORMIndices() {
         List<List> result = []
 
-        DataSource dataSource = getDataSource(DS_DEFAULT)
-        Sql sql = new Sql(dataSource)
-        def sf = BeanStore.get('sessionFactory')
-        int i = 0
+        Sql sql = getSql(DS_DEFAULT)
+        try {
+            def sf = BeanStore.get('sessionFactory')
+            int i = 0
 
-        CodeUtils.getAllDomainClasses().each { cls ->
-            String clstn  = null
-            try {
-                clstn = sf.getClassMetadata(cls).getTableName()
-            } catch (Exception e) {
-                clstn = null
-            }
-            PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
-            if (pe) {
-                Map mapping = pe.mapping?.mappedForm?.columns
-                if (mapping) {
-                    mapping.sort().each { prop ->
-                        PersistentProperty pp = pe.getPropertyByName(prop.key)
-                        prop.value.columns.each { c ->
-                            if (c.index) {
-                                List<GroovyRowResult> siList = []
-                                c.index.split(',').each { ci ->
-                                    String query = """
-                                        select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-                                        where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
-                                    siList << (clstn ? sql.firstRow(query) : null)
+            CodeUtils.getAllDomainClasses().each { cls ->
+                String clstn  = null
+                try {
+                    clstn = sf.getClassMetadata(cls).getTableName()
+                } catch (Exception e) {
+                    clstn = null
+                }
+                PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
+                if (pe) {
+                    Map mapping = pe.mapping?.mappedForm?.columns
+                    if (mapping) {
+                        mapping.sort().each { prop ->
+                            PersistentProperty pp = pe.getPropertyByName(prop.key)
+                            prop.value.columns.each { c ->
+                                if (c.index) {
+                                    List<GroovyRowResult> siList = []
+                                    c.index.split(',').each { ci ->
+                                        String query = """
+                                            select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+                                            where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
+                                        siList << (clstn ? sql.firstRow(query) : null)
+                                    }
+
+    //                                String query = """
+    //                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+    //                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
+    //                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
+    //                                println clstn + ' ' + c.index + ' = ' + siList
+                                    result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
+                                } else {
+                                    result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                                 }
-
-//                                String query = """
-//                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-//                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
-//                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
-//                                println clstn + ' ' + c.index + ' = ' + siList
-                                result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
-                            } else {
-                                result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                             }
                         }
                     }
                 }
             }
         }
+        finally { sql.close() }
+
         result
     }
 
@@ -225,11 +252,12 @@ class DatabaseInfo {
      * @return a {@link List} of rows containing every table and the row count in each
      */
     static List<Map<String, Object>> getAllTablesUsageInfo(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
-
-        List<GroovyRowResult> rows = sql.rows( "select relname as tablename, reltuples as rowcount from pg_class join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
-        rows.collect{getGroovyRowResultAsMap(it) }
+        Sql sql = getSql(dsIdentifier)
+        try {
+            List<GroovyRowResult> rows = sql.rows( "select relname as tablename, reltuples as rowcount from pg_class join information_schema.tables on relname = table_name where table_schema = 'public' order by table_name")
+            rows.collect{getGroovyRowResultAsMap(it) }
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -238,23 +266,34 @@ class DatabaseInfo {
      * @return a {@link List} of tables and columns defined in the given database
      */
     static Map<String, List> getAllTablesCollationInfo(String dsIdentifier = DS_DEFAULT) {
-        DataSource dataSource = getDataSource(dsIdentifier)
-        Sql sql = new Sql(dataSource)
         Map<String, List> result = [:]
 
-        sql.rows( "select tablename from pg_tables where schemaname = 'public'").each { table ->
-            String tablename = table.get('tablename')
-            List columns = []
-            sql.rows("select column_name, data_type, collation_name from information_schema.columns where table_schema = 'public' and table_name = '" + tablename + "'").each{ col ->
-                columns.add([
-                        column: col.get('column_name'),
-                        type: col.get('data_type'),
-                        collation: col.get('collation_name') ?: ''
-                ])
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.rows( "select tablename from pg_tables where schemaname = 'public'").each { table ->
+                String tablename = table.get('tablename')
+                List columns = []
+                sql.rows("select column_name, data_type, collation_name from information_schema.columns where table_schema = 'public' and table_name = '" + tablename + "'").each{ col ->
+                    columns.add([
+                            column: col.get('column_name'),
+                            type: col.get('data_type'),
+                            collation: col.get('collation_name') ?: ''
+                    ])
+                }
+                result.putAt(tablename, columns)
             }
-            result.putAt(tablename, columns)
         }
+        finally { sql.close() }
+
         result
+    }
+
+    static List<String> getDbmVersion(String dsIdentifier = DS_DEFAULT) {
+        Sql sql = getSql(dsIdentifier)
+        try {
+            sql.firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value } as List<String>
+        }
+        finally { sql.close() }
     }
 
     /**
@@ -266,5 +305,10 @@ class DatabaseInfo {
         Map<String, Object> row = [:]
         grr.keySet().each{ key -> row.putAt(key as String, grr[key]) }
         row
+    }
+
+    static Sql getSql(String dsIdentifier) {
+        DataSource dataSource = getDataSource(dsIdentifier)
+        new Sql(dataSource)
     }
 }

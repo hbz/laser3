@@ -107,9 +107,6 @@ class NavigationTagLib {
         if (attrs.id != null) {
             linkTagAttrs.id = attrs.id
         }
-        if (attrs.fragment != null) {
-            linkTagAttrs.fragment = attrs.fragment
-        }
         linkTagAttrs.params = linkParams
 
         Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('default.paginate.prev', null, null, locale))]
@@ -291,11 +288,11 @@ class NavigationTagLib {
             )
         }
         else {
-            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
+            if (userService.hasFormalAffiliation(contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled"  '
                 out << 'role="menuitem">' + linkBody + '</div>'
             }
-//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 

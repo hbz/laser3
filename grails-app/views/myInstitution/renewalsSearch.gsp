@@ -1,8 +1,8 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription" %>
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
         <ui:crumb message="menu.institutions.gen_renewals" class="active"/>
     </ui:breadcrumbs>
@@ -19,35 +19,35 @@
             </div>
 
             <div class="field">
-                <button class="ui primary button" type="submit" name="search"
+                <button class="${Btn.PRIMARY}" type="submit" name="search"
                         value="yes">${message(code: 'default.button.search.label')}</button>
                 <g:if test="${params.search == 'yes'}">
-                    <button class="ui button" type="submit" name="searchreset"
+                    <button class="${Btn.SIMPLE}" type="submit" name="searchreset"
                             value="yes">${message(code: 'default.button.searchreset.label')}</button>
                 </g:if>
             </div>
         </div>
     </g:form>
 
-    <ui:msg class="info" header="${message(code: 'myinst.renewalSearch.workflowinfo')}" message="myinst.renewalSearch.workflow" noClose="true" />
+    <ui:msg class="info" header="${message(code: 'myinst.renewalSearch.workflowinfo')}" message="myinst.renewalSearch.workflow" hideClose="true" />
 
 <hr />
 
 <g:if test="${basket.size() <= 1}">
 
-    <ui:msg class="info" header="Info" message="myinst.renewalSearch.auswahl" noClose="true" />
+    <ui:msg class="info" header="Info" message="myinst.renewalSearch.auswahl" hideClose="true" />
 
     <hr />
 </g:if>
 
 <div class="field">
     <g:if test="${Subscription.get(sub_id).packages}">
-    <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
+    <g:link class="${Btn.SIMPLE}" controller="myInstitution" params="${[sub_id: sub_id]}"
             action="renewalsnoPackageChange">${message(code: 'myinst.renewalSearch.uploadnopackageschange')}</g:link>
     </g:if>
-        <g:link class="ui button" controller="myInstitution" params="${[sub_id: sub_id]}"
+        <g:link class="${Btn.SIMPLE}" controller="myInstitution" params="${[sub_id: sub_id]}"
                     action="renewalswithoutPackage">${message(code: 'myinst.renewalSearch.uploadwithoutpackage')}</g:link>
-    <g:link class="ui button" controller="myInstitution"
+    <g:link class="${Btn.SIMPLE}" controller="myInstitution"
             action="renewalsUpload">${message(code: 'menu.institutions.imp_renew')}</g:link>
 
 </div>
@@ -104,12 +104,12 @@
                     <tbody>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <td><i class="${Icons.PACKAGE} icon"></i><g:link controller="package" action="show"
+                            <td><i class="${Icon.PACKAGE}"></i><g:link controller="package" action="show"
                                                                                              id="${hit.getSource().dbId}"
                                                                                              target="_blank">${hit.getSource().name}</g:link></td>
                             %{--<td>${hit.getSource().consortiaName}</td>--}%
                             <td>
-                                <button type="submit" class="ui button" name="addBtn"
+                                <button type="submit" class="${Btn.SIMPLE}" name="addBtn"
                                         value="${hit.getSource().dbId}">${message(code: 'myinst.renewalSearch.addBtn')}</button>
                             </td>
                         </tr>
@@ -145,9 +145,9 @@
         <div class="ui segment">
             <g:if test="${basket}">
 
-                <button class="ui button" type="submit" name="generate"
+                <button class="${Btn.SIMPLE}" type="submit" name="generate"
                         value="yes">${message(code: 'myinst.renewalSearch.generate')}</button><br /><br />
-            %{--<button class="ui button" type="button" name=""--}%
+            %{--<button class="${Btn.SIMPLE}" type="button" name=""--}%
             %{--value="">${message(code: 'myinst.renewalSearch.generateonline')}</button>--}%
 
             </g:if>
@@ -157,9 +157,9 @@
                     <th><h4 class="ui header">${message(code: 'myinst.renewalSearch.basket')}</h4>
                     </th>
                     <th><g:if test="${basket}">
-                        <button class="ui icon basic negative button" type="submit" name="clearBasket"
-                                value="yes">${message(code: 'myinst.renewalSearch.clearBasket')}<i
-                                class="trash icon"></i></button>
+                        <button class="${Btn.NEGATIVE} basic" type="submit" name="clearBasket" value="yes">
+                            <i class="trash icon"></i> ${message(code: 'myinst.renewalSearch.clearBasket')}
+                        </button>
                     </g:if></th>
                 </tr>
                 </thead>
@@ -167,17 +167,17 @@
                 <g:each in="${basket}" var="itm">
                     <tr>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
-                        <i class="${Icons.PACKAGE} icon"></i>${itm.name}
+                        <i class="${Icon.PACKAGE}"></i>${itm.name}
                     </g:if><g:else>
-                        <i class="${Icons.SUBSCRIPTION} icon"></i>${itm.name}<hr />
+                        <i class="${Icon.SUBSCRIPTION}"></i>${itm.name}<hr />
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
-                        <button type="submit" class="ui icon basic negative button" name="clearOnlyoneitemBasket"
+                        <button type="submit" class="${Btn.ICON.NEGATIVE} basic" name="clearOnlyoneitemBasket"
                                 value="${itm.id}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash icon"></i></button>
+                            <i class="${Icon.CMD.DELETE}"></i></button>
                     </g:if>
                     </td>
                     </tr>

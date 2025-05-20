@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
+<laser:htmlStart message="menu.my.comp_lic" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code: 'menu.my.licenses')}" controller="myInstitution" action="currentLicenses"/>
@@ -22,7 +22,7 @@
                 <div class="ui field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false" onchange="JSPC.app.adjustDropdown()"/>
-                    <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
+                    <label for="show.subscriber">${message(code: 'default.compare.show.licensee.name')}</label>
                 </div>
                 </div>
             </g:if>
@@ -38,11 +38,11 @@
         </div>
 
         <div class="field">
-            <g:link controller="compare" action="${actionName}" class="ui secondary button">${message(code: 'default.button.comparereset.label')}</g:link>
+            <g:link controller="compare" action="${actionName}" class="${Btn.SECONDARY}">${message(code: 'default.button.comparereset.label')}</g:link>
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"
-                                                               name="Compare" class="ui button"/>
+                                                               name="Compare" class="${Btn.SIMPLE}"/>
         </div>
 
 </ui:form>
@@ -75,7 +75,10 @@
         }
 
         var dropdownSelectedObjects = $('#selectedObjects');
-        var selectedObjects = ${raw(objects?.id as String)};
+        var selectedObjects = [];
+        <g:each in="${objects.id}" var="objId">
+            selectedObjects.push(${objId})
+        </g:each>
 
         dropdownSelectedObjects.empty();
 

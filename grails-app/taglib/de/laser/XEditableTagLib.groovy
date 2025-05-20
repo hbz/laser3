@@ -394,46 +394,6 @@ class XEditableTagLib {
         }
     }
 
-    def simpleHiddenValue = { attrs, body ->
-        String default_empty = message(code:'default.button.edit.label')
-
-        if (attrs.type == 'date') {
-            out << '<div class="ui calendar datepicker">'
-        }
-        out << "<a href=\"#\" class=\"simpleHiddenValue ${attrs.class?:''}\""
-
-        if (attrs.type == 'date') {
-            out << ' data-type="text"' // combodate | date
-
-            String df = "${message(code:'default.date.format.notime').toUpperCase()}"
-            out << " data-format=\"${df}\""
-            out << " data-viewformat=\"${df}\""
-            out << " data-template=\"${df}\""
-
-            default_empty = message(code:'default.date.format.notime.normal')
-
-            if (attrs.language) {
-                out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""
-            }
-        }
-        else if (attrs.type == "refdata") {
-            String data_link = createLink(controller: 'ajax', action: 'remoteRefdataSearch', params: [id: attrs.category])
-            out << " data-type=\"select\" data-source=\"${data_link}\" "
-        }
-        else {
-            out << " data-type=\"${attrs.type?:'text'}\" "
-        }
-
-        String emptyText = ' data-emptytext="' + ( attrs.emptytext ?: default_empty ) + '"'
-
-        out << "data-hidden-id=\"${attrs.name}\" ${emptyText} >${attrs.value?:''}</a>"
-        out << "<input type=\"hidden\" id=\"${attrs.id}\" name=\"${attrs.name}\" value=\"${attrs.value?:''}\"/>"
-
-        if (attrs.type == 'date') {
-            out << '</div>'
-        }
-    }
-
     private String _renderObjectValue(value) {
         String result = ''
         String not_set = message(code:'refdata.notSet')
@@ -558,10 +518,10 @@ class XEditableTagLib {
             out << " data-oldvalue=\"${oldValue}\" "
             out << " data-value=\"${oldValue}\" data-autotext=\"never\">"
             if(oldValue)
-                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + oldValue + '"/>'
+                out << '<span class="la-popup-tooltip" data-position="" data-content="' + oldValue + '"/>'
             else if(!oldValue && emptyTooltip)
-                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + emptyTooltip + '"/>'
-            else out << '<span class="la-popup-tooltip la-delay" data-position="" data-content=""/>'
+                out << '<span class="la-popup-tooltip" data-position="" data-content="' + emptyTooltip + '"/>'
+            else out << '<span class="la-popup-tooltip" data-position="" data-content=""/>'
             out << "<i class=\"${attrs.iconClass ?: 'info'} ${oldValue ? 'green' : 'la-light-grey'} icon\"></i>"
             out << '</span>'
 
@@ -571,7 +531,7 @@ class XEditableTagLib {
         else {
 
             if (owner[field]) {
-                out << '<span class="la-popup-tooltip la-delay ui icon" data-position="top right" data-content="'
+                out << '<span class="la-popup-tooltip ui icon" data-position="top right" data-content="'
 
                 if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format ?: message(code: 'default.date.format.notime'))

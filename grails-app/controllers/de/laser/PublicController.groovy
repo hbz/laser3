@@ -1,13 +1,16 @@
 package de.laser
 
-
+import de.laser.api.v0.ApiManager
 import de.laser.properties.SubscriptionProperty
 import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 
@@ -17,16 +20,23 @@ import grails.plugins.mail.MailService
 @Secured(['permitAll'])
 class PublicController {
 
+    ContextService contextService
     EscapeService escapeService
     GenericOIDService genericOIDService
     MailService mailService
     SpringSecurityService springSecurityService
 
     /**
-     * Displays the landing page
+     * Redirects to dashboard or login
      */
     @Secured(['permitAll'])
     def index() {
+        if (springSecurityService.isLoggedIn()) {
+            redirect( uri: SpringSecurityUtils.securityConfig.successHandler.defaultTargetUrl )
+        }
+        else {
+            redirect( uri: SpringSecurityUtils.securityConfig.auth.loginFormUrl ) // , params: params
+        }
     }
 
    /**
@@ -37,9 +47,17 @@ class PublicController {
         String text = "User-agent: *\n"
 
         if (AppUtils.getCurrentServer() == AppUtils.PROD) {
-            text += "Disallow: /tipp/ \n"                                   // TODO TMP
-            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
             text += "Disallow: /gasco/details/ \n"
+            text += "Disallow: /login/ \n"              // ERMS-6180
+            text += "Disallow: /public/api/ \n"         // ERMS-6180
+            text += "Disallow: /public/dsgvo/ \n"
+            text += "Disallow: /public/faq/ \n"
+            text += "Disallow: /public/help/ \n"
+            text += "Disallow: /public/manual/ \n"
+            text += "Disallow: /public/releases/ \n"
+            text += "Disallow: /public/wcagFeedbackForm/ \n"
+            text += "Disallow: /public/wcagStatement/ \n"
+            text += "Disallow: /public/wcagTest/ \n"
         }
         else {
             text += "Disallow: / \n"
@@ -50,14 +68,15 @@ class PublicController {
     /**
      * Displays the WCAG statement
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def wcagStatement() {
     }
 
     /**
      * Displays the WCAG feedback form
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def wcagFeedbackForm() {
     }
 
@@ -65,7 +84,7 @@ class PublicController {
      * Takes the submitted message and sends a barrier-free feedback mail to an address responsible for
      * disability matters
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def sendFeedbackForm() {
 
         try {
@@ -91,8 +110,18 @@ class PublicController {
     /**
      * Test page for check compatibility
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def wcagTest() {
+    }
+
+    /**
+     * Call to open the GDPR statement page
+     */
+    @Secured(['ROLE_USER'])
+    def dsgvo() {
+        Map<String, Object> result = [:]
+        result
     }
 
     /**
@@ -110,8 +139,7 @@ class PublicController {
       try {
 
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
+                """select o from Org o, OrgSetting os_ct where 
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
                         os_ct.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_PRO','ORG_CONSORTIUM_BASIC'))
                         order by lower(o.name)"""
@@ -286,6 +314,7 @@ class PublicController {
                         [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                 )
                 result.title = sub.name
+                result.info  = SubscriptionProperty.findByOwnerAndType(sub, PropertyStore.SUB_PROP_GASCO_GENERAL_INFORMATION)?.getValue()
 
                 if (participants) {
                     List libraryTypes = Org.executeQuery('select lt, count(lt) from Org o join o.libraryType lt where o in (:oList) group by lt', [oList: participants])
@@ -316,6 +345,69 @@ class PublicController {
         Map<String, Object> result = [:]
         result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
         result.mappingColsPro = ["management", "organisation", "reporting", "api"]
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def help() {
+    }
+
+    @Secured(['ROLE_USER'])
+    def api() {
+        Map<String, Object> result = [
+                history : [ 'legacy', '3.4', '3.7' ], // todo
+                version   : ApiManager.VERSION
+        ]
+        if (params.id) {
+            result.version = params.id
+        }
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def manual() {
+        Map<String, Object> result = [
+                content : [
+                        'various'                       : ['Allgemein', 'General'],
+                        'subscriptionInformationSheet'  : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
+                        'fileImport'                    : ['Anleitung zum Hochladen', 'Upload instructions']
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id
+        }
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def faq() {
+        Map<String, Object> result = [
+                content : [
+                        'various'               : ['Allgemein', 'General'],
+                        'notifications'         : ['Benachrichtigungen', 'Notifications'],
+                        'propertyDefinitions'   : ['Merkmale', 'Properties'],
+                        'userManagement'        : ['Benutzer-Accounts', 'User accounts'],
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id
+        }
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def releases() {
+        Map<String, Object> result = [
+                history : ['3.2', '3.3', '3.4', '3.5'] // todo
+        ]
+
+        String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
+        if (params.id) {
+            iap = params.id.toString().split('\\.')
+        }
+        result.version = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
         result
     }
 }

@@ -2,7 +2,7 @@ package de.laser.survey
 
 import de.laser.Org
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 
 
 class SurveyVendorResult {

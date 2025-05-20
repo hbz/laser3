@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue;de.laser.storage.RDConstants" %>
 <laser:htmlStart message="menu.public.all_titles" />
 
     <ui:breadcrumbs>
@@ -17,11 +17,11 @@
           </div>
           <div class="field">
             <label for="filter">${message(code: 'title.search_in')}</label>
-            <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'default.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'default.all')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
+            <g:select class="ui dropdown clearable " id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'default.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'default.all')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
-              <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-              <button class="ui primary button" type="submit" name="search" value="yes">${message(code: 'default.button.filter.label')}</button>
+              <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+              <button class="${Btn.PRIMARY}" type="submit" name="search" value="yes">${message(code: 'default.button.filter.label')}</button>
             </div>
         </div>
       </g:form>
@@ -33,16 +33,7 @@
              <g:if test="${hits && resultsTotal > 0}" >
                <ui:messages data="${flash}" />
 
-               <div class="ui icon info message">
-                 <i class="exclamation triangle icon"></i>
-                 <i class="close icon"></i>
-                 <div class="content">
-                   <div class="header">
-                     ${message(code: 'message.attention')}
-                   </div>
-                   <p>${message(code: 'message.attention.needTime')}</p>
-                 </div>
-               </div>
+                 <ui:msg class="info" showIcon="true" header="${message(code: 'message.attention')}" message="message.attention.needTime" />
 
                 <div id="resultsarea" class="la-clear-before">
                   <table class="ui sortable celled la-js-responsive-table la-table table">

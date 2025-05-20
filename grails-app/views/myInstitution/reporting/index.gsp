@@ -1,10 +1,10 @@
-<%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<%@page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
         <ui:breadcrumbs>
-            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 
@@ -13,16 +13,16 @@
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
         <div style="margin-right:0.5em">
-            <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="bookmark-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
             </div>
-            <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="history-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
-            <div id="info-toggle" class="ui icon button right floated">
-                <i class="icon question"></i>
+            <div id="info-toggle" class="${Btn.ICON.SIMPLE} right floated">
+                <i class="${Icon.UI.HELP}"></i>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
+                    <i class="${Icon.UI.HELP} large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
@@ -56,7 +56,7 @@
                         ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        <i class="${Icon.UI.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
                         ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>
@@ -75,9 +75,9 @@
                             <div class="item">
                             <div class="content middle aligned">
                                 <div class="header">We:kb</div>
-                                <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                                <g:if test="${eshApiSource}">
-                                    <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                <g:set var="wekb_url" value="${Wekb.getURL()}" />
+                                <g:if test="${wekb_url}">
+                                    <a href="${wekb_url}" target="_blank">${wekb_url}</a>
                                 </g:if>
                                 <g:else>--</g:else>
                             </div>
@@ -134,7 +134,7 @@
                             <div class="menu">
                                 <g:each in="${cfgFilterList}" var="cfg">
                                     <div class="item" data-value="${cfg}">
-                                        <i class="${BaseConfig.getIcon(cfg)} icon grey"></i> ${BaseConfig.getFilterLabel(cfg)}
+                                        <i class="${BaseConfig.getIcon(cfg)} grey"></i> ${BaseConfig.getFilterLabel(cfg)}
                                     </div>
                                 </g:each>
                             </div>
@@ -155,16 +155,15 @@
         </div>
 
         <g:if test="${filterResult}">
-
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="${Btn.SIMPLE} small right floated"><icon:bug /> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>
 
             <laser:render template="/myInstitution/reporting/query/${filter}" />
 
-            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+            <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
@@ -305,6 +304,9 @@
                             echart.on ('legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
+                            $(window).resize(function () {
+                                JSPC.app.reporting.current.chart.echart.resize();
+                            });
 
                             let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
                             let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
@@ -420,6 +422,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

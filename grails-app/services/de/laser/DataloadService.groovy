@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.remote.FTControl
-import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.survey.SurveyConfig
@@ -12,6 +11,13 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.InvoicingVendor
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
@@ -137,11 +143,11 @@ class DataloadService {
      * Currently supported by this implementation are:
      * <ul>
      *     <li>{@link Org}</li>
-     *     <li>{@link Provider}</li>
-     *     <li>{@link Vendor}</li>
-     *     <li>{@link TitleInstancePackagePlatform}</li>
-     *     <li>{@link de.laser.Package}</li>
-     *     <li>{@link Platform}</li>
+     *     <li>{@link de.laser.wekb.Provider}</li>
+     *     <li>{@link de.laser.wekb.Vendor}</li>
+     *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
+     *     <li>{@link de.laser.wekb.Package}</li>
+     *     <li>{@link de.laser.wekb.Platform}</li>
      *     <li>{@link License}</li>
      *     <li>{@link Subscription}</li>
      *     <li>{@link SurveyConfig}</li>
@@ -179,20 +185,13 @@ class DataloadService {
                     result.altnames << altname.name
                 }
 
-                result.status = org.status?.getMapForES()
                 result.visible = 'Public'
+                result.archiveDate = org.archiveDate
                 result.rectype = org.getClass().getSimpleName()
 
                 result.sortname = org.sortname
 
-                result.type = []
-                org.orgType?.each { type ->
-                    try {
-                        result.type.add(type.getMapForES())
-                    } catch (Exception e) {
-                        log.error( e.toString() )
-                    }
-                }
+                result.type = org.getOrgType()?.getMapForES() // TODO: ERMS-6009
 
                 result.identifiers = []
                 org.ids?.each { ident ->
@@ -400,8 +399,6 @@ class DataloadService {
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
-                //result.consortiaID = pkg.getConsortia()?.id
-                //result.consortiaName = pkg.getConsortia()?.name
                 result.providerId = pkg.provider?.id
                 result.providerName = pkg.provider?.name
 
@@ -571,14 +568,14 @@ class DataloadService {
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?: 0
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org
                         result.availableToOrgs = orgs?.id
-                        result.consortiaID = sub.getConsortia()?.id
-                        result.consortiaName = sub.getConsortia()?.name
+                        result.consortiaID = sub.getConsortium()?.id
+                        result.consortiaName = sub.getConsortium()?.name
 
                         result.members = []
                         orgs.each { org ->
@@ -870,7 +867,7 @@ class DataloadService {
 
                 switch (ie.subscription._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
@@ -944,7 +941,7 @@ class DataloadService {
                 if (subProp.isPublic) {
                     switch (subProp.owner._getCalculatedType()) {
                         case CalculatedType.TYPE_CONSORTIAL:
-                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                             break
                         case CalculatedType.TYPE_PARTICIPATION:
                             result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id

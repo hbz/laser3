@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyConfig" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -25,7 +25,9 @@
                     <g:if test="${subscription.packages}">
                         <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
-                    <th>${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -72,16 +74,29 @@
                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
                     <td>
-                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/>
-                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
+                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                             data_confirm_term_how="ok"
+                                             class="js-open-confirm-modal-xEditableRefData"
+                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                        <%-- partially implicitly defined by value --%>
+                        <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                            <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
+                                <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        </g:else>
                     </td>
 
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i></g:link>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                     </td>
                 </tr>
                 </tbody>
@@ -107,7 +122,7 @@
                             <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
                                     <ui:select name="audit_valid_from" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
@@ -120,8 +135,8 @@
                             <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown"  name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable"  name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -133,8 +148,8 @@
                             <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -150,14 +165,14 @@
                                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                                 %>
-                                <ui:select class="ui dropdown" name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                                <ui:select class="ui dropdown clearable" name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                                            noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -170,15 +185,15 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.kind.label')}</label>
-                                <ui:select class="ui dropdown" name="process_kind"
+                                <ui:select class="ui dropdown clearable" name="process_kind"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -189,15 +204,15 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.form.label')}</label>
-                                <ui:select class="ui dropdown" name="process_form"
+                                <ui:select class="ui dropdown clearable" name="process_form"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -208,15 +223,15 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.resource.label')}</label>
-                                <ui:select class="ui dropdown" name="process_resource"
+                                <ui:select class="ui dropdown clearable" name="process_resource"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -227,15 +242,15 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                                <ui:select class="ui dropdown" name="process_isPublicForApi"
+                                <ui:select class="ui dropdown clearable" name="process_isPublicForApi"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -248,15 +263,15 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                                <ui:select class="ui dropdown" name="process_hasPerpetualAccess"
+                                <ui:select class="ui dropdown clearable" name="process_hasPerpetualAccess"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -267,45 +282,47 @@
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                                <ui:select class="ui dropdown" name="process_hasPublishComponent"
+                                <ui:select class="ui dropdown clearable" name="process_hasPublishComponent"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
                             </g:if>
                         </div>
                     </div>
+                    <%-- too dangerous; risk of enourmous workload
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.holdingSelection.label')}</label>
-                                <ui:select class="ui dropdown" name="process_holding"
+                                <ui:select class="ui dropdown clearable" name="process_holding"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${tmplAddColumns}">
                                 <div class="field">
-                                    <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select class="ui dropdown" name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <label><span class="la-popup-tooltip" data-content="${message(code: 'subscription.auditable')}"><i class="${Icon.SIG.INHERITANCE}"></i></span></label>
+                                    <ui:select class="ui dropdown clearable" name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
                             </g:if>
                         </div>
                     </div>
+                    --%>
                     <div class="four wide column">
                         <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
-                                <ui:select class="ui dropdown" name="process_isAutomaticRenewAnnually"
+                                <ui:select class="ui dropdown clearable" name="process_isAutomaticRenewAnnually"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -315,7 +332,7 @@
                 </div>
                 <div class="row">
                     <div class="column">
-                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                                 value="changeProperties">${message(code: 'default.button.save_changes')}</button>
                     </div>
                 </div>
@@ -336,7 +353,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <g:if test="${controllerName == "subscription"}">
@@ -363,7 +380,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -376,7 +395,7 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -387,16 +406,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved}">
-                                    <span data-position="top right"
-                                          class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="grey la-thumbtack-regular icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -450,8 +460,30 @@
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
-                            <ui:auditButton auditable="[sub, 'holdingSelection']"/>
+                            <g:if test="${sub._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" id="holdingSelection"
+                                                     data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditableRefData"
+                                                     data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && (!SurveyConfig.findBySubscriptionAndType(sub, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(sub.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
+                            </g:if>
+                            <g:elseif test="${sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" id="holdingSelection"
+                                                     data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditableRefData"
+                                                     data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld && !auditService.getAuditConfig(sub.instanceOf, 'holdingSelection')}"/>
+                            </g:elseif>
+                            <g:if test="${sub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.audit.target.inherit.implicit')}" data-position="top right">
+                                    <i class="${Icon.SIG.INHERITANCE} grey"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <ui:auditButton auditable="[sub, 'holdingSelection']"/>
+                            </g:else>
                         </td>
                         <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <td>
@@ -467,10 +499,10 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </td>
                     </tr>
@@ -495,11 +527,40 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#membersListToggler').click(function () {
+        let triggered = $("tr .selectedSubs[class!=disabled]");
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
+            triggered.prop('checked', true);
         } else {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+            triggered.prop('checked', false);
         }
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $("input[name=selectedSubs]").checkbox({
@@ -538,7 +599,7 @@
                         prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
                     }
                 ]
-            },
+            }/*,
             noSubscription: {
                 identifier: 'selectedSubs',
                 rules: [
@@ -548,6 +609,7 @@
                     }
                 ]
             }
+            */
         }
     });
 </laser:script>

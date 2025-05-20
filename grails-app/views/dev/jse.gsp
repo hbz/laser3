@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <!doctype html>
 <html>
 <head>
@@ -42,17 +43,17 @@
 
     <laser:render template="jse_tmpl" model="[pos:'unten']" />
 
-    <ui:remoteLink class="ui icon positive button" role="button"
-                      controller="dev" action="jse" params="[xhr:true]"
-                      data-before="console.log('-- XHR CALL --')"
-                      data-update="jse_xhr"
+    <ui:remoteLink class="${Btn.POSITIVE}" role="button"
+                   controller="dev" action="jse" params="[xhr:true]"
+                   data-before="console.log('-- XHR CALL --')"
+                   data-update="jse_xhr"
     >XHR</ui:remoteLink>
 
     <div id="jse_xhr">
     &nbsp;
     </div>
 
-    <ui:remoteLink class="ui icon positive button" role="button"
+    <ui:remoteLink class="${Btn.POSITIVE}" role="button"
                       controller="dev" action="jse" params="[xhr_full:true]"
                       data-before="console.log('-- XHR_full CALL --')"
                       data-update="jse_xhr_full"

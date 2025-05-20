@@ -10,6 +10,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
+import de.laser.wekb.Platform
 import grails.converters.JSON
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -65,7 +66,7 @@ class ApiEZB {
                         "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
                             sub  : sub,
                             orgs : orgs,
-                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -113,14 +114,19 @@ class ApiEZB {
      */
     static private List<Org> getAccessibleOrgs() {
 
+//        List<Org> orgs = OrgSetting.executeQuery(
+//                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+//                        "and (o.status is null or o.status != :deleted)", [
+//                key    : OrgSetting.KEYS.EZB_SERVER_ACCESS,
+//                rdValue: RDStore.YN_YES,
+//                deleted: RefdataValue.getByValueAndCategory('Deleted', 'org.status') // TODO: erms-6224 - removed o.status != 'deleted'
+//        ])
+        // TODO: erms-6238
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue and o.archiveDate is null", [
                 key    : OrgSetting.KEYS.EZB_SERVER_ACCESS,
-                rdValue: RDStore.YN_YES,
-                deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                rdValue: RDStore.YN_YES
         ])
-        //List<Org> orgs = Org.executeQuery('select id.org from Identifier id where id.ns.ns = :ezb', [ezb: IdentifierNamespace.EZB_ORG_ID])
 
         orgs
     }
@@ -166,7 +172,7 @@ class ApiEZB {
             Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
             orgStubMap.subscriptions = []
             String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND (sub.status = :current OR (sub.status in (:otherAccessible) AND sub.hasPerpetualAccess = true))' //as of November 24th, '22, per Miriam's suggestion, only current subscriptions should be made available for EZB yellow switch
-            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT, otherAccessible: [RDStore.SUBSCRIPTION_EXPIRED, RDStore.SUBSCRIPTION_TEST_ACCESS]] //set to OR_SUBSCRIBER_CONS
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM], current: RDStore.SUBSCRIPTION_CURRENT, otherAccessible: [RDStore.SUBSCRIPTION_EXPIRED, RDStore.SUBSCRIPTION_TEST_ACCESS]] //set to OR_SUBSCRIBER_CONS
             if(changedFrom) {
                 queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
                 queryParams.changedFrom = changedFrom

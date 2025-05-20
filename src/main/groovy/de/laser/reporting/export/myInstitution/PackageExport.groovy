@@ -1,14 +1,14 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.Provider
-import de.laser.remote.ApiSource
+
+import de.laser.wekb.Provider
+import de.laser.remote.Wekb
 import de.laser.ContextService
 import de.laser.IdentifierNamespace
-import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -31,7 +31,7 @@ class PackageExport extends BaseDetailsExport {
 
             base : [
                     meta : [
-                            class: de.laser.Package
+                            class: de.laser.wekb.Package
                     ],
                     fields : [
                             default: [
@@ -63,11 +63,11 @@ class PackageExport extends BaseDetailsExport {
 
     static List<String> ES_SOURCE_FIELDS = [
 
-            "uuid",
-            "openAccess", "paymentType", "scope",
-            "altname", "description", "descriptionURL",
-            "curatoryGroups.*", "packageArchivingAgencies.*", "ddcs.*", "identifiers.*", "nationalRanges.*", "regionalRanges.*",
-            "lastUpdatedDisplay"
+            'uuid',
+            'openAccess', 'paymentType', 'scope',
+            'altname', 'description', 'descriptionURL',
+            'curatoryGroups.*', 'packageArchivingAgencies.*', 'ddcs.*', 'identifiers.*', 'nationalRanges.*', 'regionalRanges.*',
+            'lastUpdatedDisplay'
     ]
 
     /**
@@ -132,9 +132,9 @@ class PackageExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(pkg.id)) {
-                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
-                            if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
+                            String wekb = Wekb.getURL()
+                            if (wekb) {
+                                prop = wekb + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
                             }
                         }
                     }
@@ -204,7 +204,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                     else if (key == 'x-curatoryGroup') {
                         List<String> cgList = record?.get( esData.mapping )?.collect{ cg ->
-                            String cgType = RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: '(' + cg.type + ')'
+                            String cgType = RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: '(' + cg.type + ')'
                             cg.name + ( cgType ? ' - ' + cgType : '')
                         }
                         content.add (cgList ? cgList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '')
@@ -228,7 +228,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                     else if (key == 'x-id') {
                         List<String> idList = record?.get( esData.mapping )?.collect{ id ->
-                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                            IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.wekb.Package')
                             ns ? ((ns.getI10n('name') ?: ns.ns) + ':' + id.value) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace ) + ':' + id.value
                         }
                         content.add (idList ? idList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '')

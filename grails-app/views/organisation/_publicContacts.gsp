@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.PersonRole; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.CustomerTypeService; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="showOnlyPublic" value="${true}"/>
@@ -13,7 +13,7 @@
                 <g:set var="persons"
                        value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)}"/>
                 <g:each in="${persons}" var="prs">
-                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                    <laser:render template="/addressbook/person_full_details" model="${[
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, prs),
                             personContext          : orgInstance,
@@ -43,7 +43,7 @@
                 <g:set var="persons"
                        value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_INVOICING_CONTACT)}"/>
                 <g:each in="${persons}" var="prs">
-                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                    <laser:render template="/addressbook/person_full_details" model="${[
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_INVOICING_CONTACT, prs),
                             personContext          : orgInstance,
@@ -76,11 +76,11 @@
                 <g:set var="techSupports"
                        value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)}"/>
                 <g:each in="${techSupports}" var="prs">
-                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                    <laser:render template="/addressbook/person_full_details" model="${[
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
                             personContext          : orgInstance,
-                            tmplShowDeleteButton   : (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                            tmplShowDeleteButton   : (contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
@@ -89,7 +89,7 @@
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
-                            editable               : (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                            editable               : (contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                             noSelection            : true
                     ]}"/>
                 </g:each>

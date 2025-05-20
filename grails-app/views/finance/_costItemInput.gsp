@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.Package; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostInformationDefinition; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -24,7 +24,7 @@
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <g:if test="${idSuffix == 'bulk'}">
-                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown clearable"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -32,7 +32,7 @@
                                               value="" />
                             </g:if>
                             <g:else>
-                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown clearable"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -73,7 +73,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown clearable"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
@@ -86,7 +86,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.costItemConfiguration"/></label>
-                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
+                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown clearable"
                                       from="${costItemSigns}"
                                       optionKey="id"
                                       optionValue="value"
@@ -96,7 +96,7 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
-                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown clearable"
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
@@ -118,7 +118,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -160,13 +160,13 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <g:select class="ui dropdown calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
+                        <g:select class="ui dropdown clearable calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
                               optionValue="${{it.display ? it.taxType.getI10n("value")+" ("+it.taxRate+"%)" : it.taxType.getI10n("value")}}"
@@ -184,7 +184,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -230,7 +230,7 @@
                                    value="${costItem.sub.getName()}" />
                             <input name="newSubscription" id="newSubscription_${idSuffix}"
                                    type="hidden"
-                                   value="${Subscription.class.name + ':' + costItem.sub.id}" />
+                                   value="${costItem.sub.id}" />
                         </g:if>
                         <g:else>
                             <g:if test="${subscription}">
@@ -239,7 +239,7 @@
                                        value="${subscription.getName()}" />
                                 <input name="newSubscription" id="newSubscription_${idSuffix}"
                                        type="hidden"
-                                       value="${Subscription.class.name + ':' + subscription.id}" />
+                                       value="${subscription.id}" />
                             </g:if>
                             <g:else>
                                 <div class="ui search selection dropdown newCISelect" id="newSubscription_${idSuffix}">
@@ -259,23 +259,23 @@
                                 <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriberRespConsortia().sortname}" />
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':forParent'}"
+                                          value="forParent"
                                 />
                             </g:elseif>
                             <g:else>
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':' + costItem?.sub?.id}"
+                                          value="${costItem?.sub?.id}"
                                 />
                             </g:else>
                         </g:if>
@@ -286,17 +286,17 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
-                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
-                                          from="${[{}] + costItem?.sub?.packages?.pkg}"
+                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable search"
+                                          from="${costItem?.sub?.packages?.pkg}"
                                           optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
-                                          optionKey="${{Package.class.name + ':' + it?.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Package.class.name + ':' + costItem?.pkg?.id}" />
+                                          value="${costItem?.pkg?.id}" />
                             </g:if>
                             <g:else>
                             <%--<input name="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
                                 <div class="ui search selection dropdown newCISelect" id="newPackage_${idSuffix}">
-                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${Package.class.name}:${costItem.pkg.id}" : params.newPackage}">
+                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${costItem.pkg.id}" : params.newPackage}">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text"></div>
@@ -307,7 +307,7 @@
                             <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                             <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newIE_${idSuffix}">
-                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
+                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${costItem.issueEntitlement.id}" : params.newIE}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -317,7 +317,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.titleGroup')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newTitleGroup_${idSuffix}" >
-                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -370,9 +370,33 @@
 
         </div><!-- three fields -->
 
+        <div class="two fields">
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
+                <div class="field">
+                    <label>${g.message(code: 'financials.costInformationDefinition')}</label>
+                    <ui:dropdown name="newCostInformationDefinition"
+                                 class="newCostInformationDefinition_${idSuffix} clearable"
+                                 from="${costInformationDefinitions}"
+                                 iconWhich="${Icon.PROP.IS_PRIVATE}"
+                                 optionKey="${{it.id}}"
+                                 optionValue="${{ it.getI10n('name') }}"
+                                 noSelection="${message(code: 'default.select.choose.label')}"/>
+                </div><!-- .field -->
+            </fieldset>
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
+                <div class="field">
+                    <label></label>
+                    <input type="text" name="newCostInformationStringValue" id="newCostInformationValueText_${idSuffix}" hidden="hidden">
+                    <select id="newCostInformationValueDropdown_${idSuffix}" name="newCostInformationRefValue" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                    </select>
+                </div>
+            </fieldset>
+        </div><!-- two fields -->
+
         <g:if test="${mode == 'copy' && copyToOtherSub}">
         <div class="fields">
-            <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
+            <fieldset class="sixteen wide field la-modal-fieldset-margin-right">
                 <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
 
                 <div class="ui field">
@@ -381,7 +405,7 @@
                         <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="JSPC.app.adjustDropdown()">
                             <option value=""><g:message code="default.select.choose.label"/></option>
                             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }" var="status">
-                                <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+                                <option <%=(status.id in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
                             </g:each>
                         </select>
 
@@ -393,11 +417,11 @@
                             <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                         </div><br />
                     </g:if>
-                   %{-- <div class="ui checkbox">
+                   <div class="ui checkbox">
                         <g:checkBox name="show.connectedObjects" value="true" checked="false"
                                     onchange="JSPC.app.adjustDropdown()"/>
                         <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
-                    </div>--}%
+                    </div>
                     <br />
                     <select id="selectedSubs" name="selectedSubs" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -412,9 +436,9 @@
     <%
         String contextSub = ""
         if(costItem && costItem.sub)
-            contextSub = genericOIDService.getOID(costItem.sub)
+            contextSub = costItem.sub.id
         else if(subscription)
-            contextSub = genericOIDService.getOID(subscription)
+            contextSub = subscription.id
     %>
     JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
         let values = [];
@@ -458,6 +482,9 @@
         calculateLocalCurrency: $("#calculateLocalCurrency_${idSuffix}"),
         costCurrency: $("#newCostCurrency_${idSuffix}"),
         costItemElement: $("#newCostItemElement_${idSuffix}"),
+        costInformationDefinition: $(".newCostInformationDefinition_${idSuffix}"),
+        costInformationValueDropdown: $("#newCostInformationValueDropdown_${idSuffix}"),
+        costInformationValueText: $("#newCostInformationValueText_${idSuffix}"),
         billingSumRounding: $("#newBillingSumRounding_${idSuffix}"),
         finalCostRounding: $("#newFinalCostRounding_${idSuffix}"),
         taxRate: $("#newTaxRate_${idSuffix}"),
@@ -467,6 +494,17 @@
         newSubscription: $("#newSubscription_${idSuffix}"),
         isVisibleForSubscriber: $("#newIsVisibleForSubscriber_${idSuffix}"),
         elementChangeable: false,
+        refdataDefs: [
+        <%
+            Set<Long> refdataDefs = CostInformationDefinition.executeQuery("select cif.id from CostInformationDefinition cif where cif.type = '"+RefdataValue.class.name+"' and (cif.tenant = null or cif.tenant = :ctx)", [ctx: contextService.getOrg()])
+            refdataDefs.eachWithIndex { Long cifId, int i ->
+                String tmp = cifId
+                if(i < refdataDefs.size() - 1)
+                    tmp += ','
+                print tmp
+            }
+        %>
+        ],
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -481,13 +519,13 @@
             newSubscription_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
         <g:if test="${costItem?.sub || subscription}">
             newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx=${contextSub}",
-                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
-                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
+            newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
+            newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
         </g:if>
         <g:else>
             newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
-                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
-                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
+            newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
+            newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
         </g:else>
         },
         eurVal: "${RDStore.CURRENCY_EUR.id}",
@@ -507,11 +545,11 @@
         <% if(costItem?.issueEntitlement) {
             String ieTitleName = costItem.issueEntitlement.tipp.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
-        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention()})");
         <%  }
         if(costItem?.issueEntitlementGroup) {
             String issueEntitlementGroupName = costItem.issueEntitlementGroup.name %>
-        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention()})");
         <%  }  %>
         },
         collect: function (fields) {
@@ -525,7 +563,11 @@
         },
         preselectMembers: function () {
         <g:if test="${pickedSubscriptions}">
-            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+            let licenseeTargets = [];
+            <g:each in="${pickedSubscriptions}" var="pickedSub">
+                licenseeTargets.push(${pickedSub});
+            </g:each>
+            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",licenseeTargets);
             <g:if test="${pickedSubscriptions.size() > 9}">
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
             </g:if>
@@ -607,7 +649,8 @@
             if(localHandInput === true) {
                 //manipulate iff localCurrency has been changed by user
                 parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
+                if(parsedLocalCurrency != 0 && parsedBillingCurrency != 0)
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
             }
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
@@ -650,6 +693,8 @@
         },
         doubleToString: function (input, currencyRate = false) {
             let rndInput = currencyRate ? input : input.toFixed(2)
+            if(currencyRate)
+                console.log(input);
             if(!isNaN(input)) {
                 let output;
                 if(JSPC.app.finance${idSuffix}.userLang !== 'en')
@@ -668,6 +713,20 @@
             });
             this.toggleLicenseeTarget.click( function() {
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
+            });
+            this.costInformationDefinition.change( function() {
+                let numberVal = parseInt($(this).dropdown('get value'));
+                let withRefdata = JSPC.app.finance${idSuffix}.refdataDefs.indexOf(numberVal) > -1;
+                JSPC.app.finance${idSuffix}.costInformationValueDropdown.dropdown('clear');
+                JSPC.app.adjustCostInformationDropdown(withRefdata, <g:if test="${costItem?.costInformationRefValue}">${costItem.costInformationRefValue.id}</g:if><g:else>false</g:else>);
+                if(withRefdata) {
+                    JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').show();
+                    JSPC.app.finance${idSuffix}.costInformationValueText.hide();
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').hide();
+                    JSPC.app.finance${idSuffix}.costInformationValueText.show();
+                }
             });
             this.newPackage.change(function(){
                 let context;
@@ -904,6 +963,47 @@
                 }
         });
     }
+
+    JSPC.app.adjustCostInformationDropdown = function (withRefdata, preselect) {
+
+        var dropdownCostInformationValues = JSPC.app.finance${idSuffix}.costInformationValueDropdown;
+
+        dropdownCostInformationValues.empty();
+
+        if(withRefdata) {
+            var url = '<g:createLink controller="ajaxJson" action="adjustCostInformationValueList"/>?costInformationDefinition='+JSPC.app.finance${idSuffix}.costInformationDefinition.dropdown('get value');
+            if(!preselect) {
+                dropdownCostInformationValues.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
+                dropdownCostInformationValues.prop('selectedIndex', 0);
+            }
+            else dropdownCostInformationValues.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
+
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(entry.value === preselect)
+                            dropdownCostInformationValues.append($('<option selected="selected"></option>').attr('value', entry.value).text(entry.text));
+                        else
+                            dropdownCostInformationValues.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    });
+                }
+            });
+        }
+    }
+    <g:if test="${costItem?.costInformationDefinition}">
+        JSPC.app.finance${idSuffix}.costInformationDefinition.dropdown("set selected","${costItem?.costInformationDefinition.id}");
+
+        // set filterProp by params
+        <g:if test="${costItem?.costInformationRefValue}">
+            JSPC.app.finance${idSuffix}.costInformationValueText.hide();
+            JSPC.app.finance${idSuffix}.costInformationValueDropdown.dropdown("set selected", "${costItem.costInformationRefValue.id}");
+        </g:if>
+        <g:elseif test="${costItem?.costInformationStringValue}">
+            JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').hide();
+            JSPC.app.finance${idSuffix}.costInformationValueText.val("${costItem.costInformationStringValue}").show();
+        </g:elseif>
+    </g:if>
 
     <g:if test="${mode == 'copy' && copyToOtherSub}">
         JSPC.app.adjustDropdown();

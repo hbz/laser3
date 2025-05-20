@@ -33,7 +33,7 @@ for instance `lemon icon` not `lemon outline icon` since there is only one lemon
 i.icon.hand.pointer.outline.slash {
   font-family: 'icomoon';
 }
-i.icon.pencil.alternate.slash {
+i.icon.write.slash {
   font-family: 'icomoon';
 }
 i.icon.la-thumbtack.slash {
@@ -74,7 +74,7 @@ i.icon.la-noChange {
   font-family: 'icomoon';
 }
 /**/
-i.icon.la-gokb {
+i.icon.la-wekb {
   font-family: 'icomoon';
 }
 i.icon.la-laser {
@@ -148,12 +148,19 @@ i.icon.la-sparkles {
   font-family: 'icomoon';
 }
 
+i.icon.la-survey {
+  font-family: 'icomoon';
+}
+i.icon.la-check-double {
+  font-family: 'icomoon';
+}
+
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
 
 i.icon.hand.pointer.outline.slash:before { content: "\e901"; }
-i.icon.pencil.alternate.slash:before { content: "\e902"; }
+i.icon.write.slash:before { content: "\e902"; }
 i.icon.la-thumbtack.slash:before { content: "\e903"; }
 i.icon.plus.square.slash:before { content: "\e904"; }
 i.icon.la-chain.broken:before { content: "\e905"; }
@@ -168,7 +175,7 @@ i.icon.la-noChange:before { content: "\e900"; }
 i.icon.la-append:before { content: "\e90c"; }
 i.icon.la-replace:before { content: "\e90d"; }
 /**/
-i.icon.la-gokb:before { content: "\e90e"; }
+i.icon.la-wekb:before { content: "\e90e"; }
 i.icon.la-laser:before { content: "\e90f"; }
 /**/
 i.icon.la-less-than:before { content: "\e910"; }
@@ -202,6 +209,9 @@ i.icon.la-tab:before { content: "\e91f"; }
 i.icon.la-bookmark.slash:before { content: "\e921"; }
 
 i.icon.la-sparkles:before { content: "\e920"; }
+
+i.icon.la-survey:before { content: "\e922"; }
+i.icon.la-check-double.slash:before { content: "\e923"; }
 /*******************************
            Laser Icons
 *******************************/
@@ -218,15 +228,14 @@ i.icon.la-sparkles:before { content: "\e920"; }
   text-transform: none;
 }
 
-// for the audit Icon that remains from the Audit Button in case of
-.la-header-with-icon {
-  .la-clone {
-  vertical-align: super;
-  }
-}
-/* Light Grey */
+
+/* Very Light Grey */
 i.la-light-grey.icon {
   color: #e8e8e8 !important;
+}
+/* Light Grey */
+i.la-lighter-grey.icon {
+  color: #c9c9c9  !important;
 }
 i.inverted.la-light-grey.icon {
   color: rgba(0,0,0,.6) !important;
@@ -390,4 +399,8 @@ i.icon.la-objectIsMine.fixed {
   z-index: 100;
   left: 0;
   right: 0;
+}
+
+i.bordered.icon.la-checkButton {
+    box-shadow: @blue 0px 0px 0px 0.2em inset;
 }

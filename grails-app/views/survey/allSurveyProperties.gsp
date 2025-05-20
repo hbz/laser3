@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -21,7 +21,7 @@
 
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code:'surveyProperty.create_new')}"
+    <input class="${Btn.SIMPLE}" value="${message(code:'surveyProperty.create_new')}"
            data-ui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 
@@ -29,10 +29,10 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="grey question circle icon la-popup"></i>
+        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
 
         <div class="ui popup">
-            <i class="${Icons.PRIVATE_PROPERTY} icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icon.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -53,7 +53,9 @@
                 <th>${message(code: 'propertyDefinition.expl.label')}</th>
             </g:else>
             <th>${message(code: 'default.type.label')}</th>
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         </thead>
 
@@ -63,9 +65,9 @@
                     ${i + 1}
                 </td>
                 <td>
-                    <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
+                    <g:if test="${property?.tenant && property?.tenant.id == contextService.getOrg().id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='${Icons.PRIVATE_PROPERTY} icon'></i>
+                        <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}
@@ -74,7 +76,7 @@
 
                 <td>
 
-                    <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
+                    <g:if test="${property?.tenant && property?.tenant.id == contextService.getOrg().id}">
                         <ui:xEditable owner="${property}" field="expl_${SUBSTITUTE}" type="textarea"/>
                     </g:if>
                     <g:else>
@@ -97,14 +99,14 @@
                     </g:if>
                 </td>
                 <td class="x">
-                    <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
-                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property?.id, actionForSurveyProperty: 'deleteSurveyProperty']"
-                                class="ui icon negative button js-open-confirm-modal"
+                    <g:if test="${property.countUsages() == 0 && property.tenant?.id == contextService.getOrg().id}">
+                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property.id, actionForSurveyProperty: 'deleteSurveyProperty']"
+                                class="${Btn.ICON.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [property.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -133,7 +135,7 @@
             <div class="field six wide">
                 <label for="pd_descr" class="property-label">${message(code: 'default.description.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
-                <select name="pd_descr" id="pd_descr" class="ui dropdown">
+                <select name="pd_descr" id="pd_descr" class="ui dropdown clearable">
                     <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
                         <option value="${pd}"><g:message code="propertyDefinition.${pd}.label"
                                                          default="${pd}"/></option>
@@ -143,7 +145,7 @@
 
             <div class="field five wide">
                 <label for="pd_type" class="property-label"><g:message code="default.type.label"/></label>
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
                           name="pd_type"
@@ -164,7 +166,7 @@
         <div class="fields">
             <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                 <label class="property-label"><g:message code="refdataCategory.label"/></label>
-                <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
+                <select class="ui search selection dropdown clearable remoteRefdataSearch" name="refdatacategory"></select>
 
                 <div class="ui grid" style="margin-top:1em">
                     <div class="ten wide column">
@@ -187,7 +189,7 @@
 
                     <div class="six wide column">
                         <br />
-                        <a href="<g:createLink controller="profile" action="properties"/>" target="_blank">
+                        <a href="<g:createLink controller="myInstitution" action="manageRefdatas"/>" target="_blank">
                             <i class="icon window maximize outline"></i>
                             Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
                         </a>

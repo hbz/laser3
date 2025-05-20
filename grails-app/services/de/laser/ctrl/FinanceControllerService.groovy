@@ -4,6 +4,8 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.BudgetCode
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -89,7 +91,7 @@ class FinanceControllerService {
         }
         if (!(result.user instanceof User))
             throw new FinancialDataException("Context user not loaded successfully!")
-        if (!(result.institution instanceof Org))
+        if (!(contextService.getOrg() instanceof Org))
             throw new FinancialDataException("Context org not loaded successfully!")
         if (params.sub || params.id) {
             String subId
@@ -98,18 +100,17 @@ class FinanceControllerService {
             else if(params.id)
                 subId = params.id
             result.subscription = Subscription.get(subId)
-            if (!(result.subscription instanceof Subscription))
-                throw new FinancialDataException("Invalid or no subscription found!")
+            if (result.subscription) {
+                Map navigation = linksGenerationService.generateNavigation(result.subscription)
+                result.navNextSubscription = navigation.nextLink
+                result.navPrevSubscription = navigation.prevLink
 
-            Map navigation = linksGenerationService.generateNavigation(result.subscription)
-            result.navNextSubscription = navigation.nextLink
-            result.navPrevSubscription = navigation.prevLink
-
-            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+                Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+                if(contextService.getOrg().isCustomerType_Consortium())
+                    excludes << RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
+                // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+                result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+            }
         }
         Locale locale = LocaleUtils.getCurrentLocale()
 
@@ -117,7 +118,7 @@ class FinanceControllerService {
         List<String> dataToDisplay = []
         boolean editable = false
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
-        switch(result.institution.getCustomerType()) {
+        switch(contextService.getOrg().getCustomerType()) {
         //cases one to three
             case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ]:
                 if (result.subscription) {
@@ -158,7 +159,7 @@ class FinanceControllerService {
                                     'join subC.orgRelations roleC ' +
                                     'join s.orgRelations roleMC ' +
                                     'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:contextService.getOrg(),consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
                     result.showVisibilitySettings = true
                     editable = true
@@ -194,7 +195,7 @@ class FinanceControllerService {
                 break
         }
         if (editable)
-            result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+            result.editable = contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){
@@ -239,10 +240,15 @@ class FinanceControllerService {
      */
     Map<String,Object> getEditVars(Org org) {
         String lang = LocaleUtils.getCurrentLang()
+        Set<CostInformationDefinition> costInformationDefinitions
+        if(CostInformationDefinitionGroup.countByTenant(org) > 0)
+            costInformationDefinitions = CostInformationDefinition.executeQuery('select cifg.costInformationDefinition from CostInformationDefinitionGroup cifg where cifg.tenant = :org', [org: org])
+        else costInformationDefinitions = CostInformationDefinition.findAllByTenantIsNullOrTenant(org)
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
             costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+lang+' asc',[org:org]),
+            costInformationDefinitions: costInformationDefinitions,
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
             budgetCodes:        BudgetCode.findAllByOwner(org, [sort: 'value']),
             currency:           financeService.orderedCurrency()

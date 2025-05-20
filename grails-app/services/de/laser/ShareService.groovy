@@ -2,6 +2,11 @@ package de.laser
 
 
 import de.laser.interfaces.ShareSupport
+import de.laser.storage.RDStore
+import de.laser.wekb.Package
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 
 /**
@@ -31,11 +36,13 @@ class ShareService {
                 license:        (target instanceof License) ? target : share.license,
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
                 link:           (target instanceof Links) ? target : share.link,
-                domain:         share.domain,
-                globannounce:   share.globannounce,
                 sharedFrom:     share,
                 isShared:       false
         )
+        if (clonedShare.license && clonedShare.license.getAllLicensee().size() == 1)
+            clonedShare.targetOrg = clonedShare.license.getLicensee()
+        else if(clonedShare.subscription)
+            clonedShare.targetOrg = clonedShare.subscription.getSubscriber()
         if (clonedShare.save()) {
             if(target instanceof Subscription) {
                 //damn that three-tier inheritance level ... check if there are departments for a consortial subscription!!!! Show David!!!
@@ -44,9 +51,8 @@ class ShareService {
                     DocContext clonedDescendantShare = new DocContext(
                             owner:          share.owner ,
                             subscription:   d,
-                            domain:         share.domain,
-                            globannounce:   share.globannounce,
                             sharedFrom:     share,
+                            targetOrg:      d.getSubscriber(),
                             isShared:       false
                     )
                     clonedDescendantShare.save()

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection/>
 
 <div class="ui card">
@@ -8,9 +8,8 @@
             <div class="ui accordion la-accordion-showMore js-package-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-delay right floated ">
-                            <i class="ui angle double down icon"></i>
+                        <div class="${Btn.MODERN.SIMPLE} right floated">
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-package-info-accordion')
@@ -62,7 +61,7 @@
                                                                 <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                                         var="curatoryGroup">
                                                                     <div class="item"><g:link
-                                                                            url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
+                                                                            url="${baseUrl}/resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
                                                                 </g:each>
                                                             </div>
                                                         </dd>
@@ -81,10 +80,10 @@
                                                         <dd>
                                                             <g:if test="${pkgInfo.packageInstanceRecord.source?.automaticUpdates}">
                                                                 <g:message code="package.index.result.automaticUpdates"/>
-                                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                                <span class="la-long-tooltip la-popup-tooltip"
                                                                       data-position="right center"
                                                                       data-content="${pkgInfo.packageInstanceRecord.source.frequency}">
-                                                                    <i class="grey question circle icon"></i>
+                                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                                 </span>
                                                             </g:if>
                                                             <g:else>

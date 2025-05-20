@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
-<laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
+<laser:htmlStart message="subscription.details.surveys.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -37,7 +37,9 @@
             <th>${message(code: 'surveyInfo.type.label')}</th>
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
 
         </thead>
@@ -51,11 +53,19 @@
 
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey ${Icons.SURVEY} icon la-list-icon"></i>
+                                <i class="grey ${Icon.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
+
+                        <g:if test="${surveyConfig.invoicingInformation}">
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                  data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                                <i class="dollar icon la-list-icon"></i>
+                            </span>
+                        </g:if>
+
                         ${surveyConfig.getSurveyName()}
                     </div>
                 </td>
@@ -71,9 +81,9 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -87,27 +97,27 @@
                 </td>
                 <td class="x">
 
-                    <g:if test="${(contextOrg.isCustomerType_Consortium())}">
-                            <span class="la-popup-tooltip la-delay"
+                    <g:if test="${(contextService.getOrg().isCustomerType_Consortium())}">
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: institution.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>
                     <g:else>
-                            <span class="la-popup-tooltip la-delay"
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}"
                                         params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:else>

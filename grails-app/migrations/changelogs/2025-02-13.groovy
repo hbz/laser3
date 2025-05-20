@@ -149,6 +149,86 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "klober (modified)", id: "1739437462869-18") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition_group_item where pde_property_definition_fk = (select pd_id from property_definition where pd_description = 'Person Property' and pd_name = 'Note' and pd_tenant_fk is null);")
+                String c = "removed property_definition_group_item (fk=Person Property>Note) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-19") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition where pd_description = 'Person Property' and pd_name = 'Note' and pd_tenant_fk is null;")
+                String c = "removed property_definition (Person Property>Note) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-20") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition_group_item where pde_property_definition_fk in (select pd_id from property_definition where pd_description = 'Organisation Config' and pd_tenant_fk is null);")
+                String c = "removed property_definition_group_item (fk=Organisation Config) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-21") {
+        grailsChange {
+            change {
+                List c = []
+                List pd = ['API Key', 'Public Journal Access', 'RequestorID', 'statslogin']
+                pd.each {
+                    sql.executeUpdate("delete from org_property where op_type_fk = (select pd_id from property_definition where pd_description = 'Organisation Config' and pd_name = :pd and pd_tenant_fk is null);", [pd: it])
+                    c << "removed org_property (${it}) -> ${sql.getUpdateCount()}"
+                }
+                confirm(c.join(', '))
+                changeSet.setComments(c.join(', '))
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-22") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition where pd_description = 'Organisation Config' and pd_tenant_fk is null;")
+                String c = "removed property_definition (Organisation Config) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-23") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition_group_item where pde_property_definition_fk in (select pd_id from property_definition where pd_description = 'System Config' and pd_tenant_fk is null);")
+                String c = "removed property_definition_group_item (fk=System Config) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-24") {
+        grailsChange {
+            change {
+                sql.executeUpdate("delete from property_definition where pd_description = 'System Config' and pd_tenant_fk is null;")
+                String c = "removed property_definition (System Config) -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
 
     changeSet(author: "klober (generated)", id: "1739437462869-25") {
         addColumn(tableName: "org") {

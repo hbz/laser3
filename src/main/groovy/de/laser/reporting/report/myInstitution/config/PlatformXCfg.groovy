@@ -1,7 +1,8 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
@@ -21,10 +22,10 @@ class PlatformXCfg extends BaseConfig {
                     fields: [
                             'name'                      : [ type: BaseConfig.FIELD_TYPE_PROPERTY /* blind */ ],
                             'primaryUrl'                : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
-                            'provider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
+                            'provider'                  : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'proxySupported'            : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
+                            'otherProxies'              : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'serviceProvider'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER ],
                             'shibbolethAuthentication'  : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'softwareProvider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
@@ -32,21 +33,33 @@ class PlatformXCfg extends BaseConfig {
                             'packageStatus'             : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PACKAGE_PACKAGESTATUS ],
                             'subscriptionStatus'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_SUBSCRIPTION_STATUS, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'counterCertified'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'statisticsFormat'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ]
+                            'statisticsFormat'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             //'type'                    : [ type: FIELD_TYPE_REFDATA ],
+                            'accessPlatform'                    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessibilityStatementAvailable'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessibilityStatementUrl'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                            'accessAudio'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessVideo'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessPdf'                 : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessEPub'                : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'accessDatabase'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'playerForAudio'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'playerForVideo'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'viewerForPdf'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                            'viewerForEpub'             : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default: [
                                     [ 'packageStatus', 'status' ],
                                     [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
-                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
+                                    [ 'passwordAuthentication', 'otherProxies', 'statisticsFormat' ]
                             ],
                             my: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status' ],
                                     [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
-                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
+                                    [ 'passwordAuthentication', 'otherProxies', 'statisticsFormat' ]
                             ]
                     ],
                     query : [
@@ -59,15 +72,26 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-ipAuthentication' :           [ '@' ],    // ES
                                             'platform-shibbolethAuthentication' :   [ '@' ],    // ES
                                             'platform-passwordAuthentication' :     [ '@' ],    // ES
-                                            'platform-proxySupported' :             [ '@' ],    // ES
+                                            'platform-otherProxies' :               [ '@' ],    // ES
                                             'platform-statisticsFormat' :           [ '@' ],    // ES
                                             'platform-statisticsUpdate' :           [ '@' ],    // ES
                                             'platform-counterCertified' :           [ '@' ],    // ES
-                                            'platform-counterR3Supported' :         [ '@' ],    // ES
                                             'platform-counterR4Supported' :         [ '@' ],    // ES
                                             'platform-counterR5Supported' :         [ '@' ],    // ES
                                             'platform-counterR4SushiApiSupported' : [ '@' ],    // ES
                                             'platform-counterR5SushiApiSupported' : [ '@' ],    // ES
+                                            'platform-accessPlatform' :             [ '@' ],
+                                            'platform-accessibilityStatementAvailable' : [ '@' ],
+//                                            'platform-accessibilityStatementUrl' :  [ '@' ],
+                                            'platform-accessAudio' :                [ '@' ],
+                                            'platform-accessVideo' :                [ '@' ],
+                                            'platform-accessEPub' :                 [ '@' ],
+                                            'platform-accessPdf' :                  [ '@' ],
+                                            'platform-accessDatabase' :             [ '@' ],
+                                            'platform-playerForAudio' :             [ '@' ],
+                                            'platform-playerForVideo' :             [ '@' ],
+                                            'platform-viewerForEpub' :              [ '@' ],
+                                            'platform-viewerForPdf' :               [ '@' ],
                                             'platform-*' :                          [ 'generic.all' ]
                                     ]
                             ]
@@ -86,9 +110,8 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-ipAuthentication',
                                                     'platform-shibbolethAuthentication',
                                                     'platform-passwordAuthentication',
-                                                    'platform-proxySupported',
+                                                    'platform-otherProxies',
                                                     'platform-counterCertified',
-                                                    'platform-counterR3Supported',
                                                     'platform-counterR4Supported',
                                                     'platform-counterR5Supported',
                                                     'platform-counterR4SushiApiSupported',
@@ -140,20 +163,22 @@ class PlatformXCfg extends BaseConfig {
             'status'                                : [ dtc: false  ],
             'platform-altname'                      : [             es: true,               export: true, label: 'package.show.altname'],
             'platform-x-propertyWekb'               : [             es: true  ],
+
             'platform-ipAuthentication'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.ip.supported',            rdc: RDConstants.IP_AUTHENTICATION ],
             'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],
-
             'platform-passwordAuthentication'       : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N ],
-            'platform-proxySupported'               : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N ],
+            'platform-otherProxies'                 : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.other.proxies',           rdc: RDConstants.Y_N ],
             'platform-statisticsFormat'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT ],
             'platform-statisticsUpdate'             : [ dtc: false, es: true,               export: true, label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY ],
-            'platform-counterCertified'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N ],
 
-            'platform-counterR3Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r3supported',    rdc: RDConstants.Y_N ],
+            'platform-counterCertified'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N ],
             'platform-counterR4Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4supported',    rdc: RDConstants.Y_N ],
             'platform-counterR5Supported'           : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5supported',    rdc: RDConstants.Y_N ],
             'platform-counterR4SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r4sushi',        rdc: RDConstants.Y_N ],
             'platform-counterR5SushiApiSupported'   : [ dtc: false, es: true,               export: true, label: 'platform.stats.counter.r5sushi',        rdc: RDConstants.Y_N ],
+
+            'accessPlatform'                        : [ dtc: false,                         export: true, label: 'platform.accessibility.accessPlatform', rdc: RDConstants.ACCESSIBILITY_COMPLIANCE ],
+            'accessibilityStatementUrl'             : [ dtc: false,                         export: true, label: 'platform.accessibilityStatementUrl.label'],
 
             '_dtField_?_propertyLocal'              : [ dtc: true   ],  // virtual, optional, fixed position
             '_dtField_lastUpdated'                  : [ dtc: true   ],  // virtual

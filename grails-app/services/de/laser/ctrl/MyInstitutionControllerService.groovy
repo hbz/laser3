@@ -27,6 +27,7 @@ class MyInstitutionControllerService {
     CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
+    DashboardService dashboardService
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
@@ -50,11 +51,9 @@ class MyInstitutionControllerService {
         prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
             return [status: STATUS_ERROR, result: result]
         }
-
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -94,15 +93,15 @@ class MyInstitutionControllerService {
         params.taskStatus = 'not done'
         FilterService.Result fsr = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         prf.setBenchmark('tasks')
-        result.tasks = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        result.tasks = taskService.getTasksByResponsibility(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
         result.tasksCount    = result.tasks.size()
 
         prf.setBenchmark('due dates')
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution, false, false)
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user as User, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user as User )
 
         prf.setBenchmark('workflows')
-        if (workflowService.hasUserPerm_edit()) {
+        if (workflowService.hasWRITE()) {
             if (params.cmd) {
                 String[] cmd = params.cmd.split(':')
 
@@ -113,10 +112,10 @@ class MyInstitutionControllerService {
             }
         }
 
-        if (workflowService.hasUserPerm_read()){
+        if (workflowService.hasREAD()){
             List<WfChecklist> workflows = []
 
-            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) ).each { clist ->
                 Map info = clist.getInfo()
 
                 if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
@@ -127,8 +126,23 @@ class MyInstitutionControllerService {
             result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
 
-        prf.setBenchmark('wekbNews')
-        result.wekbNews = wekbNewsService.getCurrentNews()
+        if (dashboardService.showWekbNews()) {
+            prf.setBenchmark('wekbNews')
+            result.wekbNews = wekbNewsService.getCurrentNews()
+        }
+
+        if (dashboardService.showCurrentTestSubscriptions()) {
+            prf.setBenchmark('testSubscription')
+            result.currentTestSubscriptions = Subscription.executeQuery(
+                    'select distinct(s) from Subscription s join s.orgRelations oo where oo.org = :owner and oo.roleType in (:roles) AND s.status = :ta ' +
+                            'and (s.startDate is null or s.startDate <= :today) and (s.endDate is null or s.endDate >= :today) order by s.name', [
+                        owner: contextService.getOrg(),
+                        roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER],
+                        ta   : RDStore.SUBSCRIPTION_TEST_ACCESS,
+                        today: new Date()
+                ]
+            )
+        }
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]
@@ -138,11 +152,11 @@ class MyInstitutionControllerService {
         Map<String, Object> result = getResultGenerics(controller, params)
         params.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
 
-        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.editable = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
 
         List notShowClickMe = []
 
-        if(result.contextOrg.isCustomerType_Consortium()){
+        if(contextService.getOrg().isCustomerType_Consortium()){
             notShowClickMe = [ExportClickMeService.CONSORTIAS]
         }else{
             notShowClickMe = [ExportClickMeService.CONSORTIA_PARTICIPATIONS, ExportClickMeService.INSTITUTIONS,
@@ -151,7 +165,7 @@ class MyInstitutionControllerService {
                               ExportClickMeService.SURVEY_COST_ITEMS]
         }
 
-        if(result.contextOrg.isCustomerType_Basic()){
+        if(contextService.getOrg().isCustomerType_Basic()){
             notShowClickMe << [ExportClickMeService.CONSORTIAS]
         }
 
@@ -159,31 +173,31 @@ class MyInstitutionControllerService {
         result.clickMeTypes = ExportClickMeService.CLICK_ME_TYPES - notShowClickMe
         result.clickMeConfigsCount= [:]
         result.clickMeTypes.each { String clickMeType ->
-            result.clickMeConfigsCount[clickMeType] = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: result.contextOrg, clickMeType: clickMeType])[0]
+            result.clickMeConfigsCount[clickMeType] = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: contextService.getOrg(), clickMeType: clickMeType])[0]
         }
 
 
-        result.clickMeConfigs = ClickMeConfig.executeQuery('from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType order by configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab])
-        result.clickMeConfigsAllCount = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg ', [contextOrg: result.contextOrg])[0]
+        result.clickMeConfigs = ClickMeConfig.executeQuery('from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType order by configOrder', [contextOrg: contextService.getOrg(), clickMeType: params.tab])
+        result.clickMeConfigsAllCount = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg ', [contextOrg: contextService.getOrg()])[0]
 
         [status: STATUS_OK, result: result]
     }
 
     Map<String, Object> exportConfigsActions(MyInstitutionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenerics(controller, params)
-        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.editable = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
         if(result.editable) {
             if (params.cmd == 'delete' && params.id) {
-                ClickMeConfig clickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
+                ClickMeConfig clickMeConfig = ClickMeConfig.findByContextOrgAndId(contextService.getOrg(), params.id)
 
                 if (clickMeConfig) {
                     clickMeConfig.delete()
                 }
             }
             if (params.cmd in ['moveUp', 'moveDown'] && params.id) {
-                ClickMeConfig toMoveClickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
-                Set<ClickMeConfig> sequence = ClickMeConfig.executeQuery('select cmc from ClickMeConfig as cmc where cmc.contextOrg = :contextOrg and cmc.clickMeType = :clickMeType order by cmc.configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab]) as Set<ClickMeConfig>
+                ClickMeConfig toMoveClickMeConfig = ClickMeConfig.findByContextOrgAndId(contextService.getOrg(), params.id)
+                Set<ClickMeConfig> sequence = ClickMeConfig.executeQuery('select cmc from ClickMeConfig as cmc where cmc.contextOrg = :contextOrg and cmc.clickMeType = :clickMeType order by cmc.configOrder', [contextOrg: contextService.getOrg(), clickMeType: params.tab]) as Set<ClickMeConfig>
 
                 int idx = sequence.findIndexOf { it.id == toMoveClickMeConfig.id }
                 int pos = toMoveClickMeConfig.configOrder
@@ -224,8 +238,6 @@ class MyInstitutionControllerService {
         Org org = contextService.getOrg()
 
         result.user = user
-        result.institution = org
-        result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
         result.subId = params.subId
         result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())
@@ -234,10 +246,13 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
+                result.editable = contextService.isInstEditor()
                 break
-            case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
+            case [ 'addressbook', 'tasks' ]:
+                result.editable = contextService.isInstEditor()
+                break
+            case [ 'budgetCodes' ]:
+                result.editable = contextService.isInstEditor()
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
@@ -248,10 +263,10 @@ class MyInstitutionControllerService {
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = contextService.isInstEditor_or_ROLEADMIN()
+                result.changeProperties = contextService.isInstEditor()
                 break
             default:
-                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = contextService.isInstEditor()
         }
 
         result

@@ -1,6 +1,6 @@
-<%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="license.new" serviceInjection="true"/>
+<laser:htmlStart message="license.new" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
@@ -18,16 +18,12 @@
     <ui:form controller="myInstitution" action="processEmptyLicense" class="newLicence">
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
-                <ui:msg class="info" noClose="true">
-                    ${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}
-                </ui:msg>
+                <ui:msg class="info" hideClose="true" message="myinst.licensewithSub.notice" args="[subInstance.name]" />
             </g:if>
 
             <g:if test="${params.baselicense}">
                 <g:hiddenField name="baselicense" value="${params.baselicense}"/>
-                <ui:msg class="info" noClose="true">
-                    ${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}
-                </ui:msg>
+                <ui:msg class="info" hideClose="true" message="myinst.copyLicense.notice" args="[params.licenseName]" />
             </g:if>
 
             <div class="field required">
@@ -56,8 +52,8 @@
 
         <div class="field">
             <br />
-            <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
-            <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+            <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
+            <input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
         </div>
     </ui:form>
 

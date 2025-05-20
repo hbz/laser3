@@ -17,6 +17,8 @@ class SystemEvent {
 
     @Transient
     private String i18n
+    @Transient
+    private long startTime
 
     String    token                 // i18n and more
     String    payload               // json for object ids, etx
@@ -35,6 +37,8 @@ class SystemEvent {
             'BOOTSTRAP_STARTUP'             : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'CAJ_JOB_START'                 : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'CAJ_JOB_COMPLETE'              : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'CRYPTO_DECRYPT_ERROR'          : [category: CATEGORY.OTHER,   relevance: RELEVANCE.WARNING],
+            'CRYPTO_ENCRYPT_ERROR'          : [category: CATEGORY.OTHER,   relevance: RELEVANCE.WARNING],
             'DBDD_JOB_START'                : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_COMPLETE'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_IGNORE'               : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
@@ -47,6 +51,9 @@ class SystemEvent {
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'DOCSTORE_ENC_RAW_FILES'        : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'DOCSTORE_MOV_OUTDATED_FILES'   : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'DOCSTORE_DEL_ORPHANED_DOCS'    : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_COMPLETE'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_ERROR'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -54,6 +61,7 @@ class SystemEvent {
             'FT_INDEX_CLEANUP_ERROR'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'GD_SYNC_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'GD_SYNC_JOB_COMPLETE'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'GDC_INFO'                      : [category: CATEGORY.OTHER,  relevance: RELEVANCE.INFO],
             'GSSS_JSON_START'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_JSON_COMPLETE'            : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_JSON_ERROR'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -180,6 +188,8 @@ class SystemEvent {
             }
 
             if (result) {
+                result.startTime = System.currentTimeMillis()
+
                 result.token = token
                 result.payload = payload ? (new JSON(payload)).toString(false) : null
 
@@ -241,7 +251,7 @@ class SystemEvent {
      * @param token the new token for this record
      * @param payload the new JSON payload
      */
-    void changeTo(String token, def payload) {
+    void changeTo(String token, Map<String, Object> payload = [:]) {
         withTransaction {
             if (DEFINED_EVENTS.containsKey(token)) {
                 log.info '> changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
@@ -251,10 +261,9 @@ class SystemEvent {
                 this.relevance = DEFINED_EVENTS.get(token).relevance
 
                 this.hasChanged = true
+                payload.s = this.startTime ? ((System.currentTimeMillis() - this.startTime) / 1000).round(2) : 0
 
-                if (payload) {
-                    this.payload = (new JSON(payload)).toString(false)
-                }
+                this.payload = (new JSON(payload)).toString(false)
                 this.save()
             }
         }

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.helper.Icons; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
-<laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
+<%@ page import="de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.finance.CostItem; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<laser:htmlStart message="surveyInfo.copyProperties" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -17,20 +17,20 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br/>
 
-<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -39,11 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <ui:messages data="${flash}"/>
-
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
-    </h2>
+    </h2>--}%
 
     <ui:greySegment>
         <div class="ui grid">
@@ -94,7 +92,7 @@
     </ui:greySegment>
 
 %{--<div class="ui icon positive message">
-    <i class="info icon"></i>
+    <i class="${Icon.UI.INFO}"></i>
 
     <div class="content">
         <div class="header"></div>
@@ -116,7 +114,12 @@
     <g:if test="${properties}">
         <div class="ui segment">
             <h3>
-                <g:message code="propertyDefinition.plural"/>
+                <g:if test="${params.tab == 'surveyProperties'}">
+                    <g:message code="propertyDefinition.plural"/>
+                </g:if>
+                <g:else>
+                    <g:message code="subscription.properties.consortium"/>
+                </g:else>
             </h3>
             <table class="ui sortable celled la-js-responsive-table la-table table">
                 <thead>
@@ -154,13 +157,133 @@
 
                     <tr>
                         <td>${i + 1}</td>
-                        <td><g:link controller="survey" action=" $actionName"
-                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSubscription, property)}</td>
+                        <td><g:link controller="survey" action="$actionName"
+                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link>
+
+                            <g:if test="${property.getI10n('expl') != null && !property.getI10n('expl').contains(' °')}">
+                                <g:if test="${property.getI10n('expl')}">
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${property.getI10n('expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </g:if>
+                            </g:if>
+                            <g:if test="${property.mandatory}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code: 'default.mandatory.tooltip')}">
+                                    <i class="${Icon.PROP.MANDATORY}"></i>
+                                </span>
+                            </g:if>
+                            <g:if test="${property.multipleOccurrence}">
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
+                                    <i class="${Icon.PROP.MULTIPLE}"></i>
+                                </span>
+                            </g:if>
+                        </td>
+                        <td>
+
+                            <g:if test="${params.tab == 'surveyProperties'}">
+                                <%
+                                    PropertyDefinition propDef
+                                    int count = 0
+                                    if(property) {
+                                        if (property.tenant) {
+                                            propDef = PropertyDefinition.getByNameAndDescrAndTenant(property.name, PropertyDefinition.SUB_PROP, property.tenant)
+                                            count = propDef ? subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSubscription, propDef) : 0
+                                        } else {
+                                            propDef = PropertyDefinition.getByNameAndDescr(property.name, PropertyDefinition.SUB_PROP)
+                                            count = propDef ? subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, propDef) : 0
+                                        }
+                                    }
+                                %>
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${count} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'customProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'privateProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSubscription])[0]})
+                            </g:if>
+
+                        </td>
                         <g:if test="${params.tab == 'surveyProperties'}">
                             <td>${participantsList ? surveyService.countSurveyPropertyWithValueByMembers(surveyConfig, property, participantsList.org) : 0}</td>
                         </g:if>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSuccessorSubscription, property)}</td>
+                        <td>
+
+                            <g:if test="${params.tab == 'surveyProperties'}">
+                                <%
+                                    PropertyDefinition propDef
+                                    int count = 0
+                                    if(property) {
+                                        if (property.tenant) {
+                                            propDef = PropertyDefinition.getByNameAndDescrAndTenant(property.name, PropertyDefinition.SUB_PROP, property.tenant)
+                                            count = propDef ? subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, propDef) : 0
+                                        } else {
+                                            propDef = PropertyDefinition.getByNameAndDescr(property.name, PropertyDefinition.SUB_PROP)
+                                            count = propDef ? subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, propDef) : 0
+                                        }
+                                    }
+                                %>
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${count} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'customProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+
+                            <g:if test="${params.tab == 'privateProperties'}">
+                                <span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.fromConsortia2')}"
+                                      data-position="top right"><i class="large icon cart arrow down grey"></i></span>
+
+                                (<span class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.propertyCount')}"><i
+                                    class="icon sticky note grey"></i>
+                            </span>  ${subscriptionService.countPrivateSubscriptionPropertiesOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)} / <span
+                                    class="la-popup-tooltip" data-content="${message(code: 'property.notInherited.info.membersCount')}"><i
+                                        class="${Icon.SUBSCRIPTION} grey"></i>
+                            </span> ${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :sub', [sub: parentSuccessorSubscription])[0]})
+                            </g:if>
+                        </td>
                     </tr>
                 </g:each>
                 </tbody>
@@ -168,13 +291,12 @@
         </div>
     </g:if>
 
-
     <ui:greySegment>
         <g:if test="${properties}">
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]"
-                    method="post" class="ui form ">
+                    method="post" class="ui form">
                 <g:hiddenField name="copyProperty" value="${selectedProperty}"/>
 
                 <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -201,7 +323,7 @@
                                                   optionKey="id"
                                                   optionValue="name"
                                                   value="${selectedProperty}"
-                                                  class="ui dropdown"
+                                                  class="ui dropdown clearable"
                                                   onchange="this.form.submit()"/>
                                 </g:form>
                             </th>
@@ -220,7 +342,7 @@
                                               optionKey="id"
                                               optionValue="name"
                                               value="${selectedProperty}"
-                                              class="ui dropdown"
+                                              class="ui dropdown clearable"
                                               onchange="this.form.submit()"/>
                             </g:form>
                             </th>
@@ -248,7 +370,7 @@
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
+                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newProperty && participant.surveyProperty) || (participant.newProperty && participant.newProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
@@ -280,7 +402,7 @@
                             </td>
 
                             <td>
-                                <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
+                                <g:if test="${params.tab == 'customProperties'}">
                                     <g:if test="${!participant.oldSub}">
                                         ${message(code: 'copyProperties.copyProperties.noSubscription')}
                                     </g:if>
@@ -326,17 +448,11 @@
                                         </g:elseif>
 
                                         <g:if test="${participant.oldCustomProperty.hasProperty('instanceOf') && participant.oldCustomProperty.instanceOf && AuditConfig.getConfig(participant.oldCustomProperty.instanceOf)}">
-                                            <g:if test="${participant.oldSub.isSlaved}">
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                            <g:if test="${participant.oldSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="icon thumbtack grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 
@@ -400,6 +516,72 @@
                                 </g:else>
                                 </g:if>
 
+                                <g:if test="${params.tab == 'surveyProperties'}">
+                                    <g:if test="${!participant.oldSub}">
+                                        ${message(code: 'copyProperties.copyProperties.noSubscription')}
+                                    </g:if>
+                                    <g:elseif test="${participant.oldSub && participant.oldProperty}">
+
+                                        <g:if test="${participant.oldProperty.type.isLongType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="number"
+                                                          overwriteEditable="${false}"
+                                                          field="longValue"/>
+                                        </g:if>
+                                        <g:elseif test="${participant.oldProperty.type.isStringType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="stringValue"/>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.oldProperty.type.isBigDecimalType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="decValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.oldProperty.type.isDateType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="date"
+                                                          overwriteEditable="${false}"
+                                                          field="dateValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.oldProperty.type.isURLType()}">
+                                            <ui:xEditable owner="${participant.oldProperty}" type="url"
+                                                          field="urlValue"
+                                                          overwriteEditable="${false}"
+
+                                                          class="la-overflow la-ellipsis"/>
+                                            <g:if test="${participant.oldProperty.value}">
+                                                <ui:linkWithIcon href="${participant.oldProperty.value}"/>
+                                            </g:if>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.oldProperty.type.isRefdataValueType()}">
+                                            <ui:xEditableRefData owner="${participant.oldProperty}" type="text"
+                                                                 overwriteEditable="${false}"
+                                                                 field="refValue"
+                                                                 config="${participant.oldProperty.type.refdataCategory}"/>
+                                        </g:elseif>
+
+                                        <g:if test="${participant.oldProperty.hasProperty('instanceOf') && participant.oldProperty.instanceOf && AuditConfig.getConfig(participant.oldProperty.instanceOf)}">
+                                            <g:if test="${participant.oldSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
+                                            </g:if>
+                                            <g:else>
+                                                <ui:auditIcon type="default" />
+                                            </g:else>
+                                        </g:if>
+
+                                    </g:elseif><g:else>
+
+                                    <g:if test="${!participant.propDef || participant.propDef.tenant}">
+                                        ${message(code: 'subscriptionsManagement.noPrivateProperty')}
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code: 'subscriptionsManagement.noCustomProperty')}
+                                    </g:else>
+
+                                </g:else>
+                                </g:if>
+
                             </td>
 
                             <g:if test="${params.tab == 'surveyProperties'}">
@@ -451,7 +633,7 @@
                                 </td>
                             </g:if>
                             <td>
-                                <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
+                                <g:if test="${params.tab == 'customProperties'}">
                                     <g:if test="${participant.newCustomProperty}">
 
                                         <g:if test="${participant.newCustomProperty.type.isLongType()}">
@@ -494,17 +676,11 @@
                                         </g:elseif>
 
                                         <g:if test="${participant.newCustomProperty.hasProperty('instanceOf') && participant.newCustomProperty.instanceOf && AuditConfig.getConfig(participant.newCustomProperty.instanceOf)}">
-                                            <g:if test="${participant.newSub.isSlaved}">
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                            <g:if test="${participant.newSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="icon thumbtack grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 
@@ -565,12 +741,75 @@
                                 </g:else>
                                 </g:if>
 
+                                <g:if test="${params.tab == 'surveyProperties'}">
+                                    <g:if test="${participant.newProperty}">
+
+                                        <g:if test="${participant.newProperty.type.isLongType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="number"
+                                                          overwriteEditable="${false}"
+                                                          field="longValue"/>
+                                        </g:if>
+                                        <g:elseif test="${participant.newProperty.type.isStringType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="stringValue"/>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.newProperty.type.isBigDecimalType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="text"
+                                                          overwriteEditable="${false}"
+                                                          field="decValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.newProperty.type.isDateType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="date"
+                                                          overwriteEditable="${false}"
+                                                          field="dateValue"/>
+                                        </g:elseif>
+                                        <g:elseif test="${participant.newProperty.type.isURLType()}">
+                                            <ui:xEditable owner="${participant.newProperty}" type="url"
+                                                          field="urlValue"
+                                                          overwriteEditable="${false}"
+
+                                                          class="la-overflow la-ellipsis"/>
+                                            <g:if test="${participant.newProperty.value}">
+                                                <ui:linkWithIcon href="${participant.newProperty.value}"/>
+                                            </g:if>
+                                        </g:elseif>
+                                        <g:elseif
+                                                test="${participant.newProperty.type.isRefdataValueType()}">
+                                            <ui:xEditableRefData owner="${participant.newProperty}" type="text"
+                                                                 overwriteEditable="${false}"
+                                                                 field="refValue"
+                                                                 config="${participant.newProperty.type.refdataCategory}"/>
+                                        </g:elseif>
+
+                                        <g:if test="${participant.newProperty.hasProperty('instanceOf') && participant.newProperty.instanceOf && AuditConfig.getConfig(participant.newProperty.instanceOf)}">
+                                            <g:if test="${participant.newSub.instanceOf}">
+                                                <ui:auditIcon type="auto" />
+                                            </g:if>
+                                            <g:else>
+                                                <ui:auditIcon type="default" />
+                                            </g:else>
+                                        </g:if>
+
+                                    </g:if><g:else>
+
+                                    <g:if test="${!participant.propDef || participant.propDef.tenant}">
+                                        ${message(code: 'subscriptionsManagement.noPrivateProperty')}
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code: 'subscriptionsManagement.noCustomProperty')}
+                                    </g:else>
+
+                                </g:else>
+                                </g:if>
+
                             </td>
 
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                            class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                                 </g:if>
 
                                 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -580,8 +819,7 @@
                                         <br>
                                         <br>
 
-                                        <div class="ui icon"
-                                             data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                        <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                             <i class="bordered colored info icon"></i>
                                         </div>
                                     </g:if>
@@ -591,9 +829,8 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                        <i class="bordered colored chart pie icon"></i>
+                                    <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                        <i class="${Icon.SURVEY} bordered colored"></i>
                                     </div>
                                 </g:if>
                             </td>
@@ -619,7 +856,7 @@
                             <br>
                         </g:if>
 
-                        <button class="ui button positive"
+                        <button class="${Btn.POSITIVE}"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
                 </div>
@@ -631,24 +868,39 @@
     </ui:greySegment>
 
     <div class="sixteen wide field" style="text-align: center;">
-        <g:if test="${params.tab != 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copyProperties"
+        <g:if test="${params.tab != 'privateProperties' && surveyConfig.subscription}">
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
         </g:if>
-        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItems"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
-                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-            </g:link>
-        </g:elseif>
-        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
-                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
-            </g:link>
-        </g:elseif>
+        <g:else>
+            <g:if test="${surveyConfig.subscription && params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:if>
+            <g:elseif test="${surveyConfig.subscription && params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+            <g:elseif test="${params.tab == 'surveyProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+            <g:elseif test="${params.tab == 'surveyProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+                <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                    ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+                </g:link>
+            </g:elseif>
+        </g:else>
+
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">

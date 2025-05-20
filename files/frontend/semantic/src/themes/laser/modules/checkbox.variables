@@ -4,3 +4,4 @@
 
 @textColor: @black;  /* laser-black -matching the blue */
 @backgroundColor:  #d3dae3;
+@solidBorderColor: @darkBlueGrey;

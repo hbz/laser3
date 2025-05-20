@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
@@ -10,14 +10,27 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
-    <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
+    <a onclick="JSPC.app.systemMessages.edit();" class="${Btn.SIMPLE}" role="button" aria-label="${message(code: 'admin.systemMessage.create')}">
+        ${message(code: 'admin.systemMessage.create')}
+    </a>
 </div>
 
 <br />
 <br />
 
-<ui:msg class="info" noClose="true">
-    <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+<ui:msg class="info" showIcon="true" hideClose="true">
+    ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+    <br />
+    <br />
+    ${message(code: 'admin.help.markdown')}.
+    <br />
+    Dabei können folgende Token zur Erzeugung dynamischer Inhalte verwendet werden:
+    <br />
+    <br />
+    <g:each in="${helpService.getTokenMap()}" var="tk">
+        &nbsp; {{${tk.key}}} -> ${tk.value} <br />
+    </g:each>
+
 </ui:msg>
 
 <ui:messages data="${flash}" />
@@ -29,29 +42,44 @@
             <th>${message(code: 'default.type.label')}</th>
             <th>${message(code: 'default.activated.label')}</th>
             <th>${message(code: 'default.lastUpdated.label')}</th>
-            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
     </thead>
     <tbody>
-        <g:each in="${systemMessages}" var="msg">
+        <g:each in="${systemMessages}" var="msg" status="mi">
         <tr style="vertical-align: top">
             <td>
-                <div class="ui attached segment">
-                    <strong>${message(code: 'default.german.label')}</strong><br />
-                    <ui:xEditable owner="${msg}" field="content_de" type="textarea"/>
+                <div class="ui top attached segment">
+                    <span class="ui mini top right attached label">DE</span>
+                    <div>
+                        <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
+                    </div>
                 </div>
                 <div class="ui attached segment">
-                    <strong>${message(code: 'default.english.label')}</strong><br />
-                    <ui:xEditable owner="${msg}" field="content_en" type="textarea"/>
+                    <span class="ui mini top right attached label">EN</span>
+                    <div>
+                        <ui:renderContentAsMarkdown>${msg.content_en}</ui:renderContentAsMarkdown>
+                    </div>
                 </div>
+                <g:if test="${msg.condition}">
+                    <div class="ui attached segment">
+                        <span class="ui mini top right attached label">${message(code: 'default.condition')}</span>
+                        <span class="ui text red"><strong>${msg.condition.key}</strong> - ${msg.condition.description} (${msg.condition.systemMessageType})</span>
+                    </div>
+                </g:if>
             </td>
             <td>
-                <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">
-                    <span class="ui label yellow">Systemmeldung</span>
+                <g:if test="${SystemMessage.TYPE_GLOBAL == msg.type}">
+                    <span class="ui label orange">Systemmeldung</span>
                 </g:if>
-                <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">
+                <g:elseif test="${SystemMessage.TYPE_DASHBOARD == msg.type}">
+                    <span class="ui label teal">Dashboard</span>
+                </g:elseif>
+                <g:elseif test="${SystemMessage.TYPE_STARTPAGE == msg.type}">
                     <span class="ui label blue">Startseite</span>
-                </g:if>
+                </g:elseif>
             </td>
             <td>
                 <ui:xEditableBoolean owner="${msg}" field="isActive"/>
@@ -60,41 +88,58 @@
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
             </td>
             <td class="x">
-                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="ui negative icon button la-modern-button"
+                <g:link controller="admin" action="deleteSystemMessage" id="${msg.id}" class="${Btn.MODERN.NEGATIVE}"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE} icon"></i>
+                    <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
+
+                <a onclick="JSPC.app.systemMessages.edit(${msg.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                </a>
             </td>
         </tr>
         </g:each>
     </tbody>
 </table>
 
-<ui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
-    <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.systemMessages = {
 
-        <fieldset>
-            <div class="field">
-                <label for="content_de">${message(code: 'default.content.label')} (${message(code: 'default.german.label')})</label>
-                <textarea name="content_de" id="content_de"></textarea>
-            </div>
+        edit: function (id) {
+            $.ajax({
+                url: '<g:createLink controller="admin" action="editSystemMessage"/>?id=' + id,
+                success: function(result){
+                    $('#dynamicModalContainer').empty()
+                    $('#modalCreateSystemMessage, #modalEditSystemMessage').remove()
 
-            <div class="field">
-                <label for="content_en">${message(code: 'default.content.label')} (${message(code: 'default.english.label')})</label>
-                <textarea name="content_en" id="content_en"></textarea>
-            </div>
+                    $('#dynamicModalContainer').html(result);
+                    $('#dynamicModalContainer .ui.modal').modal({
+                        autofocus: false,
+                        onVisible: function() {
+                            r2d2.helper.focusFirstFormElement(this)
+                        }
+                    }).modal('show')
+                }
+            });
+        },
 
-            <div class="field">
-                <label for="type">${message(code: 'default.type.label')}</label>
-                <g:select from="${[[SystemMessage.TYPE_ATTENTION, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
-                          optionKey="${{it[0]}}"
-                          optionValue="${{it[1]}}"
-                          name="type"
-                          class="ui fluid search dropdown"/>
-            </div>
-        </fieldset>
-    </g:form>
-</ui:modal>
+        updatePreview: function (elem) {
+            let id = $(elem).attr('id').replace('_content_', '_preview_')
+            let value = $(elem).val()
+
+            $.ajax({
+                url: '<g:createLink controller="ajaxHtml" action="renderMarkdown"/>',
+                method: 'POST',
+                data: {
+                    text: value
+                },
+                success: function(data) {
+                    $('.modal #' + id).html(data)
+                }
+            });
+        }
+    }
+</laser:script>
 
 <laser:htmlEnd />

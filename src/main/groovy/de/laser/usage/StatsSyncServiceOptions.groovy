@@ -4,11 +4,10 @@ package de.laser.usage
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.storage.RDConstants
-import de.laser.properties.PlatformProperty
 import groovy.util.logging.Slf4j
 
 @Deprecated

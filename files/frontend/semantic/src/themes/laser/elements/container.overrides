@@ -10,4 +10,10 @@
     margin-right: auto;
   }
 }
+/* Login Card in Mobiles */
+@media only screen and (max-width: @tabletBreakpoint) {
+  #login .ui.card {
+    margin-top: 80px;
+  }
+}
 

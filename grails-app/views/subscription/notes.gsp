@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore;" %>
 
-<laser:htmlStart message="default.notes.label" serviceInjection="true"/>
+<laser:htmlStart message="default.notes.label" />
 
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
         <ui:controlButtons>
@@ -16,7 +16,7 @@
 
         <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
-        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+        <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
             <laser:render template="message" />
         </g:if>
 

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -20,9 +20,9 @@
     <laser:render template="${customerTypeService.getSubscriptionFilterTemplatePath()}"/>
 
     <div class="ui buttons">
-        <g:link action="linkToSubscription" class="ui button positive" params="${params+[id:license.id,subscription:"all"]}"><g:message code="license.linkAll"/></g:link>
+        <g:link action="linkToSubscription" class="${Btn.POSITIVE}" params="${params+[id:license.id, subscription:"all"]}"><g:message code="license.linkAll"/></g:link>
         <div class="or" data-text="${message(code:'default.or')}"></div>
-        <g:link action="linkToSubscription" class="ui button negative" params="${params+[id:license.id,unlink:true,subscription:"all"]}"><g:message code="license.unlinkAll"/></g:link>
+        <g:link action="linkToSubscription" class="${Btn.NEGATIVE}" params="${params+[id:license.id,unlink:true,subscription:"all"]}"><g:message code="license.unlinkAll"/></g:link>
     </div>
     <laser:render template="/templates/subscription/subscriptionTable"/>
 

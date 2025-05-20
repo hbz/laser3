@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.fileConsistency" />
 
@@ -9,12 +9,13 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.fileConsistency" type="admin"/>
 
-<div class="ui grid">
-    <div class="sixtenn wide column">
 
-        <h3 class="ui header"><i class="ui hdd icon"></i><span class="content">Dateien</span></h3>
-
-        <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header"><i class="hdd icon"></i> Dateien </div>
+    </div>
+    <div class="content">
+        <table class="ui table compact la-table">
             <thead>
                 <tr>
                     <th>${message(code:'default.description.label')}</th>
@@ -40,10 +41,15 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: Doc</span></h3>
-
-         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header"><icon:database /> Objekte: Doc </div>
+    </div>
+    <div class="content">
+        <table class="ui table compact la-table">
             <thead>
                 <tr>
                     <th>${message(code:'default.description.label')}</th>
@@ -91,10 +97,15 @@
                 </tr>
             </tbody>
          </table>
+    </div>
+</div>
 
-        <h3 class="ui header"><i class="ui database icon"></i><span class="content">Objekte: DocContext</span></h3>
-
-        <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header"><icon:database /> Objekte: DocContext </div>
+    </div>
+    <div class="content">
+        <table class="ui table compact la-table">
             <thead>
             <tr>
                 <th>${message(code:'default.description.label')}</th>
@@ -121,81 +132,74 @@
             </tbody>
          </table>
 
-        <br />
-        <br />
-        <br />
-
-        <h3 class="ui header"><i class="ui tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
-
-        <ui:msg class="info" noClose="true">
-            Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
-            <br />
-            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span class="sc_red">status = deleted</span> ) => Doc.
-        </ui:msg>
-
-        <div class="ui list">
-            <g:each in="${listOfDocsInUseOrphaned}" var="doc">
-
-                 <div class="item">${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="index" controller="docstore" id="${doc.uuid}">${doc.uuid}</g:link>
-                    <g:if test="${doc.owner}">
-                        (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
-                    </g:if>
-                <%
-                    print "&nbsp;&nbsp;"
-                    print link(action: 'recoveryDoc', controller: 'admin', params:['docID': doc.id], target: '_blank') { '<i class="ui large icon paste yellow"></i>' }
-                %>
-
-                     <g:if test="${DocContext.findAllByOwner(doc)}">
-                        <div class="ui list">
-                        <g:each in="${DocContext.findAllByOwner(doc)}" var="dc">
-                            <div class="item">
-                        <%
-                            if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
-                                print "<span style='color:red'>"
-                            }
-                            print "&nbsp;&nbsp;&nbsp;&nbsp; ${dc.id} : "
-
-                            if (dc.isShared) {
-                                print " <i class='ui icon share alternate square'></i> "
-                            }
-                            if (dc.sharedFrom) {
-                                print " <i class='ui icon share alternate'></i> "
-                            }
-
-                            if (dc.license) {
-                                println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +
-                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
-                            }
-                            if (dc.subscription) {
-                                println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +
-                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
-                            }
-                            if (dc.org) {
-                                println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +
-                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
-                            }
-                            if (dc.link) {
-                                println "Links ${dc.link.id} "
-                            }
-                            if (dc.surveyConfig) {
-                                println "SurveyConfig ${dc.surveyConfig.id} - ${dc.surveyConfig.type} ${dc.surveyConfig.header} &nbsp;&nbsp; " +
-                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params:['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
-                            }
-
-                            if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
-                                print "</span>"
-                            }
-                        %>
-                            </div>
-                        </g:each>
-                        </div>
-                     </g:if>
-                </div>
-
-            </g:each>
-        </div>
-
     </div>
 </div>
+
+%{--        <div class="header"><i class="tasks icon"></i> ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte) </div>--}%
+
+%{--        <ui:msg class="info" hideClose="true">--}%
+%{--            Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.--}%
+%{--            <br />--}%
+%{--            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span class="sc_red">status = deleted</span> ) => Doc.--}%
+%{--        </ui:msg>--}%
+
+%{--        <div class="ui list">--}%
+%{--            <g:each in="${listOfDocsInUseOrphaned}" var="doc">--}%
+
+%{--                 <div class="item">${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>--}%
+%{--                    <g:if test="${doc.owner}">--}%
+%{--                        (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)--}%
+%{--                    </g:if>--}%
+
+%{--                     <g:if test="${DocContext.findAllByOwner(doc)}">--}%
+%{--                        <div class="ui list">--}%
+%{--                        <g:each in="${DocContext.findAllByOwner(doc)}" var="dc">--}%
+%{--                            <div class="item">--}%
+%{--                        <%--}%
+%{--                            if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {--}%
+%{--                                print "<span style='color:red'>"--}%
+%{--                            }--}%
+%{--                            print "&nbsp;&nbsp;&nbsp;&nbsp; ${dc.id} : "--}%
+
+%{--                            if (dc.isShared) {--}%
+%{--                                print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "--}%
+%{--                            }--}%
+%{--                            if (dc.sharedFrom) {--}%
+%{--                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "--}%
+%{--                            }--}%
+
+%{--                            if (dc.license) {--}%
+%{--                                println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +--}%
+%{--                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }--}%
+%{--                            }--}%
+%{--                            if (dc.subscription) {--}%
+%{--                                println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +--}%
+%{--                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }--}%
+%{--                            }--}%
+%{--                            if (dc.org) {--}%
+%{--                                println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +--}%
+%{--                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }--}%
+%{--                            }--}%
+%{--                            if (dc.link) {--}%
+%{--                                println "Links ${dc.link.id} "--}%
+%{--                            }--}%
+%{--                            if (dc.surveyConfig) {--}%
+%{--                                println "SurveyConfig ${dc.surveyConfig.id} - ${dc.surveyConfig.type} ${dc.surveyConfig.header} &nbsp;&nbsp; " +--}%
+%{--                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params:['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }--}%
+%{--                            }--}%
+
+%{--                            if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {--}%
+%{--                                print "</span>"--}%
+%{--                            }--}%
+%{--                        %>--}%
+%{--                            </div>--}%
+%{--                        </g:each>--}%
+%{--                        </div>--}%
+%{--                     </g:if>--}%
+%{--                </div>--}%
+
+%{--            </g:each>--}%
+%{--        </div>--}%
+
 
 <laser:htmlEnd />

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ExportClickMeService" %>
-<laser:htmlStart message="subscription.details.financials.label" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.financials.label" />
 
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>

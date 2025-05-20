@@ -2,8 +2,12 @@ package de.laser
 
 import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 
 import java.time.LocalDate
@@ -11,9 +15,9 @@ import java.time.ZoneId
 
 /**
  * This service keeps track of the changes performed in the <a href="https://wekb.hbz-nrw.de">we:kb knowledge base</a>. It replaces the entirely
- * functionality of {@link PendingChange}s for {@link TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
+ * functionality of {@link PendingChange}s for {@link de.laser.wekb.TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
  * successors {@link TitleChange}s and {@link IssueEntitlementChange}s. Periodically, via a Cronjob, the last changes are being retrieved from the we:kb
- * using the {@link ApiSource} to fetch the data which is then being cached
+ * using the {@link Wekb} to fetch the data which is then being cached
  */
 @Transactional
 class WekbNewsService {
@@ -36,7 +40,7 @@ class WekbNewsService {
      *     <li>newly created</li>
      *     <li>updated</li>
      * </ul>
-     * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.Package} and {@link Platform}
+     * objects. The following objects are being traced: {@link Org} (provider), {@link de.laser.wekb.Package} and {@link de.laser.wekb.Platform}
      * @return a {@link Map} containing the counts: [all: all, inLaser: in LAS:eR, my: subscribed, marker: bookmarked, created: newly created, updated: updated objects]
      */
     Map getCurrentNews() {
@@ -118,11 +122,16 @@ class WekbNewsService {
         ttl1800.put('wekbNews', result)
     }
 
+    void clearCache() {
+        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
+        ttl1800.remove('wekbNews')
+    }
+
     /**
      * Fetches the changes of the last given amount of days and assembles the counts of:
      * <ul>
      *     <li>providers ({@link Org})</li>
-     *     <li>{@link de.laser.Package}s</li>
+     *     <li>{@link de.laser.wekb.Package}s</li>
      *     <li>{@link Platform}</li>
      * </ul>
      * Counted are for each class:
@@ -144,8 +153,7 @@ class WekbNewsService {
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
         String cs = DateUtils.getSDF_yyyyMMdd_HHmmss().format(frame)
 
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String apiUrl = apiSource.baseUrl + apiSource.fixToken + '/searchApi'
+        String apiUrl = Wekb.getSearchApiURL()
         //log.debug('WekbNewsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]
@@ -182,12 +190,6 @@ class WekbNewsService {
                     it.remove('sortname')
                     it.remove('status')
 
-//                    if (key == 'org') {
-//                        Org o = Org.findByGokbId(it.uuid)
-//                        it.id = o?.id
-//                        it.globalUID = o?.globalUID
-//                    }
-//                    else
                     List match = []
 
                     if (key == 'package') {
@@ -216,9 +218,6 @@ class WekbNewsService {
                 result[key].count = result[key].deleted.size() + result[key].created.size() + result[key].countUpdated
             }
         }
-
-//        Map orgMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Org'])
-//        process(orgMap as Map, 'org')
 
         Map packageMap = gokbService.executeQuery(apiUrl, base + [componentType: 'Package'])
         process(packageMap as Map, 'package')
