@@ -253,10 +253,10 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id)) {
+                                    if(!subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
                                         executorService.execute({
                                             Set<Package> subPackages = SubscriptionPackage.findAllBySubscription(sub)
-                                            String threadName = 'PackageUnlink_' + sub.id
+                                            String threadName = 'PackageTransfer_' + sub.id
                                             Thread.currentThread().setName(threadName)
                                             if(subChildIDs) {
                                                 subPackages.each { SubscriptionPackage sp ->
@@ -268,6 +268,7 @@ class AjaxController {
                                             subPackages.each { SubscriptionPackage sp ->
                                                 Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
                                                 if(missingTipps.size() > 0) {
+                                                    subscriptionService.cachePackageName("PackageTransfer_" + sub.id, sp.pkg.name)
                                                     log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
                                                     subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
                                                 }

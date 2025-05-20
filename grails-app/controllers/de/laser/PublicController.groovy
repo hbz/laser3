@@ -355,7 +355,7 @@ class PublicController {
     @Secured(['ROLE_USER'])
     def api() {
         Map<String, Object> result = [
-                history : [ 'legacy', '3.4', '3.6' ], // todo
+                history : [ 'legacy', '3.4', '3.7' ], // todo
                 version   : ApiManager.VERSION
         ]
         if (params.id) {

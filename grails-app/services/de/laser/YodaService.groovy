@@ -135,7 +135,7 @@ class YodaService {
      * Cleans {@link IssueEntitlement}s which should not exist because the issue entitlements of the parents hold
      */
     void cleanupIssueEntitlements() {
-        Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s where (s.holdingSelection = :entire or (s.holdingSelection = :partial and exists(select ac from AuditConfig ac where ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id and ac.referenceField = 'holdingSelection'))) and s.instanceOf != null", [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
+        Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s where (s.holdingSelection = :entire or (s.holdingSelection = :partial and exists(select ac from AuditConfig ac where ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id and ac.referenceField = 'holdingSelection'))) and s.instanceOf != null", [partial: RDStore.SUBSCRIPTION_HOLDING_PARTIAL, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
         Sql storageSql = GlobalService.obtainStorageSqlConnection(), sql = GlobalService.obtainSqlConnection()
         Connection arrayConn = sql.getDataSource().getConnection()
         int processedTotal = 0
@@ -168,6 +168,8 @@ class YodaService {
                         sql.execute("delete from price_item where pi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from permanent_title where pt_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from issue_entitlement_coverage where ic_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement_group_item where igi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("update cost_item set ci_e_fk = null where ci_e_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from issue_entitlement where ie_id = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                     }
                 }
