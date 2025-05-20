@@ -1,5 +1,8 @@
 package changelogs
 
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
+
 databaseChangeLog = {
 
     changeSet(author: "djebeniani (generated)", id: "1746769820789-1") {
@@ -167,5 +170,27 @@ databaseChangeLog = {
 
     changeSet(author: "djebeniani (generated)", id: "1746769820789-20") {
         addForeignKeyConstraint(baseColumnNames: "sursubre_subscription_fk", baseTableName: "survey_subscription_result", constraintName: "FKt6lvgc6kbsf3jh5rcrpsidl5h", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "sub_id", referencedTableName: "subscription", validate: "true")
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1746769820789-21") {
+        grailsChange {
+            change {
+                String query = 'select s from SurveyOrg s where person is not null'
+                Set<SurveyOrg> surveyOrgs = SurveyOrg.executeQuery(query)
+                int cnt = 0
+                int cntSurOrgPer = surveyOrgs.size()
+                surveyOrgs.each { SurveyOrg surveyOrg ->
+                    SurveyPersonResult surveyPersonResult = new SurveyPersonResult(surveyConfig: surveyOrg.surveyConfig, owner: surveyOrg.surveyConfig.surveyInfo.owner, participant: surveyOrg.org, person: surveyOrg.person, billingPerson: true)
+                    if(!surveyPersonResult.save()) {
+                        println surveyPersonResult.errors.getAllErrors().toListString()
+                    }else {
+                        cnt++
+                    }
+                }
+                confirm("${query}: ${cnt}/${cntSurOrgPer}")
+                changeSet.setComments("${query}: ${cnt}/${cntSurOrgPer}")
+            }
+            rollback {}
+        }
     }
 }

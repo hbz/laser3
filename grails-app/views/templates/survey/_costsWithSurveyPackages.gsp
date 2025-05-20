@@ -21,7 +21,7 @@
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
-    <g:if test="${surveyInfo.owner.id != participant.id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${(costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -268,7 +268,7 @@
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != participant.id && costItemsSurvey}">
+    <g:if test="${costItemsSurvey}">
 
         <div class="ui card la-time-card">
 

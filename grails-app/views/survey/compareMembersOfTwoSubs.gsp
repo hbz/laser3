@@ -13,6 +13,7 @@
 
 <ui:controlButtons>
     <laser:render template="exports"/>
+    <laser:render template="actions"/>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>

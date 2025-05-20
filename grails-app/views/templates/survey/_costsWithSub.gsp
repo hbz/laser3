@@ -17,7 +17,7 @@
         String dataTooltip = ""
     %>
 
-    <g:if test="${surveyInfo.owner.id != contextService.getOrg().id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${actionName != 'show' && (costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -98,7 +98,7 @@
                                 </td>
 
                                 <g:set var="surveyCostItems" scope="request"
-                                       value="${costItem.costItemElement && surveyOrg ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement) : null}"/>
+                                       value="${costItem.costItemElement && surveyOrg ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement) : null}"/>
 
 
                                 <g:if test="${surveyCostItems && !(costItem.costItemElement in (costItemElementsNotInSurveyCostItems))}">
@@ -184,7 +184,7 @@
                         </g:each>
 
                         <g:set var="costItemsWithoutSubCostItems"
-                               value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInListAndPkgIsNull(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
+                               value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInListAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
                         <g:if test="${costItemsWithoutSubCostItems}">
                             <g:each in="${costItemsWithoutSubCostItems}" var="ciWithoutSubCost">
                                 <tr>
@@ -322,7 +322,7 @@
         </div>
     </g:if>
 
-    <g:if test="${surveyInfo.owner.id == contextService.getOrg().id}">
+    <g:if test="${actionName == 'show' && surveyInfo.owner.id == contextService.getOrg().id}">
         <g:set var="consCostItems"
                value="${subscription ? CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
