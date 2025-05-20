@@ -298,7 +298,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getPackageData() {
-        Map<String,Object> result = [subscription:issueEntitlementService.getTargetSubscription(Subscription.get(params.subscription)), curatoryGroups: []], packageMetadata = [:]
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
 
         result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.showConsortiaFunctions = contextService.getOrg().isCustomerType_Consortium()

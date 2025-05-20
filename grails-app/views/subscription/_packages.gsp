@@ -120,7 +120,7 @@
                                                     </span>
                                                 </g:if>
                                                 <g:else>
-                                                    <div class="ui simple dropdown clearable negative icon button la-modern-button la-popup-tooltip ${unlinkTitlesDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
+                                                    <div class="ui simple dropdown clearable negative icon button la-modern-button la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
                                                         <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
                                                         <div class="menu">
                                                             <g:if test="${!auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
@@ -155,15 +155,15 @@
                                                     </span>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${unlinkTitlesDisabled}">
-                                                        <span class="la-popup-tooltip" data-content="${unlinkTitlesDisabledTooltip}">
+                                                    <g:if test="${auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
                                                             <g:link controller="subscription"
                                                                     action="unlinkPackage"
                                                                     params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                                     data-confirm-term-how="delete"
                                                                     data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
-                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} ${unlinkTitlesDisabled}"
+                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} disabled"
                                                                     role="button"
                                                                     aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                                 <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
@@ -200,15 +200,15 @@
                                                     </span>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${unlinkTitlesDisabled}">
-                                                        <span class="la-popup-tooltip" data-content="${unlinkTitlesDisabledTooltip}">
+                                                    <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
                                                             <g:link controller="subscription"
                                                                     action="unlinkPackage"
                                                                     params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
                                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                                     data-confirm-term-how="delete"
                                                                     data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
-                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} ${unlinkTitlesDisabled}"
+                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} disabled"
                                                                     role="button"
                                                                     aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                                 <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
