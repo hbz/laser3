@@ -349,18 +349,26 @@ class UiTagLib {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
                                 out   << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE + '"></i>'
                                 out   << '<div class="menu">'
-                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
-                                        controller: 'ajax',
-                                        action: 'toggleAudit',
-                                        params: ['owner': oid, 'property': [objAttr]],
-                                        class: 'item'
-                                )
-                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>erhalten</strong>',
-                                        controller: 'ajax',
-                                        action: 'toggleAudit',
-                                        params: ['owner': oid, 'property': [objAttr], keep: true],
-                                        class: 'item'
-                                )
+                                if(objAttr == 'holdingSelection') {
+                                    out << g.link( 'Vererbung deaktivieren',
+                                            controller: 'ajax',
+                                            action: 'toggleAudit',
+                                            params: ['owner': oid, 'property': [objAttr], keep: true],
+                                            class: 'item')
+                                }
+                                else {
+                                    out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
+                                            controller: 'ajax',
+                                            action: 'toggleAudit',
+                                            params: ['owner': oid, 'property': [objAttr]],
+                                            class: 'item'
+                                    )
+                                    out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>erhalten</strong>',
+                                            controller: 'ajax',
+                                            action: 'toggleAudit',
+                                            params: ['owner': oid, 'property': [objAttr], keep: true],
+                                            class: 'item')
+                                }
                                 out   << '</div>'
                                 out << '</div>'
                             }

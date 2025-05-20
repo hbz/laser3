@@ -906,6 +906,9 @@ class SurveyControllerService {
                 if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
             }
 
+            result.vendorListTotal = result.vendorTotal.size()
+            result.vendorList = result.vendorTotal.drop(result.offset).take(result.max)
+
             [result: result, status: STATUS_OK]
         }
     }
@@ -1426,11 +1429,11 @@ class SurveyControllerService {
                                     }
                                 } else {
                                     if (cost_item_element) {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
                                             createCostItem = true
                                         }
                                     } else {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
                                             createCostItem = true
                                         }
                                     }
@@ -4408,7 +4411,7 @@ class SurveyControllerService {
                 newMap.oldSub = sub._getCalculatedPreviousForSurvey()
 
                 newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
-                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
+                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
 
                 result.participantsList << newMap
 
@@ -4706,7 +4709,7 @@ class SurveyControllerService {
                 newMap.newSub = sub
 
                 newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
-                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
+                newMap.surveyCostItem = newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNullAndSurveyConfigSubscriptionIsNull(newMap.surveyOrg, RDStore.COST_ITEM_DELETED, result.selectedCostItemElement) : null
 
                 result.participantsList << newMap
 
@@ -5194,10 +5197,9 @@ class SurveyControllerService {
                 if (!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)) {
 
                     Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                            [parentSub  : result.parentSubscription,
+                            [parentSub  : result.surveyConfig.subscription,
                              participant: it.participant
                             ])[0]
-
 
                     if (!oldSubofParticipant) {
                         oldSubofParticipant = result.parentSubscription
