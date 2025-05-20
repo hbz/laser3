@@ -156,6 +156,7 @@ class YodaService {
                         sql.execute("delete from permanent_title where pt_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from issue_entitlement_coverage where ic_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from issue_entitlement_group_item where igi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("update cost_item set ci_e_fk = null where ci_e_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                         sql.execute("delete from issue_entitlement where ie_id = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                     }
                 }
