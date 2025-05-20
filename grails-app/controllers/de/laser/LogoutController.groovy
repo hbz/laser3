@@ -8,7 +8,7 @@ import grails.plugin.springsecurity.annotation.Secured
 /**
  * This controller is responsible for session destructing upon logout
  */
-@Secured(['IS_AUTHENTICATED_FULLY'])
+@Secured(['IS_AUTHENTICATED_FULLY', 'IS_AUTHENTICATED_REMEMBERED'])
 class LogoutController {
 
 	ContextService contextService
