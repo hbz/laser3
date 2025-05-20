@@ -9,10 +9,18 @@ import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveySubscriptionResult
+import de.laser.survey.SurveyTransfer
+import de.laser.survey.SurveyVendorResult
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
@@ -288,7 +296,7 @@ class DeletionService {
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
-        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfigInList(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
         SurveyInfo surveyInfo
         // collecting informations
@@ -485,7 +493,21 @@ class DeletionService {
 
                             SurveyResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
 
+                            SurveyPackageResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveySubscriptionResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyPersonResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyTransfer.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
                             SurveyConfigProperties.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigPackage.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigSubscription.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigVendor.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
 
                             SurveyOrg.findAllBySurveyConfig(tmp).each { tmp2 ->
 
@@ -510,10 +532,22 @@ class DeletionService {
 
                             SurveyResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
 
+                            SurveyPackageResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveySubscriptionResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyPersonResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyVendorResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyTransfer.findAllByOrgAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
                             tmp.delete()
 
                         }
                     }
+
+                    SurveyTransfer.findAllByOrgAndSubscription(sub.getSubscriber(), sub).each { tmp2 -> tmp2.delete() }
 
                     if (surveyInfo){
                         surveyInfo.delete()

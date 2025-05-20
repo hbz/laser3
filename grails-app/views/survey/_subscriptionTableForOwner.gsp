@@ -205,7 +205,15 @@
                         </g:link>
                     </td>
                     <td class="x">
+                        <g:if test="${actionName == 'createSubscriptionSurvey' && editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                    data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
+                                    controller="survey" action="addSubtoSubscriptionSurvey"
+                                    params="[sub: s.id]">
+                                <i class="${Icon.CMD.EDIT}"></i>
+                            </g:link>
 
+                        </g:if>
                     </td>
                 </tr>
             </g:each>
