@@ -556,6 +556,6 @@ class BootStrapService {
     }
 
     void genericDataCleansing() {
-        ERMS6460.go() // TMP only - remove after release
+        // ERMS6460.go() - deactivated after release 3.5
     }
 }

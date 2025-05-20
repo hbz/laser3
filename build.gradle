@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
-version '3.5'
-group 'de.laser'
+version = '3.5'
+group   = 'de.laser'
 
 // ---[ build script ]---
 
@@ -11,16 +11,16 @@ buildscript {
         maven { url = 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion                // 2024
-        classpath 'org.grails.plugins:hibernate5:' + gormVersion                                // 2024
-        classpath 'org.grails.plugins:database-migration:' + databaseMigrationVersion           // 2024
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineVersion       // 2024
-        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.5.0'             // 2025
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.52.0'                          // 2025
+        classpath 'org.grails:grails-gradle-plugin:'                + grailsGradlePluginVersion // 2024
+        classpath 'org.grails.plugins:hibernate5:'                  + gormVersion               // 2024
+        classpath 'org.grails.plugins:database-migration:'          + databaseMigrationVersion  // 2024
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:'  + assetPipelineVersion      // 2024
+        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:'  + gradleGitPropertiesVersion  // 2025
+        classpath 'com.github.ben-manes:gradle-versions-plugin:'                + gradleVersionsPluginVersion // 2025
 
         // -- dependency resolving issue
-        classpath 'org.grails:grails-shell:6.1.2'                                           // 2024 : + org.grails.plugins:database-migration
-        classpath 'org.quartz-scheduler:quartz:2.4.0'                                       // 2024
+        classpath 'org.grails:grails-shell:'        + grailsShellVersion     // 2024 : + org.grails.plugins:database-migration
+        classpath 'org.quartz-scheduler:quartz:'    + quartzSchedulerVersion // 2024
     }
 }
 
@@ -89,51 +89,51 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:' + elasticsearchVersion                                // 2025
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:' + elasticsearchVersion  // 2025
+    implementation 'org.elasticsearch:elasticsearch:'                               + elasticsearchVersion // 2025
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:' + elasticsearchVersion // 2025
 
-    implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
+    implementation 'org.grails:grails-shell:'               + grailsShellVersion            // 2024 : + org.grails.plugins:database-migration
 
-    implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
+    implementation 'org.grails.plugins:audit-logging:'      + auditLoggingVersion           // 2021
     implementation 'org.grails.plugins:database-migration:' + databaseMigrationVersion, {   // 2024
         exclude module: 'spring-boot-cli'
     }
-    implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
-    implementation 'org.grails.plugins:mail:3.0.0'                          // 2021
-    implementation 'org.grails.plugins:quartz:3.0.0'                        // 2024
-    implementation 'org.grails.plugins:spring-security-core:6.1.2'          // 2024
-    implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
+    implementation 'org.grails.plugins:grails-executor:'        + grailsExecutorVersion     // 2016 : [deprecated]
+    implementation 'org.grails.plugins:mail:'                   + mailVersion               // 2021
+    implementation 'org.grails.plugins:quartz:'                 + quartzVersion             // 2024
+    implementation 'org.grails.plugins:spring-security-core:'   + springSecurityCoreVersion // 2024
+    implementation 'org.grails.plugins:wkhtmltopdf:'            + wkhtmltopdfVersion        // 2018
 
-    implementation 'org.hibernate:hibernate-core:' + hibernateVersion       // 2023
-    implementation 'org.hibernate:hibernate-ehcache:' + hibernateVersion    // 2023 : + org.hibernate:hibernate-core:5.6.15.Final
+    implementation 'org.hibernate:hibernate-core:'      + hibernateVersion  // 2023
+    implementation 'org.hibernate:hibernate-ehcache:'   + hibernateVersion  // 2023 : + org.hibernate:hibernate-core:5.6.15.Final
     implementation 'net.sf.ehcache:ehcache:2.10.9.2'                        // 2021
 //    implementation 'org.hibernate:hibernate-jcache:' + hibernateVersion   //        replacement for hibernate-ehcache:5.6.14.Final
 //    implementation 'org.ehcache:ehcache:3.10.8'                           //        replacement for net.sf.ehcache:ehcache:2.10.9.2
 
-    implementation 'commons-io:commons-io:2.19.0'                           // 2025
-    implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
-    implementation 'com.vladsch.flexmark:flexmark:' + flexmarkVersion                       // 2023
-    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:' + flexmarkVersion // 2023
-    implementation 'com.vladsch.flexmark:flexmark-ext-tables:' + flexmarkVersion            // 2023
-    implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
-    implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
-    implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
-    implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
-    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
-    implementation 'org.quartz-scheduler:quartz:2.4.0'                      // 2024
+    implementation 'commons-io:commons-io:'                     + commonsIoVersion            // 2025
+    implementation 'com.github.albfernandez:juniversalchardet:' + juniversalchardetVersion    // 2024
+    implementation 'com.vladsch.flexmark:flexmark:'                         + flexmarkVersion // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:'   + flexmarkVersion // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-tables:'              + flexmarkVersion // 2023
+    implementation 'io.github.gpc:asynchronous-mail:'   + asynchronousMailVersion   // 2023
+    implementation 'org.apache.commons:commons-lang3:'  + commonsLang3Version       // 2024
+    implementation 'org.apache.poi:poi-ooxml:'          + poiOoxmlVersion           // 2017 : [freeze] : 5.x available
+    implementation 'org.codehaus.gpars:gpars:'          + gparsVersion              // 2014
+    implementation 'org.codehaus.janino:janino:'        + janinoVersion             // 2024 : logback
+    implementation 'org.liquibase:liquibase-core:'      + liquibaseCoreVersion      // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
+    implementation 'org.quartz-scheduler:quartz:'       + quartzSchedulerVersion    // 2024
 
     // --------------------------------------------------
 
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineVersion     // 2024
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:' + assetPipelineVersion       // 2024
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:' + assetPipelineVersion     // 2024
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineVersion // 2024
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:'   + assetPipelineVersion // 2024
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:' + assetPipelineVersion // 2024
 
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [freeze]
+    runtimeOnly 'javax.xml.bind:jaxb-api:'   + jaxbApiVersion    // 2018 : [freeze]
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
-    runtimeOnly 'org.graalvm.sdk:graal-sdk:22.0.0.2'                        // + com.bertramlabs.plugins:asset-pipeline-core [freeze]
-    runtimeOnly 'org.postgresql:postgresql:42.7.5'                          // 2025
+    runtimeOnly 'org.graalvm.sdk:graal-sdk:' + graalSdkVersion   // + com.bertramlabs.plugins:asset-pipeline-core [freeze]
+    runtimeOnly 'org.postgresql:postgresql:' + postgresqlVersion // 2025
 }
 
 java {

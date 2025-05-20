@@ -9,7 +9,7 @@
 - Hibernate 5.6.15.Final / GORM 8.1.1
 - Elasticsearch 7.17.28
 - Logback 1.2.12
-- Gradle 8.13
+- Gradle 8.12.1
 - Groovy 3.0.23
 - Java 17
 - PostgreSQL 16+
