@@ -244,6 +244,7 @@ class YodaService {
                                          "vendor:2dbf4b63-ea15-4ee2-bb7a-df06a7a79bc9",
                                          "vendor:bc6b0944-5c6d-469b-a94b-921e4eb1a48f",
                                          "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7"]
+        Map<String, String> lsConsortium = [:]
         /*
         step 1:
         library supplier should be kept
