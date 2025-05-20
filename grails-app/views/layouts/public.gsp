@@ -7,6 +7,8 @@
     <meta charset="utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
     <meta name="viewport" content="initial-scale = 1.0">
+    <meta name="google-site-verification" content="Fj609YsnLVTvHX9lLH9QF4-M-_8Bmgqmp3ZXmauEoCQ" />
+
 
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
