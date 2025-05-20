@@ -1,11 +1,11 @@
 package de.laser.convenience
 
 import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
-import de.laser.Provider
-import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import de.laser.auth.User
 
 /**

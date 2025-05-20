@@ -1,9 +1,9 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/actions" />
 
         <g:if test="${editable}">
             <g:if test="${actionName == 'show'}">
@@ -52,16 +52,7 @@
             </g:elseif>
         </g:if>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <g:if test="${actionName in ['show']}">
-                <div class="divider"></div>
-                <g:link class="item js-open-confirm-modal la-popup-tooltip la-delay" action="disableAllUsers" id="${params.id}"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
-                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
-                </g:link>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icons.CMD_DELETE} icon"></i> ${message(code:'deletion.org')}</g:link>
-            </g:if>
-        </sec:ifAnyGranted>
+        <g:render template="actions_roleAdminOptions" />
     </ui:actionsDropdown>
 </g:if>
 
@@ -70,8 +61,8 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org']]}" />
 </g:if>
 
 

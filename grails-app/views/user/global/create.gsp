@@ -1,6 +1,6 @@
-<%@ page import="de.laser.*;de.laser.auth.Role" %>
+<%@ page import="de.laser.ui.Btn; de.laser.*;de.laser.auth.Role" %>
 
-<laser:htmlStart message="user.create_new.label" serviceInjection="true" />
+<laser:htmlStart message="user.create_new.label" />
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet
@@ -63,8 +63,8 @@
                         <g:if test="${controllerName == 'organisation'}">
                             <input type="hidden" name="id" value="${orgInstance.id}" />
                         </g:if>
-                        <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
-                        <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+                        <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="${Btn.SIMPLE}" disabled/>
+                        <input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
                     </div>
 
                 </fieldset>

@@ -5,7 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.OrgSetting
-import de.laser.Package
+import de.laser.wekb.Package
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.api.v0.*
@@ -41,12 +41,18 @@ class ApiStatistic {
      */
     static private List<Org> getAccessibleOrgs() {
 
+//        List<Org> orgs = OrgSetting.executeQuery(
+//                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+//                        "and (o.status is null or o.status != :deleted)", [
+//                key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
+//                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
+//                deleted: RefdataValue.getByValueAndCategory('Deleted', 'org.status') // TODO: erms-6224 - removed o.status != 'deleted'
+//        ])
+        // TODO: erms-6238
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue and o.archiveDate is null", [
                             key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
-                            rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
-                            deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                            rdValue: RDStore.YN_YES
                     ])
 
         orgs
@@ -81,7 +87,7 @@ class ApiStatistic {
      * Checks implicit NATSTAT_SERVER_ACCESS; i.e. only those packages are being listed which are subscribed by at least one
      * subscriber who gave permission to the Nationaler Statistikserver to access its data
      * @return JSON
-     * @see ApiUnsecuredMapReader#getPackageStubMap(de.laser.Package)
+     * @see ApiUnsecuredMapReader#getPackageStubMap(de.laser.wekb.Package)
      */
     static JSON getAllPackages() {
         Collection<Object> result = []
@@ -147,9 +153,11 @@ class ApiStatistic {
         Collection<Object> result = []
         orgRoles.each { ogr ->
             if (ogr.roleType.id == RDStore.OR_CONTENT_PROVIDER.id) {
-                if (ogr.org.status?.value == 'Deleted') {
-                }
-                else {
+//                if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
+//                }
+//                else {
+                // TODO: erms-6238
+                if (! ogr.org.isArchived()) {
                     result.add(ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org))
                 }
             }
@@ -233,12 +241,14 @@ class ApiStatistic {
 
                 OrgRole.findAllBySub(subPkg.subscription).each { ogr ->
 
-                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]) {
+                    if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]) {
                         if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
-                            if (ogr.org.status?.value == 'Deleted') {
-                            }
-                            else {
+//                            if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
+//                            }
+//                            else {
+                            // TODO: erms-6238
+                            if (! ogr.org.isArchived()) {
                                 Map<String, Object> org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
                                 if (org) {
                                     orgList.add(ApiToolkit.cleanUp(org, true, true))

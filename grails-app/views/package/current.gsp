@@ -1,13 +1,10 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.wekb.Package" %>
 <laser:htmlStart message="package.show.nav.current" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
     <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
 </ui:breadcrumbs>
-
-<ui:modeSwitch controller="package" action="show" params="${params}"/>
-
 <ui:controlButtons>
     <ui:exportDropdown>
         <%--
@@ -63,7 +60,7 @@
             <g:else>
                 --%>
             <%-- enabling LAS:eR confirms for AJAX links requires additional engineering --%>
-                <g:link class="item kbartExport"
+                <g:link class="item kbartExport  js-no-wait-wheel"
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             <%--</g:else>--%>
         </ui:exportDropdownItem>
@@ -82,6 +79,8 @@
 
 <laser:render template="nav"/>
 
+<div id="downloadWrapper"></div>
+
 <ui:messages data="${flash}"/>
 
 <ui:errors bean="${packageInstance}"/>
@@ -89,10 +88,9 @@
 <laser:render template="/templates/filter/tipp_ieFilter"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
-    <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+    <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
 
-<div id="downloadWrapper"></div>
 <g:if test="${titlesList}">
     <div class="ui form">
         <div class="two wide fields">
@@ -100,7 +98,7 @@
                 <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 2, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
             </div>
             <div class="field la-field-noLabel">
-                <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                <ui:showMoreCloseButton />
             </div>
         </div>
     </div>
@@ -114,7 +112,7 @@
     </div>
 
     <div class="ui clearing segment la-segmentNotVisable">
-        <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+        <ui:showMoreCloseButton />
     </div>
 
     <ui:paginate action="current" controller="package" params="${params}" max="${max}" total="${num_tipp_rows}"/>

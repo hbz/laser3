@@ -1,4 +1,4 @@
-<%@page import="de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ui.Icon; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
@@ -10,7 +10,7 @@
 %{--                <a class="item" data-tab="package-filter-tab-3">${message(code:'platform.label')}</a>--}%
 %{--            </g:if>--}%
 
-            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+            <a class="item" data-tab="package-filter-tab-help"> ? %{--<i class="${Icon.UI.HELP}"></i>--}%</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="package-filter-tab-1">
@@ -46,7 +46,7 @@
         <div class="ui bottom attached tab segment" data-tab="package-filter-tab-help">
             <div class="field">
                 <div style="text-align:center; padding:2em 0">
-                    <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.packages.png')}"/>
+                    <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'media', file: 'reporting/global.packages.png')}"/>
                 </div>
             </div>
         </div><!-- .tab -->

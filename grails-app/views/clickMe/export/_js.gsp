@@ -9,15 +9,12 @@
             $('#dynamicModalContainer').empty().html(data);
 
             $('#dynamicModalContainer .ui.modal').modal({
+               detachable: true,
                onShow: function () {
                     r2d2.initDynamicUiStuff('#exportClickMeModal');
                     r2d2.initDynamicXEditableStuff('#exportClickMeModal');
                     $("html").css("cursor", "auto");
-                },
-                detachable: true,
-                autofocus: false,
-                closable: false,
-                transition: 'scale',
+               },
                 onApprove : function() {
                     $(this).find('#exportClickMeModal .ui.form').submit();
                     return false;

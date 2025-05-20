@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Icon; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*; de.laser.AuditConfig" %>
 <laser:serviceInjection />
 <!-- _licProp -->
 
@@ -82,17 +82,17 @@
         <%-- custom properties --%>
 
             <g:if test="${derivedPropDefGroups.orphanedProperties}">
-                <g:set var="filteredOrphanedProperties" value="${derivedPropDefGroups.orphanedProperties.findAll { prop -> (prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}}"/>
+                <g:set var="filteredOrphanedProperties" value="${derivedPropDefGroups.orphanedProperties.findAll { prop -> (prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isVisibleExternally() || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}}"/>
             </g:if>
             <g:if test="${filteredOrphanedProperties}">
                 <div>
                     <h5 class="ui header">
-                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icons.LICENSE} icon"></i>${license}</g:link>
+                        <g:link controller="license" action="show" id="${license.id}"><i class="${Icon.LICENSE}"></i>${license}</g:link>
                         (${message(code:'subscription.properties')})
                     </h5>
 
                     <laser:render template="/subscription/licPropGroup" model="${[
-                            propList: derivedPropDefGroups.orphanedProperties,
+                            propList: filteredOrphanedProperties,
                             ownObj: license
                     ]}"/>
                 </div>

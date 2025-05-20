@@ -1,42 +1,40 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
-import de.laser.properties.PropertyDefinition
-import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
-import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfigVendor
-import de.laser.survey.SurveyVendorResult
 import de.laser.traces.DeletedObject
-import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.Session
 import org.springframework.context.MessageSource
-import org.springframework.transaction.TransactionStatus
-
-import javax.servlet.ServletOutputStream
-import java.text.SimpleDateFormat
 
 @Transactional
 class VendorService {
 
     ContextService contextService
     DocstoreService docstoreService
-    DeletionService deletionService
     GokbService gokbService
     MessageSource messageSource
     TaskService taskService
-    UserService userService
     WorkflowService workflowService
 
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
@@ -45,13 +43,13 @@ class VendorService {
 
     /**
      * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
-     * @param vendor the {@link Vendor} for which the contacts should be retrieved
+     * @param vendor the {@link de.laser.wekb.Vendor} for which the contacts should be retrieved
      * @param onlyPublic retrieve only public contacts?
      * @param functionType the function type of the contacts to be requested
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
-     * @return a {@link List} of {@link Person}s matching to the function type
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
+    List<Person> getContactPersonsByFunctionType(Vendor vendor, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [vendor: vendor]
         String functionTypeFilter = ''
         if(functionType) {
@@ -65,7 +63,7 @@ class VendorService {
             )
         }
         else {
-            queryParams.ctx = contextOrg
+            queryParams.ctx = contextService.getOrg()
             Person.executeQuery(
                     'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor ' + functionTypeFilter +
                             ' and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )',
@@ -111,166 +109,6 @@ class VendorService {
         if(wekbResult.recordsCount > 0)
             records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
         records
-    }
-
-    /**
-     * should be a batch process, triggered by DBM change script, but should be triggerable for Yodas as well
-     * Changes agencies ({@link Org}s defined as such) into {@link Vendor}s
-     */
-    void migrateVendors() {
-        PropertyDefinition.findAllByDescr(PropertyDefinition.ORG_PROP).each { PropertyDefinition orgPropDef ->
-            if(!PropertyDefinition.findByNameAndDescrAndTenant(orgPropDef.name, PropertyDefinition.VEN_PROP, orgPropDef.tenant)) {
-                PropertyDefinition venPropDef = new PropertyDefinition(
-                        name: orgPropDef.name,
-                        name_de: orgPropDef.name_de,
-                        name_en: orgPropDef.name_en,
-                        expl_de: orgPropDef.expl_de,
-                        expl_en: orgPropDef.expl_en,
-                        descr: PropertyDefinition.VEN_PROP,
-                        type: orgPropDef.type,
-                        refdataCategory: orgPropDef.refdataCategory,
-                        multipleOccurrence: orgPropDef.multipleOccurrence,
-                        mandatory: orgPropDef.mandatory,
-                        isUsedForLogic: orgPropDef.isUsedForLogic,
-                        isHardData: orgPropDef.isHardData,
-                        tenant: orgPropDef.tenant
-                )
-                venPropDef.save()
-            }
-        }
-        Org.withTransaction { TransactionStatus ts ->
-            Set<Combo> agencyCombos = Combo.executeQuery('select c from Combo c, Org o join o.orgType ot where (c.fromOrg = o or c.toOrg = o) and ot = :agency', [agency: RDStore.OT_AGENCY])
-            agencyCombos.each { Combo ac ->
-                VendorLink vl = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS)
-                vl.from = Vendor.convertFromAgency(ac.fromOrg)
-                vl.to = Vendor.convertFromAgency(ac.toOrg)
-                vl.dateCreated = ac.dateCreated
-                if(vl.save()) {
-                    ac.delete()
-                }
-                else {
-                    log.error(vl.getErrors().getAllErrors().toListString())
-                }
-            }
-            ts.flush()
-            Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            agencyContacts.each { PersonRole pr ->
-                Vendor v = Vendor.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if (!v) {
-                    v = Vendor.convertFromAgency(pr.org)
-                }
-                if(pr.prs.tenant == pr.org) {
-                    List<Contact> contacts = new ArrayList(pr.prs.contacts)
-                    contacts.each { Contact tmp ->
-                        tmp.delete()
-                    }
-                    pr.prs.contacts.clear()
-                    pr.prs.delete()
-                    pr.delete()
-                }
-                else {
-                    pr.vendor = v
-                    pr.org = null
-                    pr.save()
-                }
-            }
-            ts.flush()
-            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            docOrgContexts.each { DocContext dc ->
-                Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if (!v) {
-                    v = Vendor.convertFromAgency(dc.org)
-                }
-                if(dc.targetOrg == dc.org)
-                    dc.targetOrg = null
-                dc.org = null
-                dc.vendor = v
-                dc.save()
-            }
-            ts.flush()
-            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
-            docTargetOrgContexts.each { DocContext dc ->
-                Vendor v = Vendor.findByGlobalUID(dc.targetOrg.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                if (!v) {
-                    v = Vendor.convertFromAgency(dc.targetOrg)
-                }
-                dc.targetOrg = null
-                dc.org = null
-                dc.vendor = v
-                dc.save()
-            }
-            ts.flush()
-            Set<OrgRole> agencyRelations = OrgRole.findAllByRoleType(RDStore.OR_AGENCY)
-            Set<Long> toDelete = []
-            agencyRelations.each { OrgRole ar ->
-                if(!ar.org.getCustomerType()) {
-                    Vendor v = Vendor.findByGlobalUID(ar.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
-                    if (!v) {
-                        v = Vendor.convertFromAgency(ar.org)
-                    }
-                    if (ar.sub && !VendorRole.findByVendorAndSubscription(v, ar.sub)) {
-                        VendorRole vr = new VendorRole(vendor: v, subscription: ar.sub, isShared: ar.isShared)
-                        if (vr.save()) {
-                            if (ar.isShared) {
-                                List<Subscription> newTargets = Subscription.findAllByInstanceOf(vr.subscription)
-                                newTargets.each{ Subscription sub ->
-                                    vr.addShareForTarget_trait(sub)
-                                }
-                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
-                            }
-                            log.debug("processed: ${vr.vendor}:${vr.subscription} ex ${ar.org}:${ar.sub}")
-                        }
-                        else log.error(vr.errors.getAllErrors().toListString())
-                    }
-                    else if(ar.lic && !VendorRole.findByVendorAndLicense(v, ar.lic)) {
-                        VendorRole vr = new VendorRole(vendor: v, license: ar.lic, isShared: ar.isShared)
-                        if (vr.save()) {
-                            if (ar.isShared) {
-                                List<License> newTargets = License.findAllByInstanceOf(vr.license)
-                                newTargets.each{ License lic ->
-                                    vr.addShareForTarget_trait(lic)
-                                }
-                                //log.debug("${OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: ar])} shares deleted")
-                            }
-                            log.debug("processed: ${vr.vendor}:${vr.license} ex ${ar.org}:${ar.lic}")
-                        }
-                        else log.error(vr.errors.getAllErrors().toListString())
-                    }
-                    else if (ar.pkg) {
-                        if(!PackageVendor.findByVendorAndPkg(v, ar.pkg)) {
-                            PackageVendor pv = new PackageVendor(vendor: v, pkg: ar.pkg)
-                            if (pv.save())
-                                log.debug("processed: ${pv.vendor}:${pv.pkg} ex ${ar.org}:${ar.pkg}")
-                            else log.error(pv.errors.getAllErrors().toListString())
-                        }
-                    }
-                }
-                ar.delete()
-            }
-            ts.flush()
-            toDelete.collate(50000).eachWithIndex { subSet, int i ->
-                log.debug("deleting records ${i * 50000}-${(i + 1) * 50000}")
-                OrgRole.executeUpdate('delete from OrgRole ar where ar.sharedFrom.id in (:toDelete)', [toDelete: subSet])
-                OrgRole.executeUpdate('delete from OrgRole ar where ar.id in (:toDelete)', [toDelete: subSet])
-            }
-            ts.flush()
-        }
-        Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:agency)', [agency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]])
-        agencies.each { Org agency ->
-            OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
-            List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
-            oldPersons.each { Person old ->
-                PersonRole.executeUpdate('delete from PersonRole pr where pr.prs = :oldPerson', [oldPerson: old])
-                Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
-            }
-            Map<String, Object> delResult = deletionService.deleteOrganisation(agency, null, false)
-            if(delResult.deletable == false) {
-                log.info("${agency.name}:${agency.id} could not be deleted. Pending: ${delResult.info.findAll{ info -> info[1].size() > 0 && info[2] == DeletionService.FLAG_BLOCKER }.toListString()}")
-                agency.removeFromOrgType(RDStore.OT_AGENCY)
-                agency.save()
-            }
-        }
     }
 
     /**
@@ -401,13 +239,15 @@ class VendorService {
 
                     markers.each { Marker mkr ->
                         mkr.ven = replacement
+                        mkr.save()
                     }
 
                     // persons
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
                     updateCount = 0
                     deleteCount = 0
-                    PersonRole.findAllByVendor(vendor).each { PersonRole pr ->
+                    vendor.prsLinks.clear()
+                    prsLinks.each { PersonRole pr ->
                         Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
                         if(!equivalent) {
                             pr.vendor = replacement
@@ -513,8 +353,11 @@ class VendorService {
         result
     }
 
-    boolean isMyVendor(Vendor vendor, Org contextOrg) {
-        int count = VendorRole.executeQuery('select count(*) from OrgRole oo, VendorRole vr where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context and vr.vendor = :vendor', [vendor: vendor, context: contextOrg])[0]
+    boolean isMyVendor(Vendor vendor) {
+        int count = VendorRole.executeQuery(
+                'select count(*) from OrgRole oo, VendorRole vr where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context and vr.vendor = :vendor',
+                [vendor: vendor, context: contextService.getOrg()]
+        )[0]
         count > 0
     }
 
@@ -535,17 +378,17 @@ class VendorService {
         Map<String, Object> result = [user: contextUser,
                                       institution: contextOrg,
                                       contextOrg: contextOrg, //for templates
-                                      contextCustomerType:contextOrg.getCustomerType(),
-                                      wekbApi: ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]
+                                      contextCustomerType:contextOrg.getCustomerType()]
         if(params.id) {
             result.vendor = Vendor.get(params.id)
-            result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(contextUser, contextOrg, 'INST_EDITOR')
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.vendor).size()
+            result.editable = contextService.isInstEditor()
+            result.isAdmin = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-            result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)
-            result.notesCount       = docstoreService.getNotesCount(result.vendor, result.institution)
-            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution)
+            result.docsCount        = docstoreService.getDocsCount(result.vendor, contextService.getOrg())
+            result.notesCount       = docstoreService.getNotesCount(result.vendor, contextService.getOrg())
+            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, contextService.getOrg())
         }
 
         SwissKnife.setPaginationParams(result, params, contextUser)
@@ -557,10 +400,9 @@ class VendorService {
         User contextUser = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, contextUser)
         Locale locale = LocaleUtils.getCurrentLocale()
-        result.wekbApi = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if (queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.' + queryCuratoryGroups.error) as String
         } else {
@@ -631,19 +473,22 @@ class VendorService {
         if (params.containsKey('sort')) {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         } else
-            vendorQuery += " order by v.sortname "
+            vendorQuery += " order by v.name "
 
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
         result.vendorListTotal = vendorsTotal.size()
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+        result.vendorTotal = vendorsTotal
         result
 
     }
 
-    Set<Long> getCurrentVendorIds(Org context) {
-        Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
-                [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+    Set<Vendor> getCurrentVendors(Org context) {
+        Set<Vendor> result = VendorRole.executeQuery("select v from VendorRole vr join vr.vendor as v where (vr.subscription in (select sub from OrgRole where org = :context and roleType in (:subRoleTypes)) or vr.license in (select lic from OrgRole where org = :context and roleType in (:licRoleTypes))) order by v.name",
+                [context:context,
+                 subRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],
+                 licRoleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]])
         result
     }
 

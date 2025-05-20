@@ -6,11 +6,12 @@ import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -20,6 +21,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class PlatformController  {
 
     ContextService contextService
+    FilterService filterService
     GokbService gokbService
     PlatformControllerService platformControllerService
     PropertyService propertyService
@@ -41,9 +43,9 @@ class PlatformController  {
     /**
      * Landing point; redirects to the list of platforms
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def index() {
         redirect action: 'list', params: params
@@ -54,21 +56,20 @@ class PlatformController  {
      * Beware that a we:kb API connection has to be established for the list to work!
      * @return a list of all platforms currently recorded in the we:kb ElasticSearch index
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def list() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map<String, Object> result = [
                 user: contextService.getUser(),
-                editUrl: apiSource.editUrl,
+                baseUrl: Wekb.getURL(),
                 myPlatformIds: [],
                 flagContentGokb : true, // gokbService.doQuery
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -83,53 +84,7 @@ class PlatformController  {
                 [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
-        Map queryParams = [componentType: "Platform"]
-
-        if(params.q) {
-            result.filterSet = true
-            queryParams.name = params.q
-        }
-
-        if(params.provider) {
-            result.filterSet = true
-            queryParams.provider = params.provider
-        }
-
-        if(params.status) {
-            result.filterSet = true
-            queryParams.status = RefdataValue.get(params.status).value
-        }
-        else if(!params.filterSet) {
-            result.filterSet = true
-            queryParams.status = "Current"
-            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
-        }
-
-        if (params.ipSupport) {
-            result.filterSet = true
-            queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
-        }
-        if (params.shibbolethSupport) {
-            result.filterSet = true
-            queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-        }
-        if (params.counterCertified) {
-            result.filterSet = true
-            queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-        }
-        if(params.counterSushiSupport) {
-            result.filterSet = true
-            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
-        }
-        if (params.curatoryGroup) {
-            result.filterSet = true
-            queryParams.curatoryGroupExact = params.curatoryGroup
-        }
-
-        if (params.curatoryGroupType) {
-            result.filterSet = true
-            queryParams.curatoryGroupType = params.curatoryGroupType
-        }
+        Map<String, Object> queryParams = filterService.getWekbPlatformFilterParams(params)
 
         // overridden pagination - all uuids are required
         Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:10000, status: params.status], queryParams)
@@ -140,7 +95,7 @@ class PlatformController  {
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [
                 contextOrg: contextService.getOrg(),
-                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]
@@ -254,20 +209,20 @@ class PlatformController  {
      * but fetched on-the-fly from we:kb; a we:kb ElasticSearch API is thus necessary
      * @return the details view of the platform
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
+
+        result.baseUrl = Wekb.getURL()
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -276,26 +231,26 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = contextService.isInstEditor_or_ROLEADMIN()
+        result.editable = contextService.isInstEditor()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
                     "and oapl.subPkg is null order by LOWER(ap.name)"
-        result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : result.contextOrg])
+        result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : contextService.getOrg()])
 
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution " +
             "and not exists (" +
             "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true " +
             "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
-        result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : result.contextOrg])
+        result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : contextService.getOrg()])
 
-        result.selectedInstitution = result.contextOrg.id
+        result.selectedInstitution = contextService.getOrg().id
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [
                 contextOrg: contextService.getOrg(),
-                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]
@@ -331,88 +286,12 @@ class PlatformController  {
     }
 
     /**
-     * Call for linking the platform to an access point.
-     * Is a non-modal duplicate of {@link #dynamicApLink()} -
-     * @deprecated use {@link #dynamicApLink()} instead
-     */
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    @Check404()
-    def link() {
-        Map<String, Object> result = [:]
-        Platform platformInstance = Platform.get(params.id)
-
-        Org selectedInstitution = contextService.getOrg()
-
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-            hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-
-        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-            notActiveAPLinkQuery += "and not exists ("
-            notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-            notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
-
-        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        result.accessPointLinks = results
-        result.platformInstance = platformInstance
-        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
-        result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution.id
-        result
-    }
-
-    /**
-     * Call to link a platform to another access point
-     * @return renders the available options in a modal
-     */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def dynamicApLink(){
-        Map<String, Object> result = [:]
-        Platform platformInstance = Platform.get(params.platform_id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.platform_id]) as String
-            redirect action: 'list'
-            return
-        }
-        Org selectedInstitution =  contextService.getOrg()
-        if (params.institution_id){
-            selectedInstitution = Org.get(params.institution_id)
-        }
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-
-        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-        notActiveAPLinkQuery += "and not exists ("
-        notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
-
-        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        result.accessPointLinks = results
-        result.platformInstance = platformInstance
-        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
-        result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution.id
-        render(view: "_apLinkContent", model: result)
-    }
-
-    /**
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -426,9 +305,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -438,18 +317,18 @@ class PlatformController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
-        if (params.AccessPoints){
+        if (params.AccessPoints) {
             apInstance = OrgAccessPoint.get(params.AccessPoints)
+        }
             if (!apInstance) {
                 flash.error = 'No valid Accesspoint id given'
-                redirect action: 'link', params: [id:params.id]
+                redirect action: 'show', params: [id: params.platform_id]
                 return
             }
             else {
@@ -460,19 +339,5 @@ class PlatformController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-        }
-    }
-
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def removeAccessPoint() {
-        Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)
-        if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
-            flash.error = ctrlResult.result.error
-        }
-        redirect action: 'link', params: [id:params.id]
     }
 }

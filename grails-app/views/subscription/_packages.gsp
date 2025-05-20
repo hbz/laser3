@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.PendingChangeConfiguration; de.laser.wekb.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org; de.laser.IssueEntitlement" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -7,195 +7,250 @@
         <div class="ui accordion la-accordion-showMore">
         <g:each in="${subscription.packages}" var="sp">
             <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
-            <% String buttonColor = ""
+            <% String buttonColor = "blue"
             if(sp.pendingChangeConfig.size() > 0) {
                 buttonColor = "green"
             }%>
             <div class="ui raised segments la-accordion-segments">
-                <div class="ui fluid segment  title">
-                    <g:if test="${subscriptionService.checkThreadRunning('PackageUnlink_'+subscription.id)}">
-                        <ui:msg icon="ui exclamation icon" class="info"><g:message code="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}"/></ui:msg>
+                <div class="ui fluid segment title">
+                    <g:if test="${subscriptionService.checkThreadRunning('PackageUnlink_'+subscription.id+'_'+sp.pkg.id)}">
+                        <ui:msg class="info" showIcon="true" message="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}" />
                     </g:if>
                     <g:else>
-                        <div class="ui stackable equal width grid">
-                            <div class="four wide column">
-                                <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                                <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
-                                <br>
-                                ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
-                            </div>
-                            <div class="three wide column">
-                                <div>
-                                    <g:if test="${sp.pkg.provider}">
-                                        <i aria-hidden="true" class="${Icons.PROVIDER} grey outline icon la-popup-tooltip la-delay" data-content="${message(code: 'provider.label')}"></i>
-                                        <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
-                                        <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
-                                        <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
+                        <div class="ui sixteen equal width column stackable internally grid">
+                            <div class="row">
+                                <div class="column">
+                                    <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                                    <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
+                                    <br>
+                                    ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
+                                </div>
+
+                                <div class="seven wide right aligned column">
+                                    <g:if test="${sp.pkg.nominalPlatform}">
+                                        <i aria-hidden="true" class="${Icon.PLATFORM} grey la-popup-tooltip" data-content="${message(code: 'platform.label')}"></i>
+                                        <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
+                                        <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                                        <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                                     </g:if>
                                 </div>
-                                <g:each in="${sp.pkg.vendors}" var="pv">
-                                    <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
+                            </div>
+                            <div class="row">
+                                <div class="column">
                                     <div>
-                                        <i aria-hidden="true" class="${Icons.VENDOR} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'vendor.label')}"></i>
-                                        <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
-                                        <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
-                                        <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
+                                        <g:if test="${sp.pkg.provider}">
+                                            <i aria-hidden="true" class="${Icon.PROVIDER} grey la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>
+                                            <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
+                                            <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
+                                            <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
+                                        </g:if>
                                     </div>
-                                </g:each>
-                            </div>
-                            <div class="three wide column">
-                                <g:if test="${sp.pkg.nominalPlatform}">
-                                    <i aria-hidden="true" class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
-                                    <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
-                                    <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
-                                    <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
-                                </g:if>
-                            <%--
-                            <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
-                                <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
-                                    <g:if test="${platform}">
-                                        <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                        <ui:linkWithIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
-                                    </g:if>
-                                </g:each>
-                            </g:if>
-                            --%>
-                            </div>
-                            <div class="six wide right aligned column">
-                                <g:if test="${editmode}">
-                                    <div class="ui icon blue button la-modern-button ${buttonColor} la-popup-tooltip la-delay"
-                                         data-content="${message(code:'subscription.packages.config.header')}">
-                                        <i class="ui angle double down icon"></i>
-                                    </div>
-                                    <%
-                                        String unlinkDisabled = '', unlinkDisabledTooltip = null
-                                        Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
-                                        if(showConsortiaFunctions) {
-                                            if(auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
-                                                unlinkDisabled = 'disabled'
-                                                unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingInheritanceSetting")
-                                            }
-                                            else if (blockingCostItems) {
-                                                unlinkDisabled = 'disabled'
-                                                unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingSubscribersConsortia")
-                                            }
-                                        }
-                                        else {
-                                            if(blockingCostItems) {
-                                                unlinkDisabled = 'disabled'
-                                                unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blocked")
-                                            }
-                                        }
-                                        String btnClass = "item js-open-confirm-modal ${unlinkDisabled}"
-                                    %>
-                                    <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
-                                        <div class="ui buttons">
-                                            <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
-                                                <i aria-hidden="true" class="chain broken icon"></i>
-                                                <div class="menu">
-                                                    <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
-                                                            data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Paket auf Elternebene entknüpfen. Auf Einrichtungsebene Paket <strong>behalten</strong>.
-                                                    </g:link>
-                                                    <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childWithIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.package.consortia")}"
-                                                            data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Paket auf Elternebene entknüpfen. Auf Einrichtungsebene Paket <strong>löschen</strong>.
-                                                    </g:link>
-                                                </div>
-                                            </div>
-                                            <div class="or" data-text="|"></div>
-                                            <div class="ui simple dropdown negative icon button la-modern-button ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
-                                                <i aria-hidden="true" class="eraser icon"></i>
-                                                <div class="menu">
-                                                    <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
-                                                            data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Titel auf Elternebene löschen. Auf Einrichtungsebene Titel <strong>behalten</strong>.
-                                                    </g:link>
-                                                    <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childOnlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.titles.consortia")}"
-                                                            data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Titel auf Elternebene löschen. Auf Einrichtungsebene Titel <strong>löschen</strong>.
-                                                    </g:link>
-                                                </div>
-                                            </div>
+                                    <%-- deactivated as of ERMS-6375 after call with Micha
+                                    <g:each in="${sp.pkg.vendors}" var="pv">
+                                        <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
+                                        <div>
+                                            <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip" data-content="${message(code: 'vendor.label')}"></i>
+                                            <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
+                                            <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                            <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                         </div>
-                                    </g:if>
-                                    <g:else>
-                                        <div class="ui buttons">
-                                            <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
-                                                    <g:link controller="subscription"
-                                                            action="unlinkPackage"
-                                                            params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
-                                                            data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
-                                                            role="button"
-                                                            aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        <i aria-hidden="true" class="chain broken icon"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
-                                            <g:else>
-                                                <g:link controller="subscription"
-                                                        action="unlinkPackage"
-                                                        params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
-                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
-                                                        data-confirm-term-how="delete"
-                                                        data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
-                                                        role="button"
-                                                        aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                    <i aria-hidden="true" class="chain broken icon"></i>
-                                                </g:link>
-                                            </g:else>
-                                            <div class="or" data-text="|"></div>
-                                            <g:if test="${unlinkDisabled}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
-                                                    <g:link controller="subscription"
-                                                            action="unlinkPackage"
-                                                            params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
-                                                            data-confirm-term-how="delete"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
-                                                            role="button"
-                                                            aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        <i aria-hidden="true" class="eraser icon"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
-                                            <g:else>
-                                                <g:link controller="subscription"
-                                                        action="unlinkPackage"
-                                                        params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
-                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
-                                                        data-confirm-term-how="delete"
-                                                        data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
-                                                        class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip"
-                                                        role="button"
-                                                        aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                    <i aria-hidden="true" class="eraser icon"></i>
-                                                </g:link>
-                                            </g:else>
+                                    </g:each> --%>
+                                </div>
+                                <div class="seven wide right aligned column">
+                                    <g:if test="${editmode}">
+                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} ${buttonColor}"
+                                             data-content="${message(code:'subscription.packages.config.header')}">
+                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
-                                    </g:else>
-                                </g:if>
-
-                                <g:if test="${subscription.packages.size() > 1}">
-                                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
-                                            code="subscription.details.details.package.label"/></a>
-                                </g:if>
-
-                                <g:if test="${subscription.packages.size() == 1}">
-                                    <g:link class="ui right floated button" controller="package" action="show"
-                                            id="${subscription.packages[0].pkg.id}"><g:message
-                                            code="subscription.details.details.package.label"/></g:link>
-                                </g:if>
+                                        <%
+                                            String unlinkDisabled = '', unlinkDisabledTooltip = null, unlinkTitlesDisabled = '', unlinkTitlesDisabledTooltip = null
+                                            Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: contextService.getOrg()])
+                                            if(showConsortiaFunctions) {
+                                                if(auditService.getAuditConfig(subscription, 'holdingSelection')) {
+                                                    unlinkTitlesDisabled = 'disabled'
+                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
+                                                }
+                                                else if (blockingCostItems) {
+                                                    unlinkDisabled = 'disabled'
+                                                    unlinkTitlesDisabled = 'disabled'
+                                                    unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingSubscribersConsortia")
+                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingSubscribersConsortia")
+                                                }
+                                            }
+                                            else {
+                                                //cover also local subscriptions!
+                                                if(subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || (subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection'))) {
+                                                    unlinkTitlesDisabled = 'disabled'
+                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
+                                                }
+                                                if(blockingCostItems) {
+                                                    unlinkDisabled = 'disabled'
+                                                    unlinkTitlesDisabled = 'disabled'
+                                                    unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blocked")
+                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blocked")
+                                                }
+                                            }
+                                            String btnClass = "item js-open-confirm-modal ${unlinkDisabled}", btnTitleClass = "item js-open-confirm-modal ${unlinkTitlesDisabled}"
+                                        %>
+                                        <g:if test="${showConsortiaFunctions && !sp.subscription.instanceOf}">
+                                            <div class="ui buttons">
+                                                <div class="ui simple dropdown clearable negative icon button la-modern-button la-popup-tooltip ${unlinkDisabled}" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                    <div class="menu">
+                                                        <%--
+                                                            <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
+                                                                    data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                                <g:message code="subscriptionsManagement.unlinkInfo.packageParentOnly"/>
+                                                            </g:link>
+                                                        --%>
+                                                        <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childWithIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.package.consortia")}"
+                                                                data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <g:message code="subscriptionsManagement.unlinkInfo.packageParentWithMembers"/>
+                                                        </g:link>
+                                                    </div>
+                                                </div>
+                                                <div class="or" data-text="|"></div>
+                                                <g:if test="${unlinkTitlesDisabled}">
+                                                    <span class="la-popup-tooltip" data-content="${unlinkTitlesDisabledTooltip}">
+                                                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} ${unlinkTitlesDisabled}"
+                                                                role="button"
+                                                                aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:if>
+                                                <g:else>
+                                                    <div class="ui simple dropdown clearable negative icon button la-modern-button la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
+                                                        <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
+                                                        <div class="menu">
+                                                            <g:if test="${!auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                                <g:link controller="subscription" action="unlinkPackage" class="${btnTitleClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
+                                                                        data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                                    <g:message code="subscriptionsManagement.unlinkInfo.titlesParentOnly"/>
+                                                                </g:link>
+                                                            </g:if>
+                                                            <g:link controller="subscription" action="unlinkPackage" class="${btnTitleClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childOnlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.titles.consortia")}"
+                                                                    data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                                <g:message code="subscriptionsManagement.unlinkInfo.titlesParentWithMembers"/>
+                                                            </g:link>
+                                                        </div>
+                                                    </div>
+                                                </g:else>
+                                            </div>
+                                        </g:if>
+                                        <g:else>
+                                            <div class="ui buttons">
+                                                <g:if test="${unlinkDisabled}">
+                                                    <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
+                                                        <g:link controller="subscription"
+                                                                action="unlinkPackage"
+                                                                params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
+                                                                data-confirm-term-how="delete"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} ${unlinkDisabled}"
+                                                                role="button"
+                                                                aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:if test="${auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
+                                                            <g:link controller="subscription"
+                                                                    action="unlinkPackage"
+                                                                    params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
+                                                                    data-confirm-term-how="delete"
+                                                                    data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
+                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} disabled"
+                                                                    role="button"
+                                                                    aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                                <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                            </g:link>
+                                                        </span>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:link controller="subscription"
+                                                                action="unlinkPackage"
+                                                                params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
+                                                                data-confirm-term-how="delete"
+                                                                data-content="${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
+                                                                role="button"
+                                                                aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                        </g:link>
+                                                    </g:else>
+                                                </g:else>
+                                                <div class="or" data-text="|"></div>
+                                                <g:if test="${unlinkDisabled}">
+                                                    <span class="la-popup-tooltip" data-content="${unlinkDisabledTooltip}">
+                                                        <g:link controller="subscription"
+                                                                action="unlinkPackage"
+                                                                params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
+                                                                data-confirm-term-how="delete"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} ${unlinkDisabled}"
+                                                                role="button"
+                                                                aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
+                                                            <g:link controller="subscription"
+                                                                    action="unlinkPackage"
+                                                                    params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
+                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
+                                                                    data-confirm-term-how="delete"
+                                                                    data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
+                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP} disabled"
+                                                                    role="button"
+                                                                    aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                                <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
+                                                            </g:link>
+                                                        </span>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:link controller="subscription"
+                                                                action="unlinkPackage"
+                                                                params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
+                                                                data-confirm-term-how="delete"
+                                                                data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
+                                                                role="button"
+                                                                aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
+                                                        </g:link>
+                                                    </g:else>
+                                                </g:else>
+                                            </div>
+                                        </g:else>
+                                    </g:if>
+                                </div>
                             </div>
                         </div>
                     </g:else>
                 </div>
                 <div class="ui fluid segment content">
                     <div class="ui grid">
+                        <div class="sixteen wide column">
+                            <g:if test="${subscription.packages.size() > 1}">
+                                <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal"><g:message
+                                    code="subscription.details.details.package.label"/></a>
+                            </g:if>
+
+                            <g:if test="${subscription.packages.size() == 1}">
+                                <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show"
+                                        id="${subscription.packages[0].pkg.id}"><g:message
+                                    code="subscription.details.details.package.label"/></g:link>
+                            </g:if>
+                        </div>
                         <div class="eight wide column">
                             <dl>
                                 <dt>${message(code: 'default.status.label')}</dt>
@@ -208,7 +263,7 @@
                                         <div class="ui list">
                                             <g:each in="${packageInstanceRecord.altname}" var="altname">
                                               <div class="item">
-                                                  <i class="box open grey icon"></i>
+                                                  <i class="${Icon.SYM.ALTNAME} grey"></i>
                                                   <div class="content">
                                                     ${altname}
                                                   </div>
@@ -254,47 +309,6 @@
                                 <dt>${message(code: 'package.file')}</dt>
                                 <dd>${sp.pkg.file?.getI10n("value")}</dd>
                             </dl>
-                            <%--
-                            <g:if test="${packageInstanceRecord.source}">
-                                <dl>
-                                    <dt>${message(code: 'package.source.label')}</dt>
-                                    <dd>
-                                        ${packageInstanceRecord.source.name}<ui:linkWithIcon href="${editUrl}resource/show/${packageInstanceRecord.source.uuid}"/>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.url.label"/></dt>
-                                    <dd>
-                                        <g:if test="${packageInstanceRecord.source.url}">
-                                            <g:message code="package.source.url"/><ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
-                                        </g:if>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.frequency"/></dt>
-                                    <dd>${packageInstanceRecord.source.frequency ? RefdataValue.getByValueAndCategory(packageInstanceRecord.source.frequency, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n('value') : packageInstanceRecord.source.frequency}</dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
-                                    <dd>${Boolean.valueOf(packageInstanceRecord.source.automaticUpdates) ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.lastRun"/></dt>
-                                    <dd>
-                                        <g:if test="${packageInstanceRecord.source.lastRun}">
-                                            <g:set var="sourceLastRun" value="${DateUtils.parseDateGeneric(packageInstanceRecord.source.lastRun)}"/>
-                                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${sourceLastRun}"/>
-                                        </g:if>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:else>
-                                <dl>
-                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
-                                    <dd><g:message code="package.index.result.noAutomaticUpdates"/></dd>
-                                </dl>
-                            </g:else>
-                            --%>
                         </div>
                         <g:if test="${packageInstanceRecord}">
                             <div class="eight wide column">
@@ -387,178 +401,6 @@
                                 </dl>
                             </div>
                         </g:if>
-                        <%--
-                        <div class="nine wide column">
-                            <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
-                                <h5 class="ui header">
-                                    <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
-                                </h5>
-                                <table class="ui table stackable la-noSticky">
-                                    <thead>
-                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th class="control-label la-border-left" colspan="2">
-                                                <g:message code="subscription.details.linkPackage.children.label"/>
-                                            </th>
-                                        </tr>
-                                    </g:if>
-                                    <tr>
-                                        <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
-                                        <th class="control-label">
-                                            <g:message code="subscription.packages.setting.label"/>
-                                        </th>
-                                        <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                            <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
-                                                    <i class="ui large icon bullhorn"></i>
-                                                </span>
-                                            </th>
-                                            <th class="control-label la-border-left" >
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
-                                                    <i class="ui large icon thumbtack"></i>
-                                                </span>
-                                            </th>
-                                            <th class="control-label">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
-                                                    <i class="ui large icon bullhorn"></i>
-                                                </span>
-                                            </th>
-                                        </g:if>
-                                    </tr>
-                                    </thead>
-                                    <g:set var="excludes" value="${PendingChangeConfiguration.NOTIFICATION_ONLY}"/>
-                                    <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
-                                        <%
-                                            PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
-                                        %>
-                                        <tr>
-                                            <th class="control-label">
-                                                <g:message code="subscription.packages.${settingKey}"/>
-                                            </th>
-                                            <td>
-                                                <g:if test="${subscription.instanceOf}">
-                                                    ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : "Einstellung wird nicht geerbt"}
-                                                </g:if>
-                                                <g:else>
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <ui:select class="ui fluid dropdown"
-                                                                       name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                                       optionKey="id" optionValue="value"
-                                                                       value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                            />
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </g:else>
-                                            </td>
-                                            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                                <td>
-                                                    <g:if test="${editmode}">
-                                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                    </g:else>
-                                                </td>
-                                                <td class="la-border-left">
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey) : false}"/>
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </td>
-                                                <td>
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) : false}"/>
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </td>
-                                            </g:if>
-                                        </tr>
-                                    </g:each>
-                                    <tr>
-                                        <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
-                                        </th>
-                                        <td>
-                                            <g:if test="${!subscription.instanceOf}">
-                                                <g:if test="${editmode}">
-                                                    <g:checkBox class="ui checkbox" name="freezeHolding" checked="${sp.freezeHolding}"/>
-                                                </g:if>
-                                                <g:else>
-                                                    ${sp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                </g:else>
-                                            </g:if>
-                                            <g:else>
-                                                <g:set var="parentSp" value="${SubscriptionPackage.findBySubscriptionAndPkg(subscription.instanceOf, sp.pkg)}"/>
-                                                ${parentSp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                            </g:else>
-                                        </td>
-
-                                            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                                <td class="la-border-left">
-                                                    <g:if test="${editmode}">
-                                                        <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING)}"/>
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                    </g:else>
-                                                </td>
-                                                <td></td>
-                                            </g:if>
-
-                                    </tr>
-                                    <g:if test="${editmode && !subscription.instanceOf}">
-                                        <tr>
-                                            <td colspan="2" class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></td>
-                                            <g:set var="now" value="${new Date()}"/>
-                                            <td colspan="2" class="control-label">
-                                                <g:if test="${subscription.endDate < now}">
-                                                    <%
-                                                        boolean disabled = false
-                                                        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-                                                        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-                                                        threadArray.each { Thread thread ->
-                                                            if (thread.name == 'PackageTransfer_' + subscription.id) {
-                                                                disabled = true
-                                                            }
-                                                        }
-                                                    %>
-                                                    <g:if test="${!disabled}">
-                                                        <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative js-open-confirm-modal la-popup-tooltip la-delay"
-                                                                params="[id: subscription.id, subPkg: sp.id]"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.resetSubToEndDate")}"
-                                                                data-confirm-term-how="ok">
-                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
-                                                        </g:link>
-                                                    </g:if>
-                                                    <g:else>
-                                                        <g:link class="ui disabled button negative la-popup-tooltip la-delay"
-                                                                data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
-                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
-                                                        </g:link>
-                                                    </g:else>
-                                                </g:if>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                </table>
-                            </g:form>
-                        </div>
-                    --%>
                         </div>
                     </div>
                 </div>

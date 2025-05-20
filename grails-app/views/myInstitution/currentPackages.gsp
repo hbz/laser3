@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
-<laser:htmlStart message="menu.my.packages" serviceInjection="true" />
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.wekb.Package; de.laser.RefdataValue" %>
+<laser:htmlStart message="menu.my.packages" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.packages" class="active" />
@@ -10,15 +10,11 @@
 <ui:messages data="${flash}" />
 
 <g:if test="${!error}">
-    <laser:render template="/templates/filter/packageGokbFilter"
-        model="[
-                tmplConfigShow: [
-                        ['q', 'pkgStatus', 'status', 'hasPerpetualAccess'],
-                        ['provider', 'ddc', 'curatoryGroup'],
-                        ['curatoryGroupType', 'automaticUpdates']
-                ]
-        ]"
-    />
+    <laser:render template="/templates/filter/packageGokbFilter" model="[
+            filterConfig: filterConfig,
+            curatoryGroupTypes: curatoryGroupTypes,
+            automaticUpdates: automaticUpdates,
+    ]"/>
 
     <g:if test="${records}">
         <laser:render template="/templates/filter/packageGokbFilterTable"
@@ -32,7 +28,6 @@
     <ui:paginate action="currentPackages" total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
 </g:if>
-
 <%--
 <ui:filter>
     <g:form action="currentPackages" method="get" class="ui form">
@@ -52,7 +47,7 @@
 
             <div class="field">
                 <label>${message(code: 'myinst.currentPackages.filter.subStatus.label')}</label>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable " name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
@@ -78,8 +73,8 @@
             </div>
             <div class="field la-field-right-aligned">
                 <input type="hidden" name="isSiteReloaded" value="yes"/>
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
             </div>
         </div>
     </g:form>

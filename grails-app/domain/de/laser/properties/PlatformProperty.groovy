@@ -1,12 +1,12 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly general) to a {@link de.laser.Platform}.
+ * The class's name is what it does: a property (implicitly general) to a {@link de.laser.wekb.Platform}.
  * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
  * This flag is particularly important here because platforms are accessible by everyone.
  */
@@ -16,8 +16,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -36,7 +34,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         id          column: 'plp_id'
         version     column: 'plp_version'
         stringValue column: 'plp_string_value', type: 'text'
-        intValue    column: 'plp_int_value'
         longValue   column: 'plp_long_value'
         decValue    column: 'plp_dec_value'
         refValue    column: 'plp_ref_value_rv_fk', index: 'plp_ref_value_idx'
@@ -54,7 +51,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

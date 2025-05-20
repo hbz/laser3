@@ -1,14 +1,24 @@
 package de.laser
 
-
+import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
+import de.laser.helper.Params
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.*
+import de.laser.finance.CostItem
 import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
+import de.laser.utils.RandomUtils
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -167,6 +177,53 @@ class PropertyService {
     }
 
     /**
+     * Adds new CostInformationDefinition for the given institution if not existing
+     * @param params the request parameter map
+     * @return a list containing the process status
+     */
+    List addPrivateCostInformation(GrailsParameterMap params) {
+        log.debug("trying to add private cost information definition for institution: " + params)
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Org tenant = contextService.getOrg()
+
+        if ( (params.pd_name) && (params.pd_name != "null") ) {
+
+            /*RefdataCategory rdc = null
+            if (params.pd_type == RefdataValue.class.name) {
+                if (params.refdatacategory) {
+                    rdc = RefdataCategory.findById( params.long('refdatacategory') )
+                }
+                if (! rdc) {
+                    return ['error', messageSource.getMessage('propertyDefinition.descr.missing2', null, locale)]
+                }
+            }*/
+
+            Map<String, Object> map = [
+                    token       : RandomUtils.getUUID(),
+                    //type        : params.pd_type,
+                    type        : 'java.lang.String',
+                    //rdc         : rdc?.getDesc(),
+                    i10n        : [
+                            name_de: params.pd_name?.trim(),
+                            name_en: params.pd_name?.trim(),
+                            expl_de: params.pd_expl?.trim(),
+                            expl_en: params.pd_expl?.trim()
+                    ],
+                    tenant      : tenant.globalUID]
+
+            CostInformationDefinition privateCIDef = CostInformationDefinition.construct(map)
+            Object[] args = [messageSource.getMessage("costInformationDefinition.create.label", null, locale), privateCIDef.getI10n('name')]
+            if (privateCIDef.save()) {
+                return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
+            }
+            else {
+                return ['error', messageSource.getMessage('default.not.created.message', args, locale)]
+            }
+        }
+        else return ['error', messageSource.getMessage('propertyDefinition.type.missing',null,locale)]
+    }
+
+    /**
      * Adds new PrivateProperty for the given institution if not existing
      * @param params the request parameter map
      * @return a list containing the process status
@@ -191,7 +248,7 @@ class PropertyService {
             }
 
             Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
+                    token       : RandomUtils.getUUID(),
                     category    : params.pd_descr,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),
@@ -218,11 +275,61 @@ class PropertyService {
     }
 
     /**
+     * Deletes the given private property or cost information definition for this institution
+     * @param params the parameter map containing the property definition parameters
+     * @return success or error messages
+     */
+    String deletePrivatePropertyDefinition(GrailsParameterMap params) {
+        log.debug("delete private property or cost information definition for institution: " + params)
+
+        String messages = ""
+        Org tenant = contextService.getOrg()
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        Params.getLongList(params, 'deleteIds').each { Long id ->
+            if(params.instanceType == PropertyDefinition.class.name) {
+                PropertyDefinition privatePropDef = PropertyDefinition.findByIdAndTenant(id, tenant)
+                if (privatePropDef) {
+
+                    try {
+                        if (privatePropDef.mandatory) {
+                            privatePropDef.mandatory = false
+                            privatePropDef.save()
+
+                            // delete inbetween created mandatories
+                            Class.forName(privatePropDef.getImplClass())?.findAllByType(privatePropDef)?.each { prop ->
+                                prop.delete()
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error(e.toString())
+                    }
+
+                    String oldPropertyName = privatePropDef.getI10n('name')
+                    privatePropDef.delete()
+                    messages += messageSource.getMessage('default.deleted.message', [messageSource.getMessage("propertyDefinition.${privatePropDef.descr}.create.label", null, locale), oldPropertyName] as Object[], locale)
+                }
+            }
+            else if(params.instanceType == CostInformationDefinition.class.name) {
+                CostInformationDefinition costInformationDefinition = CostInformationDefinition.findByIdAndTenant(id, tenant)
+                if (costInformationDefinition) {
+                    String oldPropertyName = costInformationDefinition.getI10n('name')
+                    CostInformationDefinitionGroup cidg = CostInformationDefinitionGroup.findByCostInformationDefinition(costInformationDefinition)
+                    cidg.delete()
+                    costInformationDefinition.delete()
+                    messages += messageSource.getMessage('default.deleted.message', [messageSource.getMessage("costInformationDefinition.create.label", null, locale), oldPropertyName] as Object[], locale)
+                }
+            }
+        }
+        messages
+    }
+
+    /**
      * Retrieves the usage details of the property definitions for the context institution
      * @return a map containing usage counts and details for each property definition
      */
     List getUsageDetails() {
-        List<Long> usedPdList  = []
+        List<String> usedPdList  = []
         Map<String, Object> detailsMap = [:]
         List<Long> multiplePdList = []
 
@@ -236,23 +343,33 @@ class PropertyService {
                 detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
 
                 pds.each{ PropertyDefinition pd ->
-                    usedPdList << pd.id
+                    usedPdList << genericOIDService.getOID(pd)
                 }
 
-                String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+                String query2 = "select xp.type.id from ${dc.name} xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
             else if(SurveyResult.class.name.contains(dc.name)) {
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery('select distinct type from SurveyResult')
                 detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
                 pds.each { PropertyDefinition pd ->
-                    usedPdList << pd.id
+                    usedPdList << genericOIDService.getOID(pd)
                 }
-                String query2 = "select p.type.id from SurveyResult p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+
+//                String query2 = "select xp.type.id from SurveyResult xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
+                String query2 = "select sr.type.id from SurveyResult sr where sr.type.tenant = null or sr.type.tenant = :ctx group by sr.type.id, sr.participant, sr.surveyConfig, sr.owner having count(sr) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
+            else if(CostItem.class.name.contains(dc.name)) {
+                Set<CostInformationDefinition> cifs = CostInformationDefinition.executeQuery('select distinct costInformationDefinition from CostItem')
+                detailsMap.putAt( dc.shortName, cifs.collect{ CostInformationDefinition cif -> "${cif.id}:${cif.type}"}.sort() )
+                cifs.each { CostInformationDefinition cif ->
+                    usedPdList << genericOIDService.getOID(cif)
+                }
+                //String query2 = "select ci.costInformationDefinition.id from CostItem ci where ci.costInformationDefinition.tenant = null or ci.costInformationDefinition.tenant = :ctx group by ci.costInformationDefinition.id, ci.owner having count(ci) > 1"
+                //multiplePdList.addAll(CostInformationDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
+            }
         }
-
         [usedPdList.unique().sort(), detailsMap.sort(), multiplePdList]
     }
 
@@ -288,12 +405,12 @@ class PropertyService {
      * @param propDef the property definition for filter preset
      * @return
      */
-    Map<String,Object> processObjects(obj,Org contextOrg,PropertyDefinition propDef) {
+    Map<String,Object> processObjects(obj, PropertyDefinition propDef) {
         Map<String,Object> objMap = [id:obj.id,propertySet:obj.propertySet,displayAction:"show"]
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
-            objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(contextOrg.isCustomerType_Consortium()) {
+            objMap.name = s.dropdownNamingConvention()
+            if (contextService.getOrg().isCustomerType_Consortium()) {
                 objMap.manageChildren = "membersSubscriptionsManagement"
                 objMap.manageChildrenParams = [id:s.id,propertiesFilterPropDef:genericOIDService.getOID(propDef), tab: 'properties']
             }
@@ -543,7 +660,7 @@ class PropertyService {
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.lic.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }
                     else {
-                        consortium = obj.getConsortia()
+                        consortium = obj.getConsortium()
                         objId = (consortium.id == contextOrg.id) ? obj.instanceOf.id : obj.id
                         query = 'select b from PropertyDefinitionGroupBinding b where b.propDefGroup = :pdg and b.sub.id = :id and b.propDefGroup.tenant = :ctxOrg'
                     }
@@ -627,6 +744,7 @@ class PropertyService {
      Map<String, Object> getAvailableProperties(PropertyDefinition propDef, Org contextOrg, GrailsParameterMap params) {
          Set filteredObjs = [], objectsWithoutProp = []
          Map<String,Object> parameterMap = [type:propDef,ctx:contextOrg], result = [:]
+
          if(params.objStatus)
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = ''
@@ -641,7 +759,7 @@ class PropertyService {
              case PropertyDefinition.SUB_PROP:
                  if(!params.objStatus)
                      parameterMap.status = RDStore.SUBSCRIPTION_CURRENT
-                 objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) and oo.sub.status = :status order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
+                 objectsWithoutProp.addAll(Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :ctx '+subFilterClause+' and oo.roleType in (:roleTypes) and not exists (select sp from SubscriptionProperty sp where sp.owner = oo.sub and sp.tenant = :ctx and sp.type = :type) and oo.sub.status = :status order by oo.sub.name asc, oo.sub.startDate asc, oo.sub.endDate asc',parameterMap+[roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]]))
                  filteredObjs.addAll(SubscriptionProperty.executeQuery('select sp.owner from SubscriptionProperty sp where sp.type = :type and sp.tenant = :ctx '+spOwnerFilterClause+' and sp.owner.status = :status order by sp.owner.name asc',parameterMap))
                  result.auditable = propDef.tenant == null //blocked until inheritance of private property is cleared
                  result.manageChildren = true
@@ -657,8 +775,7 @@ class PropertyService {
                  filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
                  break
              case PropertyDefinition.ORG_PROP:
-                 if(!params.objStatus)
-                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
+                // ERMS-6224 - removed org.status
                  String orgfilter = '', orgfilter2 = ''
                  Map<String,Object> orgFilterMap = [:]
 
@@ -672,7 +789,7 @@ class PropertyService {
                                  [context    : contextOrg,
                                   comboType  : RDStore.COMBO_TYPE_CONSORTIUM.id,
                                   subscrRoles: [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id],
-                                  consType   : RDStore.OR_SUBSCRIPTION_CONSORTIA.id,
+                                  consType   : RDStore.OR_SUBSCRIPTION_CONSORTIUM.id,
                                   subStatus  : RDStore.SUBSCRIPTION_CURRENT.id
                                  ])
                          orgfilter += 'and o.id in (:myInstsIds)'
@@ -682,11 +799,11 @@ class PropertyService {
                  }
 
                  if(orgfilter != ''){
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status order by o.sortname asc, o.name asc', parameterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc', parameterMap))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) order by o.sortname asc, o.name asc', parameterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc', parameterMap))
                  }
                  result.sortname = true
                  break
@@ -700,7 +817,7 @@ class PropertyService {
                      List<Long> myProvidersIds = Provider.executeQuery("select distinct(p.id) from ProviderRole pvr join pvr.provider p, OrgRole or_sub " +
                              "where pvr.subscription = or_sub.sub and or_sub.org = :subOrg and or_sub.roleType.id in (:subRoleTypes) " ,
                              [subOrg      : contextOrg,
-                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]
+                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]
                              ])
                      providerFilter += 'and p.id in (:myProvidersIds)'
                      providerFilter2 += 'and pp.owner.id in (:myProvidersIds)'
@@ -708,10 +825,10 @@ class PropertyService {
                  }
 
                  if(providerFilter != ''){
-                     objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status  ' + providerFilter + ' order by p.sortname asc, p.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
+                     objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status  ' + providerFilter + ' order by p.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
                      filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status ' + providerFilter2 + ' order by pp.owner.sortname asc, pp.owner.name asc', parameterMap + providerFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status order by p.sortname asc, p.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
+                     objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status order by p.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
                      filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status order by pp.owner.sortname asc, pp.owner.name asc', parameterMap))
                  }
                  break
@@ -731,7 +848,7 @@ class PropertyService {
                      List<Long> myVendorIds = Provider.executeQuery("select distinct(v.id) from VendorRole vr join vr.vendor v, OrgRole or_sub " +
                              "where vr.subscription = or_sub.sub and or_sub.org = :subOrg and or_sub.roleType.id in (:subRoleTypes) " ,
                              [subOrg      : contextOrg,
-                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id]
+                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]
                              ])
                      vendorFilter += 'and v.id in (:myVendorIds)'
                      vendorFilter2 += 'and vp.owner.id in (:myVendorIds)'
@@ -739,10 +856,10 @@ class PropertyService {
                  }
 
                  if(vendorFilter != ''){
-                     objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status  ' + vendorFilter + ' order by v.sortname asc, v.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
+                     objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status  ' + vendorFilter + ' order by v.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
                      filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status ' + vendorFilter2 + ' order by vp.owner.sortname asc, vp.owner.name asc', parameterMap + providerFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status order by v.sortname asc, v.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
+                     objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status order by v.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
                      filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status order by vp.owner.sortname asc, vp.owner.name asc', parameterMap))
                  }
                  break
@@ -751,5 +868,65 @@ class PropertyService {
          result.withProp = filteredObjs
          result
      }
+
+     boolean checkPropertyExists(Object object, PropertyDefinition type){
+         boolean exists = true
+             switch (object.class.name) {
+                 case SurveyInfo.class.name:
+                     SurveyConfig surveyConfig = object.surveyConfigs[0]
+                     if (surveyConfig && !SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, type)) {
+                         exists = false
+                     }
+                     break
+                 case [License.class.name, Subscription.class.name, Org.class.name, Provider.class.name, Platform.class.name, Vendor.class.name]:
+                     def existingProp
+                     Org contextOrg = contextService.getOrg()
+                     if(type.tenant){
+                         existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id && !it.isPublic}
+                     }else {
+                         existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id }
+                     }
+
+                     if (existingProp == null || type.multipleOccurrence) {
+                         exists = false
+                     }
+                     break
+             }
+         exists
+     }
+
+    boolean addPropertyToObject(Object object, PropertyDefinition type) {
+        boolean propertyCreated = false
+        def newProp
+        def existingProp
+        Org contextOrg = contextService.getOrg()
+
+        if(type.tenant){
+            existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id && !it.isPublic}
+        }else {
+            existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id }
+        }
+
+        if (existingProp == null || type.multipleOccurrence) {
+            String propDefConst = type.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
+            newProp = PropertyDefinition.createGenericProperty(propDefConst, object, type, contextOrg)
+            if (newProp.hasErrors()) {
+                log.error(newProp.errors.toString())
+            } else {
+                log.debug("New property created: " + newProp.type.name)
+                propertyCreated = true
+            }
+        }
+
+        propertyCreated
+    }
+
+    List<PropertyDefinition> getOrphanedPropertyDefinition(String descr) {
+
+        List<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.tenant = null and pd NOT in (select pgi.propDef from PropertyDefinitionGroupItem pgi join pgi.propDefGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant)', [descr: descr, tenant: contextService.getOrg(), ownerType: PropertyDefinition.getDescrClass(descr)])
+        propertyDefinitions
+    }
+
+
 }
 

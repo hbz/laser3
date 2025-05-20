@@ -1,13 +1,13 @@
 <%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
 
 <div>
     <div>
         <g:if test="${ownerView && surveyOrg}">
             <dl>
                 <dt>
-                    ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+                    ${message(code: 'surveyOrg.ownerComment.label', args: [participant.sortname])}
                 </dt>
                 <dd>
                     ${surveyOrg.ownerComment}

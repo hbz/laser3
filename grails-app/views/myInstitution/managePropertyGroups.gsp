@@ -1,7 +1,8 @@
-<%@ page import="de.laser.helper.Icons; de.laser.properties.PropertyDefinition;de.laser.*"%>
-<laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
+<%@ page import="de.laser.finance.CostInformationDefinition; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
+<laser:htmlStart message="menu.institutions.prop_groups" />
 
         <ui:breadcrumbs>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb message="menu.institutions.manage_props" class="active"/>
         </ui:breadcrumbs>
 
@@ -14,7 +15,7 @@
             <laser:render template="actions"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_props" type="${contextService.getOrg().getCustomerType()}" />
 
         <laser:render template="nav" />
 
@@ -27,7 +28,7 @@
                 <g:message code="propertyDefinition.${typeEntry.key}.label"/> (${typeEntry.value.size()})
             </div>
             <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
-                <table class="ui celled sortable table la-js-responsive-table la-table compact">
+                <table class="ui sortable table la-js-responsive-table la-table compact">
                     <thead>
                     <tr>
                         <th><g:message code="default.order.label"/></th>
@@ -36,7 +37,9 @@
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
                         <g:if test="${editable}">
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </g:if>
                     </tr>
                     </thead>
@@ -46,30 +49,30 @@
                         <tr>
                             <td>
                                 <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                    <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
                                             role="button">
-                                        <i class="icon arrow up"></i>
+                                        <i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${typeEntry.value.size() > 1}">
                                     <g:if test="${i > 0}">
-                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
                                                 role="button">
-                                            <i class="icon arrow up"></i>
+                                            <i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                     <g:if test="${i < typeEntry.value.size()-1}">
-                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="ui icon button compact la-modern-button"
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
                                                 role="button">
-                                            <i class="icon arrow down"></i>
+                                            <i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
                                     </g:else>
                                 </g:elseif>
                             </td>
@@ -87,20 +90,20 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="${Btn.MODERN.SIMPLE} trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="write icon"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
                                             params="${[cmd:'delete', oid:pdgOID]}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
                                             data-confirm-term-how="delete"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>
@@ -110,6 +113,40 @@
                 </table>
             </div>
         </g:each>
+        <div class="title ${params.ownerType == CostInformationDefinition.COST_INFORMATION ? 'active' : ''}">
+            <i class="dropdown icon"></i>
+            <g:message code="costInformationDefinition.label"/>
+        </div>
+        <div class="content ${params.ownerType == CostInformationDefinition.COST_INFORMATION ? 'active' : ''}">
+            <table class="ui sortable table la-js-responsive-table la-table compact">
+                <thead>
+                    <tr>
+                        <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
+                        <g:if test="${editable}">
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
+                        </g:if>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            ${costInformationDefinitionsInUse.size()}
+                        </td>
+                        <g:if test="${editable}">
+                            <td class="x">
+                                <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', costInformationsInUse: true]}" class="${Btn.MODERN.SIMPLE} trigger-modal"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </g:link>
+                            </td>
+                        </g:if>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -147,7 +184,6 @@
                     },
                     detachable: true,
                     autofocus: false,
-                    closable: false,
                     transition: 'scale',
                     onApprove : function() {
                         $(this).find('.ui.form').submit();

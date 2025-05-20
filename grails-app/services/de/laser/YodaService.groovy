@@ -1,16 +1,24 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.PersonRole
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -19,6 +27,7 @@ import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
+import java.sql.Connection
 import java.time.Duration
 import java.util.concurrent.ExecutorService
 
@@ -28,12 +37,11 @@ import java.util.concurrent.ExecutorService
 //@Transactional
 class YodaService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
     GlobalService globalService
-    PackageService packageService
     ExecutorService executorService
 
     boolean bulkOperationRunning = false
@@ -111,40 +119,54 @@ class YodaService {
     }
 
     /**
-     * Retrieves titles without we:kb ID
-     * @return a map containing faulty titles in the following structure:
-     * <ul>
-     *     <li>titles with a remapping target</li>
-     *     <li>titles with issue entitlements</li>
-     *     <li>deletable entries</li>
-     *     <li>titles which should receive a UUID</li>
-     * </ul>
+     * Cleans {@link IssueEntitlement}s which should not exist because the issue entitlements of the parents hold
      */
-    Map<String,Object> getTIPPsWithoutGOKBId() {
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value)
-        List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
-        Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
-        List<Map<String,Object>> tippsWithAlternate = []
-        Map<Long,Long> toDelete = [:]
-        Set<Long> toUUIDfy = []
-        tippsWithoutGOKbID.each { tipp ->
-            TitleInstancePackagePlatform altTIPP = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :current and tipp.gokbId != null",[pkg:tipp.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0]
-            if(altTIPP) {
-                toDelete[tipp.id] = altTIPP.id
-                tippsWithAlternate << [tipp:tipp,altTIPP:altTIPP]
+    void cleanupIssueEntitlements() {
+        Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s where (s.holdingSelection = :entire or (s.holdingSelection = :partial and exists(select ac from AuditConfig ac where ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id and ac.referenceField = 'holdingSelection'))) and s.instanceOf != null", [partial: RDStore.SUBSCRIPTION_HOLDING_PARTIAL, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
+        Sql storageSql = GlobalService.obtainStorageSqlConnection(), sql = GlobalService.obtainSqlConnection()
+        Connection arrayConn = sql.getDataSource().getConnection()
+        int processedTotal = 0
+        //in order to distribute memory load
+        try {
+            subsConcerned.eachWithIndex { Subscription s, int si ->
+                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.globalUID as oldGlobalUID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId) from IssueEntitlement ie where ie.subscription = :subConcerned", [subConcerned: s])
+                int offset = 0, step = 5000, total = data.size()
+                processedTotal += data.size()
+                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldGlobalUID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
+                Set<Long> toDelete = []
+                log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records, processed in total: ${processedTotal}")
+                if(data) {
+                    storageSql.withBatch(step, query) { BatchingPreparedStatementWrapper stmt ->
+                        for (offset; offset < total; offset++) {
+                            Map<String, Object> ieTrace = data[offset]
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie where ie.id = :ieId', [ieId: ieTrace.oldDatabaseId])[0]
+                            ieTrace.oldName = tipp.name
+                            ieTrace.referencePackageWekbId = tipp.pkg.gokbId
+                            ieTrace.referenceTitleWekbId = tipp.gokbId
+                            ieTrace.refereceSubscriptionUID = s.globalUID
+                            stmt.addBatch(ieTrace)
+                            if(offset % step == 0 && offset > 0) {
+                                log.debug("reached ${offset} rows")
+                            }
+                        }
+                    }
+                    toDelete.addAll(data.oldDatabaseId)
+                    toDelete.collate(65000).each { List<Long> part ->
+                        sql.execute("delete from price_item where pi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from permanent_title where pt_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement_coverage where ic_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement_group_item where igi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("update cost_item set ci_e_fk = null where ci_e_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement where ie_id = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                    }
+                }
+                globalService.cleanUpGorm()
             }
-            else toUUIDfy << tipp.id
         }
-        issueEntitlementsAffected.each { IssueEntitlement ie ->
-            if (ieTippMap.get(ie.tipp)) {
-                ieTippMap[ie.tipp] << ie
-            } else {
-                Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
-                ies.add(ie)
-                ieTippMap[ie.tipp] = ies
-            }
+        finally {
+            storageSql.close()
+            sql.close()
         }
-        [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
     /**
@@ -186,7 +208,7 @@ class YodaService {
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.maxContentLength = 1024 * 1024 * 100
             config.readTimeout = Duration.ofMinutes(2)
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'searchApi', config)
+            BasicHttpClient http = new BasicHttpClient(grs.getUri() + '/searchApi', config)
             int offset = 0, max = 20000
             boolean more = true
             Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
@@ -292,7 +314,7 @@ class YodaService {
                 deletedLaserTIPPs.each { Map row ->
                     Map<String, Object> titleRow = row
                     titleRow.wekbStatus = wekbUuids.get(row.wekbId)
-                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
+                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
                     titleRow.issueEntitlements = issueEntitlements
                     if(!issueEntitlements) {
                         keysToDelete << row.wekbId
@@ -335,7 +357,7 @@ class YodaService {
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
                     if(entire)
-                        batchUpdateService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                        batchQueryService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
                     log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }
@@ -350,9 +372,9 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
+            case Provider.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
                 componentType = 'Org'
-                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                objects.addAll(Provider.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.PROVIDER_STATUS_REMOVED))
                 break
             case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
@@ -371,18 +393,20 @@ class YodaService {
             objects.each { obj ->
                 Map record = globalSourceSyncService.fetchRecordJSON(false, [componentType: componentType, uuid: obj.gokbId])
                 if(record?.count == 0) {
-                    if(obj instanceof Org) {
-                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
-                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
-                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
-                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
-                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
-                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
-                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
-                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
-                        deletionService.deleteOrganisation(obj, null, false)
-                    }
-                    else if(obj instanceof Platform) {
+                    //TODO implement cleanup of providers and vendors
+//                    if(obj instanceof Org) {
+//                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
+//                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
+//                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
+//                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
+//                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
+//                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
+//                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
+//                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
+//                        deletionService.deleteOrganisation(obj, null, false)
+//                    }
+//                    else
+                    if (obj instanceof Platform) {
                         IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed where ie.status != :removed and ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.platform = :plat)', [removed: RDStore.TIPP_STATUS_REMOVED, plat: obj])
                         TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed where tipp.status != :removed and tipp.platform = :plat', [plat: obj, removed: RDStore.TIPP_STATUS_REMOVED])
                         obj.status = RDStore.PLATFORM_STATUS_REMOVED

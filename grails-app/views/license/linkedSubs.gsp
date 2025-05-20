@@ -1,11 +1,11 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.License; de.laser.RefdataValue; de.laser.interfaces.CalculatedType; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+        <g:if test="${contextService.isInstEditor()}">
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </g:if>
     </ui:controlButtons>
@@ -18,8 +18,8 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
-<g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
-    <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
+<g:if test="${license.instanceOf && (contextService.getOrg().id == license.getLicensingConsortium()?.id)}">
+    <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
         <g:message code="myinst.licenseDetails.message.ChildView" />
         <g:message code="myinst.licenseDetails.message.ConsortialView" />
         <g:link controller="license" action="linkedSubs" id="${license.instanceOf.id}">
@@ -46,7 +46,7 @@
 
                 <div class="field">
                     <label>${message(code: 'default.status.label')}</label>
-                    <ui:select class="ui dropdown" name="status"
+                    <ui:select class="ui dropdown clearable" name="status"
                                   from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                   optionKey="id"
                                   optionValue="value"
@@ -94,9 +94,9 @@
                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <input name="filterSet" type="hidden" value="true">
-                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+                    <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
                 </div>
             </g:else>
         </g:form>
@@ -117,21 +117,21 @@
 
             <th>${message(code: 'default.subscription.label')}</th>
             <th>
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.previous.label')}">
-                    <i class="${Icons.LINK_PREV} icon"></i>
+                    <i class="${Icon.LNK.PREV}"></i>
                 </span>
             </th>
             <th>${message(code:'default.startDate.label.shy')}</th>
             <th>${message(code:'default.endDate.label.shy')}</th>
             <th>
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                       data-content="${message(code: 'default.next.label')}">
-                    <i class="${Icons.LINK_NEXT} icon"></i>
+                    <i class="${Icon.LNK.NEXT}"></i>
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
-            <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !license.instanceOf}">
                 <th>${message(code:'org.institution.label')}</th>
             </g:if>
             <th class="la-no-uppercase">
@@ -160,14 +160,7 @@
                     <td>${subscr.sortname}</td>
                     <td>
                         <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                        <g:if test="${sub.isSlaved}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'license.details.isSlaved.tooltip')}">
-                                <i class="grey la-thumbtack-regular icon"></i>
-                            </span>
-                        </g:if>
-
-                        <ui:customerTypeProIcon org="${subscr}" />
+                        <ui:customerTypeOnlyProIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
@@ -176,10 +169,10 @@
                                     (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
                                 </div>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
+                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person')}" var="gcp">
                                 <div class="item">
                                     ${gcp}
-                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
@@ -188,10 +181,10 @@
                                     (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
                                 </div>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', institution)}" var="sse">
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor')}" var="sse">
                                 <div class="item">
                                     ${sse}
-                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
                                 </div>
                             </g:each>
                         </div>
@@ -202,32 +195,30 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${navPrevSubscription}">
-                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icons.LINK_PREV} icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navPrevSubscription.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                     </g:if>
                 </td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                 <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                 <td class="center aligned">
                     <g:if test="${navNextSubscription}">
-                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icons.LINK_NEXT} icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${navNextSubscription.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                     </g:if>
                 </td>
                 <td>
                     ${sub.status.getI10n("value")}
                 </td>
-                <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !license.instanceOf}">
                     <g:set var="childSubCount" value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent',[parent:sub])[0]}"/>
                     <td>
                         <g:if test="${childSubCount > 0}">
                             <g:link controller="subscription" action="members" params="${[id:sub.id]}">
-                                <div class="ui blue circular label">${childSubCount}</div>
+                                <ui:bubble count="${childSubCount}" />
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="subscription" action="addMembers" params="${[id:sub.id]}">
-                                <div class="ui blue circular label">
-                                    ${childSubCount}
-                                </div>
+                                <ui:bubble count="${childSubCount}" />
                             </g:link>
                         </g:else>
                     </td>

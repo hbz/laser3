@@ -18,8 +18,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -39,7 +37,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         id          column: 'sp_id'
         version     column: 'sp_version'
         stringValue column: 'sp_string_value', type: 'text'
-        intValue    column: 'sp_int_value'
         longValue   column: 'sp_long_value'
         decValue    column: 'sp_dec_value'
         refValue    column: 'sp_ref_value_rv_fk', index: 'sp_ref_value_idx'
@@ -58,7 +55,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)

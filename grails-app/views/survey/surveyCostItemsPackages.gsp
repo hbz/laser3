@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;" %>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItemsPackages.label')})" />
 
 <ui:breadcrumbs>
 %{--    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>--}%
@@ -22,103 +22,67 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyCostItemsPackages.label')}
-</h2>
-
-<br />
-
 <g:if test="${surveyConfig}">
+
+    <g:if test="${afterEnrichment}">
+        <g:if test="${wrongSeparator}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        </g:if>
+        <g:else>
+            <g:if test="${matchCounter > 0}">
+                <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
+            </g:if>
+            <g:else>
+                <ui:msg showIcon="true" class="warning" message="financials.enrichment.emptyResult" args="[totalRows]"/>
+            </g:else>
+            <g:if test="${missing || wrongIdentifiers}">
+                <ui:msg showIcon="true" class="error">
+                    <g:if test="${missing}">
+                        <g:message code="financials.enrichment.missingPrices"/>
+                    </g:if>
+                    <g:if test="${wrongIdentifiers}">
+                        <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/><br>
+                        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                    </g:if>
+                </ui:msg>
+            </g:if>
+        </g:else>
+    </g:if>
+
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
-            <div class="ui top attached stackable tabular la-tab-with-js menu">
-                <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyCostItems"
-                        id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants', selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
-                    ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                    <span class="ui floating blue circular label">${selectedSubParticipants?.size() ?: 0}</span>
-                </g:link>
-
-                <g:link class="item ${params.tab == 'selectedParticipants' ? 'active' : ''}"
-                        controller="survey" action="surveyCostItems"
-                        id="${surveyConfig.surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants', selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
-                    ${message(code: 'surveyParticipants.selectedParticipants')}
-                    <span class="ui floating blue circular label">${selectedParticipants?.size() ?: 0}</span>
-                </g:link>
-
-            </div>
 
         <div class="ui bottom attached tab segment active">
 
-            <div class="four wide column">
-
-                <g:if test="${params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0}">
-                    <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="surveyCostItems.createInitialCostItem"/>
-                    </button>
-                </g:if>
-
-                <g:if test="${params.tab == 'selectedParticipants' && selectedParticipants.size() > 0}">
-                    <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
-                            class="ui icon button right floated trigger-modal">
-                        <g:message code="surveyCostItems.createInitialCostItem"/>
-                    </button>
-                </g:if>
-
-                <br>
-                <br>
-                %{--<a class="ui right floated button" data-ui="modal" href="#bulkCostItemsUpload"><g:message code="menu.institutions.financeImport"/></a>--}%
-                <br>
-                <br>
-            </div
-
-
-
-            <br />
-            <br />
+            <g:render template="costItemsByCostItemElementAndPkgTable"/>
 
             <ui:filter>
                 <g:form action="surveyCostItems" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
-                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex']],
+                        tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['hasSubscription', 'subRunTimeMultiYear'], ['subscriptionAdjustDropdown']],
                                   tmplConfigFormFilter: true
                           ]"/>
                 </g:form>
             </ui:filter>
 
-            <g:render template="costItemsByCostItemElementAndPkgTable"/>
-
             <br/>
             <div class="field" style="text-align: right;">
                 <button id="bulkCostItems-toggle"
-                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                        class="${Btn.SIMPLE}"><g:message code="financials.bulkCostItems.show"/></button>
                 <laser:script file="${this.getGroovyPageFileName()}">
                     $('#bulkCostItems-toggle').on('click', function () {
                         $('#bulkCostItems').toggleClass('hidden')
@@ -132,25 +96,24 @@
             </div>
 
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, bulkSelectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID, selectPkg: 'true']">
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
-                        <ui:msg icon="info" message="surveyCostItems.bulkOption.info"/>
+                        <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
                     </g:if>
                     <g:else>
-                        <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
+                        <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip"
                                                     data-position="right center"
                                                     data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                             ${message(code: 'surveyCostItems.bulkOption.label')}
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span></h3>
 
                         <div class="ui basic segment">
 
-                            <laser:render template="costItemInputSurvey"/>
+                            <laser:render template="costItemInputSurvey" model="[bulkCostItems: true]"/>
 
-                            <g:if test="${params.tab == 'selectedSubParticipants'}">
                                 <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
                                 <div class="fields la-forms-grid">
@@ -171,7 +134,6 @@
                                         </div>
                                     </fieldset>
                                 </div>
-                            </g:if>
 
                             <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
@@ -198,8 +160,7 @@
 
                         <div class="two fields">
                             <div class="eight wide field" style="text-align: left;">
-                                <button class="ui button"
-                                        type="submit">${message(code: 'default.button.save_changes')}</button>
+                                <button class="${Btn.SIMPLE}" type="submit">${message(code: 'default.button.save_changes')}</button>
                             </div>
 
                             <div class="eight wide field" style="text-align: right;">
@@ -210,72 +171,22 @@
 
                 </div>
 
-
-
-                <g:if test="${params.tab == 'selectedSubParticipants'}">
-
-                    <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
-
-                    <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedSubParticipants?.findAll { it.hasInstAdmin() }}"/>
-
-                    <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                            <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
-                        </a>
-                    </g:if>
-
-                        <br />
-                        <br />
-
-                        <laser:render template="/templates/filter/orgFilterTable"
-                                  model="[orgList         : surveyParticipantsHasAccess,
-                                          tmplShowCheckbox: true,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), 'surveyCostItemPackage'],
-                                          tableID         : 'costTable'
-                                  ]"/>
-
-                    </div>
-
-                    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
-                    <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedSubParticipants?.findAll { !it.hasInstAdmin() }}"/>
-
-                    <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
-                            <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
-                        </a>
-                    </g:if>
-
-                        <br />
-                        <br />
-
-                        <laser:render template="/templates/filter/orgFilterTable"
-                                  model="[orgList       : surveyParticipantsHasNotAccess,
-                                          tmplShowCheckbox: true,
-                                          tmplConfigShow: ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), 'surveyCostItemPackage'],
-                                          tableID       : 'costTable'
-                                  ]"/>
-
-                    </div>
-
+                <g:if test="${surveyConfig.subscription}">
+                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveyCostItemPackage']}"/>
                 </g:if>
-
-
-                <g:if test="${params.tab == 'selectedParticipants'}">
+                <g:else>
+                    <g:set var="tmplConfigShow" value="${['lineNumber', 'sortname', 'name', 'surveyCostItemPackage']}"/>
+                </g:else>
 
                     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedParticipants?.findAll { it.hasInstAdmin() }}"/>
+                           value="${participants?.findAll { it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -287,23 +198,24 @@
 
                     <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList       : surveyParticipantsHasAccess,
-                                      tmplShowCheckbox: true,
-                                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'surveyCostItemPackage'],
+                                      tmplShowCheckbox: editable,
+                                      tmplConfigShow: tmplConfigShow,
                                       tableID       : 'costTable'
                               ]"/>
 
 
+                    <g:set var="surveyParticipantsHasNotAccess"
+                           value="${participants?.findAll { !it.hasInstAdmin() }}"/>
+
+                    <g:if test="${surveyParticipantsHasNotAccess}">
+
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
-                    <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedParticipants?.findAll { !it.hasInstAdmin() }}"/>
-
                     <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+
+                        <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
-                    </g:if>
                     </div>
 
 
@@ -312,41 +224,30 @@
 
                     <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
-                                      tmplShowCheckbox: true,
-                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItemPackage'],
+                                      tmplShowCheckbox: editable,
+                                      tmplConfigShow  : tmplConfigShow,
                                       tableID         : 'costTable'
                               ]"/>
 
-                </g:if>
+                    </g:if>
 
                 <br />
                 <br />
                 <button name="deleteCostItems" value="true" type="submit"
-                        class="ui icon negative button js-open-confirm-modal"
+                        class="${Btn.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
                         data-confirm-term-how="delete"
                         data-confirm-id="processSurveyCostItemsBulk"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="${Icons.CMD_DELETE} icon"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+                    <i class="${Icon.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
                 </button>
 
             </g:form>
             <br />
             <br />
 
-            <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setSurveyWorkFlowInfo: 'workflowCostItemsFinish']">
 
-                <div class="ui right floated compact segment">
-                    <div class="ui checkbox">
-                        <input type="checkbox" onchange="this.form.submit()"
-                               name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
-                        <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
-                    </div>
-                </div>
-
-            </g:form>
 
         </div>
     </div>
@@ -354,55 +255,5 @@
 <g:else>
     <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
 </g:else>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-
-JSPC.app.isClicked = false;
-
-JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
-                        event.preventDefault();
-
-                        // prevent 2 Clicks open 2 Modals
-                        if (!JSPC.app.isClicked) {
-                            JSPC.app.isClicked = true;
-                            $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
-                            $('#dynamicModalContainer').empty()
-
-                           $.ajax({
-                                url: "<g:createLink controller='survey' action='addForAllSurveyCostItem'/>",
-                                traditional: true,
-                                data: {
-                                    id: "${params.id}",
-                                    surveyConfigID: "${surveyConfig.id}",
-                                    orgsIDs: orgsIDs,
-                                    selectedPkg: true,
-                                    selectedCostItemElementID: "${selectedCostItemElementID}",
-                                    selectedPackageID: "${selectedPackageID}"
-                                }
-                            }).done(function (data) {
-                                $('#dynamicModalContainer').html(data);
-
-                                $('#dynamicModalContainer .ui.modal').modal({
-                                    onVisible: function () {
-                                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
-                                        r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
-
-                                    },
-                                    detachable: true,
-                                    closable: false,
-                                    transition: 'scale',
-                                    onApprove: function () {
-                                        $(this).find('.ui.form').submit();
-                                        return false;
-                                    }
-                                }).modal('show');
-                            })
-                            setTimeout(function () {
-                                JSPC.app.isClicked = false;
-                            }, 800);
-                        }
-                    }
-
-</laser:script>
 
 <laser:htmlEnd />

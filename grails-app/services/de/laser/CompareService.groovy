@@ -44,10 +44,10 @@ class CompareService {
      */
     Map compareProperties(List objects) {
         LinkedHashMap result = [groupedProperties: [:], orphanedProperties: [:], privateProperties: [:]]
-        Org contextOrg = contextService.getOrg()
+
         objects.each { object ->
 
-            Map<String, Object> allPropDefGroups = object.getCalculatedPropDefGroups(contextOrg)
+            Map<String, Object> allPropDefGroups = object.getCalculatedPropDefGroups(contextService.getOrg())
             allPropDefGroups.entrySet().each { propDefGroupWrapper ->
                 /*
                   group group level
@@ -55,7 +55,7 @@ class CompareService {
                  */
                 String wrapperKey = propDefGroupWrapper.getKey()
                 if (wrapperKey.equals("orphanedProperties")) {
-                    List allowedProperties = propDefGroupWrapper.getValue().findAll { prop -> (prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) }
+                    List allowedProperties = propDefGroupWrapper.getValue().findAll { prop -> (prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) }
                     Map orphanedProperties = result.orphanedProperties
                     orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties, object, allowedProperties)
                     result.orphanedProperties = orphanedProperties
@@ -72,14 +72,14 @@ class CompareService {
                             case "global":
                                 groupKey = (PropertyDefinitionGroup) propDefGroup
                                 if (groupKey.isVisible)
-                                    groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, null, object, contextOrg))
+                                    groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, null, object, contextService.getOrg()))
                                 break
                             case "local":
                                 try {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
                                     if (groupBinding.isVisible) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, groupBinding, object, contextOrg))
+                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, groupBinding, object, contextService.getOrg()))
                                     }
                                 }
                                 catch (ClassCastException e) {
@@ -92,7 +92,7 @@ class CompareService {
                                     groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                                     groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
                                     if (groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
-                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, groupBinding, object, contextOrg))
+                                        groupedProperties.put(groupKey, comparisonService.getGroupedPropertyTreesSortedAndAllowed(groupedProperties, groupKey, groupBinding, object, contextService.getOrg()))
                                     }
                                 }
                                 catch (ClassCastException e) {
@@ -106,7 +106,7 @@ class CompareService {
                 }
             }
             TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, object, object.propertySet.findAll { it.type.tenant?.id == contextOrg.id })
+            privateProperties = comparisonService.buildComparisonTree(privateProperties, object, object.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id })
             result.privateProperties = privateProperties
         }
 
@@ -124,10 +124,6 @@ class CompareService {
      */
     List getMyLicenses(Map params, boolean onlyIds = false) {
 
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-
         String base_qry
         Map qry_params
 
@@ -135,7 +131,7 @@ class CompareService {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
 
         } else if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = """from License as l where (
@@ -148,12 +144,12 @@ class CompareService {
                     )
                 )
             )))"""
-            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         } else {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         }
 
         if (params.status) {
@@ -172,22 +168,18 @@ class CompareService {
      */
     List getMySubscriptions(Map params, boolean onlyIds = false) {
 
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-
         String base_qry
         Map qry_params = [:]
 
-        if ((result.institution as Org).isCustomerType_Consortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
-            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution]
+            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()]
         }
         else {
             base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS], 'activeInst': result.institution, 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS], 'activeInst': contextService.getOrg(), 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
         }
 
         if (params.status) {

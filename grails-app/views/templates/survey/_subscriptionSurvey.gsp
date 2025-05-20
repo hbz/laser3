@@ -1,7 +1,7 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.wekb.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
 
 <g:if test="${customProperties}">
     <div class="ui card">
@@ -9,10 +9,9 @@
             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} right floated"
                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
-                            <i class="ui angle double down icon"></i>
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-propertiesCompareInfo-accordion')
@@ -52,7 +51,7 @@
         <g:if test="${!subscription}">
             <div>%{-- needed for css --}%
             <ui:headerTitleIcon type="Subscription"/>
-            <g:link class="ui button right floated" controller="public" action="gasco"
+            <g:link class="${Btn.SIMPLE} right floated" controller="public" action="gasco"
                     params="${[q: surveyConfig.subscription.name, consortia: "${surveyInfo.owner.class.name}:${surveyInfo.owner.id}"]}">
                 GASCO-Monitor
             </g:link>
@@ -68,9 +67,8 @@
             <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <div
-                                class="ui button icon blue la-modern-button la-delay right floated">
-                            <i class="ui angle double down icon"></i>
+                        <div class="${Btn.MODERN.SIMPLE} right floated">
+                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                         </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-subscription-info-accordion')
@@ -100,7 +98,7 @@
 
                     <div class="content" id="subscription-info">
                         <div class="ui stackable grid container">
-                            <div class="ten wide column ">
+                            <div class="ten wide column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                     <dd>${subscription.status.getI10n('value')}</dd>
@@ -132,11 +130,11 @@
                                     </dt>
                                     <dd>
 
-                                        <div class="ui list ">
+                                        <div class="ui list">
                                             <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                     var="id">
                                                 <div class="item js-copyTriggerParent">
-                                                    <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+                                                    <span class="ui small basic image label js-copyTrigger la-popup-tooltip"
                                                           data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                                         <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                                         ${id.ns.ns}: <div class="detail js-copyTopic">${id.value}</div>
@@ -177,7 +175,7 @@
                                     <laser:render template="/templates/links/providerLinksAsList"
                                                   model="${[roleLinks    : visibleProviders,
                                                             roleObject   : subscription,
-                                                            roleRespValue: 'Specific subscription editor',
+                                                            roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                             editmode     : false,
                                                             showPersons  : false
                                                   ]}"/>
@@ -189,7 +187,7 @@
                                     <laser:render template="/templates/links/vendorLinksAsList"
                                                   model="${[roleLinks    : visibleVendors,
                                                             roleObject   : subscription,
-                                                            roleRespValue: 'Specific subscription editor',
+                                                            roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                             editmode     : false,
                                                             showPersons  : false
                                                   ]}"/>
@@ -248,9 +246,9 @@
                                                     <td class="right aligned">
                                                         <g:if test="${pair.propertySet}">
                                                             <div id="derived-license-properties-toggle${link.id}"
-                                                                 class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                                                                 class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                                                  data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                                <i class="ui angle double down icon"></i>
+                                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                             </div>
                                                             <laser:script file="${this.getGroovyPageFileName()}">
                                                                 $("#derived-license-properties-toggle${link.id}").on('click', function() {
@@ -258,9 +256,9 @@
                                                             //$("#derived-license-properties${link.id}").toggleClass('hidden');
 
                                                             if ($("#derived-license-properties${link.id}").hasClass('visible')) {
-                                                                $(this).html('<i class="ui angle double down icon"></i>')
+                                                                $(this).html('<i class="angle double down icon"></i>')
                                                             } else {
-                                                                $(this).html('<i class="ui angle double up icon"></i>')
+                                                                $(this).html('<i class="angle double up icon"></i>')
                                                             }
                                                         })
                                                             </laser:script>
@@ -302,11 +300,11 @@
                 <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                     <div class="item">
                         <div class="title">
-                            <div class="ui button icon blue la-modern-button la-delay right floated ">
-                                <i class="ui angle double down icon"></i>
+                            <div class="${Btn.MODERN.SIMPLE} right floated">
+                                <i class="${Icon.CMD.SHOW_MORE}"></i>
                             </div>
 
-                            <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+                            <i aria-hidden="true" class="${Icon.STATS} circular green inverted"></i>
 
                             <h2 class="ui icon header la-clear-before la-noMargin-top">
                                 <g:link controller="subscription" action="stats" target="_blank"
@@ -316,7 +314,7 @@
 
                         <div class="content">
                             <g:link controller="subscription" action="stats" target="_blank"
-                                    id="${subscription.id}" class="ui button">
+                                    id="${subscription.id}" class="${Btn.SIMPLE}">
                                 <g:message code="renewEntitlementsWithSurvey.stats.button"/>
                             </g:link>
                         </div>
@@ -329,11 +327,10 @@
 </g:if>--}%
 
 
-
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('body #participation').editable('destroy').editable({
-        tpl: '<select class="ui dropdown"></select>'
+        tpl: '<select class="ui dropdown clearable"></select>'
         }).on('shown', function() {
             r2d2.initDynamicUiStuff('body');
             $(".table").trigger('reflow');

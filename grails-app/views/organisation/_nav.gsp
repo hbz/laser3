@@ -1,13 +1,24 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService" %>
 <laser:serviceInjection/>
+
+%{--<pre>--}%
+%{--    _nav.gsp--}%
+%{--    contextOrg: ${contextOrg}--}%
+%{--    institution: ${institution}--}%
+%{--    orgInstance: ${orgInstance}--}%
+%{--    inContextOrg: ${inContextOrg}--}%
+%{--    institutionalView: ${institutionalView}--}%
+%{--    consortialView: ${consortialView}--}%
+%{--</pre>--}%
+
 <ui:subNav actionName="${actionName}">
     <%
         Map<String, Object> breadcrumbParams = [id: orgInstance.id]
     %>
 
-    <g:if test="${orgInstance.isInfoAccessibleFor(contextService.getOrg())}">
+    <g:if test="${orgInstance.isInfoAccessible()}">
 %{--            <ui:subNavItem controller="organisation" action="info" params="${breadcrumbParams}" message="org.nav.info"/>--}%
-        <g:link controller="org" action="info" params="${breadcrumbParams}" class="item ${actionName == 'info' ? 'active' : ''}" role="tab"><i class="chartline circular icon" style="margin:0"></i></g:link>
+        <g:link controller="org" action="dataviz" params="${breadcrumbParams}" class="item ${actionName == 'dataviz' ? 'active' : ''}" role="tab"><i class="${Icon.DATA_DASHBOARD} circular" style="margin:0"></i></g:link>
     </g:if>
 
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
@@ -36,7 +47,7 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" counts="${docsCount}" message="default.documents.label" />
 
-    <g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowService.hasREAD()}">
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
     </g:if>
     <g:elseif test="${contextService.getOrg().isCustomerType_Basic()}">
@@ -59,12 +70,11 @@
         <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
                               controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy" />
     </g:if>
-    <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM') && !orgInstance.hasInstAdminEnabled()}">
+    <%-- to exclude other consortium admins --%>
+    <g:elseif test="${contextService.getUser().isComboInstAdminOf(orgInstance) && !orgInstance.hasInstAdminEnabled()}">
         <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
     </g:elseif>
-    <%-- sense???
-    <g:else>
-        <ui:subNavItem message="org.nav.dataTransfer.shy" disabled="disabled" />
-    </g:else>
-    --%>
+    <g:elseif test="${contextService.getUser().isAdmin() || contextService.getUser().isYoda()}">
+        <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
+    </g:elseif>
 </ui:subNav>

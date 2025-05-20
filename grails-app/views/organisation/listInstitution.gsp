@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
-<laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
+<laser:htmlStart message="menu.public.all_insts" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
@@ -24,7 +24,7 @@
         </ui:actionsDropdown>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" type="institution" />
 
     <ui:messages data="${flash}" />
 
@@ -33,10 +33,9 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [
-                                      ['name', 'orgStatus', 'isLegallyObliged'],
-                                      ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
+                                      ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
                                       ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
-                                      ['discoverySystemsFrontend', 'discoverySystemsIndex']
+                                      ['discoverySystemsFrontend', 'discoverySystemsIndex', 'isLegallyObliged', 'isMyX']
                               ],
                               tmplConfigFormFilter: true
                       ]"/>

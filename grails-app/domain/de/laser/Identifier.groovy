@@ -3,6 +3,10 @@ package de.laser
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.wekb.Package
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
@@ -16,8 +20,8 @@ import groovy.util.logging.Slf4j
  * @see Subscription#ids
  * @see License#ids
  * @see Org#ids
- * @see TitleInstancePackagePlatform#ids
- * @see Package#ids
+ * @see de.laser.wekb.TitleInstancePackagePlatform#ids
+ * @see de.laser.wekb.Package#ids
  */
 @Slf4j
 class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
@@ -69,7 +73,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         id    column:'id_id'
         version column: 'id_version'
         ns    column:'id_ns_fk', index:'id_ns_value_idx'
-        value column:'id_value', index:'id_ns_value_idx'
+        value column:'id_value', index:'id_value_idx, id_ns_value_idx'
         note  column:'id_note',  type: 'text'
 
         lic   column:'id_lic_fk', index: 'id_lic_idx'
@@ -114,10 +118,13 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         int result = aVal.compareToIgnoreCase(bVal)
         if(result == 0) {
             if(ns.nsType) {
-                result = ns.nsType.compareTo(o.ns.nsType)
+                result = ns.nsType <=> o.ns.nsType
             }
             if(result == 0 || !ns.nsType) {
-                result = value.compareTo(o.value)
+                result = value <=> o.value
+            }
+            if(result == 0) {
+                result = id <=> o.id
             }
         }
         result
@@ -347,9 +354,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
 
         if (this.ns?.ns == IdentifierNamespace.ISIL) {
-            if( (this.value != IdentifierNamespace.UNKNOWN) &&
-                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
-            {
+            if( (this.value != IdentifierNamespace.UNKNOWN) && ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != ''))) {
                 this.value = 'DE-'+this.value.trim()
             }
         }
@@ -383,7 +388,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
               }
           }
           if(this.ns?.ns == 'ISIL') {
-              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '') {
+              if((this.value != IdentifierNamespace.UNKNOWN) && (!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')) {
                   this.value = 'DE-'+this.value.trim()
               }
           }

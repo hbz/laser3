@@ -1,5 +1,7 @@
 package de.laser
 
+import grails.converters.JSON
+
 class ClickMeConfig {
 
     String name
@@ -35,5 +37,19 @@ class ClickMeConfig {
 
         contextOrg column: 'cmc_context_org_fk', index: 'cmc_context_org_idx'
 
+    }
+
+    Map getClickMeConfigMap(){
+        Map clickMeConfigMap = jsonConfig ? JSON.parse(jsonConfig) : [:]
+        return clickMeConfigMap
+    }
+
+    int getClickMeConfigSize(){
+        int count = 0
+        Map clickMeConfigMap = getClickMeConfigMap()
+        if(clickMeConfigMap)
+            count = clickMeConfigMap.size()
+
+        return count
     }
 }

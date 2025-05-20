@@ -1,6 +1,6 @@
-<%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
 
-<laser:htmlStart message="profile" serviceInjection="true" />
+<laser:htmlStart message="profile" />
 
     <ui:breadcrumbs>
         <ui:crumb message="profile.bc.profile" class="active"/>
@@ -13,23 +13,23 @@
     <g:if test="${delResult}">
 
         <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+            <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+            <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-            <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+            <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
         </g:if>
 
         <g:form controller="profile" action="delete" data-confirm-id="deleteProfile_form" params="${[id: user.id, process: true]}">
 
-            <g:link controller="profile" action="index" class="ui button">${message(code: 'default.button.cancel.label')}</g:link>
+            <g:link controller="profile" action="index" class="${Btn.SIMPLE}">${message(code: 'default.button.cancel.label')}</g:link>
 
             <g:if test="${delResult.deletable}">
                 <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
                     <g:if test="${substituteList}">
-                        <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfile"
+                        <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteProfile"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
                                 ${message(code:'deletion.user')}
                         </div>
@@ -44,19 +44,19 @@
                         </div>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                        <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
+                        <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                     </g:else>
                 </g:if>
                 <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                    <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteProfile"
+                    <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteProfile"
                          data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.profile")}" data-confirm-term-how="delete">
                             ${message(code:'deletion.user')}
                     </div>
                 </g:elseif>
             </g:if>
             <g:else>
-                <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
+                <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
             </g:else>
 
         </g:form>
@@ -77,9 +77,9 @@
                     <td>
                         ${info[0]}
                     </td>
-                    <td style="text-align:center">
+                    <td class="center aligned">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
-                            <span class="ui circular label la-popup-tooltip la-delay ${info[2]}"
+                            <span class="ui circular label la-popup-tooltip ${info[2]}"
                                 <g:if test="${info[2] == DeletionService.FLAG_WARNING}">
                                     data-content="${message(code:'user.delete.warning')}"
                                 </g:if>

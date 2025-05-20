@@ -24,7 +24,6 @@
                 <th scope="col">${message(code:'default.name.label')}</th>
                 <th scope="col">${message(code:'org.libraryType.label')}</th>
                 <th scope="col">${message(code:'org.libraryNetwork.label')}</th>
-%{--                <th scope="col">${message(code:'org.orgType.label')}</th>--}%
                 <th scope="col">${message(code:'org.customerType.label')}</th>
             </tr>
             </thead>
@@ -43,11 +42,6 @@
                         </td>
                         <td>${org.libraryType?.getI10n('value')}</td>
                         <td>${org.libraryNetwork?.getI10n('value')}</td>
-%{--                        <td>--}%
-%{--                            <g:each in="${org.orgType}" var="ot">--}%
-%{--                                ${ot.getI10n('value')} <br/>--}%
-%{--                            </g:each>--}%
-%{--                        </td>--}%
                         <td>${org.getCustomerTypeI10n()}</td>
                     </tr>
                 </g:each>
@@ -68,7 +62,6 @@
                 <th scope="col">${message(code:'default.name.label')}</th>
                 <th scope="col">${message(code:'org.libraryType.label')}</th>
                 <th scope="col">${message(code:'org.libraryNetwork.label')}</th>
-%{--                <th scope="col">${message(code:'org.orgType.label')}</th>--}%
                 <th scope="col">${message(code:'org.customerType.label')}</th>
             </tr>
             </thead>
@@ -82,11 +75,6 @@
                         </td>
                         <td>${org.libraryType?.getI10n('value')}</td>
                         <td>${org.libraryNetwork?.getI10n('value')}</td>
-%{--                        <td>--}%
-%{--                            <g:each in="${org.orgType}" var="ot">--}%
-%{--                                ${ot.getI10n('value')} <br/>--}%
-%{--                            </g:each>--}%
-%{--                        </td>--}%
                         <td>${org.getCustomerTypeI10n()}</td>
                     </tr>
                 </g:each>

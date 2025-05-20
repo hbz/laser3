@@ -9,8 +9,8 @@ import de.laser.helper.Profiler
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * This controller handles calls related to global user management
@@ -81,7 +81,7 @@ class UserController {
         Profiler prf = new Profiler()
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         prf.setBenchmark('init')
-        Map filterParams = params.clone()
+        GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.max = result.max
         filterParams.offset = result.offset
         Map userData = userService.getUserMap(filterParams)
@@ -90,8 +90,8 @@ class UserController {
         result.users = userData.data
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set availableComboOrgs = [[oid: genericOIDService.getOID(result.orgInstance), name: result.orgInstance.sortname]]
-        String query = "select new map(concat('${Org.class.name}:',c.fromOrg.id) as oid,c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
+        Set availableComboOrgs = [[id: result.orgInstance.id, name: result.orgInstance.sortname]]
+        String query = "select new map(c.fromOrg.id as id, c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
         availableComboOrgs.addAll(Org.executeQuery(query, [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]))
         prf.setBenchmark('after combo orgs')
         result.filterConfig = [
@@ -108,7 +108,6 @@ class UserController {
 
         result.tmplConfig = [
                 editable:result.editable,
-                editor: result.editor,
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
@@ -134,7 +133,7 @@ class UserController {
         }
         else {
             result.availableOrgs = Org.executeQuery(
-                    "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') order by o.sortname",
+                    "select o from Org o where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (o.archiveDate is null) order by o.sortname",
                         [customerType: OrgSetting.KEYS.CUSTOMER_TYPE]
                 )
             result.manipulateAffiliations = true
@@ -160,7 +159,7 @@ class UserController {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -197,7 +196,7 @@ class UserController {
      * get username and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })

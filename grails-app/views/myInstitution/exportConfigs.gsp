@@ -1,11 +1,11 @@
-<%@ page import="de.laser.helper.Icons" %>
-<laser:htmlStart message="menu.institutions.clickMeConfig" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<laser:htmlStart message="menu.institutions.clickMeConfig" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.institutions.clickMeConfig" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon type="file" message="menu.institutions.clickMeConfig" total="${clickMeConfigsAllCount}" floated="true"/>
+<ui:h1HeaderWithIcon message="menu.institutions.clickMeConfig" total="${clickMeConfigsAllCount}" floated="true" type="${contextService.getOrg().getCustomerType()}"/>
 <br>
 <br>
 <br>
@@ -32,9 +32,12 @@
                     <th>${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.name.label')}</th>
                     <th>${message(code: 'default.note.label')}</th>
+                    <th>${message(code: 'default.count.label')}-${message(code: 'default.config.label')}</th>
                     <th>${message(code: 'clickMeConfig.configOrder')}</th>
                     <g:if test="${editable}">
-                        <th>${message(code: 'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <ui:optionsIcon />
+                        </th>
                     </g:if>
                 </tr>
                 </thead>
@@ -51,21 +54,24 @@
                             <ui:xEditable owner="${clickMeConfig}" field="note" type="textarea"/>
                         </td>
                         <td>
+                            ${clickMeConfig.getClickMeConfigSize()}
+                        </td>
+                        <td>
                             <g:if test="${editable}">
                                 <g:if test="${i == 1 && clickMeConfigs.size() == 2}">
-                                    <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                         params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="icon arrow up"></i>
+                                    <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
+                                            params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${i > 0}">
-                                        <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="icon arrow up"></i>
+                                        <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
+                                                params="[cmd: 'moveUp', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_UP}"></i>
                                         </g:link>
                                     </g:if>
                                     <g:if test="${i < clickMeConfigs.size()-1}">
-                                        <g:link class="ui icon blue button compact la-modern-button" action="exportConfigsActions"
-                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="icon arrow down"></i>
+                                        <g:link class="${Btn.MODERN.SIMPLE} compact" action="exportConfigsActions"
+                                                params="[cmd: 'moveDown', id: clickMeConfig.id, tab: params.tab]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
                                         </g:link>
                                     </g:if>
                                 </g:else>
@@ -74,11 +80,19 @@
                         </td>
                         <g:if test="${editable}">
                             <td>
+
+                                <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                params="${params + [exportController: controllerName, exportAction: actionName, clickMeType: clickMeConfig.clickMeType, id: params.id, clickMeConfigId: clickMeConfig.id, exportFileName: 'EditExportConfig', editExportConfig: true]}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i class="${Icon.CMD.EDIT}"></i>
+                                </g:link>
+
                                 <g:link controller="myInstitution" action="exportConfigsActions"
-                                        params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="ui icon negative button  la-modern-button"
+                                        params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="${Btn.MODERN.NEGATIVE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </td>
                         </g:if>
@@ -89,5 +103,7 @@
         </div>
     </div>
 </div>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

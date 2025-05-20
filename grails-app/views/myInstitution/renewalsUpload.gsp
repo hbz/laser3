@@ -1,7 +1,8 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="myinst.renewalUpload.label" />
 
   <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
     <ui:crumb message="menu.institutions.imp_renew" class="active" />
   </ui:breadcrumbs>
@@ -9,7 +10,7 @@
     <ui:greySegment>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
           <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
-        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
+        <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
     </ui:greySegment>
 
@@ -32,7 +33,7 @@
         <div>
         <hr />
             <g:if test="${entitlements}">
-                ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br />
+                ${message(code:'myinst.renewalUpload.upload.note', args:[contextService.getOrg().name])}<br />
                 <table class="ui celled la-js-responsive-table la-table table">
                     <tbody>
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
@@ -64,7 +65,7 @@
 
                 <div class="la-float-right">
                     <g:if test="${entitlements}">
-                        <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
+                        <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.accept')}</button>
                     </g:if>
                 </div>
                 <br /><hr />
@@ -112,7 +113,7 @@
 
           <div class="la-float-right">
               <g:if test="${entitlements}">
-                  <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.accept')}</button>
+                  <button type="submit" class="${Btn.SIMPLE}">${message(code:'myinst.renewalUpload.accept')}</button>
               </g:if>
           </div>
         </div>

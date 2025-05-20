@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
-<laser:htmlStart message="package.show.all" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
+<laser:htmlStart message="package.show.all" />
 
 <ui:breadcrumbs>
     <ui:crumb message="package.show.all" class="active"/>
@@ -11,23 +11,14 @@
 
 <g:if test="${!error}">
     <laser:render template="/templates/filter/packageGokbFilter" model="[
-            tmplConfigShow: filterConfig,
+            filterConfig: filterConfig,
             curatoryGroupTypes: curatoryGroupTypes,
             automaticUpdates: automaticUpdates,
     ]"/>
 </g:if>
 
 <g:if test="${error}">
-    <div class="ui icon error message">
-        <i class="exclamation triangle icon"></i>
-        <i class="close icon"></i>
-        <div class="content">
-            <div class="header">
-                ${message(code: 'message.attention')}
-            </div>
-            <p>${error}</p>
-        </div>
-    </div>
+    <ui:msg class="error" showIcon="true" header="${message(code: 'message.attention')}" text="${error}" />
 </g:if>
 
 <div class="twelve wide column la-clear-before">

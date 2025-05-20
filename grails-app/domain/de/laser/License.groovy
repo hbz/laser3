@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -14,6 +15,10 @@ import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -33,12 +38,21 @@ import java.text.SimpleDateFormat
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
+    static enum ONIXPL_CONTROLLED_LIST {
+        LICENSE_DOCUMENT_TYPE_CODE ('LicenseDocumentTypeCode'),
+        LICENSE_STATUS_CODE ('LicenseStatusCode'),
+        TERM_STATUS_CODE ('TermStatusCode'),
+        USAGE_STATUS_CODE ('UsageStatusCode')
+
+        ONIXPL_CONTROLLED_LIST(String code) {
+            this.code = code
+        }
+
+        public String code
+    }
+
     License instanceOf
 
-    /**
-     * If a license is slaved then any changes to instanceOf will automatically be applied to this license
-     */
-    boolean isSlaved = false
     boolean isPublicForApi = false
 
     @RefdataInfo(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
@@ -113,7 +127,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
-               isSlaved column:'lic_is_slaved'
               openEnded column:'lic_open_ended_rv_fk', index:'lic_open_ended_idx'
               documents batchSize: 10
         licenseCategory column: 'lic_category_rdv_fk', index:'lic_category_idx'
@@ -191,8 +204,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             sortableReference = generateSortableReference(reference)
         }
         Map<String, Object> changes = super.beforeUpdateHandler()
-        log.debug ("beforeUpdate() " + changes.toMapString())
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
@@ -305,7 +316,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all organisation linked as providers to this license
-     * @return a {@link List} of {@link Provider}s linked as provider
+     * @return a {@link List} of {@link de.laser.wekb.Provider}s linked as provider
      */
     List<Provider> getProviders() {
         Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.sortname",
@@ -314,7 +325,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this license
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",
@@ -451,7 +462,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getContextService().isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if(BeanStore.getContextService().isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || licsee
             }
         }

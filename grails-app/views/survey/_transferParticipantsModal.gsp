@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.License; de.laser.ProviderRole; de.laser.VendorRole" %>
+<%@ page import="de.laser.wekb.ProviderRole; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.License; de.laser.wekb.VendorRole" %>
 <g:set var="auditConfigProviders" value="${ProviderRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 <g:set var="auditConfigVendors" value="${VendorRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 
@@ -188,8 +188,8 @@
                         <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                     </div>
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                        <i class="grey question circle icon la-popup"></i>
+                    <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'myinst.separate_lics_all.expl')}">
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                     </span>
                     <br />
                     <div class="ui radio checkbox">
@@ -199,7 +199,7 @@
                     <div class="generateSlavedLicsReference-wrapper hidden">
                         <br />
                         <g:select from="${memberLicenses}"
-                                  class="ui fluid search multiple dropdown hide"
+                                  class="ui fluid search multiple dropdown clearable hide"
                                   optionKey="${{ License.class.name + ':' + it.id }}"
                                   optionValue="${{ it.reference }}"
                                   noSelection="${['' : message(code:'default.select.all.label')]}"

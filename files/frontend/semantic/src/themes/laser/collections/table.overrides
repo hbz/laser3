@@ -2,30 +2,13 @@
 /*--------------
     Sortable
 ---------------*/
-/* change classnames bec. of existing sort function in LAS:eR */
+
 
 /* Sorted */
 .ui.sortable.table thead th.sorted {
   background: #F2F2F2;
   color: @sortableActiveColor;
 }
-
-
-
-.ui.sortable.table thead th.sortable:after {
-  content: @sortableIconSort;
-  color: @grey;
-  display: inline;
-}
-.ui.sortable.table thead th.asc:after {
-  content: @sortableIconAscending;
-  color: @black;
-}
-.ui.sortable.table thead th.desc:after {
-  content: @sortableIconDescending;
-  color: @black;
-}
-
 
 .ui.sortable.table > thead > tr > th {
   cursor: default;
@@ -39,7 +22,6 @@
 }
 .ui.sortable.table thead th.sortable:hover {
   background:#F2F2F2;
-
 }
 
 .ui.table {

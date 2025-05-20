@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.IssueEntitlement" %>
 
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
@@ -25,12 +25,18 @@
                  text="${issueEntitlementInstance.tipp.name}"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"
                         type="${issueEntitlementInstance.tipp.titleType}" />
 
+<laser:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
+
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
+<laser:render template="/templates/reportTitleToProvider/flyoutAndTippTask" model="${[tipp: issueEntitlementInstance.tipp]}"/>
 
 <div class="la-inline-lists">
 
@@ -65,17 +71,17 @@
                 <div class="ui list">
                     <g:each in="${participantPerpetualAccessToTitle}" var="pt">
                         <div class="item">
-                                <i class="${Icons.SUBSCRIPTION} icon"></i>
+                                <i class="${Icon.SUBSCRIPTION}"></i>
                                 <div class="content">
                                     <div class="header"
                                         <g:link controller="subscription"
                                             action="index"
-                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention()}</g:link>
                                     </div>
                                     <div class="description">
                                         <g:link controller="issueEntitlement"
                                                 action="show"
-                                                class="ui tiny button la-margin-top-05em"
+                                                class="${Btn.SIMPLE} tiny la-margin-top-05em"
                                                 id="${pt.issueEntitlement.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                     </div>
                                 </div>
@@ -128,12 +134,12 @@
 
                 <div class="la-icon-list">
                     <div class="item">
-                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                         </g:if>
                         <g:else>
@@ -143,11 +149,11 @@
                     </div>
 
                     <div class="item">
-                        <i class="grey calendar icon la-popup-tooltip la-delay"
+                        <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
                             <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                            <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
                         <g:else>
@@ -191,8 +197,7 @@
                     <g:if test="${issueEntitlementInstance.ieGroups}">
                         <g:each in="${issueEntitlementInstance.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                             <div class="item">
-                                <i class="grey icon object group la-popup-tooltip la-delay"
-                                   data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
+                                <i class="${Icon.IE_GROUP} grey la-popup-tooltip" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
                                 <div class="content">
                                     <g:link controller="subscription" action="index"
@@ -232,7 +237,7 @@
                                               institutions: statsWibid
                                      ]"
                                      title="Springe zu Statistik im Nationalen Statistikserver">
-                        <i class="chart bar outline icon"></i>
+                        <i class="${Icon.STATS}"></i>
                     </ui:statsLink>
                 </span>
 
@@ -304,7 +309,6 @@
     </g:if>
 
 
-
 <%-- we should not be supposed to see the same tipp in other circumstances ... do we need the following information at all?
     <g:if test="${issueEntitlementInstance.tipp.title.tipps}">
         <br />
@@ -342,7 +346,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="submit" class="ui primary button"
+                        <input type="submit" class="${Btn.PRIMARY}"
                                value="${message(code: 'default.button.submit.label')}">
                     </div>
 
@@ -382,7 +386,7 @@
                             <td><g:link controller="package" action="show"
                                         id="${t.pkg.id}">${t.pkg.name}</g:link></td>
                             <td>
-                                <g:link class="ui button" controller="tipp" action="show"
+                                <g:link class="${Btn.SIMPLE}" controller="tipp" action="show"
                                         id="${t.id}">${message(code: 'tipp.details')}</g:link></td>
                         </tr>
                     </g:each>

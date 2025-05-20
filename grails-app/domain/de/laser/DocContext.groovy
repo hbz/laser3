@@ -5,6 +5,8 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.traits.ShareableTrait
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 /**
@@ -31,28 +33,22 @@ class DocContext implements ShareableTrait, Comparable {
     RefdataValue shareConf
     Org targetOrg
 
-    Boolean globannounce = false
     DocContext sharedFrom
     Boolean isShared = false
 
     Date dateCreated
     Date lastUpdated
 
-    // We may attach a note to a particular column, in which case, we set domain here as a discriminator
-    String domain
-
     static mapping = {
                id column:'dc_id'
           version column:'dc_version'
-            owner column:'dc_doc_fk', sort:'title', order:'asc', index:'doc_owner_idx'
-           domain column:'dc_domain'
-          license column:'dc_lic_fk', index:'doc_lic_idx'
-     subscription column:'dc_sub_fk', index:'doc_sub_idx'
-              org column:'dc_org_fk', index:'doc_org_idx'
-         provider column:'dc_prov_fk', index:'doc_prov_idx'
-           vendor column:'dc_ven_fk', index:'doc_ven_idx'
+            owner column:'dc_doc_fk',              index: 'dc_doc_idx', sort:'title', order:'asc'
+          license column:'dc_lic_fk',              index: 'dc_lic_idx'
+     subscription column:'dc_sub_fk',              index: 'dc_sub_idx'
+              org column:'dc_org_fk',              index: 'dc_org_idx'
+         provider column:'dc_prov_fk',             index: 'dc_prov_idx'
+           vendor column:'dc_ven_fk',              index: 'dc_ven_idx'
              link column:'dc_link_fk',             index: 'dc_link_idx'
-     globannounce column:'dc_is_global'
            status column:'dc_status_fk',           index: 'dc_status_idx'
        sharedFrom column:'dc_shared_from_fk',      index: 'dc_shared_from_idx'
          isShared column:'dc_is_shared'
@@ -72,7 +68,6 @@ class DocContext implements ShareableTrait, Comparable {
         provider    (nullable:true)
         vendor      (nullable:true)
         link        (nullable:true)
-        domain      (nullable:true, blank:false)
         status      (nullable:true)
         sharedFrom    (nullable: true)
         shareConf     (nullable: true)

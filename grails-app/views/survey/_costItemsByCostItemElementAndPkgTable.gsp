@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.finance.CostItem" %>
 <laser:serviceInjection/>
 
 <g:set var="sumCostInBillingCurrencyAfterTax" value="${0}"/>
@@ -50,13 +50,13 @@
                         <g:if test="${selectedCostItemElementID == costItemElement.id && costItemsByPackage.pkg.id == selectedPackageID}">
                             <g:link controller="survey" action="$actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
-                                <i class="check bordered large green icon"></i>
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                             </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="survey" action="$actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id, selectedPackageID: costItemsByPackage.pkg.id]}">
-                                <i class="close bordered large red icon"></i>
+                                <i class="${Icon.SYM.CHECKBOX} large"></i>
                             </g:link>
                         </g:else>
                     </td>
@@ -64,21 +64,25 @@
             </g:each>
         </g:each>
         </tbody>
-        <tfoot>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>${sumCostItems}</td>
-        <td>
-            <g:formatNumber number="${sumCostInBillingCurrency}" minFractionDigits="2"
-                            maxFractionDigits="2" type="number"/>
-        </td>
-        <td>
-            <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
-                            maxFractionDigits="2" type="number"/>
-        </td>
-        <td></td>
-        </tfoot>
+        <g:if test="${costItemsByPackages}">
+            <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>${sumCostItems}</td>
+                <td>
+                    <g:formatNumber number="${sumCostInBillingCurrency}" minFractionDigits="2"
+                                    maxFractionDigits="2" type="number"/>
+                </td>
+                <td>
+                    <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                    maxFractionDigits="2" type="number"/>
+                </td>
+                <td></td>
+            </tr>
+            </tfoot>
+        </g:if>
     </table>
 </div>
 

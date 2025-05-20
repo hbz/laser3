@@ -1,5 +1,5 @@
-<%@ page import="de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
-<laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
+<%@ page import="de.laser.License; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<laser:htmlStart message="subscriptionsManagement.subscriptions.members" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -14,7 +14,7 @@
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${subscription.name}" />
 
 <ui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}" tab="${params.tab}"/>
 
 <h2 class="ui left aligned icon header la-clear-before">
     ${message(code: 'subscriptionsManagement.subscriptions.members')}
@@ -40,8 +40,9 @@
 <g:if test="${params.tab != 'customerIdentifiers'}">
     <ui:filter>
         <g:form action="membersSubscriptionsManagement" controller="subscription"
-                params="${[id: params.id, tab: params.tab, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear, propertiesFilterPropDef: propertiesFilterPropDef]}"
+                params="${[id: params.id, showMembersSubWithMultiYear: params.showMembersSubWithMultiYear, propertiesFilterPropDef: propertiesFilterPropDef]}"
                 method="get" class="ui form">
+            <input type="hidden" name="tab" value="${params.tab}"/>
             <laser:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow      : [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subRunTimeMultiYear']],

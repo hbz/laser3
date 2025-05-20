@@ -1,10 +1,12 @@
+<%@ page import="de.laser.convenience.Marker; de.laser.ui.Btn; de.laser.ui.Icon" %>
+<laser:serviceInjection/>
+
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
-
         <g:if test="${(ie && ie.perpetualAccessBySub) || permanentTitle}">
-            <g:if test="${ie && ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+            <g:if test="${ie && ie.perpetualAccessBySub && !(ie.perpetualAccessBySub.id in [subscription.id, subscription.instanceOf?.id])}">
                 <g:link controller="subscription" action="index" id="${ieperpetualAccessBySub.id}">
-                    <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                    <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                           data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
                           data-position="left center" data-variation="tiny">
                         <i class="star blue icon"></i>
@@ -12,14 +14,14 @@
                 </g:link>
             </g:if>
             <g:elseif test="${permanentTitle}">
-                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo(contextOrg)}"
+                <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
+                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo()}"
                       data-position="left center" data-variation="tiny">
                     <i class="star icon"></i>
                 </span>
             </g:elseif>
             <g:else>
-                <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                       data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
                       data-position="left center" data-variation="tiny">
                     <i class="star icon"></i>
@@ -48,7 +50,7 @@
             <laser:render template="/templates/tipps/coverages_accordion" model="${[ie: null, tipp: tipp, overwriteEditable: false]}"/>
         </div>
 
-        <div class="four wide column">
+        <div class="three wide column">
             <!-- START TEMPLATE -->
             <laser:render template="/templates/identifier" model="${[ie: null, tipp: tipp]}"/>
             <!-- END TEMPLATE -->
@@ -74,11 +76,12 @@
         </div>
 
         <div class="one wide column">
-            <div class="ui right floated buttons">
-                <div class="right aligned wide column">
-                </div>
-                <div class="ui icon blue button la-modern-button">
-                    <i class="ui angle double down icon"></i>
+            <div class="ui right aligned">
+%{--                <g:if test="${!isPublic_gascoDetails && tipp.isMarked(contextService.getUser(), Marker.TYPE.TIPP_CHANGES)}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}" simple="true"/>--}%
+%{--                </g:if>--}%
+                <div class="${Btn.MODERN.SIMPLE}">
+                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                 </div>
             </div>
         </div>

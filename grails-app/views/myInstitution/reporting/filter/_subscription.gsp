@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@page import="de.laser.ui.Icon; de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
         <div class="menu ui top attached tabular la-tab-with-js">
@@ -22,7 +22,7 @@
                 <a class="item" data-tab="sub-filter-tab-6">${message(code:'default.vendor.export.label')}</a>
             </g:if>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
-                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="icon question"></i>--}%</a>
+                <a class="item" data-tab="sub-filter-tab-help"> ? %{--<i class="${Icon.UI.HELP}"></i>--}%</a>
             </g:if>
         </div><!-- .menu -->
 
@@ -171,7 +171,7 @@
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-help">
                 <div class="field">
                     <div style="text-align:center; padding:2em 0">
-                        <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.subscriptions.png')}"/>
+                        <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'media', file: 'reporting/global.subscriptions.png')}"/>
                     </div>
                 </div>
             </div><!-- .tab -->

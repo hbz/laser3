@@ -4,6 +4,8 @@ import de.laser.storage.BeanStore
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import org.grails.core.io.support.GrailsFactoriesLoader
 import org.grails.datastore.mapping.model.PersistentEntity

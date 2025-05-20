@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
@@ -12,15 +12,7 @@
 
 <ui:messages data="${flash}"/>
 
-<div class="ui icon positive message">
-    <i class="info icon"></i>
-    <div class="content">
-        <div class="header"></div>
-        <p>
-            ${message(code: 'allSubscriptions.info2')}
-        </p>
-    </div>
-</div>
+<ui:msg class="info" showIcon="true" hideClose="true" message="allSubscriptions.info2" />
 
 <h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
 <ui:totalNumber total="${num_sub_rows}"/>
@@ -36,9 +28,9 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
-                          class="la-popup-tooltip la-delay"
+                          class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -56,7 +48,7 @@
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable " name="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -73,7 +65,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code: 'subscription.form.label')}</label>
-                <ui:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown clearable" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -83,7 +75,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code: 'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown clearable" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -96,7 +88,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown search" name="provider"
+                <g:select class="ui dropdown clearable search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"
@@ -106,10 +98,8 @@
 
             <div class="field la-field-right-aligned">
 
-                        <a href="${request.forwardURI}"
-                           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button"
-                               value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
 
             </div>
         </div>
@@ -140,13 +130,13 @@
 
 
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                        <i class="users large icon"></i>
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                        <i class="${Icon.ATTR.SURVEY_PARTICIPANTS} large"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                        <i class="money bill large icon"></i>
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                        <i class="${Icon.FNC.COST} large"></i>
                     </a>
                 </th>
 
@@ -174,14 +164,14 @@
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
-                                    <g:if test="${s.consortia && s.consortia == institution}">
+                                    <g:if test="${s.getConsortium() && s.getConsortium() == contextService.getOrg()}">
                                         ( ${s.getSubscriberRespConsortia().name} )
                                     </g:if>
                                 </g:if>
                             </g:link>
                             <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
-                                    <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                     <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                 </div>
                             </g:each>
@@ -191,7 +181,7 @@
                             <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}"
                                                 params="[pkgfilter: sp.pkg.id]"
                                                 title="${sp.pkg.provider?.name}">
@@ -228,22 +218,20 @@
                         </td>
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                    <div class="ui blue circular label">${childSubIds.size()}</div>
+                                    <ui:bubble count="${childSubIds.size()}" />
                                 </g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    <div class="ui blue circular label">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
-                                    </div>
+                                    <ui:bubble count="${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:contextService.getOrg(), deleted:RDStore.COST_ITEM_DELETED])[0]}" />
                                 </g:link>
                             </td>
 
                         <td class="x">
-                            <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:if test="${editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO ) && childSubIds.size() > 0}">
 
-                                    <g:link class="ui icon positive button la-popup-tooltip la-delay"
+                                    <g:link class="${Btn.POSITIVE}"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                             params="[sub: s.id]">
                                         <g:message code="createSubscriptionSurvey.selectButton"/>

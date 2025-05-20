@@ -1,5 +1,5 @@
 <!-- template: meta/subscriptionTransferInfo -->
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
 <laser:serviceInjection />
 
@@ -19,23 +19,23 @@
                 <th scope="col" rowspan="3" class="center aligned">${message(code: 'subscription.priceIncreaseInfo.label')}</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                        <i class="${Icons.SURVEY} large icon"></i>
+                    <span class="la-popup-tooltip" data-content="${message(code: 'survey.label')}" data-position="top center">
+                        <i class="${Icon.SURVEY} large"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
-                        <i class="comments large icon"></i>
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                        <i class="${Icon.ATTR.SURVEY_EVALUTAION}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
-                        <i class="times circle large icon"></i>
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                        <i class="${Icon.ATTR.SURVEY_CANCELLATION}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
-                        <i class="percentage large icon"></i>
+                    <span class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                        <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE}"></i>
                     </span>
                 </th>
 
@@ -43,20 +43,20 @@
                 <th colspan="3" class="la-smaller-table-head center aligned">Renewal</th>
 
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip"
                             data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}"
                             data-position="top center">
                         <i class="large icons">
-                            <i class="chart pie icon"></i>
+                            <i class="${Icon.SURVEY}"></i>
                             <i class="top right corner redo icon"></i>
                         </i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned">
-                    <span class="la-popup-tooltip la-delay"
+                    <span class="la-popup-tooltip"
                        data-content="${message(code: 'renewalEvaluation.exportRenewal')}"
                        data-position="top center">
-                        <i class="download icon"></i>
+                        <i class="${Icon.CMD.DOWNLOAD}"></i>
                     </span>
                 </th>
                 <th scope="col" rowspan="3" class="center aligned"></th>
@@ -156,7 +156,7 @@
                                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                             <g:if test="${supportedMimeType}">
                                                 <a href="#documentPreview"
-                                                   data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                   data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                             </g:if>
                                             <g:else>
                                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -167,10 +167,10 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                    class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
-                                                <i class="download small icon"></i>
+                                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -243,8 +243,8 @@
                             <g:if test="${s.discountScale}">
                                 ${s.discountScale.name} : ${s.discountScale.discount}
                                 <g:if test="${s.discountScale.note}">
-                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${s.discountScale.note}">
-                                        <i class="info circle icon blue"></i>
+                                    <span data-position="top left" class="la-popup-tooltip" data-content="${s.discountScale.note}">
+                                        <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -263,6 +263,17 @@
                         <g:formatDate formatName="default.date.format.notime" date="${s.renewalSentDate}"/>
                     </td>
                     <td>
+
+                        <g:if test="${editable && surConfig && surConfig.surveyInfo.id.toString() == params.id}">
+                            <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
+                                    data-ownerid="${s.id}"
+                                    data-ownerclass="${s.class.name}"
+                                    data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                    data-ui="modal"
+                                    data-href="#modalCreateDocumentSubTransferInfo">
+                                <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
+                            </button>
+                        </g:if>
                         <%
                             Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
                             documentSet2 = documentSet2.sort { it.owner?.title }
@@ -277,7 +288,7 @@
                                                    value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                             <g:if test="${supportedMimeType}">
                                                 <a href="#documentPreview"
-                                                   data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                   data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                             </g:if>
                                             <g:else>
                                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -288,10 +299,10 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                    class="ui icon blue tiny button la-modern-button"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                    class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
-                                                <i class="download small icon"></i>
+                                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
                                             </g:link>
                                         </div>
                                     </div>
@@ -306,7 +317,7 @@
                         <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                     params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surConfig.surveyInfo.id, surveyConfigID: surConfig.id, modalText: message(code: 'renewalEvaluation.exportRenewal')]">
-                                <i class="download icon"></i> ${countModificationToContactInformationAfterRenewalDoc}
+                                <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToContactInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>
@@ -324,17 +335,17 @@
                             <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION,
                                          id: surConfig.surveyInfo.id, surveyConfigID: surConfig.id,
-                                         modalText: message(code: 'renewalEvaluation.exportRenewal')+'('+ g.message(code: 'subscription.referenceYear.label')+': '+ surConfig.subscription.referenceYear+')']">
-                                <i class="download small icon"></i>
+                                         modalText: 'Export: ('+ g.message(code: 'renewalEvaluation.exportRenewal')+'('+ g.message(code: 'subscription.referenceYear.label')+': '+ surConfig.subscription.referenceYear+')']">
+                                <i class="${Icon.CMD.DOWNLOAD}"></i>
                             </g:link>
                         </g:if>
                     </td>
                     <td>
                         <g:link controller="subscription" action="subTransfer" id="${s.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -363,4 +374,20 @@
         display: none;
     }
 </style>
+
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocumentSubTransferInfo", owntp: 'subscription']}"/>
+
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.callbacks.modal.onShow.modalCreateDocumentSubTransferInfo = function(trigger) {
+            $('#modalCreateDocumentSubTransferInfo input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+            $('#modalCreateDocumentSubTransferInfo input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+            $('#modalCreateDocumentSubTransferInfo input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+            $('#modalCreateDocumentSubTransferInfo select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+        }
+    </laser:script>
+
+</g:if>
 <!-- template: meta/subscriptionTransferInfo -->

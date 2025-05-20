@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
@@ -14,23 +14,26 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataValueModal" data-ui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addRefdataValueModal" data-ui="modal">${message(code:'refdataValue.create_new.label')}</button>
                     </div>
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
                     </div>
                     <div class="field">
-                        <g:link class="ui button" action="manageRefdataIntegrityCheck"><i class="icon wrench"></i> ${message(code:'default.integrityCheck.label')}</g:link>
+                        <g:link class="${Btn.SIMPLE}" action="manageRefdataIntegrityCheck"><i class="icon wrench"></i> ${message(code:'default.integrityCheck.label')}</g:link>
                     </div>
                 </div>
             </div>
+
+        <g:link class="${Btn.SIMPLE}" action="manageRefdatas" params="[sort: 'desc']">Nach Schlüssel sortieren</g:link>
+        <g:link class="${Btn.SIMPLE}" action="manageRefdatas" params="[sort: 'desc_de']">Nach deutschem Namen sortieren</g:link>
 
         <div class="ui styled fluid accordion">
             <g:each in="${rdCategories}" var="rdc">
 
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    ${rdc.getI10n('desc')}
+                    ${rdc.getI10n('desc')} (${rdc.desc}) <!--[${rdc.id}]-->
                 </div>
                 <div class="content">
 
@@ -41,7 +44,9 @@
                             <th>Wert (Schlüssel)</th>
                             <th>DE</th>
                             <th>EN</th>
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -73,15 +78,15 @@
                             <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(rdc.desc)}" var="rdv">
                                 <tr>
                                     <td>
-                                        <g:if test="${rdv.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                        <g:if test="${!rdv.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
-                                                <i class="info circle icon blue"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
+                                                <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -107,22 +112,22 @@
                                     <td class="x">
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                                <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
-                                                    <button class="ui icon button la-modern-button" data-href="#replaceRefdataValueModal" data-ui="modal"
+                                                <span data-position="top rightla-popup-tooltip" data-content="${message(code:'refdataValue.exchange.label')}">
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replaceRefdataValueModal" data-ui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>
 
                                         <g:if test="${! rdv.isHardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
-                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="ui icon negative button la-modern-button"
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: RefdataValue.class.name + ':' + rdv.id]}" class="${Btn.MODERN.NEGATIVE}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>
@@ -169,7 +174,7 @@
                                         select += '<option value="' + option.value + '">' + option.text + '</option>';
                                     }
                                 }
-                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown">' + select + '</select>';
+                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown clearable">' + select + '</select>';
 
                                 $('label[for=xcgRdvTo]').next().replaceWith(select);
 
@@ -200,7 +205,7 @@
                         from="${rdCategories}"
                         optionKey="id" optionValue="${{it.getI10n('desc')}}"
                         name="refdata_category_id"
-                        id="refdata_modal_select" class="ui search selection dropdown" />
+                        id="refdata_modal_select" class="ui search selection dropdown clearable " />
                 </div>
 
             </g:form>

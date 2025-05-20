@@ -1,6 +1,6 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
 
-<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
+<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" class="active"/>
@@ -21,7 +21,7 @@
 
             <h3 class="ui header">JVM/Runtime</h3>
 
-            <div class="ui horizontal statistics">
+            <div class="ui horizontal small statistics">
                 <div class="statistic">
                     <div class="value">${((rt.freeMemory() / mb) as float).round(2)}</div>
                     <div class="label">MB &middot; free</div>
@@ -46,7 +46,7 @@
 
             <h3 class="ui header">${docStore.folderPath}</h3>
 
-            <div class="ui horizontal statistics">
+            <div class="ui horizontal small statistics">
                 <div class="statistic">
                     <div class="value">${docStore.filesCount}</div>
                     <div class="label">Files</div>
@@ -101,11 +101,14 @@
                 </div>
             </div>
 
-            <h3 class="ui header">${message(code:'elasticsearch.label')}</h3>
+            <h3 class="ui header">${message(code:'menu.yoda.security')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="yoda" action="manageFTControl" target="_blank">Manage FTControl</g:link>
+                        <g:link controller="yoda" action="appControllers" target="_blank">${message(code:'menu.yoda.appControllers')}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link controller="yoda" action="userRoleMatrix" target="_blank">${message(code:'menu.yoda.userRoleMatrix')}</g:link>
                     </div>
                 </div>
             </div>
@@ -146,22 +149,28 @@
                         <g:link controller="admin" action="identifierValidation" target="_blank">${message(code: "menu.admin.identifierValidation")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="fileConsistency" target="_blank">${message(code: "menu.admin.fileConsistency")}</g:link> <span class="ui mini label">Admin</span>
-                    </div>
-                    <div class="item">
                         <g:link controller="admin" action="manageDeletedObjects" target="_blank">${message(code: "menu.admin.deletedObjects")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>
 
-            <h3 class="ui header">${message(code:'menu.yoda.security')}</h3>
+            <h3 class="ui header">${message(code:'menu.admin.files')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="yoda" action="appControllers" target="_blank">${message(code:'menu.yoda.appControllers')}</g:link>
+                        <g:link controller="admin" action="simpleFilesCheck" target="_blank">${message(code: "menu.admin.simpleFilesCheck")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="userRoleMatrix" target="_blank">${message(code:'menu.yoda.userRoleMatrix')}</g:link>
+                        <g:link controller="admin" action="fileConsistency" target="_blank">${message(code: "menu.admin.fileConsistency")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="ui header">${message(code:'elasticsearch.label')}</h3>
+            <div>
+                <div class="ui divided relaxed list">
+                    <div class="item">
+                        <g:link controller="yoda" action="manageFTControl" target="_blank">Manage FTControl</g:link>
                     </div>
                 </div>
             </div>
@@ -170,8 +179,6 @@
     </div>
 </div>
 
-
-    <ui:messages data="${flash}" />
 
     <%--
     <p>TODO: New Errors</p>

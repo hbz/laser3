@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:htmlStart message="subscription.details.copyMyElements.label" serviceInjection="true" />
+<%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
+<laser:htmlStart message="subscription.details.copyMyElements.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -21,10 +21,10 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
-                <i class="${Icons.TASK}icon"></i>           ${message(code: 'menu.institutions.tasks')} <br />
-                <i class="${Icons.DOCUMENT} icon"></i>      ${message(code: 'default.documents.label')} <br />
-                <i class="${Icons.WORKFLOW} icon"></i>      ${message(code: 'workflow.plural')}
+                <i class="${Icon.SYM.NOTE}"></i>      ${message(code: 'default.notes.label')} <br />
+                <i class="${Icon.TASK}"></i>          ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="${Icon.DOCUMENT}"></i>      ${message(code: 'default.documents.label')} <br />
+                <i class="${Icon.WORKFLOW}"></i>      ${message(code: 'workflow.plural')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -36,7 +36,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i> ${message(code: 'properties')}
+                <i class="${Icon.SYM.PROPERTIES}"></i> ${message(code: 'properties')}
             </div>
         </div>
     </ui:complexSubNavItem>

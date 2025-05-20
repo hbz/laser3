@@ -1,126 +1,77 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.Subscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<laser:htmlStart message="myinst.financeImport.pageTitle" />
+<laser:htmlStart message="${pageTitle}" />
 
   <ui:breadcrumbs>
-      <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
-    <ui:crumb message="menu.institutions.financeImport" class="active"/>
+      <g:if test="${params.id}">
+          <ui:crumb controller="sub" action="show" id="${params.id}" text="${Subscription.get(params.id).name}"/>
+      </g:if>
+      <g:else>
+          <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
+      </g:else>
+      <ui:crumb message="${pageTitle}" class="active"/>
   </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" type="finance" />
+    <ui:h1HeaderWithIcon message="${pageTitle}" type="finance" />
 
     <ui:messages data="${flash}" />
 
-    <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
-        <h1 class="ui header">
-            <g:message code="myinst.financeImport.headline"/>
-        </h1>
-        <div class="content">
-            <table class="ui la-ignore-fixed compact table">
-                <thead>
-                    <tr>
-                        <%-- <th>tsv column name</th>
-                        <th>Description</th>
-                        <th>maps to</th> --%>
-                        <th>${message(code:'myinst.financeImport.tsvColumnName')}</th>
-                        <%--<th>${message(code:'myinst.financeImport.descriptionColumnName')}</th>--%>
-                        <th>${message(code:'myinst.financeImport.necessaryFormat')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <g:each in="${mappingCols}" var="mpg">
-                        <%
-                            List args = []
-                            boolean mandatory = false
-                            switch(mpg) {
-                                case 'status': List<RefdataValue> costItemStatus = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)
-                                    costItemStatus.remove(RDStore.COST_ITEM_DELETED)
-                                    args.addAll(costItemStatus.collect { it -> it.getI10n('value') })
-                                    break
-                                case 'currency': mandatory = true
-                                    break
-                                case 'element': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect { it -> it.getI10n('value') })
-                                    break
-                                case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
-                                    break
-                                case 'taxType': List<RefdataValue> taxTypes = RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE)
-                                    args.addAll(taxTypes.collect { it -> it.getI10n('value') })
-                                    break
-                                case 'taxRate': args.addAll([0,5,7,16,19])
-                                    break
-                            }
-                        %>
-                        <tr <g:if test="${mandatory}">class="negative"</g:if>>
-                            <td>${message(code:"myinst.financeImport.${mpg}")}<g:if test="${mandatory}"><span style="color: #BB1600">*</span></g:if></td>
-                            <%--<td>${message(code:"myinst.financeImport.description.${mpg}") ?: ''}</td>--%>
-                            <td>${message(code:"myinst.financeImport.format.${mpg}",args:[raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
-                        </tr>
-                    </g:each>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <p>
+<div class="ui segment la-markdown">
+    <div>
         <g:message code="myinst.financeImport.manual.p1"/>
-    </p>
-    <p>
-        <g:message code="myinst.financeImport.manual.p2"/>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li1"/></li>
-            <li><g:message code="myinst.financeImport.manual.li2"/></li>
-            <li><g:message code="myinst.financeImport.manual.li3"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_03.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_03.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_03.png')}"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li4"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_04.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_04.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_04.png')}"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li5"/></li>
-            <li><g:message code="myinst.financeImport.manual.li6"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_06.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_06.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_06.png')}"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li7"/></li>
-            <li><g:message code="myinst.financeImport.manual.li8"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_08.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_08.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_08.png')}"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li9"/></li>
-            <li><g:message code="myinst.financeImport.manual.li10"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_10.png')}"><img class="ui small image" alt="Abbildung_Punkt_01_10.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_01_10.png')}"/></a></p></li>
-        </ol>
-    </p>
-    <p>
-        <g:message code="myinst.financeImport.manual.p3"/>
-        <ol>
-            <li><g:message code="myinst.financeImport.manual.li11"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_02_01.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_01.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_02_01.png')}"/></a></p></li>
-            %{--<li><g:message code="myinst.financeImport.manual.li12"/><p><a href="#" class="previewImage" data-src="/assets/manuals/Abbildung_Punkt_02_02.png"><g:img class="ui small image" file="manuals/Abbildung_Punkt_02_02.png"/></a></p></li>
-            <li><g:message code="myinst.financeImport.manual.li13"/></li>
-            <li><g:message code="myinst.financeImport.manual.li14"/></li>
-            <li><g:message code="myinst.financeImport.manual.li15"/></li>--}%
-            <li><g:message code="myinst.financeImport.manual.li16"/><p><a href="#" class="previewImage" data-src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_02_02a.png')}"><img class="ui small image" alt="Abbildung_Punkt_02_02a.png" src="${resource(dir: 'help', file: 'finance/Abbildung_Punkt_02_02a.png')}"/></a></p></li>
-        </ol>
-        <g:message code="myinst.financeImport.manual.p4"/>
-    </p>
-          <g:if test="${params.id}">
-              <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
-                  <p>${message(code:'myinst.financeImport.subscription.template')}</p>
-              </g:link>
-          </g:if>
-          <g:else>
-              <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template.csv')}" download="template_bulk_load_cost_item_records.csv">
-                  <p>${message(code:'myinst.financeImport.template')}</p>
-              </a>
-          </g:else>
+        <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
+    </div>
+    <ui:renderMarkdown manual="fileImport" />
+</div>
+<div class="ui segment">
 
+    <g:if test="${params.id}">
+        <g:link class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em" action="generateFinanceImportWorksheet" params="${[id:params.id]}">
+            <i class="${Icon.CMD.DOWNLOAD}"></i><g:message code="myinst.financeImport.subscription.template"/>
+        </g:link>
+    </g:if>
+    <g:else>
+        <a href="${resource(dir: 'files', file: 'bulk_load_cost_item_records_template.csv')}" download="template_bulk_load_cost_item_records.csv" class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em">
+            <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.financeImport.template"/>
+        </a>
+    </g:else>
 
-          <g:uploadForm action="processFinanceImport" method="POST">
-              <g:if test="${params.id}">
-                  <g:hiddenField name="subId" value="${params.id}"/>
-              </g:if>
-              <label for="tsvFile">${message(code:'myinst.financeImport.upload')}</label>
-              <input class="ui input" type="file" name="tsvFile" id="tsvFile" accept=".txt,.tsv,.csv,text/tab-separated-values"/>
-              <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
-          </g:uploadForm>
+    <g:uploadForm action="processFinanceImport" method="post">
+        <ui:msg class="warning" header="Achtung" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
 
-    <ui:modal id="fullsizeImage" hideSubmitButton="true">
-        <img class="ui image" src="#" alt="fullsize image"/>
-    </ui:modal>
+        <g:if test="${params.id}">
+            <g:hiddenField name="subId" value="${params.id}"/>
+        </g:if>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('.previewImage').click(function() {
-            $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
-            $('#fullsizeImage').modal('show');
-        });
-    </laser:script>
+        <div class="field">
+            <div class="two fields">
+                <div class="ui action input">
+                    <input type="text" readonly="readonly" class="ui input"
+                           placeholder="${message(code: 'myinst.subscriptionImport.uploadCSV')}">
+
+                    <input type="file" name="tsvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                           style="display: none;">
+                    <div class="${Btn.ICON.SIMPLE}">
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+                    </div>
+                </div>
+
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
+            </div>
+        </div>
+    </g:uploadForm>
+</div>
+
+<g:render template="/public/markdownScript" />
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+        $(this).parent('.action').find('input:file').click();
+    });
+
+    $('input:file', '.ui.action.input').on('change', function (e) {
+        var name = e.target.files[0].name;
+        $('input:text', $(e.target).parent()).val(name);
+    });
+</laser:script>
 
 <laser:htmlEnd />

@@ -52,6 +52,12 @@ class CustomerTypeService {
 
     //
 
+    //
+
+    List<Role> getOrgInstRoles() {
+        [Role.findByAuthority(ORG_INST_BASIC), Role.findByAuthority(ORG_INST_PRO)]
+    }
+
     /**
      * Determines whether the view to be rendered is the normal version or the version for support type customers
      * @param view the view to render

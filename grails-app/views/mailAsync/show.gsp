@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:set var="entityName" value="${message(code: 'menu.yoda.mailAysnc.list')}" />
 <laser:htmlStart text="${message(code:"default.list.label", args:[entityName])}" />
 <ui:breadcrumbs>
@@ -131,11 +132,9 @@
             <g:form>
                 <input type="hidden" name="id" value="${message?.id}"/>
                 <g:if test="${message.abortable}">
-                    <g:actionSubmit class="ui button" onclick="return confirm('Are you sure?');"
-                                                         action="abort" value="Abort"/>
+                    <g:actionSubmit class="${Btn.SIMPLE}" onclick="return confirm('Are you sure?');" action="abort" value="Abort"/>
                 </g:if>
-                <g:actionSubmit class="ui button" onclick="return confirm('Are you sure?');"
-                                                     action="delete" value="Delete"/>
+                <g:actionSubmit class="${Btn.SIMPLE}" onclick="return confirm('Are you sure?');" action="delete" value="Delete"/>
             </g:form>
         </div>
                     </div>

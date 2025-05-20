@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.wekb.Package; de.laser.wekb.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.wekb.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 <!-- template: meta/identifier : editable: ${editable} -->
 <%
@@ -37,7 +37,7 @@
                     <div class="two fields">
                         <input name="owner" type="hidden" value="${genericOIDService.getOID(object)}" />
                         <div class="field">
-                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="ui icon question circle la-delay la-popup-tooltip" data-content=""></i></label>
+                            <label for="value">${message(code:'default.identifier.label')} <i id="idExpl" class="${Icon.TOOLTIP.HELP} la-popup-tooltip" data-content=""></i></label>
                             <input name="value" id="value" type="text" class="ui" />
                         </div>
                         <div class="field">
@@ -49,14 +49,14 @@
                             <label for="note">${message(code:'property.audit.menu')}</label>
 
                             <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
-                            <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay">
-                                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
+                            <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button">
+                                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_OFF}"></i>
                             </button>
                         </div>
                         </g:if>
                         <div class="right aligned field">
                             <label>&nbsp;</label>
-                            <button type="submit" class="ui button">${message(code:'default.button.add.label')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}">${message(code:'default.button.add.label')}</button>
                         </div>
                     </div>
                 </g:form>

@@ -1,9 +1,7 @@
 <%@page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:set var="contextOrg" value="${contextService.getOrg()}" />
-
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <g:if test="${actionName == 'currentSubscriptions'}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
@@ -28,7 +26,7 @@
         </ui:actionsDropdown>
     </g:if>
 </g:if>
-<g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:elseif test="${contextService.isInstUser(CustomerTypeService.ORG_SUPPORT)}">
     <g:if test="${actionName == 'manageMembers'}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -63,5 +61,5 @@
 </g:if>
 
 <g:if test="${actionName in ['documents']}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: contextService.getOrg(), owntp: 'org', inContextOrg: true]}"/>
 </g:if>

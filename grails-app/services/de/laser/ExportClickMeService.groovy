@@ -1,8 +1,11 @@
 package de.laser
 
-import de.laser.base.AbstractCoverage
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
@@ -11,6 +14,7 @@ import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -23,21 +27,26 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
-import org.hibernate.Session
 import org.xml.sax.SAXException
 
 import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -51,6 +60,7 @@ import java.time.Year
 class ExportClickMeService {
 
     AccessPointService accessPointService
+    BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
     ExportService exportService
@@ -104,6 +114,7 @@ class ExportClickMeService {
                         fields : [
                                 'participant.sortname'                  : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                                 'participant.name'                      : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.surveyPerson'                   : [field: null, label: 'Survey Contact', message: 'surveyOrg.surveyContacts', defaultChecked: 'true'],
                                 'survey.period'                         : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
                                 'survey.periodComment'                  : [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'],
                                 'costItem.costPeriod'                   : [field: null, label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
@@ -142,7 +153,7 @@ class ExportClickMeService {
                                 'participant.uuid'                    : [field: 'participant.globalUID', label: 'Laser-UUID', message: null],
                                 'participant.libraryNetwork'          : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
-                                'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label']
+                                'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
                         ]
                 ],
                 participantContacts           : [
@@ -185,7 +196,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -211,7 +222,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -226,7 +237,7 @@ class ExportClickMeService {
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                                 'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'          : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution subscription)', message: 'default.uuid.inst.sub.label'],
                         ]
                 ],
                 participant                   : [
@@ -253,6 +264,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
                                 'participant.libraryNetwork'          : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'                  : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -363,7 +375,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -393,9 +405,16 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
+                ],
+
+                identifiers: [
+                        label  : 'Identifiers',
+                        message: 'subscription.identifiers.label',
+                        fields : [:]
                 ],
 
                 packages : [
@@ -507,7 +526,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -534,7 +553,8 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
                 ],
@@ -614,7 +634,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -643,7 +663,8 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
                 ],
@@ -672,6 +693,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
                                 'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -765,7 +787,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -791,7 +813,8 @@ class ExportClickMeService {
                                 'license.startDate'      : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'        : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'      : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'          : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'          : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'   : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'           : [field: 'licenses.globalUID', label: 'Laser-UUID', message: null],
                         ]
                 ],
@@ -906,7 +929,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields : [
                                 'license.reference'      : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'license.status'         : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory': [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'      : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -942,6 +965,12 @@ class ExportClickMeService {
                     ]
             ],*/
 
+                identifiers: [
+                        label  : 'Identifiers',
+                        message: 'license.identifiers.label',
+                        fields : [:]
+                ],
+
                 providers             : [
                         label  : 'Provider',
                         message: 'provider.label',
@@ -963,12 +992,14 @@ class ExportClickMeService {
                         ]
                 ],
 
+                /*
                 participantIdentifiers: [
                         label  : 'Identifiers',
                         message: 'exportClickMe.participantIdentifiers',
                         fields : [:],
 
                 ],
+                */
 
                 licProperties         : [
                         label  : 'Public properties',
@@ -991,7 +1022,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields: [
                                 'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -1111,6 +1142,18 @@ class ExportClickMeService {
                                 'costItem.issueEntitlement'                 : [field: 'issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
                                 'costItem.issueEntitlementGroup'            : [field: 'issueEntitlementGroup.name', label: 'Title Group Name', message: 'issueEntitlementGroup.label'],
                         ]
+                ],
+
+                costInformation : [
+                        label: 'Information budgets',
+                        message: 'costInformationDefinition.financeView.label',
+                        fields: [:]
+                ],
+
+                myCostInformation : [
+                        label: 'My information budgets',
+                        message: 'costInformationDefinition.financeView.my.label',
+                        fields: [:]
                 ],
 
                 org : [
@@ -1397,8 +1440,8 @@ class ExportClickMeService {
                         message: 'provider.label',
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
+                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
@@ -1457,8 +1500,8 @@ class ExportClickMeService {
                         message: 'vendor.label',
                         fields: [
                                 'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
+                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
+                                'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'vendor.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
@@ -1506,8 +1549,8 @@ class ExportClickMeService {
                         label: 'Supplier information',
                         message: 'vendor.supplier.header',
                         fields: [
-                                'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
-                                'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
+                                'vendor.prequalification'        : [field: 'prequalification', label: 'Prequalification', message: 'vendor.supplier.prequalification.label'],
+                                'vendor.prequalificationInfo'    : [field: 'prequalificationInfo', label: 'Info to Prequalification', message: 'vendor.supplier.infoPrequalification.label']
                         ]
                 ],
                 vendorIdentifiers : [
@@ -1606,6 +1649,7 @@ class ExportClickMeService {
                         fields : [
                                 'participant.sortname'   : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                                 'participant.name'       : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.surveyPerson'    : [field: null, label: 'Survey Contact', message: 'surveyOrg.surveyContacts', defaultChecked: 'true'],
                                 'survey.ownerComment'    : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
                                 'survey.finishDate'      : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
                                 'survey.reminderMailDate': [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
@@ -1753,15 +1797,15 @@ class ExportClickMeService {
                         label  : 'IssueEntitlement',
                         message: 'issueEntitlement.label',
                         fields : [
-                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
-                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
-                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'tipp.name', defaultChecked: 'true', sqlCol: 'tipp_name'],
+                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'ie_status_rv_fk'],
+                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'tipp.accessStartDate', defaultChecked: 'true', sqlCol: 'ie_access_start_date'],
+                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'tipp.accessEndDate', defaultChecked: 'true', sqlCol: 'ie_access_end_date'],
+                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
+                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true', sqlCol: 'ig_name'],
                                 'issueEntitlement.tipp.perpetualAccessBySub': [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
                         ]
                 ],
@@ -1769,40 +1813,40 @@ class ExportClickMeService {
                         label  : 'Title Details',
                         message: 'title.details',
                         fields : [
-                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
-                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
-                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
-                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
-                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
-                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
-                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
-                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
-                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
-                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
-                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
-                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
-                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
-                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
-                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
-                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
+                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
+                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
+                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
+                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
+                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
+                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
+                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
+                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
+                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
+                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
+                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
+                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
+                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
+                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
                                 'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
                                 'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
-                                'issueEntitlement.tipp.publishers'      : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
+                                'issueEntitlement.tipp.providers'       : [field: 'tipp.providers', label: 'Providers', message: 'tipp.provider']
                         ]
                 ],
                 coverage                   : [
                         label  : 'Coverage',
                         message: 'tipp.coverage',
                         fields : [
-                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
-                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
-                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
-                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
-                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
-                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
-                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
-                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
+                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol: 'tc_start_volume'],
+                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol: 'tc_start_issue'],
+                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol: 'tc_end_date'],
+                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol: 'tc_end_volume'],
+                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol: 'tc_end_issue'],
+                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol: 'tc_coverage_note'],
+                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol: 'tc_coverage_depth'],
+                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol: 'tc_embargo']
                         ]
                 ],
                 priceItem                  : [
@@ -1833,7 +1877,6 @@ class ExportClickMeService {
                                 'subscription.manualCancellationDate': [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                                 'subscription.isMultiYear'           : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                                 'subscription.referenceYear'         : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                                //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                                 'subscription.status'                : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
                                 'subscription.kind'                  : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
                                 'subscription.form'                  : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
@@ -1844,6 +1887,11 @@ class ExportClickMeService {
                                 'subscription.uuid'                  : [field: 'subscription.globalUID', label: 'Laser-UUID', message: null],
                         ]
                 ],
+                subscriptionIdentifiers: [
+                        label  : 'Subscription Identifiers',
+                        message: 'subscription.identifiers.label',
+                        fields : [:]
+                ]
         ]
     }
 
@@ -1853,12 +1901,13 @@ class ExportClickMeService {
                         label: 'Title',
                         message: 'default.title.label',
                         fields: [
-                                'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
+                                'tipp.name'            : [field: 'name', label: 'Name', message: 'tipp.name', defaultChecked: 'true', sqlCol: 'tipp_name' ],
                                 'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
                                 'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
                                 'tipp.titleType'       : [field: 'titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
                                 'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
                                 'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
+                                'perpetualAccessBySub' : [field: null, label: 'Subscription', message: 'subscription', defaultChecked: 'true']
                         ]
                 ],
                 titleDetails      : [
@@ -1872,7 +1921,7 @@ class ExportClickMeService {
                                 'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
                                 'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
                                 'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
-                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number::text'],
                                 'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
                                 'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
                                 'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
@@ -1967,6 +2016,9 @@ class ExportClickMeService {
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
 
+        exportFields.put("surveyPropertyParticipantComment", [field: null, label: "${messageSource.getMessage('surveyResult.participantComment.export', null, locale)}", defaultChecked: 'true'])
+        exportFields.put("surveyPropertyCommentOnlyForOwner", [field: null, label: "${messageSource.getMessage('surveyResult.commentOnlyForOwner.export', null, locale)}", defaultChecked: 'true'])
+
         if(!(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surveyConfig.surveyProperties.surveyProperty.id) && !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surveyConfig.surveyProperties.surveyProperty.id)){
             exportFields.remove('survey.period')
             exportFields.remove('survey.periodComment')
@@ -1987,6 +2039,9 @@ class ExportClickMeService {
 
         if(surveyConfig.vendorSurvey){
             exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
+        }
+        if(surveyConfig.subscriptionSurvey){
+            exportFields.put("subscriptionSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
@@ -2053,6 +2108,10 @@ class ExportClickMeService {
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
 
+        fields.survey.fields << ["surveyPropertyParticipantComment": [field: null, label: "${messageSource.getMessage('surveyResult.participantComment.export', null, locale)}", defaultChecked: 'true']]
+        fields.survey.fields << ["surveyPropertyCommentOnlyForOwner": [field: null, label: "${messageSource.getMessage('surveyResult.commentOnlyForOwner.export', null, locale)}", defaultChecked: 'true']]
+
+
         if(!(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in surveyConfig.surveyProperties.surveyProperty.id) &&  !(PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in surveyConfig.surveyProperties.surveyProperty.id)){
             fields.survey.fields.remove('survey.period')
             fields.survey.fields.remove('survey.periodComment')
@@ -2076,6 +2135,14 @@ class ExportClickMeService {
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+        if(surveyConfig.subscriptionSurvey){
+            fields.survey.fields << ["subscriptionSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('subscriptionSurvey')) {
+                fields.survey.fields.remove('subscriptionSurvey')
             }
         }
 
@@ -2332,6 +2399,9 @@ class ExportClickMeService {
                 break
         }
 
+        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+            exportFields.put("identifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
@@ -2404,6 +2474,9 @@ class ExportClickMeService {
         fields.mySubProperties.fields.clear()
         fields.subCostItems.fields.costItemsElements.clear()
 
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_SUBSCRIPTION]).each {
+            fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
@@ -2655,9 +2728,15 @@ class ExportClickMeService {
             exportFields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
+        IdentifierNamespace.findAllByNsType(License.class.name, [sort: 'ns']).each {
+            exportFields.put("identifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        /*
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
+        */
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
@@ -2700,9 +2779,15 @@ class ExportClickMeService {
         fields.licProperties.fields.clear()
         fields.myLicProperties.fields.clear()
 
+
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_LICENSE]).each {
+            fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        /*
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        */
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
 
@@ -2734,6 +2819,11 @@ class ExportClickMeService {
             getDefaultExportCostItemConfig().get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
+        }
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            exportFields.put("costInformation." + costInformationDefinition.id, [field: null, label: costInformationDefinition."${localizedName}", privateProperty: (costInformationDefinition.tenant?.id == contextOrg.id)])
         }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
@@ -2792,6 +2882,19 @@ class ExportClickMeService {
                 fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
+
+        fields.costInformation.fields.clear()
+        fields.myCostInformation.fields.clear()
+
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinition cif where (cif.tenant = :ctx or cif.tenant = null) order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            //the proxies again ...
+            if(costInformationDefinition.tenant?.id == contextOrg.id)
+                fields.myCostInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.costInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: false]]
         }
 
         fields.participantIdentifiers.fields.clear()
@@ -3023,13 +3126,10 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the organisation fields for the given perspective configuration for the UI
-     * @param orgType the organisation type to be exported
+     * @param customerType the organisation type to be exported
      * @return the configuration map for the organisation export for UI
      */
-    Map<String, Object> getExportOrgFieldsForUI(String orgType) {
-
-//        println 'orgType'
-//        println orgType
+    Map<String, Object> getExportOrgFieldsForUI(String customerType) {
 
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
@@ -3045,7 +3145,7 @@ class ExportClickMeService {
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
 
-        switch(orgType) {
+        switch (customerType) {
             case 'consortium': fields.putAll(getDefaultExportConsortiaConfig())
                 fields.consortiumIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -3471,6 +3571,9 @@ class ExportClickMeService {
             exportFields.put("surveyProperty."+surveyConfigProperties.surveyProperty.id, [field: null, label: "${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true'])
         }
 
+        exportFields.put("surveyPropertyParticipantComment", [field: null, label: "${messageSource.getMessage('surveyResult.participantComment.export', null, locale)}", defaultChecked: 'true'])
+        exportFields.put("surveyPropertyCommentOnlyForOwner", [field: null, label: "${messageSource.getMessage('surveyResult.commentOnlyForOwner.export', null, locale)}", defaultChecked: 'true'])
+
         if(surveyConfig.pickAndChoose){
             exportFields.put("pickAndChoose", [field: null, label: "${messageSource.getMessage('surveyEvaluation.titles.label', null, locale)}", defaultChecked: 'true'])
         }
@@ -3491,6 +3594,9 @@ class ExportClickMeService {
 
         if(surveyConfig.vendorSurvey){
             exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
+        }
+        if(surveyConfig.subscriptionSurvey){
+            exportFields.put("subscriptionSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
@@ -3556,6 +3662,9 @@ class ExportClickMeService {
             fields.survey.fields << ["surveyProperty.${surveyConfigProperties.surveyProperty.id}": [field: null, label: "${messageSource.getMessage('surveyProperty.label', null, locale)}: ${surveyConfigProperties.surveyProperty."${localizedName}"}", defaultChecked: 'true']]
         }
 
+        fields.survey.fields << ["surveyPropertyParticipantComment": [field: null, label: "${messageSource.getMessage('surveyResult.participantComment.export', null, locale)}", defaultChecked: 'true']]
+        fields.survey.fields << ["surveyPropertyCommentOnlyForOwner": [field: null, label: "${messageSource.getMessage('surveyResult.commentOnlyForOwner.export', null, locale)}", defaultChecked: 'true']]
+
         if(surveyConfig.pickAndChoose){
             fields.survey.fields << ["pickAndChoose": [field: null, label: "${messageSource.getMessage('surveyEvaluation.titles.label', null, locale)}", defaultChecked: 'true']]
         }else {
@@ -3569,6 +3678,14 @@ class ExportClickMeService {
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
+            }
+        }
+
+        if(surveyConfig.subscriptionSurvey){
+            fields.survey.fields << ["subscriptionSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.subscriptionSurvey.label', null, locale)}", defaultChecked: 'true']]
+        }else {
+            if(fields.survey.fields.containsKey('subscriptionSurvey')) {
+                fields.survey.fields.remove('subscriptionSurvey')
             }
         }
 
@@ -3733,6 +3850,9 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_SUBSCRIPTION]).each {
+            fields.subscriptionIdentifiers.fields << ["subscriptionIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
 
         fields
     }
@@ -3761,6 +3881,10 @@ class ExportClickMeService {
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+            exportFields.put("subscriptionIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
         exportFields
@@ -4488,7 +4612,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Vendor} set to export
+     * @param result the {@link de.laser.wekb.Vendor} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -4535,7 +4659,7 @@ class ExportClickMeService {
 
     /**
      * Exports the given fields from the given cost items
-     * @param result the {@link Provider} set to export
+     * @param result the {@link de.laser.wekb.Provider} set to export
      * @param selectedFields the fields which should appear in the export
      * @param format the {@link FORMAT} to be exported
      * @param contactSources which type of contacts should be taken? (public or private)
@@ -4773,15 +4897,9 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @return an Excel worksheet containing the export
      */
-    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format) {
+    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format, String chartFilter) {
         Locale locale = LocaleUtils.getCurrentLocale()
-
-        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
-        List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
-
-        //List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
-        //List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
-
+        Map sheetData = [:]
         Map<String, Object> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportSurveyEvaluationFields(result.surveyConfig)
@@ -4837,59 +4955,100 @@ class ExportClickMeService {
 
         List exportData = []
 
-        exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", 'positive')])
+        if(chartFilter){
+            exportData.add([createTableCell(format, chartFilter + " (${result.participants.size()})", 'bold')])
+            result.participants.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
 
-        participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
-            Map participantResult = [:]
-            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
 
-            participantResult.sub = [:]
-            if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
             }
 
-            participantResult.participant = surveyOrg.org
-            participantResult.surveyConfig = result.surveyConfig
-            participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
-            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-            participantResult.surveyOrg = surveyOrg
-            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
-            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+            sheetData = [:]
+            sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
-
-
-        }
-
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", 'negative')])
-
-
-        participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
-            Map participantResult = [:]
-            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
-
-            participantResult.sub = [:]
-            if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+            if (result.participants) {
+                sheetData = _exportAccessPoints(result.participants.org, sheetData, selectedExportFields, locale, " - 1", format)
             }
 
-            participantResult.participant = surveyOrg.org
-            participantResult.surveyConfig = result.surveyConfig
-            participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
-            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-            participantResult.surveyOrg = surveyOrg
-            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
-            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+            if (result.participants) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, result.participants.org, sheetData, selectedExportFields, locale, " - 2", format)
+            }
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
-        }
+        }else {
 
-        /*exportData.add([[field: '', style: null]])
+            List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+
+            //List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
+            //List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
+            exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", 'positive')])
+
+            participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
+
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
+
+
+            }
+
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", 'negative')])
+
+
+            participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
+
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
+            }
+
+            /*exportData.add([[field: '', style: null]])
         exportData.add([[field: '', style: null]])
         exportData.add([[field: '', style: null]])
 
@@ -4916,26 +5075,24 @@ class ExportClickMeService {
             _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
         }*/
 
+            sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
 
+            if (participantsFinish) {
+                sheetData = _exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale, " - 1", format)
+            }
 
+            if (participantsNotFinish) {
+                sheetData = _exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2", format)
+            }
 
-        Map sheetData = [:]
-        sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
+            if (participantsFinish) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsFinish.org, sheetData, selectedExportFields, locale, " - 3", format)
+            }
 
-        if (participantsFinish) {
-            sheetData = _exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale, " - 1", format)
-        }
+            if (participantsNotFinish) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 4", format)
+            }
 
-        if (participantsNotFinish) {
-            sheetData = _exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2", format)
-        }
-
-        if (participantsFinish) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsFinish.org, sheetData, selectedExportFields, locale, " - 3", format)
-        }
-
-        if (participantsNotFinish) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 4", format)
         }
 
 
@@ -4954,10 +5111,10 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportIssueEntitlements(ArrayList<Long> result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportIssueEntitlements(Set<Long> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
-        Map<String, Object> selectedExportFields = [:]
+        Map<String, Map> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportIssueEntitlementFields()
 
@@ -4971,8 +5128,9 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
-        List exportData = []
+        List exportData = buildIssueEntitlementRows(result, selectedExportFields, format)
 
+        /*
         int max = 32500
         TitleInstancePackagePlatform.withSession { Session sess ->
             for(int offset = 0; offset < result.size(); offset+=max) {
@@ -5002,6 +5160,7 @@ class ExportClickMeService {
                 sess.flush()
             }
         }
+        */
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -5022,10 +5181,10 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportTipps(Collection result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportTipps(Set<Long> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
-        Map<String, Object> selectedExportFields = [:]
+        Map<String, Map> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportTippFields()
 
@@ -5039,108 +5198,7 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
-        List exportData = []
-
-        if(result.size() < 10000) {
-            int max = result[0] instanceof Long ? 5000 : 500
-            TitleInstancePackagePlatform.withSession { Session sess ->
-                for(int offset = 0; offset < result.size(); offset+=max) {
-                    List allRows = []
-                    Set<TitleInstancePackagePlatform> tipps = []
-                    if(result[0] instanceof TitleInstancePackagePlatform) {
-                        //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                        tipps = result.drop(offset).take(max)
-                    }
-                    else if(result[0] instanceof Long) {
-                        tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
-                    }
-                    tipps.each { TitleInstancePackagePlatform tipp ->
-                        if(!tipp.coverages && !tipp.priceItems) {
-                            allRows << tipp
-                        }
-                        else if(tipp.coverages.size() > 1){
-                            tipp.coverages.each { AbstractCoverage covStmt ->
-                                allRows << covStmt
-                            }
-                        }
-                        else {
-                            allRows << tipp
-                        }
-                    }
-
-                    allRows.eachWithIndex { rowData, int i ->
-                        long start = System.currentTimeMillis()
-                        _setTippRow(rowData, selectedExportFields, exportData, format)
-                        log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
-                    }
-                    log.debug("flushing after ${offset} ...")
-                    sess.flush()
-                }
-            }
-        }
-        else {
-            Sql sql = GlobalService.obtainSqlConnection()
-            try {
-            List sqlCols = []
-            Map<String, Object> sqlParams = [:]
-            selectedExportFields.eachWithIndex { String fieldKey, Map fields, int idx ->
-                if(fields.containsKey('sqlCol')) {
-                    if(fields.sqlCol.contains('rv')) {
-                        sqlCols.add("(select ${LocaleUtils.getLocalizedAttributeName('rdv_value')} from refdata_value where rdv_id = ${fields.sqlCol}) as ${fields.sqlCol}")
-                    }
-                    else if(fields.sqlCol.contains('pkg')) {
-                        sqlCols.add("(select ${fields.sqlCol} from package where pkg_id = tipp_pkg_fk) as ${fields.sqlCol}")
-                    }
-                    else if(fields.sqlCol.contains('plat')) {
-                        sqlCols.add("(select ${fields.sqlCol} from platform where plat_id = tipp_plat_fk) as ${fields.sqlCol}")
-                    }
-                    else if(fieldKey.contains('tippIdentifiers.')) {
-                        sqlCols.add("(select array_to_string(array_agg(id_value), ';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :idns${idx}) as ${fields.sqlCol}")
-                        sqlParams.put('idns'+idx, Long.parseLong(fieldKey.split("\\.")[1]))
-                    }
-                    else if (fieldKey.contains('ddcs')) {
-                        sqlCols.add("(select array_to_string(array_agg(rdv_value || ' - ' || ${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join dewey_decimal_classification on rdv_id = ddc_rv_fk where ddc_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.contains('languages')) {
-                        sqlCols.add("(select array_to_string(array_agg(${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join language on rdv_id = lang_rv_fk where lang_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.startsWith('coverage.')) {
-                        sqlCols.add("(select ${fields.sqlCol} from tippcoverage where tc_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.contains('listPrice')) {
-                        Long currency
-                        if(fieldKey.contains('GBP'))
-                            currency = RDStore.CURRENCY_GBP.id
-                        else if(fieldKey.contains('USD'))
-                            currency = RDStore.CURRENCY_USD.id
-                        else
-                            currency = RDStore.CURRENCY_EUR.id
-                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency${idx} order by pi_date_created desc limit 1) as ${fields.sqlCol}")
-                        sqlParams.put('currency'+idx, currency)
-                    }
-                    else {
-                        sqlCols.add(fields.sqlCol)
-                    }
-                }
-            }
-            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id = any(:idSet) order by tipp_sort_name"
-            log.debug(sqlQuery) //for database measurement purposes, comment out if not needed!
-            result.collate(50000).each { List<Long> subSet ->
-                sqlParams.idSet = sql.getDataSource().getConnection().createArrayOf('bigint', subSet as Object[])
-                sql.rows(sqlQuery, sqlParams).each { GroovyRowResult sqlRow ->
-                    List row = []
-                    selectedExportFields.each { String fieldKey, Map fields ->
-                        row.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
-                    }
-                    exportData.add(row)
-                }
-            }
-            }
-            finally {
-                sql.close()
-            }
-
-        }
+        List exportData = buildTippRows(result, selectedExportFields, format)
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -5181,7 +5239,7 @@ class ExportClickMeService {
                     costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.subForCostItems, costItemElements, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement'])
                 }else{
                     if(surveyOrg){
-                        costItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                        costItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
                     }
                 }
             }
@@ -5195,16 +5253,24 @@ class ExportClickMeService {
                 if (fieldKey.startsWith('surveyProperty.')) {
                     if (onlySubscription) {
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
+                        if('surveyPropertyParticipantComment' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                        }
+                        if('surveyPropertyCommentOnlyForOwner' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                        }
                     } else {
                         Long id = Long.parseLong(fieldKey.split("\\.")[1])
                         SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
                         String resultStr = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " ", ownerComment = participantResultProperty.ownerComment ?: " "
 
                         row.add(createTableCell(format, resultStr))
-                        row.add(createTableCell(format, comment))
-                        row.add(createTableCell(format, ownerComment))
+                        if('surveyPropertyParticipantComment' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, comment))
+                        }
+                        if('surveyPropertyCommentOnlyForOwner' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ownerComment))
+                        }
                     }
                 } else if (fieldKey == 'survey.period') {
                     String period = ""
@@ -5252,12 +5318,12 @@ class ExportClickMeService {
                     SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
                     if (surveyVendorResult) {
                         row.add(createTableCell(format, surveyVendorResult.vendor.name))
-                        row.add(createTableCell(format, surveyVendorResult.comment))
-                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                       /* row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                     }else {
                         row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
+                       /* row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))*/
                     }
                 }
                 else if (fieldKey == 'survey.finishDate') {
@@ -5275,16 +5341,34 @@ class ExportClickMeService {
                     row.add(createTableCell(format, reminderMailDate))
                 }
                 else if (fieldKey == 'survey.person') {
-                    String person = ""
-                    if (surveyOrg && surveyOrg.person && surveyOrg.person.contacts) {
+                    String personString = ""
+                    if (surveyOrg) {
                         List emails = []
-                        surveyOrg.person.contacts.each {
-                            if(it.contentType == RDStore.CCT_EMAIL)
-                                emails << it.content
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndBillingPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
                         }
-                        person = emails.join('; ')
+                        personString = emails.join('; ')
                     }
-                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, personString, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.surveyPerson') {
+                    String personString = ""
+                    if (surveyOrg) {
+                        List emails = []
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
+                        }
+                        personString = emails.join('; ')
+                    }
+                    row.add(createTableCell(format, personString, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
@@ -5452,8 +5536,10 @@ class ExportClickMeService {
                         }
 
                     } else {
-                        def fieldValue = _getFieldValue(participantResult, field, sdf)
-                        row.add(createTableCell(format, fieldValue))
+                        if(fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner') {
+                            def fieldValue = _getFieldValue(participantResult, field, sdf)
+                            row.add(createTableCell(format, fieldValue))
+                        }
                     }
                 }
             }
@@ -5561,10 +5647,10 @@ class ExportClickMeService {
                 }
                 */
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey == 'license.consortium') {
-                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                    row.add(createTableCell(format, subscription.getConsortium()?.name))
                 }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
@@ -5585,6 +5671,13 @@ class ExportClickMeService {
                     else if(fieldKey == 'subscription.notes.shared')
                         row.add(createTableCell(format, subNotes.sharedItems.join('\n')))
                 }
+                else if(fieldKey.contains('license.notes')) { //license.notes and license.notes.shared
+                    Map<String, Object> licNotes = _getNotesForObject(subscription.licenses)
+                    if(fieldKey == 'license.notes')
+                        row.add(createTableCell(format, licNotes.baseItems.join('\n')))
+                    else if(fieldKey == 'license.notes.shared')
+                        row.add(createTableCell(format, licNotes.sharedItems.join('\n')))
+                }
                 else if(fieldKey == 'package.name') {
                     row.add(createTableCell(format, subscription.packages.pkg.name.join('; ')))
                 }
@@ -5593,6 +5686,15 @@ class ExportClickMeService {
                 }
                 else if(fieldKey == 'platform.url') {
                     row.add(createTableCell(format, Platform.executeQuery('select distinct(plat.primaryUrl) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription = :sub', [sub: subscription]).join('; ')))
+                }
+                else if(fieldKey.startsWith('identifiers.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.sub = :sub and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [sub: subscription, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    if (identifierList) {
+                        row.add(createTableCell(format, identifierList.join("; ")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
                 }
                 else if(fieldKey.startsWith('packageIdentifiers.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -5611,7 +5713,7 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    String query = "select prop from SubscriptionProperty prop where prop.owner = :sub and prop.type.id in (:propertyDefs) and (prop.isPublic = true or prop.instanceOf != null or prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery(query,[sub:subscription, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(subscriptionProperties){
                         List<String> values = [], notes = []
@@ -5804,26 +5906,37 @@ class ExportClickMeService {
                     }
                     else row.add(createTableCell(format, ' '))
                 }
+                else if(fieldKey.startsWith('identifiers.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.lic = :license and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [lic: license, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    if (identifierList) {
+                        row.add(createTableCell(format, identifierList.join("; ")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
-                    List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    String query = "select prop from LicenseProperty prop where prop.owner = :lic and prop.type.id = :propertyDef and (prop.instanceOf != null or prop.isPublic = true or prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDef: id, contextOrg: contextService.getOrg()])
                     if(licenseProperties){
                         List<String> values = [], notes = [], paragraphs = []
                         licenseProperties.each { LicenseProperty lp ->
-                            //ternary operator / elvis delivers strange results ...
-                            if(lp.getValueInI10n() != null) {
-                                values << lp.getValueInI10n()
+                            if(lp.isVisibleExternally()) {
+                                //ternary operator / elvis delivers strange results ...
+                                if(lp.getValueInI10n() != null) {
+                                    values << lp.getValueInI10n()
+                                }
+                                else values << ' '
+                                if(lp.note != null) {
+                                    notes << lp.note
+                                }
+                                else notes << ' '
+                                if(lp.paragraph != null) {
+                                    paragraphs << lp.paragraph
+                                }
+                                else paragraphs << ' '
                             }
-                            else values << ' '
-                            if(lp.note != null) {
-                                notes << lp.note
-                            }
-                            else notes << ' '
-                            if(lp.paragraph != null) {
-                                paragraphs << lp.paragraph
-                            }
-                            else paragraphs << ' '
                         }
                         row.add(createTableCell(format, values.join('; ')))
                         row.add(createTableCell(format, notes.join('; ')))
@@ -5914,8 +6027,19 @@ class ExportClickMeService {
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
+                else if (fieldKey.startsWith('costInformation.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    if(costItem.costInformationDefinition?.id == id){
+                        if(costItem.costInformationDefinition.type == RefdataValue.class.name)
+                            row.add(createTableCell(format, costItem.costInformationRefValue.getI10n('value')))
+                        else
+                            row.add(createTableCell(format, costItem.costInformationStringValue))
+                    }else{
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
                 else if (fieldKey == 'subscription.consortium') {
-                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
+                    row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -6266,12 +6390,20 @@ class ExportClickMeService {
                         String result = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " ", ownerComment = participantResultProperty.ownerComment ?: " "
 
                         row.add(createTableCell(format, result))
-                        row.add(createTableCell(format, comment))
-                        row.add(createTableCell(format, ownerComment))
+                        if('surveyPropertyParticipantComment' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, comment))
+                        }
+                        if('surveyPropertyCommentOnlyForOwner' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ownerComment))
+                        }
                     }else{
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, ' '))
+                        if('surveyPropertyParticipantComment' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                        }
+                        if('surveyPropertyCommentOnlyForOwner' in selectedFields.keySet()) {
+                            row.add(createTableCell(format, ' '))
+                        }
                     }
                 }
                 else if (fieldKey.contains('Contact.')) {
@@ -6363,12 +6495,12 @@ class ExportClickMeService {
                     SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
                     if (surveyVendorResult) {
                         row.add(createTableCell(format, surveyVendorResult.vendor.name))
-                        row.add(createTableCell(format, surveyVendorResult.comment))
-                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                       /* row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                     }else {
                         row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
+                       /* row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))*/
                     }
                 } else if (fieldKey == 'survey.finishDate') {
                     String finishDate = ""
@@ -6383,18 +6515,36 @@ class ExportClickMeService {
                         reminderMailDate = sdf.format(participantResult.surveyOrg.reminderMailDate)
                     }
                     row.add(createTableCell(format, reminderMailDate))
-                }  else if (fieldKey == 'survey.person') {
-                    String person = ""
-                    if (participantResult.surveyOrg && participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
+                }
+                else if (fieldKey == 'survey.person') {
+                    String personString = ""
+                    if (participantResult.surveyOrg) {
                         List emails = []
-                        participantResult.surveyOrg.person.contacts.each {
-                            if(it.contentType == RDStore.CCT_EMAIL)
-                                emails << it.content
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndBillingPerson(participantResult.surveyOrg.org, participantResult.surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
                         }
-                        person = emails.join('; ')
+                        personString = emails.join('; ')
                     }
-
-                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, personString, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.surveyPerson') {
+                    String personString = ""
+                    if (participantResult.surveyOrg) {
+                        List emails = []
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPerson(participantResult.surveyOrg.org, participantResult.surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
+                        }
+                        personString = emails.join('; ')
+                    }
+                    row.add(createTableCell(format, personString, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
@@ -6475,8 +6625,10 @@ class ExportClickMeService {
                     row.add(createTableCell(format, priceBudgets.join(';')))
                     row.add(createTableCell(format, priceDiffs.join(';')))
                 }else {
+                    if(fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner') {
                         def fieldValue = _getFieldValue(participantResult, field, sdf)
                         row.add(createTableCell(format, fieldValue))
+                    }
                 }
             }
         }
@@ -6485,233 +6637,219 @@ class ExportClickMeService {
     }
 
     /**
-     * Fills a row for the issue entitlement export
-     * @param result the issue entitlement to export
+     * Fetches the selected issue entitlement fields via SQL query. The data is already prepared in JSON cells
+     * @param ieIDs the issue entitlement set to export
      * @param selectedFields the fields which should appear
-     * @param exportData the list containing the export rows
-     * @param format the {@link FORMAT} to be exported
+     * @param formatEnum the {@link FORMAT} to be exported
      */
-    private void _setIeRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
-        List row = []
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-
-        result = exportService.getIssueEntitlement(result)
-
-        DecimalFormat df = new DecimalFormat("###,##0.00")
-        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
-        selectedFields.keySet().each { String fieldKey ->
-            //long start = System.currentTimeMillis()
-            Map mapSelecetedFields = selectedFields.get(fieldKey)
-            String field = mapSelecetedFields.field
-            if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey.startsWith('issueEntitlementIdentifiers.')) {
-                        if (result) {
-                            Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
-                            if (identifierList) {
-                                row.add(createTableCell(format, identifierList.value.join(";")))
-                            } else {
-                                row.add(createTableCell(format, ' '))
-                            }
-                        } else {
-                            row.add(createTableCell(format, ' '))
-                        }
+    private List buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Map> selectedFields, FORMAT formatEnum){
+        List result = []
+        Set<String> queryCols = []
+        Map<String, Object> queryArgs = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String format = null, rdCol = I10nTranslation.getRefdataValueColumn(locale)
+        if(formatEnum == FORMAT.XLS)
+            format = ExportService.EXCEL
+        selectedFields.eachWithIndex { String fieldKey, Map mapSelectedFields, int i ->
+            String field = mapSelectedFields.field?.replaceAll("\\.", '_'), sqlCol = mapSelectedFields.sqlCol
+            if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
+            }
+            else if(fieldKey.startsWith('subscriptionIdentifiers.')) {
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_sub_fk = ie_subscription_fk and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
+            }
+            else if (fieldKey.contains('subscription.consortium')) {
+                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_fk = :consortium), null) as consName"
+                queryArgs.consortium = RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
+            }
+            else if (fieldKey.contains('tipp.ddcs')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id where ddc_tipp_fk = tipp_id), null) as ddcs"
+            }
+            else if (fieldKey.contains('tipp.languages')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from language join refdata_value on lang_rv_fk = rdv_id where lang_tipp_fk = tipp_id), null) as languages"
+            }
+            else if (fieldKey.contains('tipp.providers')) {
+                queryCols << "create_cell('${format}', (select string_agg(prov_name, ';') from package join provider on pkg_provider_fk = prov_id where pkg_id = tipp_pkg_fk), null) as providers"
+            }
+            else if (fieldKey.contains('pkg')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from package where pkg_id = tipp_pkg_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('platform')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from platform where plat_id = tipp_plat_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('ieGroup')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from issue_entitlement_group join issue_entitlement_group_item on igi_ie_group_fk = ig_id where igi_ie_fk = ie_id), null) as ${field}"
+            }
+            else if (fieldKey.contains('perpetualAccessBySub')) {
+                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end), null) as perpetualAccessbySub"
+            }
+            else if (fieldKey.startsWith('coverage.')) {
+                if(fieldKey.contains('startDate')) {
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
                 }
-                else if (fieldKey.contains('subscription.consortium')) {
-                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
+                else if(fieldKey.contains('startVolume')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), null) as coverageStartVolume"
                 }
-                else if (fieldKey.contains('tipp.ddcs')) {
-                    row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                else if(fieldKey.contains('startIssue')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), null) as coverageStartIssue"
                 }
-                else if (fieldKey.contains('tipp.languages')) {
-                    row.add(createTableCell(format, result.tipp.languages.collect {"${it.language.getI10n("value")}"}.join(";")))
-                }else if (fieldKey.contains('perpetualAccessBySub')) {
-                    String perpetualAccessBySub = result.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
-                    row.add(createTableCell(format, perpetualAccessBySub))
+                else if(fieldKey.contains('endDate')) {
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
                 }
-                else if (fieldKey.startsWith('coverage.')) {
-                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
-                    String coverageField = fieldKey.split("\\.")[1]
-
-                    def fieldValue = covStmt ? _getFieldValue(covStmt, coverageField, sdf) : null
-                    String fieldValStr = fieldValue != null ? fieldValue : ' '
-                    row.add(createTableCell(format, fieldValStr))
+                else if(fieldKey.contains('endVolume')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), null) as coverageEndVolume"
                 }
-                else if (fieldKey.contains('listPriceEUR')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.tipp.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('endIssue')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), null) as coverageEndIssue"
                 }
-                else if (fieldKey.contains('listPriceGBP')) {
-                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
-
-                    if (priceItem) {
-                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_note, tc_coverage_note), null) as coverageNote"
                 }
-                else if (fieldKey.contains('listPriceUSD')) {
-                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
-
-                    if (priceItem) {
-                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_depth, tc_coverage_depth), null) as coverageDepth"
                 }
-                else if (fieldKey.contains('localPriceEUR')) {
-                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }
-
-                    if (priceItem) {
-                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
-                }
-                else if (fieldKey.contains('localPriceGBP')) {
-                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }
-
-                    if (priceItem) {
-                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
-                }
-                else if (fieldKey.contains('localPriceUSD')) {
-                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }
-
-                    if (priceItem) {
-                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
-                }
-                else {
-                    def fieldValue = _getFieldValue(result, field, sdf)
-                    String fieldValStr = fieldValue != null ? fieldValue : ' '
-                    row.add(createTableCell(format, fieldValStr))
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_embargo, tc_embargo), null) as embargo"
                 }
             }
-            //log.debug("time needed for ${fieldKey}: ${System.currentTimeMillis()-start} msecs")
+            else if (fieldKey.contains('listPriceEUR')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro)), null) as listPriceEUR"
+                queryArgs.euro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('listPriceGBP')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp)), null) as listPriceGBP"
+                queryArgs.gbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('listPriceUSD')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd)), null) as listPriceUSD"
+                queryArgs.usd = RDStore.CURRENCY_USD.id
+            }
+            else if (fieldKey.contains('localPriceEUR')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro)), null) as localPriceEUR"
+                queryArgs.leuro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('localPriceGBP')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp)), null) as localPriceGBP"
+                queryArgs.lgbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('localPriceUSD')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd)), null) as localPriceUSD"
+                queryArgs.lusd = RDStore.CURRENCY_USD.id
+            }
+            else {
+                if(sqlCol.contains('rv_fk')) {
+                    queryCols << "create_cell('${format}', (select ${rdCol} from refdata_value where rdv_id = ${sqlCol}), null) as ${field}"
+                }
+                else if(sqlCol.containsIgnoreCase('date')) {
+                    queryCols << "create_cell('${format}', to_char(${sqlCol}, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as ${field}"
+                }
+                else {
+                    queryCols << "create_cell('${format}', ${sqlCol}, null) as ${field}"
+                }
+            }
         }
-        exportData.add(row)
-
+        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ic_ie_fk = ie_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs) order by tipp_sort_name"
+        result.addAll(batchQueryService.longArrayQuery(query, [ieIDs: ieIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
+        result
     }
 
     /**
-     * Fills a row for the title export
-     * @param result the title to export
+     * Prepares the title data to be exported in JSON cells
+     * @param tippIDs the title IDs to export
      * @param selectedFields the fields which should appear
-     * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      */
-    private void _setTippRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
-        List row = []
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-
-        result = exportService.getTipp(result)
-
-        DecimalFormat df = new DecimalFormat("###,##0.00")
-        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
-        selectedFields.keySet().each { String fieldKey ->
-            Map mapSelecetedFields = selectedFields.get(fieldKey)
-            String field = mapSelecetedFields.field
-            if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey.startsWith('tippIdentifiers.')) {
-                    if (result) {
-                        Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                        List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result, namespaces: [id]])
-                        if (identifierList) {
-                            row.add(createTableCell(format, identifierList.value.join(";")))
-                        } else {
-                            row.add(createTableCell(format, ' '))
-                        }
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+    private List buildTippRows(Set<Long> tippIDs, Map<String, Map> selectedFields, FORMAT formatEnum) {
+        List result = []
+        Set<String> queryCols = []
+        Map<String, Object> queryArgs = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String format = null, rdCol = I10nTranslation.getRefdataValueColumn(locale)
+        if(formatEnum == FORMAT.XLS)
+            format = ExportService.EXCEL
+        selectedFields.eachWithIndex{ String fieldKey, Map mapSelectedFields, int i ->
+            String field = mapSelectedFields.field?.replaceAll("\\.", '_'), sqlCol = mapSelectedFields.sqlCol
+            if(fieldKey.startsWith('tippIdentifiers.')) {
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
+            }
+            else if (fieldKey.contains('ddcs')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id where ddc_tipp_fk = tipp_id), null) as ddcs"
+            }
+            else if (fieldKey.contains('languages')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from language join refdata_value on lang_rv_fk = rdv_id where lang_tipp_fk = tipp_id), null) as languages"
+            }
+            else if (fieldKey.contains('pkg')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from package where pkg_id = tipp_pkg_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('platform')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from platform where plat_id = tipp_plat_fk), null) as ${field}"
+            }
+            else if (fieldKey == 'perpetualAccessBySub') {
+                queryCols << "create_cell('${format}', (select string_agg(sub_name || ' (' || to_char(sub_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || '-' || to_char(sub_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') || ')', ';') from permanent_title join subscription on pt_subscription_fk = sub_id where pt_tipp_fk = tipp_id and (pt_owner_fk = ${contextService.getOrg().id} or pt_subscription_fk in (select os.sub_parent_sub_fk from org_role join subscription as os on or_sub_fk = os.sub_id where or_org_fk = ${contextService.getOrg().id} and or_roletype_fk = ${RDStore.OR_SUBSCRIBER_CONS.id} and exists(select auc_id from audit_config where auc_reference_field = 'holdingSelection' and auc_reference_class = '${Subscription.class.name}' and auc_reference_id = os.sub_parent_sub_fk)))), null)"
+            }
+            else if (fieldKey.startsWith('coverage.')) {
+                if(fieldKey.contains('startDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
                 }
-                else if (fieldKey.contains('ddcs')) {
-                    row.add(createTableCell(format, result.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                else if(fieldKey.contains('startVolume')) {
+                    queryCols << "create_cell('${format}', tc_start_volume, null) as coverageStartVolume"
                 }
-                else if (fieldKey.contains('languages')) {
-                    row.add(createTableCell(format, result.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
+                else if(fieldKey.contains('startIssue')) {
+                    queryCols << "create_cell('${format}', tc_start_issue, null) as coverageStartIssue"
                 }
-                else if (fieldKey.startsWith('coverage.')) {
-                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
-                    String coverageField = fieldKey.split("\\.")[1]
-
-                    def fieldValue = covStmt ? _getFieldValue(covStmt, coverageField, sdf) : null
-                    row.add(createTableCell(format, fieldValue))
+                else if(fieldKey.contains('endDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
                 }
-                else if (fieldKey.contains('listPriceEUR')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('endVolume')) {
+                    queryCols << "create_cell('${format}', tc_end_volume, null) as coverageEndVolume"
                 }
-                else if (fieldKey.contains('listPriceGBP')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('endIssue')) {
+                    queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
                 }
-                else if (fieldKey.contains('listPriceUSD')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', tc_coverage_note, null) as coverageNote"
                 }
-                else if (fieldKey.contains('localPriceEUR')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', tc_coverage_depth, null) as coverageDepth"
                 }
-                else if (fieldKey.contains('localPriceGBP')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', tc_embargo, null) as embargo"
                 }
-                else if (fieldKey.contains('localPriceUSD')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
-
-                    if (priceItemsList) {
-                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
-                    } else {
-                        row.add(createTableCell(format, ' '))
-                    }
+            }
+            else if (fieldKey.contains('listPriceEUR')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro), null) as listPriceEUR"
+                queryArgs.euro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('listPriceGBP')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp), null) as listPriceGBP"
+                queryArgs.gbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('listPriceUSD')) {
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd), null) as listPriceUSD"
+                queryArgs.usd = RDStore.CURRENCY_USD.id
+            }
+            else {
+                if(sqlCol.contains('rv_fk')) {
+                    queryCols << "create_cell('${format}', (select ${rdCol} from refdata_value where rdv_id = ${sqlCol}), null) as ${field}"
+                }
+                else if(sqlCol.containsIgnoreCase('date')) {
+                    queryCols << "create_cell('${format}', to_char(${sqlCol}, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as ${field}"
                 }
                 else {
-                    def fieldValue = _getFieldValue(result, field, sdf)
-                    row.add(createTableCell(format, fieldValue))
+                    queryCols << "create_cell('${format}', ${sqlCol}, null) as ${field}"
                 }
             }
         }
-        exportData.add(row)
-
+        String query = "select ${queryCols.join(',')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
+        result.addAll(batchQueryService.longArrayQuery(query, [tippIDs: tippIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
+        result
     }
-
 
     /**
      * Returns the value for the given object
@@ -6876,7 +7014,7 @@ class ExportClickMeService {
 
         }*/
 
-        if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
+       /* if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
             if (orgList) {
 
                 export = accessPointService.exportEZProxysOfOrgs(orgList, format, true)
@@ -6884,7 +7022,7 @@ class ExportClickMeService {
                 sheetData[sheetName] = export
             }
 
-        }
+        }*/
 
         return sheetData
     }
@@ -7102,30 +7240,32 @@ class ExportClickMeService {
                 ReaderNumber readerNumberStudents
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
-                ReaderNumber readerNumberStaffWithDueDate
-                ReaderNumber readerNumberFTEWithDueDate
-                List dueDateCheck = ReaderNumber.executeQuery('select rn.dueDate from ReaderNumber rn where rn.org = :org and rn.dueDate != null order by rn.dueDate desc', [org: org])
-                if(dueDateCheck) {
-                    Date newestDueDate = (Date) dueDateCheck[0]
-                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_PEOPLE, org, newestDueDate)
-                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_USER, org, newestDueDate)
-                    readerNumberStaffWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, newestDueDate)
-                    readerNumberFTEWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_FTE, org, newestDueDate)
+                ReaderNumber readerNumberTotalWithYear
+                ReaderNumber readerNumberFTEWithYear
+                List yearCheck = ReaderNumber.executeQuery('select rn.year from ReaderNumber rn where rn.org = :org and rn.year != null order by rn.year desc', [org: org])
+                if(yearCheck) {
+                    Year newestYear = (Year) yearCheck[0]
+                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_PEOPLE, org, newestYear)
+                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_USER, org, newestYear)
+                    readerNumberTotalWithYear = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_FTE_TOTAL, org, newestYear)
+                    readerNumberFTEWithYear = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_FTE, org, newestYear)
 
-                    if(readerNumberStaffWithDueDate || readerNumberFTEWithDueDate){
+                    if(readerNumberTotalWithYear || readerNumberFTEWithYear){
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, newestYear.value))
                         row.add(createTableCell(format, ' '))
-                        if(readerNumberStaffWithDueDate)
-                            row.add(createTableCell(format, readerNumberStaffWithDueDate.value))
+                        row.add(createTableCell(format, ' '))
+                        if(readerNumberTotalWithYear)
+                            row.add(createTableCell(format, readerNumberTotalWithYear.value))
                         else row.add(createTableCell(format, ' '))
-                        if(readerNumberFTEWithDueDate)
-                            row.add(createTableCell(format, readerNumberFTEWithDueDate.value))
+                        if(readerNumberFTEWithYear)
+                            row.add(createTableCell(format, readerNumberFTEWithYear.value))
                         else row.add(createTableCell(format, ' '))
                     }
                     else if(readerNumberPeople || readerNumberUser){
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, newestYear.value))
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
@@ -7146,6 +7286,7 @@ class ExportClickMeService {
                         fteStr = readerNumberFTE ? readerNumberFTE.value : null
                         row.add(createTableCell(format, studentsStr))
                         row.add(createTableCell(format, staffStr))
+                        row.add(createTableCell(format, null))
                         row.add(createTableCell(format, fteStr))
                     }else{
                         boolean nextSemester = false
@@ -7163,18 +7304,18 @@ class ExportClickMeService {
                                     BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
                                            staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                                            fteStr = readerNumberFTE ? readerNumberFTE.value : null
-                                    BigDecimal studentsFTEStr = studentsStr && fteStr ? studentsStr+fteStr : null
-                                    BigDecimal studentsStaffStr = studentsStr && staffStr ? studentsStr+staffStr : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, ' '))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
+                                    row.add(createTableCell(format, null))
                                     row.add(createTableCell(format, fteStr))
                                     break
                                 }
                             }
                         }
                         if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                            row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
@@ -7211,27 +7352,26 @@ class ExportClickMeService {
                     sum = sum + (readerNumberUser.value != null ? readerNumberUser.value : 0)
                 }
 
-                if(readerNumberStaffWithDueDate){
-                    sum = sum + (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
-                    sumStudHeads += (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
-                }
-                if(readerNumberFTEWithDueDate){
-                    sum = sum + (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
-                    sumStudFTE += (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
+                if(readerNumberFTEWithYear){
+                    sum = sum + (readerNumberFTEWithYear.value != null ? readerNumberFTEWithYear.value : 0)
+                    sumStudFTE += (readerNumberFTEWithYear.value != null ? readerNumberFTEWithYear.value : 0)
                 }
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                if((readerNumberFTE?.value || readerNumberFTEWithDueDate?.value) && (readerNumberStaff?.value || readerNumberStaffWithDueDate?.value))
+                if((readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
                     row.add(createTableCell(format, ' '))
                 else
                     row.add(createTableCell(format, sum))
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : (readerNumberFTEWithDueDate ? readerNumberFTEWithDueDate.dateGroupNote : ''))))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberTotalWithYear ? readerNumberTotalWithYear.dateGroupNote : (readerNumberFTEWithYear ? readerNumberFTEWithYear.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
 
             } else {
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
@@ -7581,9 +7721,10 @@ class ExportClickMeService {
                 }*/
                 else if (fieldKey == 'participant.readerNumbers') {
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.semester.label', null, locale)))
-                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.dueDate.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.year.label', null, locale)))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_STUDENTS."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE_TOTAL."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
@@ -7644,8 +7785,8 @@ class ExportClickMeService {
                 }
                 else if(fieldKey.contains('vendorSurvey')) {
                     titles.add(createTableCell(format,  fields.label))
-                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.participantComment', null, locale)}"))
-                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}"))
+                    /*titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.participantComment', null, locale)}"))
+                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}"))*/
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
@@ -7656,8 +7797,12 @@ class ExportClickMeService {
                     if(label)
                         titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
-                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
-                        titles.add(createTableCell(format,  (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        if('surveyPropertyParticipantComment' in selectedExportFields) {
+                            titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        }
+                        if('surveyPropertyCommentOnlyForOwner' in selectedExportFields) {
+                             titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
+                        }
                     }else if (fieldKey.contains('Property')) {
                         titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                     }
@@ -7748,40 +7893,47 @@ class ExportClickMeService {
     private Map<String, Object> _getNotesForObject(objInstance) {
         List<DocContext> baseItems = [], sharedItems = []
         Org contextOrg = contextService.getOrg()
-        docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
-            if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
-                String noteContent = dc.owner.title
-                if(dc.owner.content != null) {
-                    XmlSlurper parser = new XmlSlurper()
-                    String inputText = dc.owner.content.replaceAll('&nbsp;', ' ')
-                            .replaceAll('&', '&amp;')
-                            .replaceAll('<(?!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])', '&lt;')
-                            .replaceAll('(?<!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])>', '&gt;')
-                    try {
-                        GPathResult input = parser.parseText('<mkp>'+inputText+'</mkp>')
-                        List<String> listEntries = []
-                        input.'**'.findAll{ node -> node.childNodes().size() == 0 }.each { node ->
-                            //log.debug("${node.childNodes().size()}")
-                            //if(node.childNodes().size() == 0)
-                            listEntries << node.text().trim()
-                            /*
-                            else {
-                                listEntries.addAll(_getRecursiveNodeText(node.childNodes()))
+        Set items = []
+        if(!(objInstance instanceof Collection)) {
+            items << objInstance
+        }
+        else items.addAll(objInstance)
+        items.each { obj ->
+            docstoreService.getNotes(obj, contextOrg).each { DocContext dc ->
+                if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
+                    String noteContent = dc.owner.title
+                    if(dc.owner.content != null) {
+                        XmlSlurper parser = new XmlSlurper()
+                        String inputText = dc.owner.content.replaceAll('&nbsp;', ' ')
+                                .replaceAll('&', '&amp;')
+                                .replaceAll('<(?!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])', '&lt;')
+                                .replaceAll('(?<!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])>', '&gt;')
+                        try {
+                            GPathResult input = parser.parseText('<mkp>'+inputText+'</mkp>')
+                            List<String> listEntries = []
+                            input.'**'.findAll{ node -> node.childNodes().size() == 0 }.each { node ->
+                                //log.debug("${node.childNodes().size()}")
+                                //if(node.childNodes().size() == 0)
+                                listEntries << node.text().trim()
+                                /*
+                                else {
+                                    listEntries.addAll(_getRecursiveNodeText(node.childNodes()))
+                                }
+                                */
                             }
-                            */
+                            noteContent += '\n' + listEntries.join('\n')
                         }
-                        noteContent += '\n' + listEntries.join('\n')
+                        catch (SAXException e) {
+                            log.debug(inputText)
+                        }
                     }
-                    catch (SAXException e) {
-                        log.debug(inputText)
+                    if(dc.sharedFrom) {
+                        sharedItems << noteContent
                     }
-                }
-                if(dc.sharedFrom) {
-                    sharedItems << noteContent
-                }
-                else {
-                    if(dc.owner.owner == contextOrg || dc.owner.owner == null) {
-                        baseItems << noteContent
+                    else {
+                        if(dc.owner.owner == contextOrg || dc.owner.owner == null) {
+                            baseItems << noteContent
+                        }
                     }
                 }
             }
@@ -7811,7 +7963,7 @@ class ExportClickMeService {
         def request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
         GrailsParameterMap grailsParameterMap = new GrailsParameterMap(request)
 
-        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)){
+        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)){
             String jsonConfig = (new JSON(selectedExportFields)).toString()
             String clickMeConfigName = grailsParameterMap.clickMeConfigName
             String clickMeType = grailsParameterMap.clickMeType
@@ -7833,7 +7985,7 @@ class ExportClickMeService {
 
     Map getClickMeFields(ClickMeConfig clickMeConfig, Map fields){
         if (clickMeConfig){
-            Map clickMeConfigMap = JSON.parse(clickMeConfig.jsonConfig)
+            Map clickMeConfigMap = clickMeConfig.getClickMeConfigMap()
             Set clickMeConfigMapKeys = clickMeConfigMap.keySet()
 
             fields.each { def field ->
@@ -7969,12 +8121,12 @@ class ExportClickMeService {
                 SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndVendorAndParticipant(surveyConfig, surveyConfigVendor.vendor, org)
                 if(surveyVendorResult){
                     row.add(createTableCell(format, messageSource.getMessage('default.selected.label', null, locale), 'positive'))
-                    row.add(createTableCell(format, surveyVendorResult.comment))
-                    row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                   /* row.add(createTableCell(format, surveyVendorResult.comment))
+                    row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                 }else{
                     row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
+                   /* row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))*/
                 }
             }
 

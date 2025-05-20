@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
-<laser:htmlStart message="myinst.currentTitles.label"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.wekb.Platform; de.laser.PermanentTitle; de.laser.Subscription" %>
+<laser:htmlStart message="myinst.currentTitles.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentTitles.label" class="active"/>
@@ -7,36 +7,6 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
-    <%--
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [format: 'csv']}">
-                <g:message code="default.button.exports.csv"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    --%>
         <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
@@ -58,14 +28,10 @@
                 <a class="item export" href="#kbart" data-fileformat="kbart">KBART Export</a>
             <%--</g:else>--%>
         </ui:exportDropdownItem>
-    <%--<ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </ui:exportDropdownItem>--%>
     </ui:exportDropdown>
 </ui:controlButtons>
+
+<div id="downloadWrapper"></div>
 
 <ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true"/>
 
@@ -103,8 +69,8 @@
                             value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.dropdownNamingConvention(institution)}">
-                            ${s.dropdownNamingConvention(institution)}
+                                                                                                        title="${s.dropdownNamingConvention()}">
+                            ${s.dropdownNamingConvention()}
                         </option>
                     </g:each>
                 </select>
@@ -228,17 +194,13 @@
     </div>--%>
 
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
             <input type="hidden" name="filterSet" value="true"/>
-            <input type="submit" class="ui primary button"
-                   value="${message(code: 'default.button.filter.label')}"/>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
         </div>
 
     </g:form>
 </ui:filter>
-
-<div id="downloadWrapper"></div>
 
 <laser:render template="/templates/titles/top_attached_title_tabs"
               model="${[
@@ -258,7 +220,7 @@
                     <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
                 </div>
                 <div class="field la-field-noLabel">
-                    <button class="ui button la-js-closeAll-showMore right floated ">${message(code: "accordion.button.closeAll")}</button>
+                    <ui:showMoreCloseButton />
                 </div>
             </div>
         </div>
@@ -271,18 +233,18 @@
                     <g:if test="${titles}">
                         <div class="ui fluid card">
                             <div class="content">
-                                <div class="ui accordion la-accordion-showMore">
+                                <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                                     <g:each in="${titles}" var="tipp">
                                         <div class="ui raised segments la-accordion-segments">
                                             <%
                                                 String instanceFilter = ''
-                                                if (institution.isCustomerType_Consortium())
+                                                if (contextService.getOrg().isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: contextService.getOrg(), tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
 
                                         <g:render template="/templates/titles/title_segment_accordion"
-                                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+                                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(contextService.getOrg(), tipp)]"/>
 
                                         <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                             <div class="ui stackable grid" data-ajaxTarget="true">
@@ -326,8 +288,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
-                                                                    <i class="grey icon quote right la-popup-tooltip la-delay"
-                                                                       data-content="${message(code: 'default.note.label')}"></i>
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
 
                                                                     <div class="content">
                                                                         <div class="header">
@@ -342,7 +303,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon ${Icons.TIPP_COVERAGE_DEPTH} right la-popup-tooltip la-delay"
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                     <div class="content">
@@ -358,7 +319,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.embargo}">
                                                                 <div class="item">
-                                                                    <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                                    <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                                     <div class="content">
@@ -378,24 +339,24 @@
                                                 </div>
                                                 <%-- My Area START--%>
                                                 <div class="seven wide column">
-                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                        data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                     <div class="ui la-segment-with-icon">
                                                         <div class="ui list">
                                                             <g:each in="${ie_infos}" var="ie">
                                                                 <div class="item">
-                                                                    <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             <g:link controller="subscription"
                                                                                     action="index"
-                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention()}</g:link>
                                                                         </div>
                                                                         <div class="description">
                                                                             <g:link controller="issueEntitlement"
                                                                                 action="show"
-                                                                                class="ui tiny button la-margin-top-05em"
+                                                                                class="${Btn.SIMPLE} tiny la-margin-top-05em"
                                                                                 id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                                                         </div>
                                                                     </div>
@@ -403,6 +364,8 @@
                                                             </g:each>
                                                         </div>
                                                     </div>
+
+                                                    <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -412,7 +375,7 @@
                         </div><%-- .content --%>
                     </div><%-- .card --%>
                     <div class="ui clearing segment la-segmentNotVisable">
-                            <button class="ui button la-js-closeAll-showMore right floated">${message(code: "accordion.button.closeAll")}</button>
+                            <ui:showMoreCloseButton />
                     </div>
                 </g:if>
     </g:if>
@@ -426,10 +389,10 @@
     </g:else>
 
 </div>
+
 <g:if test="${titles}">
     <ui:paginate action="currentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_ti_rows}"/>
 </g:if>
-
 
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
@@ -497,5 +460,7 @@
 </laser:script>
 
 <g:render template="/clickMe/export/js"/>
+
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

@@ -1,7 +1,12 @@
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart text="wcagStatement" />
 
-            <ui:h1HeaderWithIcon message="wcagStatement" />
+    <h1 class="ui header">
+        <icon:universalAccess />
+        <span class="content">
+            ${message(code:'wcagStatement')}
+        </span>
+    </h1>
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
             <p>

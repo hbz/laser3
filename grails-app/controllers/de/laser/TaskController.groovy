@@ -1,13 +1,16 @@
 package de.laser
 
 import de.laser.annotations.Check404
+import de.laser.auth.Role
 import de.laser.auth.User
  
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.survey.SurveyConfig
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 import java.text.SimpleDateFormat
 
@@ -17,11 +20,10 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
+	AccessService accessService
     ContextService contextService
 
 	//-----
-
-	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
 	/**
 	 * Map containing menu alternatives if an unexisting object has been called
@@ -36,13 +38,14 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor = [CustomerTypeService.PERMS_PRO], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
 	})
-    def create() {
+    def createTask() {
+		String referer = request.getHeader('referer')
+
 		Task.withTransaction {
-			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
@@ -55,7 +58,7 @@ class TaskController  {
 
 				//Bearbeiter festlegen
 				if (params.responsible == "Org") {
-					taskInstance.responsibleOrg = contextOrg
+					taskInstance.responsibleOrg = contextService.getOrg()
 				}
 				else if (params.responsible == "User") {
 					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()
@@ -79,16 +82,19 @@ class TaskController  {
 				else if (params.linkto == "surveyConfig" && params.surveyConfig && params.surveyConfig != 'null') {
 					taskInstance.surveyConfig = SurveyConfig.get(params.surveyConfig) ?: null
 				}
+				else if (params.linkto == "tipp" && params.tipp && params.tipp != 'null') {
+					taskInstance.tipp = TitleInstancePackagePlatform.get(params.tipp) ?: null
+				}
 
 				if (!taskInstance.save()) {
 					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label')]) as String
-					redirect(url: request.getHeader('referer'))
+					redirect(url: referer)
 					return
 				}
 
 				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label'), taskInstance.title]) as String
 
-				redirect(url: request.getHeader('referer'))
+				redirect(url: referer)
 		}
     }
 
@@ -96,31 +102,29 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstUser_or_ROLEADMIN()
+		ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
 	})
 	@Check404()
-    def edit() {
+    def editTask() {
+		String referer = request.getHeader('referer')
+
 		Task.withTransaction {
-			Org contextOrg = contextService.getOrg()
-			User contextUser = contextService.getUser()
-            Map<String, Object> result = [:]
-			result.contextOrg = contextOrg
-
-			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-
-			if (params.endDate) {
-				params.endDate = sdf.parse(params.endDate)
-			}
-
+            Map<String, Object> result = [
+					contextOrg : contextService.getOrg()
+			]
 			Task taskInstance = Task.get(params.id)
 
-			if ( !((contextOrg.id == taskInstance.responsibleOrg?.id) || (contextUser.id == taskInstance.responsibleUser?.id) || (contextUser.id == taskInstance.creator.id))
-			) {
-				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
-				redirect(url: request.getHeader('referer'))
+			if (!accessService.hasAccessToTask(taskInstance, AccessService.WRITE)) {
+				flash.error = message(code: 'default.noPermissions') as String
+				redirect(url: referer)
 				return
+			}
+
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+			if (params.endDate) {
+				params.endDate = sdf.parse(params.endDate)
 			}
 
 			if (params.version) {
@@ -134,7 +138,7 @@ class TaskController  {
 					)
 
 					result.taskInstance = taskInstance
-					redirect(url: request.getHeader('referer'))
+					redirect(url: referer)
 					return
 				}
 			}
@@ -143,7 +147,7 @@ class TaskController  {
 
 			//Bearbeiter festlegen/ändern
 			if (params.responsible == "Org") {
-				taskInstance.responsibleOrg = contextOrg
+				taskInstance.responsibleOrg = contextService.getOrg()
 				taskInstance.responsibleUser = null
 			} else if (params.responsible == "User") {
 				taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id) : contextService.getUser()
@@ -153,63 +157,49 @@ class TaskController  {
 			if (!taskInstance.save()) {
 				result.taskInstance = taskInstance
 				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
-				redirect(url: request.getHeader('referer'))
+				redirect(url: referer)
 				return
 			}
 
 			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
-			redirect(url: request.getHeader('referer'))
+			redirect(url: referer)
 		}
     }
 
 	/**
-	 * Call to edit the given task instance
-	 * @return the task editing modal
+	 * Deletes the given task
 	 */
-	@Secured(['permitAll']) // TODO
-	def ajaxEdit() {
-        Map<String, Object> result = [:]
-		result.params = params
-		result.contextOrg = contextService.getOrg()
-		result.taskInstance = Task.get(params.id)
-
-		render template: "/templates/tasks/modal_edit", model: result
-	}
-
-	/**
-	 * Call to delete the given task instance
-	 * @return a redirect to the referer
-	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor = [CustomerTypeService.PERMS_PRO], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
 	})
-    def delete() {
-		Task.withTransaction {
-			Task taskInstance = Task.get(params.id)
-			String tasktitel = taskInstance.title
+	def deleteTask() { // moved from AjaxController
 
-			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
-				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			if (taskInstance.creator != contextService.getUser()) {
-				flash.error = message(code: 'task.delete.norights', args: [tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			try {
-				taskInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
-			}
-			catch (DataIntegrityViolationException e) {
-				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
+		if (params.deleteId) {
+			Task.withTransaction {
+				Task dTask = Task.get(params.deleteId)
+				if (accessService.hasAccessToTask(dTask, AccessService.WRITE)) {
+					try {
+						flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
+						dTask.delete()
+					}
+					catch (Exception e) {
+						log.error(e)
+						flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
+					}
+				} else {
+					if (!dTask) {
+						flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId]) as String
+					} else {
+						flash.error = message(code: 'default.noPermissions') as String
+					}
+				}
 			}
 		}
-    }
+		if(params.returnToShow) {
+			redirect action: 'show', id: params.id, controller: params.returnToShow
+			return
+		}
+		redirect(url: request.getHeader('referer'))
+	}
 }

@@ -5,6 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.ui.Icon
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
@@ -49,7 +50,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     public static final String LIC_PROP    = 'License Property'
     public static final String ORG_PROP    = 'Organisation Property'
-    public static final String ORG_CONF    = 'Organisation Config'
     public static final String PRS_PROP    = 'Person Property'
     public static final String PLA_PROP    = 'Platform Property'
     public static final String PRV_PROP    = 'Provider Property'
@@ -60,11 +60,8 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
     @Transient
-    public static final String[] AVAILABLE_CUSTOM_DESCR = [
-            PRS_PROP,
+    public static final String[] AVAILABLE_PUBLIC_DESCR = [
             SUB_PROP,
-            //ORG_PROP, // erms-4798
-            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]
@@ -82,9 +79,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     @Transient
     public static final String[] AVAILABLE_GROUPS_DESCR = [
-            //ORG_PROP, // erms-4798
             SUB_PROP,
-            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]
@@ -398,7 +393,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             boolean isPublic = false
             if(flag == CUSTOM_PROPERTY) {
                 if(owner instanceof Subscription)
-                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortia()?.id == contextOrg.id
+                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortium()?.id == contextOrg.id
                 else if(owner instanceof License)
                     isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getLicensingConsortium()?.id == contextOrg.id
             }
@@ -464,7 +459,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? 'redo icon orange' : ''])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? Icon.PROP.MULTIPLE : ''])
             }
         }
 
@@ -588,6 +583,19 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                         ownerType: PropertyDefinition.ORG_PROP,
                         tenant: contextOrg
                     ])
+    }
+
+    /**
+     * Retrieves all property definitions defined for organisations; returned are all public ones and those defined by the context institution
+     * @param contextOrg the context institution whose own property definitions should be returned
+     * @param ownerType the type of property definition, defaulting to {@link PropertyDefinition#contextOrg}
+     * @return a {@link List} of matching property definitions
+     */
+    static List<PropertyDefinition> findAllPublicAndPrivateVendorProp(Org contextOrg){
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :ownerType and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                ownerType: PropertyDefinition.VEN_PROP,
+                tenant: contextOrg
+        ])
     }
 
     /**

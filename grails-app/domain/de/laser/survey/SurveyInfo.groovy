@@ -3,7 +3,7 @@ package de.laser.survey
 import de.laser.CustomerTypeService
 import de.laser.License
 import de.laser.Org
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
@@ -103,19 +103,31 @@ class SurveyInfo {
 
             if(it.subscription)
             {
-                if(!it.pickAndChoose && !(it.surveyProperties.size() > 0)) {
+                if(!it.pickAndChoose && SurveyConfigProperties.countBySurveyConfig(it)  == 0) {
                     check = false
                 }
             }
 
             if(!it.subscription)
             {
-                if(!(it.surveyProperties.size() > 0)) {
+                if(SurveyConfigProperties.countBySurveyConfig(it)  == 0) {
                     check = false
                 }
             }
 
-            if(!(it.orgs.org.size > 0)){
+            if(SurveyOrg.countBySurveyConfig(it) == 0){
+                check = false
+            }
+
+            if(it.vendorSurvey && (SurveyConfigVendor.countBySurveyConfig(it) == 0)){
+                check = false
+            }
+
+            if(it.subscriptionSurvey && (SurveyConfigSubscription.countBySurveyConfig(it) == 0)){
+                check = false
+            }
+
+            if(it.packageSurvey && (SurveyConfigPackage.countBySurveyConfig(it) == 0)){
                 check = false
             }
         }
@@ -164,7 +176,7 @@ class SurveyInfo {
      * @return true if the user belongs to the institution which created (= owns) this survey and if it is at least an editor or general admin, false otherwise
      */
     boolean isEditable() {
-        if(BeanStore.getContextService().isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && this.owner?.id == BeanStore.getContextService().getOrg().id)
+        if(BeanStore.getContextService().isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO ) && this.owner?.id == BeanStore.getContextService().getOrg().id)
         {
             return true
         }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -53,14 +53,14 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                            <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                     name="processOption"
                                     value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
                         </div>
                     </div>
                     <div class="eight wide field" style="text-align: right;">
                         <div class="ui buttons">
-                            <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
+                            <button class="${Btn.NEGATIVE_CONFIRM}" ${!editable ? 'disabled="disabled"' : ''}
                                     data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
                                     data-confirm-term-how="ok"
                                     name="processOption"
@@ -73,9 +73,9 @@
             <g:else>
                 <div class="sixteen wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <span class="la-popup-tooltip la-delay"
+                        <span class="la-popup-tooltip"
                               data-content="${message(code: 'license.details.unlink')}">
-                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                     data-confirm-tokenMsg="${message(code: "subscriptionsManagement.deleteLicenses.button.confirm")}"
                                     data-confirm-term-how="unlink"
                                     controller="subscription" action="unlinkAllLicenses"
@@ -105,7 +105,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
@@ -126,7 +126,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -139,8 +141,8 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -152,16 +154,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved}">
-                                    <span data-position="top right"
-                                          class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="grey la-thumbtack-regular icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                             <g:if test="${params.showMembersSubWithMultiYear}">
                                 ${sub.referenceYear}
@@ -188,10 +181,10 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     data-position="left center"
                                     role="button">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>
@@ -218,6 +211,34 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $("input[name=selectedSubs]").checkbox({
@@ -226,6 +247,7 @@
         }
     });
 
+    /*
     $('.licenseForm').form({
         on: 'blur',
         inline: true,
@@ -241,6 +263,7 @@
             }
         }
     });
+    */
 </laser:script>
 
 

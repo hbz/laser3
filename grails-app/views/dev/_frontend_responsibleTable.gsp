@@ -1,9 +1,9 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Tabellen<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Responsive Tabellen</h4>
 
-<div class="ui icon negative message">
-    <i aria-hidden="true" class="exclamation triangle icon"></i>
+<div class="ui icon error message">
+    <i aria-hidden="true" class="${Icon.UI.ERROR}"></i>
 
     <div class="content">
         <div class="header">
@@ -30,7 +30,7 @@
         </th>
 
         <th scope="col" rowspan="2" class="sortable"><a
-                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Lieferant</a>
+                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Library Supplier</a>
         </th>
 
         <th scope="col" class="la-smaller-table-head sortable"><a
@@ -38,15 +38,15 @@
         </th>
 
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtung" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
-                <i class="users large icon" aria-hidden="true"></i>
+                <i class="${Icon.ORG} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -75,7 +75,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -86,7 +86,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -95,7 +95,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -128,11 +128,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -153,7 +153,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -164,7 +164,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -173,7 +173,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -206,11 +206,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -231,7 +231,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -242,7 +242,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -251,7 +251,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -284,11 +284,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -309,7 +309,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -320,7 +320,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -329,7 +329,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -362,11 +362,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -387,7 +387,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -398,7 +398,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -407,7 +407,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -440,11 +440,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -528,7 +528,7 @@
         </th>
 
         <th scope="col" rowspan="2" class="sortable"><a
-                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Lieferant</a>
+                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Library Supplier</a>
         </th>
 
         <th scope="col" class="la-smaller-table-head sortable"><a
@@ -536,15 +536,15 @@
         </th>
 
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtung" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtung" data-position="top center"
                aria-label="Einrichtung" data-why-id="why-722">
-                <i class="users large icon" aria-hidden="true"></i>
+                <i class="${Icon.ORG} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
+            <a href="#" class="la-popup-tooltip" data-content="Einrichtungskosten" data-position="top center"
                aria-label="Einrichtungskosten" data-why-id="why-725">
-                <i class="money bill large icon" aria-hidden="true"></i>
+                <i class="${Icon.FNC.COST} large" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2" class="two">Trend</th>
@@ -573,7 +573,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -584,7 +584,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -593,7 +593,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -626,11 +626,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -651,7 +651,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -662,7 +662,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -671,7 +671,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -704,11 +704,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -729,7 +729,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -740,7 +740,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -749,7 +749,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -782,11 +782,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -807,7 +807,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -818,7 +818,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -827,7 +827,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -860,11 +860,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 
@@ -885,7 +885,7 @@
             </a>
 
             <div class="la-flexbox la-minor-object">
-                <i class="${Icons.LICENSE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.LICENSE} la-list-icon" aria-hidden="true"></i>
                 <a href="/lic/show/54">Herdt Lizenzvertrag</a><br>
             </div>
 
@@ -896,7 +896,7 @@
             <!-- packages -->
 
             <div class="la-flexbox">
-                <i class="${Icons.PACKAGE} icon la-list-icon" aria-hidden="true"></i>
+                <i class="${Icon.PACKAGE} la-list-icon" aria-hidden="true"></i>
                 <a href="/subscription/index/47645?pkgfilter=440" title="HERDT-Verlag für Bildungsmedien GmbH">
                     All You Can Read
                 </a>
@@ -905,7 +905,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -938,11 +938,11 @@
         </td>
         <td class="x" data-label="Optionen:">
 
-            <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
-                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+            <a href="/subscription/surveysConsortia/47645" class="${Btn.MODERN.SIMPLE}">
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                       data-content="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!"
                       aria-label="Es ist eine offene Lizenzverlängerungsabfrage vorhanden!" data-why-id="why-757">
-                    <i class="${Icons.SURVEY} icon" aria-hidden="true"></i>
+                    <i class="${Icon.SURVEY}" aria-hidden="true"></i>
                 </span>
             </a>
 

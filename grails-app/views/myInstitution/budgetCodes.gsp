@@ -1,9 +1,9 @@
-<%@ page import="de.laser.helper.Icons; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
     </ui:breadcrumbs>
 
@@ -15,7 +15,7 @@
             <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="${Btn.SIMPLE}" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>
@@ -28,13 +28,15 @@
                 <th>${message(code: 'default.description.label')}</th>
                 <th>
                     ${message(code: 'financials.budgetCode.usage')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </th>
                 <g:if test="${editable}">
-                    <th class="la-action-info one wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </tr>
         </thead>
@@ -50,9 +52,7 @@
                     <td>
                         <g:link controller="finance" action="index"
                                 params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                            <div class="ui blue circular label">
-                                ${costItemGroups.get(bcode) ?: 0}
-                            </div>
+                            <ui:bubble count="${costItemGroups.get(bcode)}" />
                         </g:link>
                     </td>
                     <g:if test="${editable}">
@@ -63,10 +63,10 @@
                                         params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.budgetcode", args: [fieldValue(bean: bcode, field: "value")])}"
                                         data-confirm-term-how="delete"
-                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                         </td>

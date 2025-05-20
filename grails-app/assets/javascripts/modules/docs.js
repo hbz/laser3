@@ -5,13 +5,13 @@ docs = {
     init: function (cssSel) {
         console.log('docs.init( ' + cssSel + ' )')
 
-        $(cssSel).find ('a[data-documentKey]').on ('click', function(e) {
+        $(cssSel).find ('a[data-dctx]').on ('click', function(e) {
             e.preventDefault();
-            let docKey = $(this).attr('data-documentKey')
-            let previewModalId = '#document-preview-' + docKey.split(':')[0]
+            let dctx = $(this).attr('data-dctx')
+            let previewModalId = '#document-preview-' + dctx
 
             $.ajax({
-                url: JSPC.config.ajax.htmlDocumentPreview + '?key=' + docKey
+                url: JSPC.config.ajax.htmlDocumentPreview + '?dctx=' + dctx
             }).done (function (data) {
                 $('#dynamicModalContainer').html (data)
                 $(previewModalId).modal ({

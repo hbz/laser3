@@ -1,6 +1,6 @@
 package de.laser.reporting.report.myInstitution.config
 
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class ProviderXCfg extends BaseConfig {

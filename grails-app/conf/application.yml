@@ -184,6 +184,9 @@ grails:
         wkhtmltopdf:
             binary: '/usr/bin/wkhtmltopdf'
         springsecurity:
+            auth:
+                loginFormUrl: '/login/auth'
+                ajaxLoginFormUrl: '/login/ajaxAuth'
             authority:
                 className: 'de.laser.auth.Role'
             userLookup:

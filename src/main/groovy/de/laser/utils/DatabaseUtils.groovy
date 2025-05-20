@@ -1,7 +1,6 @@
 package de.laser.utils
 
 import groovy.util.logging.Slf4j
-import org.apache.commons.lang3.RandomStringUtils
 
 /**
  * Helper class for database query related tasks
@@ -17,7 +16,7 @@ class DatabaseUtils {
      */
     static Map<String, String> getQueryStruct_ilike(String field, String value) {
 
-        String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
+        String name     = 'p_' + RandomUtils.getAlphaNumeric(6)
         String query    = ' (lower(' + field + ') like :' + name + ') '
         String val      = value.toLowerCase().trim()
 
@@ -43,7 +42,7 @@ class DatabaseUtils {
      */
     static Map<String, Object> getQueryStruct_ilike(List<String> fields, String value) {
 
-        String name     = 'p_' + RandomStringUtils.randomAlphanumeric(6)
+        String name     = 'p_' + RandomUtils.getAlphaNumeric(6)
         String query    = ''
         String val      = value.toLowerCase().trim()
 

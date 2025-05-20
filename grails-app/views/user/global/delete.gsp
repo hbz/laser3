@@ -1,5 +1,5 @@
-<%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
-<laser:htmlStart message="user.delete.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
+<laser:htmlStart message="user.delete.label" />
 
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
@@ -12,35 +12,35 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" message="deletion.success.msg" />
+            <ui:msg class="success" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
-                <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="users" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
             <g:if test="${controllerName == 'organisation'}">
-                <g:link action="users" params="${[id: orgInstance.id]}" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="users" params="${[id: orgInstance.id]}" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
             <g:if test="${controllerName == 'user'}">
-                <g:link action="list" class="ui button"><g:message code="org.nav.users"/></g:link>
+                <g:link action="list" class="${Btn.SIMPLE}"><g:message code="org.nav.users"/></g:link>
             </g:if>
 
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <ui:msg noClose="true" class="warning" message="user.delete.info2" />
+                <ui:msg class="warning" hideClose="true" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <ui:msg noClose="true" class="warning" message="user.delete.info" />
+                <ui:msg class="warning" hideClose="true" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="error" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <%
@@ -51,15 +51,15 @@
             <g:form action="${formAction}" data-confirm-id="deleteUserForm_form" params="${formParams}">
 
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <g:link action="users" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="users" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
                 </g:if>
                 <g:if test="${controllerName == 'organisation'}">
-                    <g:link action="users" params="${[id: orgInstance.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="users" params="${[id: orgInstance.id]}" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
                 </g:if>
                 <g:if test="${controllerName == 'user'}">
-                    <g:link action="list" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
+                    <g:link action="list" class="${Btn.SIMPLE}"><g:message code="default.button.cancel.label"/></g:link>
                     <input type="hidden" name="id" value="${user.id}" />
                 </g:if>
 
@@ -68,7 +68,7 @@
                     <g:if test="${delResult.deletable}">
                         <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
                             <g:if test="${substituteList}">
-                                <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteUserForm"
+                                <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteUserForm"
                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
                                      data-confirm-term-how="delete">
                                         ${message(code:'deletion.user')}
@@ -84,12 +84,12 @@
                                 </div>
                             </g:if>
                             <g:else>
-                                <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                                <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
+                                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                             </g:else>
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
-                            <div class="ui negative button js-open-confirm-modal" data-confirm-id="deleteUserForm"
+                            <div class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="deleteUserForm"
                                  data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.user", args: [user.displayName ])}"
                                  data-confirm-term-how="delete">
                                     ${message(code:'deletion.user')}
@@ -97,7 +97,7 @@
                         </g:elseif>
                     </g:if>
                     <g:else>
-                        <input disabled type="submit" class="ui button negative" value="${message(code:'deletion.user')}" />
+                        <input disabled type="submit" class="${Btn.NEGATIVE}" value="${message(code:'deletion.user')}" />
                     </g:else>
 
                 </g:if>
@@ -123,9 +123,9 @@
                     <td>
                         ${info[0]}
                     </td>
-                    <td style="text-align:center">
+                    <td class="center aligned">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
-                            <span class="ui circular label la-popup-tooltip la-delay ${info[2]}"
+                            <span class="ui circular label la-popup-tooltip ${info[2]}"
                                 <g:if test="${info[2] == DeletionService.FLAG_WARNING}">
                                     data-content="${message(code:'user.delete.warning')}"
                                 </g:if>

@@ -1,6 +1,6 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" />
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 
@@ -18,7 +18,7 @@
                     <g:select id="idns" name="idns"
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
-                              class="ui dropdown"
+                              class="ui dropdown clearable "
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
@@ -28,10 +28,11 @@
                     <input type="text" id="idv" name="idv" placeholder="Identifikator eingeben" value="${params.idv}" />
                 </div>
 
-                <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}" />
                 </div>
 
             </div>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.recoveryDoc" />
 
@@ -21,11 +21,9 @@
 
             <div class="content">
                 <ul>
-                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link action="index" controller="docstore"
-                                                                                id="${doc.uuid}">${doc.uuid}</g:link>
+                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>
                     <g:if test="${doc.owner}">
-                        (Owner: <g:link action="show" controller="org"
-                                        id="${doc.owner.id}">${doc.owner.name}</g:link>)
+                        (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>
 
                     </li>
@@ -41,30 +39,30 @@
                                     print "${dc.id} : "
 
                                     if (dc.isShared) {
-                                        print " <i class='ui icon share alternate square'></i> "
+                                        print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                     }
                                     if (dc.sharedFrom) {
-                                        print " <i class='ui icon share alternate'></i> "
+                                        print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                     }
 
                                     if (dc.license) {
                                         println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +
-                                                link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                     }
                                     if (dc.subscription) {
                                         println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +
-                                                link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                     }
                                     if (dc.org) {
                                         println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +
-                                                link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                     }
                                     if (dc.link) {
                                         println "Links ${dc.link.id} "
                                     }
                                     if (dc.surveyConfig) {
                                         println "SurveyConfig ${dc.surveyConfig.id} - ${dc.surveyConfig.type} ${dc.surveyConfig.header} &nbsp;&nbsp; " +
-                                                link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params: ['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params: ['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                     }
 
                                     if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {
@@ -88,17 +86,12 @@
                 <g:each in="${docsToRecovery}" var="docRecovery">
                     <g:if test="${doc.id != docRecovery.id}">
                         <ul>
-                            <li>${docRecovery.id} : <strong>${docRecovery.filename}</strong> -> <g:link
-                                    action="index"
-                                    controller="docstore"
-                                    id="${docRecovery.uuid}">${docRecovery.uuid}</g:link>
+                            <li>${docRecovery.id} : <strong>${docRecovery.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${docRecovery.uuid}">${docRecovery.uuid}</g:link>
                             <g:if test="${docRecovery.owner}">
-                                (Owner: <g:link action="show" controller="org"
-                                                id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
+                                (Owner: <g:link action="show" controller="org" id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
                             </g:if>
 
-                            <g:link class="ui mini button" action="processRecoveryDoc"
-                                    params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
+                            <g:link class="${Btn.SIMPLE} mini" action="processRecoveryDoc" params="[sourceDoc: doc.id, targetDoc: docRecovery.id]">Auswählen</g:link>
 
                             </li>
 
@@ -113,30 +106,29 @@
                                             print "${dc.id} : "
 
                                             if (dc.isShared) {
-                                                print " <i class='ui icon share alternate square'></i> "
+                                                print " <i class='${Icon.SIG.SHARED_OBJECT} square'></i> "
                                             }
                                             if (dc.sharedFrom) {
-                                                print " <i class='ui icon share alternate'></i> "
+                                                print " <i class='${Icon.SIG.SHARED_OBJECT_ON}'></i> "
                                             }
-
                                             if (dc.license) {
                                                 println "License ${dc.license.id} - ${dc.license.reference}, ${dc.license.sortableReference} &nbsp;&nbsp; " +
-                                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                        link(action: 'show', controller: 'lic', id: dc.license.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                             }
                                             if (dc.subscription) {
                                                 println "Subscription ${dc.subscription.id} - ${dc.subscription.name} &nbsp;&nbsp; " +
-                                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                        link(action: 'show', controller: 'subscription', id: dc.subscription.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                             }
                                             if (dc.org) {
                                                 println "Org ${dc.org.id} - ${dc.org.name} ${dc.org.sortname} &nbsp;&nbsp;" +
-                                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                        link(action: 'show', controller: 'org', id: dc.org.id) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                             }
                                             if (dc.link) {
                                                 println "Links ${dc.link.id} "
                                             }
                                             if (dc.surveyConfig) {
                                                 println "SurveyConfig ${dc.surveyConfig.id} - ${dc.surveyConfig.type} ${dc.surveyConfig.header} &nbsp;&nbsp; " +
-                                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params: ['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icons.LINK_EXTERNAL + ' icon"></i>' }
+                                                        link(action: 'surveyConfigDocs', controller: 'survey', id: dc.surveyConfig.surveyInfo.id, params: ['surveyConfigID': dc.surveyConfig.id]) { '<i class="' + Icon.LNK.EXTERNAL + '"></i>' }
                                             }
 
                                             if (dc.status == RDStore.DOC_CTX_STATUS_DELETED) {

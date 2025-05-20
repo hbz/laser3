@@ -1,8 +1,8 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
-<laser:htmlStart message="myinst.subscriptionImport.post.title" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
+<laser:htmlStart message="myinst.subscriptionImport.post.title" />
 
         <ui:breadcrumbs>
-            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
             <ui:crumb message="menu.institutions.subscriptionImport" class="active"/>
         </ui:breadcrumbs>
         <br />
@@ -70,13 +70,26 @@
                                         </ul>
                                     </li>
                                     <li>
+                                        <g:message code="identifier"/>:
+                                        <ul>
+                                            <g:each in="${sub.ids?.entrySet()}" var="id">
+                                                <g:if test="${id.getValue().idValue}">
+                                                    <%
+                                                        String idValue = id.getValue().idValue
+                                                    %>
+                                                    <li>${genericOIDService.resolveOID(id.getKey()).getI10n("name")}: ${idValue}</li>
+                                                </g:if>
+                                            </g:each>
+                                        </ul>
+                                    </li>
+                                    <li>
                                         <g:message code="myinst.subscriptionImport.notes"/>: ${sub.notes}
                                     </li>
                                 </ul>
 
                                 <g:if test="${errors}">
                                 <div class="item red">
-                                    <i class="bug icon red"></i><g:message code="default.error"/>:
+                                    <icon:bug /><g:message code="default.error"/>:
                                     <div class="content">
                                         <div class="description">
                                             <ul>
@@ -109,8 +122,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3">
-                            <input type="submit" class="ui button primary" value="${message(code:'default.button.save.label')}">
-                            <g:link action="subscriptionImport" class="ui button"><g:message code="default.button.back"/></g:link>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.save.label')}">
+                            <g:link action="subscriptionImport" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
                         </td>
                     </tr>
                 </tfoot>

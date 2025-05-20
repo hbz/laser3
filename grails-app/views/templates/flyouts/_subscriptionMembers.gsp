@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
 
-<div class="ui seven wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui very wide flyout" id="subscriptionMembers-content">
 
     <h1 class="ui header">
-%{--        <i class="${Icons.ORG} icon la-list-icon"></i>--}%
-%{--        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>--}%
+%{--        <i class="${Icon.ORG} icon la-list-icon"></i>--}%
+%{--        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>--}%
         ${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}
     </h1>
 
@@ -34,20 +34,19 @@
                         </td>
                         <td>
                             <g:link controller="org" action="show" id="${subInst.id}" class="item">
-                                <i class="${Icons.ORG} icon la-list-icon"></i>
-                                ${subInst.sortname ?: subInst.name}
+                                <ui:customerTypeIcon org="${subInst}" /> ${subInst.sortname ?: subInst.name}
                             </g:link>
                         </td>
                         <td>
                             <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, subInst, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
-                                <span class="ui icon la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
-                                    <i class="ui icon eye slash orange"></i>
+                                <span class="ui icon la-popup-tooltip" data-content="${message(code:'subscription.details.hiddenForSubscriber')}">
+                                    <i class="${Icon.SIG.VISIBLE_OFF} orange"></i>
                                 </span>
                             </g:if>
                         </td>
                         <td>
                             <g:link controller="subscription" action="show" id="${sub.id}" class="item">
-                                <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
+                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                 ${sub}
                                 <span style="margin-left:0.5em">
                                     (<g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/> - <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>)

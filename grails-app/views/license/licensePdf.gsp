@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Contact;de.laser.Identifier" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.ui.Icon; de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Identifier" %>
 <laser:serviceInjection/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -59,7 +59,7 @@
         </header>
         <article>
             <h2><g:message code="default.identifiers.label"/></h2>
-            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(license, institution).objectIds}" />
+            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(license, contextService.getOrg()).objectIds}" />
             <table>
                 <g:each in="${objectIds}" var="row">
                     <g:set var="namespace" value="${row.getKey()}"/>
@@ -77,7 +77,7 @@
                                         ${ident.value}
                                     </g:if>
                                     <g:else>${ident.value}</g:else>
-                                    <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
+                                    <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="${Icon.LNK.EXTERNAL}"></i></a></g:if>
                                 </g:if>
                                 <g:else>
                                     ${ident}
@@ -156,7 +156,7 @@
                             <span class="blue">V</span>
                         </g:elseif>--}%
                     </li>
-                    <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
+                    <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium().id}">
                         <li>
                             <strong><g:message code="license.linktoLicense"/>: </strong><g:link controller="license" action="show" id="${license.instanceOf.id}" absolute="true">${license.instanceOf.reference}</g:link>
                         </li>
@@ -193,7 +193,7 @@
                 <table>
                     <g:each in="${linkedSubscriptions}" var="subscription">
                         <tr>
-                            <td><g:link controller="subscription" action="show" id="${subscription.id}" absolute="true">${subscription.dropdownNamingConvention(institution)}</g:link></td>
+                            <td><g:link controller="subscription" action="show" id="${subscription.id}" absolute="true">${subscription.dropdownNamingConvention()}</g:link></td>
                         </tr>
                     </g:each>
                 </table>
@@ -360,8 +360,8 @@
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
                                     Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor') ||
-                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution))}">
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor'))}">
                                 <%-- public --%>
                                 <g:if test="${ Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor')  }">
                                     <g:each in="${Person.getPublicByOrgAndFunc(role.provider, 'General contact person')}" var="func">
@@ -373,7 +373,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -393,7 +393,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -407,8 +407,8 @@
                                 </g:if>
                                 <%-- public --%>
                                 <%-- private --%>
-                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution)}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextOrg)}" var="func">
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor')}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -417,7 +417,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -428,16 +428,16 @@
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', institution)}" var="resp">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor')}" var="resp">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                                ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -467,8 +467,8 @@
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') ||
                                     Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor') ||
-                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', institution) ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution))}">
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor'))}">
                                 <%-- public --%>
                                 <g:if test="${ Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor')  }">
                                     <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
@@ -480,7 +480,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -500,7 +500,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -514,8 +514,8 @@
                                 </g:if>
                                 <%-- public --%>
                                 <%-- private --%>
-                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution)}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor')}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -524,7 +524,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -535,16 +535,16 @@
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', institution)}" var="resp">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor')}" var="resp">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                                ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>

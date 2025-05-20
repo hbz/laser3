@@ -1,20 +1,21 @@
+<%@ page import="de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Kopierfunktion<a class="anchor" id="copy"></a>
 </h2>
 
 
-<div class="ui list ">
+<div class="ui list">
     <div class="item js-copyTriggerParent">
-        <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+        <span class="js-copyTrigger js-copyTopic la-popup-tooltip"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-            <i class="ui icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
+            <i class="${Icon.SYM.EMAIL} la-list-icon la-js-copyTriggerIcon"></i>
             mailto:example@example.de
         </span>
     </div>
 </div>
 
-<div class="ui list ">
+<div class="ui list">
     <div class="item js-copyTriggerParent">
-        <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+        <span class="ui small basic image label js-copyTrigger la-popup-tooltip"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 
@@ -22,7 +23,7 @@
         </span>
     </div>
     <div class="item js-copyTriggerParent">
-        <span class="ui small basic image label js-copyTrigger  la-popup-tooltip la-delay"
+        <span class="ui small basic image label js-copyTrigger  la-popup-tooltip"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 
@@ -48,7 +49,7 @@
         <pre aria-hidden="true">
             &lt;div class="ui list">
                 &lt;div class="item <strong>js-copyTriggerParent</strong>">
-                    &lt;span class="ui small basic image label <strong>js-copyTrigger</strong> la-popup-tooltip la-delay"
+                    &lt;span class="ui small basic image label <strong>js-copyTrigger</strong> la-popup-tooltip"
                           data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                         &lt;i class="la-copy grey icon <strong>la-js-copyTriggerIcon</strong>" aria-hidden="true">&lt;/i>
                         zdb: &lt;div class="detail <strong>js-copyTopic</strong>">2756942-1&lt;/div>

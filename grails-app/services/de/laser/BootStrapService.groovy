@@ -7,23 +7,25 @@ import com.opencsv.ICSVParser
 import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.finance.CostInformationDefinition
+import de.laser.gdc.ERMS6460
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.PasswordUtils
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
-import groovy.sql.Sql
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
-
-import javax.sql.DataSource
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
@@ -32,7 +34,6 @@ import javax.sql.DataSource
 class BootStrapService {
 
     CacheService cacheService
-    DataSource dataSource
     GrailsApplication grailsApplication
     RefdataReorderService refdataReorderService
     SessionFactory sessionFactory
@@ -95,6 +96,9 @@ class BootStrapService {
             log.debug("reorderRefdata ..")
             refdataReorderService.reorderRefdata()
 
+            log.debug("setupCostInformationDefinitions ..")
+            setupCostInformationDefinitions()
+
             log.debug("setupPropertyDefinitions ..")
             setupPropertyDefinitions()
 
@@ -113,8 +117,8 @@ class BootStrapService {
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
 
-            log.debug("adjustDatabasePermissions ..")
-            adjustDatabasePermissions()
+            log.debug("genericDataCleansing ..")
+            genericDataCleansing()
         }
 
         log.debug("JSON.registerObjectMarshaller(Date) ..")
@@ -258,7 +262,7 @@ class BootStrapService {
     /**
      * Parses the given CSV file path according to the file header reference specified by objType
      * @param filePath the source file to parse
-     * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue or PropertyDefinition
+     * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue, CostInformationDefinition or PropertyDefinition
      * @return the {@link List} of rows (each row parsed as {@link Map}) retrieved from the source file
      */
     List<Map> getParsedCsvData(String filePath) {
@@ -266,7 +270,7 @@ class BootStrapService {
         List<Map> result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
-        if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')|| filePath.contains('IdentifierNamespace')) ) {
+        if (! (filePath.contains('CostInformationDefinition') || filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')|| filePath.contains('IdentifierNamespace')) ) {
             log.warn("getParsedCsvData() - invalid object type ${filePath}!")
         }
         else if (! csvFile.exists()) {
@@ -304,6 +308,21 @@ class BootStrapService {
                                             value_en: line[3].trim(),
                                             expl_de:  line[4].trim(),
                                             expl_en:  line[5].trim()
+                                    ]
+                            ]
+                            result.add(map)
+                        }
+                        if (filePath.contains('CostInformationDefinition')) {
+                            Map<String, Object> map = [
+                                    token       : line[0].trim(),
+                                    type        : line[3].trim(),
+                                    rdc         : line[4].trim(),
+                                    hardData    : BOOTSTRAP,
+                                    i10n        : [
+                                            name_de: line[1].trim(),
+                                            name_en: line[2].trim(),
+                                            expl_de: line[5].trim(),
+                                            expl_en: line[6].trim()
                                     ]
                             ]
                             result.add(map)
@@ -394,15 +413,6 @@ class BootStrapService {
     }
 
     /**
-     * Ensures database permissions for the backup and readonly users
-     */
-    void adjustDatabasePermissions() {
-
-        Sql sql = new Sql(dataSource)
-        sql.rows("SELECT * FROM grants_for_maintenance()")
-    }
-
-    /**
      * Assigns to the given role the given permission
      * @param role the {@link Role} whose permissions should be granted
      * @param perm the {@link Perm} permission to be granted
@@ -469,6 +479,20 @@ class BootStrapService {
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
+
+        RDStore.getDeclaredFields() // init
+    }
+
+    /**
+     * Processes the hard coded cost information definition source and updates the cost information definitions
+     * @see CostInformationDefinition
+     */
+    void setupCostInformationDefinitions() {
+
+        List cidList = getParsedCsvData( ConfigDefaults.SETUP_COST_INFORMATION_DEFINITION_CSV )
+        cidList.each { map ->
+            CostInformationDefinition.construct(map)
+        }
     }
 
     /**
@@ -481,6 +505,8 @@ class BootStrapService {
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }
+
+        PropertyStore.getDeclaredFields() // init
     }
 
     /**
@@ -527,5 +553,9 @@ class BootStrapService {
                 IdentifierNamespace.construct(namespaceProperties)
             }
         }
+    }
+
+    void genericDataCleansing() {
+        ERMS6460.go() // TMP only - remove after release
     }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:each in="${ies}" var="ie">
     <%

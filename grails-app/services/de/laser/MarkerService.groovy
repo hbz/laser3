@@ -3,6 +3,11 @@ package de.laser
 import de.laser.convenience.Marker
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDStore
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 
 /**
@@ -13,11 +18,10 @@ import grails.gorm.transactions.Transactional
 class MarkerService {
 
     ContextService contextService
-    OrgTypeService orgTypeService
 
     /**
      * Gets the bookmarks for the given class of the given type
-     * @param cls the class for which to fetch markers - one of {@link Org}, {@link Package} or {@link Platform}
+     * @param cls the class for which to fetch markers - one of {@link Org}, {@link de.laser.wekb.Package} or {@link de.laser.wekb.Platform}
      * @param type
      * @return
      */
@@ -66,7 +70,7 @@ class MarkerService {
 
     /**
      * Builds a map of currently subscribed packages and platforms
-     * @return a {@link Map} of {@link de.laser.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
+     * @return a {@link Map} of {@link de.laser.wekb.Package} IDs and {@link Platform} IDs to which there exists a link from a {@link Subscription} (= are subscribed by the context institution)
      */
     Map<String, List> getMyCurrentXMap() {
         Map<String, List> result = [
@@ -110,7 +114,7 @@ class MarkerService {
                         + (contextService.getOrg().isCustomerType_Consortium() ? ' and sub.instanceOf = null' : ''),
                 [
                         context:    contextService.getOrg(),
-                        roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                        roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM],
                         current:    RDStore.SUBSCRIPTION_CURRENT,
                         expired:    RDStore.SUBSCRIPTION_EXPIRED
                 ]

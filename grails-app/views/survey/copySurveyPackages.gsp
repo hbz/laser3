@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:htmlStart message="copySurveyPackages.transfer" serviceInjection="true"/>
+<%@ page import="de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<laser:htmlStart message="copySurveyPackages.transfer" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -17,20 +17,20 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br/>
 
-<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -39,19 +39,12 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'copySurveyPackages.transfer')}
     </h2>
-
+--}%
     <g:if test="${isLinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
 
@@ -103,11 +96,45 @@
         </div>
     </ui:greySegment>
 
+
+    <ui:greySegment>
+        <g:form action="copySurveyPackages" method="post" class="ui small form"
+                params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
+            <div class="field">
+                <label>${message(code: 'copySurveyPackages.label')}:</label>
+                <select id="selectedPackages" name="selectedPackages" multiple="" class="ui search selection fluid dropdown">
+                    <option value="all" <%=("all" in params.list('selectedPackages')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
+
+                    <g:each in="${SurveyPackageResult.findAllBySurveyConfig(surveyConfig).groupBy {it.pkg.id}}" var="pkgMap">
+                        <g:set var="pkg" value="${de.laser.wekb.Package.get(pkgMap.key)}"/>
+                        <option <%=(params.list('selectedPackages').contains(pkg.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${pkg.id}" title="${pkg.name}">
+                            ${pkg.name}
+                        </option>
+                    </g:each>
+
+                </select>
+            </div>
+
+            <div class="field la-field-right-aligned">
+
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.select2.label', args: [message(code: 'copySurveyPackages.label')])}">
+                </div>
+
+            </div>
+
+        </g:form>
+    </ui:greySegment>
+
+
     <ui:greySegment>
 
         <g:form action="proccessCopySurveyPackages" controller="survey" id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id, selectedPackages: params.selectedPackages]"
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -136,7 +163,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyPackages && SubscriptionPackage.countByPkgInList(participant.surveyPackages) < participant.surveyPackages.size()}">
+                            <g:if test="${editable && participant.surveyPackages && participant.newSub && SubscriptionPackage.countByPkgInListAndSubscription(participant.surveyPackages, participant.newSub) < participant.surveyPackages.size()}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
@@ -179,7 +206,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -192,7 +219,7 @@
                                     <div class="item">
                                         <div class="content">
                                             <g:link controller="package" action="show" id="${pkg.id}">
-                                                ${pkg.name}<br/>${raw(pkg.getPackageSize())}
+                                                ${pkg.name}<br/><ui:pkgSize pkg="${pkg}"/>
                                             </g:link>
                                         </div>
                                     </div>
@@ -205,7 +232,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.newSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -216,7 +243,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link controller="subscription" action="index"
                                         params="${[id: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -226,8 +253,7 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                    <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                         <i class="bordered colored info icon"></i>
                                     </div>
                                 </g:if>
@@ -237,9 +263,8 @@
                                 <br>
                                 <br>
 
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>
@@ -253,22 +278,22 @@
                     <div class="eight wide field" style="text-align: left;">
                         <div class="field">
                             <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span
-                                    class="la-long-tooltip la-popup-tooltip la-delay"
-                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="grey question circle icon"></i></span>
+                                    class="la-long-tooltip la-popup-tooltip"
+                                    data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
                             </label>
                         </div>
 
                         <div class="four fields">
                             <g:if test="${parentSuccessorSubscription && auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
                                 <div class="field">
-                                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection"
+                                    <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection"
                                                from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id"
                                                optionValue="value"/>
                                 </div>
                             </g:if>
                             <g:else>
                                 <div class="field">
-                                    ${parentSuccessorSubscription.holdingSelection.getI10n('value')}
+                                    ${parentSuccessorSubscription.holdingSelection?.getI10n('value')}
                                 </div>
                             </g:else>
 
@@ -282,7 +307,7 @@
                     </div>
 
                     <div class="eight wide field" style="text-align: right;">
-                        <button class="ui button positive" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
+                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
                                 name="processOption"
                                 type="submit">${message(code: 'copySurveyPackages.transfer')}</button>
                     </div>

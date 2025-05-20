@@ -2,6 +2,7 @@ package de.laser.jobs
 
 import de.laser.SurveyUpdateService
 import de.laser.base.AbstractJob
+import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
 /**
@@ -26,7 +27,9 @@ class SurveyUpdateJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start('SURVEY_UPDATE_JOB_START')) {
+        SystemEvent sysEvent = start('SURVEY_UPDATE_JOB_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
@@ -37,6 +40,6 @@ class SurveyUpdateJob extends AbstractJob {
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop('SURVEY_UPDATE_JOB_COMPLETE')
+        stopAndComplete(sysEvent)
     }
 }

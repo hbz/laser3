@@ -8,6 +8,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -27,9 +28,8 @@ class AccessPointController  {
     AccessPointControllerService accessPointControllerService
     AccessPointService accessPointService
     ContextService contextService
-    GenericOIDService genericOIDService
     EscapeService escapeService
-    OrgTypeService orgTypeService
+    SubscriptionService subscriptionService
 
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
@@ -37,9 +37,9 @@ class AccessPointController  {
      * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
      * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def addIpRange() {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
@@ -57,9 +57,9 @@ class AccessPointController  {
      * Adds a new Mail Domain with the given parameters.
      * @see AccessPointControllerService#addMailDomain(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def addMailDomain() {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
@@ -76,13 +76,13 @@ class AccessPointController  {
      * Loads a list of subscriptions linked to the given {@link OrgAccessPoint}
      * @returns a table view listing the resulting subscriptions
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
         String qry = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
@@ -98,8 +98,7 @@ class AccessPointController  {
 
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
         ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry, [currentSubIds: currentSubIds])
         render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, inContextOrg: inContextOrg, params:params])
     }
@@ -108,13 +107,13 @@ class AccessPointController  {
      * Loads a list of platforms linked to the given {@link OrgAccessPoint}
      * @return a table view listing the resulting platforms
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
         List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params,orgAccessPoint)
         linkedPlatforms.each() {
             String qry2 = """
@@ -135,8 +134,7 @@ class AccessPointController  {
         }
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
 
         render(template: "linked_platforms_table", model: [linkedPlatforms: linkedPlatforms, inContextOrg: inContextOrg,  params:params, accessPoint: orgAccessPoint])
     }
@@ -146,16 +144,16 @@ class AccessPointController  {
      * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
      * @see OrgAccessPoint
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def create() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
-        result.contextCustomerType = result.institution.getCustomerType()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.orgInstance = organisation
         result.inContextOrg = result.orgInstance.id == contextService.getOrg().id
         result.availableOptions = accessPointService.availableOptions(organisation)
@@ -173,9 +171,9 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def processCreate() {
         RefdataValue accessMethod = RefdataValue.get(params.long('accessMethod'))
@@ -195,9 +193,9 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
@@ -226,9 +224,9 @@ class AccessPointController  {
      * @see de.uni_freiburg.ub.Ipv4Address
      * @see de.uni_freiburg.ub.Ipv6Address
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_ip() {
         _edit("ip")
@@ -239,9 +237,9 @@ class AccessPointController  {
      * @return the OpenAthens editing view
      * @see de.laser.oap.OrgAccessPointOA
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_oa() {
         _edit("oa")
@@ -252,9 +250,9 @@ class AccessPointController  {
      * @return the proxy editing view
      * @see de.laser.oap.OrgAccessPointProxy
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_proxy() {
         _edit("proxy")
@@ -265,9 +263,9 @@ class AccessPointController  {
      * @return the EZProxy editing view
      * @see de.laser.oap.OrgAccessPointEzproxy
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_ezproxy() {
         _edit("ezproxy")
@@ -278,9 +276,9 @@ class AccessPointController  {
      * @return the Shibboleth editing view
      * @see de.laser.oap.OrgAccessPointShibboleth
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_shibboleth() {
         _edit("shibboleth")
@@ -291,9 +289,9 @@ class AccessPointController  {
      * @return the Mail-Domain editing view
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def edit_maildomain() {
         _edit("mailDomain")
@@ -308,8 +306,7 @@ class AccessPointController  {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
         if (params.exportXLSX) {
             SXSSFWorkbook wb
             SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -335,7 +332,7 @@ class AccessPointController  {
                 accessPointDataList = orgAccessPoint.getAccessPointMailDomains()
             }
 
-            List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+            List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
                 String qry2 = """
@@ -376,13 +373,13 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg ),
+                    editable                          : contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg ),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
-                    contextCustomerType               : contextOrg.getCustomerType(),
+                    contextCustomerType               : contextService.getOrg().getCustomerType(),
                     activeSubsOnly                    : activeChecksOnly,
-                    institution                       : contextOrg,
+                    institution                       : contextService.getOrg(),
                     tab                               : (params.tab ?: "IPv4")
             ]
         }
@@ -391,15 +388,15 @@ class AccessPointController  {
     /**
      * Handles the deletion call for the given IP range to the service
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteAccessPointData() {
         Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.orgInstance) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if (contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC( inContextOrg )){
+        if (contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         } else {
             flash.error = message(code: 'default.noPermissions') as String
@@ -411,9 +408,9 @@ class AccessPointController  {
     /**
      * Controller call to link an access point to a given platform
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def linkPlatform() {
         Map<String,Object> result = accessPointService.linkPlatform(params)
@@ -425,9 +422,9 @@ class AccessPointController  {
     /**
      * Controller call to unlink an access point from a given platform
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def unlinkPlatform() {
         Map<String,Object> result = accessPointService.unlinkPlatform(OrgAccessPointLink.get(params.id))

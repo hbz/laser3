@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.consortia" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.consortia" />
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
@@ -48,7 +48,7 @@
     </g:if>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" type="consortium" />
 
 <ui:messages data="${flash}"/>
     <%

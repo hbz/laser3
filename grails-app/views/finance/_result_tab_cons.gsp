@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -63,7 +63,7 @@
                 <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}" scope="col" class="la-smaller-table-head"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                    <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}" scope="col" rowspan="2"/>
@@ -73,8 +73,10 @@
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}" scope="col" rowspan="2"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
+                <g:if test="${editable && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                    <th class="center aligned" scope="col" rowspan="2">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </g:if>
             <g:else>
@@ -84,7 +86,7 @@
                 </g:if>
                 <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <th class="la-no-uppercase" scope="col" rowspan="2">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                    <span class="la-popup-tooltip" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="${Icon.FNC.COST_CONFIG}"></i></span>
                 </th>
                 <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
@@ -93,8 +95,10 @@
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
-                <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
+                <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                    <th class="center aligned" scope="col" rowspan="2">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </g:else>
         </tr>
@@ -127,26 +131,7 @@
         </g:if>
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
-                <%
-                    String icon = '<i class="grey question circle icon"></i>'
-                    String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-
-                    switch (ci.costItemElementConfiguration) {
-                        case RDStore.CIEC_POSITIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="plus green circle icon"></i>'
-                            break
-                        case RDStore.CIEC_NEGATIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="minus red circle icon"></i>'
-                            break
-                        case RDStore.CIEC_NEUTRAL:
-                            dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="circle yellow icon"></i>'
-                            break
-                    }
-                %>
-                <tr id="bulkdelete-b${ci.id}">
+                <tr id="bulkdelete-b${ci.id}" class="<g:if test="${missing && ci.id in missing}">negative</g:if>">
                     <g:if test="${tmplShowCheckbox && editable}">
                         <td>
                             <g:checkBox id="selectedCostItems_${ci.id}" name="selectedCostItems" value="${ci.id}" checked="false"/>
@@ -162,7 +147,7 @@
                         <td>
                             <g:each in="${ci.sub.orgRelations}" var="or">
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
-                                    <g:link controller="org" action="show" id="${or.org.id}"><span class="la-popup-tooltip la-delay" data-content="${or.org.name}">${or.org.sortname}</span></g:link>
+                                    <g:link controller="org" action="show" id="${or.org.id}"><span class="la-popup-tooltip" data-content="${or.org.name}">${or.org.sortname}</span></g:link>
                                 </g:if>
                             </g:each>
                         </td>
@@ -173,15 +158,15 @@
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
                                     <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
                                     <g:if test="${ci.isVisibleForSubscriber}">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                            <i class="ui icon eye orange"></i>
+                                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                            <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                                         </span>
                                     </g:if>
                                 </g:if>
                             </g:each>
                             <br />
                         </g:if>
-                        ${raw(ci.costTitle?.replaceAll(/(.{50})/,'$1&shy;'))}
+                        ${ci.costTitle}
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -197,7 +182,7 @@
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                        <ui:costSign ci="${ci}"/>
                     </td>
                     <td>
                         ${ci.billingCurrency ?: 'EUR'}
@@ -241,53 +226,53 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                        <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
-                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="edit_${ci.id}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="write icon"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
-                                    <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
-                                            <i class="copy icon"></i>
+                                    <span data-position="top right la-popup-tooltip" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
+                                            <i class="${Icon.CMD.COPY}"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
+                                    <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="edit_${ci.id}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="write icon"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
-                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
-                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
-                                            <i class="copy icon"></i>
+                                    <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
+                                            <i class="${Icon.CMD.COPY}"></i>
                                         </g:link>
                                     </span>
                                 </g:else>
-                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons', offset: params.offset]" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ showView:'cons', offset: params.offset]" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.participant")}"
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:elseif test="${contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
-                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                    <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                    <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
                                         </g:link>
                                     </span>

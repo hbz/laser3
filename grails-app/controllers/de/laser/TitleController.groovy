@@ -7,6 +7,7 @@ import de.laser.helper.FilterLogic
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -20,7 +21,7 @@ class TitleController  {
 
     CacheService cacheService
     ContextService contextService
-    ESSearchService ESSearchService
+    TitleService titleService
     FilterService filterService
 
     //-----
@@ -29,32 +30,58 @@ class TitleController  {
      * Map containing menu alternatives if an unexisting object has been called
      */
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
-            'title/list': 'menu.public.all_titles',
-            'myInstitution/currentTitles': 'myinst.currentTitles.label'
+            'title/index': 'menu.public.all_titles'
+            //'myInstitution/currentTitles': 'myinst.currentTitles.label'
     ]
 
     //-----
 
     /**
      * Call to the list of all title instances recorded in the system
-     * @return the result of {@link #list()}
+     * @return a list of {@link de.laser.wekb.TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def index() {
-        redirect controller: 'title', action: 'list', params: params
+        log.debug("index : ${params}")
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
+        Map<String, Object> result = [:], configMap = [:]
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+        if(params.containsKey('filterSet')) {
+            params.each { key, value ->
+                if(value)
+                    configMap.put(key, value)
+            }
+            log.debug("index : ${configMap}")
+            prf.setBenchmark('getting keys')
+            Set<Long> keys = titleService.getKeys(configMap)
+            //prf.setBenchmark('getting counts')
+            //result.putAll(titleService.getCounts(keys))
+            prf.setBenchmark('get title list')
+            result.titlesList = keys ? TitleInstancePackagePlatform.findAllByIdInList(keys.drop(result.offset).take(result.max), [sort: params.sort?: ['sortname', 'dateFirstOnline', 'dateFirstInPrint'], order: params.order]) : []
+            result.num_tipp_rows = keys.size()
+            result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+            result.tmplConfigShow = ['lineNumber', 'name', 'status', 'package', 'provider', 'platform', 'lastUpdatedDisplay', 'linkTitle']
+        }
+        result.benchMark = prf.stopBenchmark()
+        result
     }
 
     /**
      * Lists all recorded title in the app; the result may be filtered
-     * @return a list of {@link TitleInstancePackagePlatform}s
+     * @return a list of {@link de.laser.wekb.TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
+    @Deprecated
     def list() {
         log.debug("list : ${params}")
         Profiler prf = new Profiler()
@@ -140,10 +167,11 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
+    @Deprecated
     def listES() {
         log.debug("titleSearch : ${params}")
 

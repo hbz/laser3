@@ -4,8 +4,8 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.IssueEntitlement
 import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.Subscription
 import de.laser.annotations.UnstableFeature
 import de.laser.storage.BeanStore

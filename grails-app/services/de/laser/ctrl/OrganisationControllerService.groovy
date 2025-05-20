@@ -2,14 +2,18 @@ package de.laser.ctrl
 
 
 import de.laser.*
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
-import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -26,11 +30,9 @@ class OrganisationControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessPointService accessPointService
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
-    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
@@ -38,17 +40,16 @@ class OrganisationControllerService {
 
     PageRenderer groovyPageRenderer
 
-    Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
-        User user = contextService.getUser()
-        Org org = contextService.getOrg()
-        Map<String, Object> result = [user:user,
-                                      institution:org,
-                                      contextOrg: org]
+    Map<String,Object> mailInfos(GrailsParameterMap params) {
+        Map<String, Object> result = [
+                user: contextService.getUser(),
+                institution: contextService.getOrg(),
+                contextOrg: contextService.getOrg()
+        ]
 
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
-            if(result.orgInstance.id == org.id){
+        if (params.id_org) {
+            result.orgInstance = Org.get(params.id_org)
+            if(result.orgInstance.id == contextService.getOrg().id){
                 return null
             }
             if (!contextService.getOrg().isCustomerType_Consortium() && !result.orgInstance.isCustomerType_Inst()) {
@@ -62,37 +63,37 @@ class OrganisationControllerService {
 
         if (result.orgInstance) {
             String customerIdentifier = ''
-            result.sub = Subscription.get(params.subscription)
+            result.sub = Subscription.get(params.id_subscription)
 
             if(result.sub) {
-                List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.responsibilityType = :responsibilityType and c.contentType = :type and p.isPublic = false and p.tenant = :ctx and pr.sub = :obj",
                         [providers         : result.sub.providerRelations.provider,
                          responsibilityType: RDStore.PRS_RESP_SPEC_SUB_EDITOR,
                          type              : RDStore.CCT_EMAIL,
-                         ctx               : result.contextOrg,
-                         obj               : result.sub]) : null
+                         ctx               : contextService.getOrg(),
+                         obj               : result.sub]) : []
 
-                List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = false and p.tenant = :ctx",
                         [providers         : result.sub.providerRelations.provider,
-                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING, RDStore.PRS_FUNC_TECHNICAL_SUPPORT],
                          type              : RDStore.CCT_EMAIL,
-                         ctx               : result.contextOrg]) : null
+                         ctx               : contextService.getOrg()]) : []
 
-                List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select p, pr.functionType, c from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
                         "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",
                         [providers    : result.sub.providerRelations.provider,
-                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING],
-                         type         : RDStore.CCT_EMAIL]) : null
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING, RDStore.PRS_FUNC_TECHNICAL_SUPPORT],
+                         type         : RDStore.CCT_EMAIL]) : []
+
 
                 contactListProvider = contactListProvider + contactListProviderAddressBook
 
-                result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
-                result.mailAddressOfProviderWekb = contactListProviderWekb ? contactListProviderWekb.join("; ") : ''
+                result.mailtoList = (contactListProviderWekb + contactListProvider + contactListProviderAddressBook).unique()
 
                 List<Platform> platformList = Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: result.sub])
 
@@ -103,7 +104,7 @@ class OrganisationControllerService {
                 }
             }
 
-            result.mailText = ""
+            result.mailText = [:]
 
             ReaderNumber readerNumberStudents
             ReaderNumber readerNumberStaff
@@ -170,9 +171,9 @@ class OrganisationControllerService {
             List billingAddresses = addressList.collect { Address address -> address.getAddressForExport()}
             List billingPostBoxes = postBoxList.collect { Address address -> address.getAddressForExport()}
 
-            if(params.surveyConfigID){
-                SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
-                if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
+            if (params.id_surveyConfig){
+                SurveyConfig surveyConfig = SurveyConfig.get(params.id_surveyConfig)
+                if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == contextService.getOrg()){
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
                     if(surveyOrg.address) {
                         String adressSurveyFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
@@ -184,11 +185,12 @@ class OrganisationControllerService {
                         billingPostBoxes = postBoxSurveyList.collect { Address address -> address.getAddressForExport() }
                     }
 
-                    if(surveyOrg.person) {
-                        billingContactsList = Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from PersonRole pr " +
-                                "join pr.prs p join p.contacts c where pr.prs.id = :personId and c.contentType = :type",
-                                [personId: surveyOrg.person.id, type: RDStore.CCT_EMAIL])
-                    }
+
+                    List<Person> billingPersons = SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.billingPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: surveyOrg.org, surveyConfig: surveyOrg.surveyConfig])
+                    billingContactsList = billingPersons ? Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from PersonRole pr " +
+                            "join pr.prs p join p.contacts c where pr.prs in (:persons) and c.contentType = :type",
+                            [persons: billingPersons, type: RDStore.CCT_EMAIL]) : []
+
                 }
             }
 
@@ -247,9 +249,50 @@ class OrganisationControllerService {
 
             String vatID = result.orgInstance.getIdentifierByType(IdentifierNamespace.VAT)?.value
 
-            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
-            Locale language = new Locale(result.language)
-            result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
+//            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
+//            Locale language = new Locale(result.language)
+
+            String langDe = RDStore.LANGUAGE_DE.value
+            String langEn = RDStore.LANGUAGE_EN.value
+
+            result.mailcc = result.user.email
+            result.mailto = 'Bitte ausfüllen'
+
+            result.mailSubject = [
+                    de: "Fehlerhafte Titel-Daten in der We:kb - ",
+                    en: "Incorrect title information in the We:kb - "
+            ]
+
+            if (result.sub) {
+                result.mailSubject = [
+                        de: "${messageSource.getMessage('mail.sub.mailInfos', null, new Locale(langDe) )} - ${result.sub.getLabel()}",
+                        en: "${messageSource.getMessage('mail.sub.mailInfos', null, new Locale(langEn))} - ${result.sub.getLabel()}"
+                ]
+            } else {
+                result.mailSubject = [
+                        de: "${messageSource.getMessage('mail.org.mailInfos', null, new Locale(langDe))} - (${result.orgInstance.name})",
+                        en: "${messageSource.getMessage('mail.org.mailInfos', null, new Locale(langEn))} - (${result.orgInstance.name})"
+
+                ]
+            }
+
+            result.mailText[langDe] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langDe),
+                                                                                                                                              org                 : result.orgInstance,
+                                                                                                                                              customerIdentifier  : customerIdentifier,
+                                                                                                                                              sub                 : result.sub,
+                                                                                                                                              readerNumberStudents: readerNumberStudents,
+                                                                                                                                              readerNumberStaff   : readerNumberStaff,
+                                                                                                                                              readerNumberFTE     : readerNumberFTE,
+                                                                                                                                              currentSemester     : currentSemester,
+                                                                                                                                              generalContacts     : generalContacts,
+                                                                                                                                              responsibleAdmins   : responsibleAdmins,
+                                                                                                                                              billingContacts     : billingContactsList,
+                                                                                                                                              accessPoints        : accessPoints,
+                                                                                                                                              billingAddresses       : billingAddresses,
+                                                                                                                                              billingPostBoxes: billingPostBoxes,
+                                                                                                                                              vatID: vatID]
+
+            result.mailText[langEn] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langEn),
                                                                                                                                               org                 : result.orgInstance,
                                                                                                                                               customerIdentifier  : customerIdentifier,
                                                                                                                                               sub                 : result.sub,
@@ -287,12 +330,11 @@ class OrganisationControllerService {
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, status: RDStore.O_STATUS_CURRENT)
+                orgInstance = new Org(name: params.institution)
                 orgInstance.save()
-                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
+                Combo newMember = new Combo(fromOrg: orgInstance, toOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
                 orgInstance.setDefaultCustomerType()
-                orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
                 result.orgInstance = orgInstance
                 Object[] args = [messageSource.getMessage('org.institution.label',null,locale), orgInstance.name]
                 result.message = messageSource.getMessage('default.created.message', args, locale)
@@ -327,25 +369,23 @@ class OrganisationControllerService {
         }
         switch(params.direction) {
             case 'add':
-                Map map = [toOrg: result.institution, fromOrg: Org.get(params.fromOrg), type: RDStore.COMBO_TYPE_CONSORTIUM]
-                if (! Combo.findByToOrgAndFromOrgAndType(result.institution, Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)) {
+                Map map = [toOrg: contextService.getOrg(), fromOrg: Org.get(params.fromOrg), type: RDStore.COMBO_TYPE_CONSORTIUM]
+                if (! Combo.findByToOrgAndFromOrgAndType(contextService.getOrg(), Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)) {
                     Combo cmb = new Combo(map)
                     cmb.save()
                 }
                 break
             case 'remove':
-                if(Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
+                if (Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [contextService.getOrg(), Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.sub',null,locale)
                     return [result:result, status:STATUS_ERROR]
                 }
-                else if(License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
+                else if (License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [contextService.getOrg(), Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.lic',null,locale)
                     return [result:result, status:STATUS_ERROR]
                 }
                 else {
-                    Combo cmb = Combo.findByFromOrgAndToOrgAndType(result.institution,
-                            Org.get(params.fromOrg),
-                            RDStore.COMBO_TYPE_CONSORTIUM)
+                    Combo cmb = Combo.findByFromOrgAndToOrgAndType(contextService.getOrg(), Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)
                     cmb.delete()
                 }
                 break
@@ -416,15 +456,12 @@ class OrganisationControllerService {
                                       inContextOrg:true,
                                       isMyOrg:false,
                                       institutionalView:false,
-                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 
-        //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
-
         if (params.id) {
             result.orgInstance = Org.get(params.id)
-            result.editable = controller._checkIsEditable(user, result.orgInstance)
+            result.editable = controller._checkIsEditable(result.orgInstance)
             result.inContextOrg = result.orgInstance.id == org.id
             //this is a flag to check whether the page has been called for a consortia or inner-organisation member
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
@@ -454,24 +491,18 @@ class OrganisationControllerService {
             }
         }
         else {
-            result.editable = controller._checkIsEditable(user, org)
+            result.editable = controller._checkIsEditable(org)
             result.orgInstance = result.institution
             result.inContextOrg = true
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)
-        result.notesCount       = docstoreService.getNotesCount(result.orgInstance, result.contextOrg)
-        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, contextService.getOrg())
+        result.notesCount       = docstoreService.getNotesCount(result.orgInstance, contextService.getOrg())
+        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, contextService.getOrg())
 
-        result.links = linksGenerationService.getOrgLinks(result.orgInstance)
-        Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
-        result.navPrevOrg = nav.prevLink
-        result.navNextOrg = nav.nextLink
-        result.targetCustomerType = result.orgInstance.getCustomerType()
-        result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         result
     }
 }

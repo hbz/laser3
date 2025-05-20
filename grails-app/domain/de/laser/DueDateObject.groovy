@@ -1,5 +1,11 @@
 package de.laser
 
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.storage.BeanStore
+import de.laser.survey.SurveyInfo
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -10,6 +16,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * @see Task
  * @see de.laser.survey.SurveyInfo
  */
+@Slf4j
 class DueDateObject {
 
     String attribute_name
@@ -19,23 +26,21 @@ class DueDateObject {
     /**
      * {@link Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link de.laser.survey.SurveyInfo}
      */
+    @Deprecated
     String oid
     boolean isDone = false
+
+    License         license
+    Org             org
+    Provider        provider
+    Subscription    subscription
+    SurveyInfo      surveyInfo
+    Task            task
+    Vendor          vendor
+    String          propertyOID // TODO
+
     Date lastUpdated
     Date dateCreated
-
-    /**
-     * Shorthand constructor call which supplies current time stamp for dateCreated and lastUpdated
-     * @param attribute_value_de the value according German locale
-     * @param attribute_value_en the value according English locale
-     * @param attribute_name the attribute name
-     * @param date the due date to be kept track
-     * @param object the object about which reminder should be kept
-     * @param isDone is the task done?
-     */
-    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone){
-        this(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, new Date(), new Date())
-    }
 
     /**
      * Constructor call for a new due date object connection
@@ -45,10 +50,9 @@ class DueDateObject {
      * @param date the due date to be kept track
      * @param object the object about which reminder should be kept
      * @param isDone is the task done?
-     * @param dateCreated time stamp to retain the connection's creation date
-     * @param lastUpdated time stamp to retain the connection's last modification date
+     * @param now time stamp to retain the connection's creation date and last modification date
      */
-    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone, Date dateCreated, Date lastUpdated){
+    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, Date now){
         object = GrailsHibernateUtil.unwrapIfProxy(object)
 
         this.attribute_value_de = attribute_value_de
@@ -56,9 +60,23 @@ class DueDateObject {
         this.attribute_name = attribute_name
         this.date = date
         this.oid = "${object.class.name}:${object.id}"
-        this.isDone = isDone
-        this.dateCreated = dateCreated
-        this.lastUpdated = lastUpdated
+        // this.isDone = false // TODO
+        this.dateCreated = now
+        this.lastUpdated = now
+
+        // TODO: ERMS-5862
+//        String propName = object.getClass().simpleName.uncapitalize()
+//        if (this.hasProperty(propName) && this.hasProperty(propName).getType().getCanonicalName() == object.getClass().getCanonicalName()) {
+//            this.setProperty(propName, object)
+//        }
+//        else {
+//            if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+//                this.propertyOID = "${object.class.name}:${object.id}"
+//            }
+//            else {
+//                log.warn 'DueDateObject.create( ' + object + ' ) FAILED'
+//            }
+//        }
     }
 
     static mapping = {
@@ -70,9 +88,16 @@ class DueDateObject {
         date                    column: 'ddo_date'
         oid                     column: 'ddo_oid'
         isDone                  column: 'ddo_is_done'
+        license                 column: 'ddo_license_fk'
+        org                     column: 'ddo_org_fk'
+        provider                column: 'ddo_provider_fk'
+        subscription            column: 'ddo_subscription_fk'
+        surveyInfo              column: 'ddo_survey_info_fk'
+        task                    column: 'ddo_task_fk'
+        vendor                  column: 'ddo_vendor_fk'
+        propertyOID             column: 'ddo_property_oid'
         dateCreated             column: 'ddo_date_created'
         lastUpdated             column: 'ddo_last_updated'
-        autoTimestamp true
     }
 
     static constraints = {
@@ -82,6 +107,54 @@ class DueDateObject {
         oid                     (blank:false)//, unique: ['attribut_name', 'ddo_oid'])
         dateCreated             (nullable:true)
         lastUpdated             (nullable:true)
+        license                 (nullable:true)
+        org                     (nullable:true)
+        provider                (nullable:true)
+        subscription            (nullable:true)
+        surveyInfo              (nullable:true)
+        task                    (nullable:true)
+        vendor                  (nullable:true)
+        propertyOID             (nullable:true)
     }
 
+    String getOID() {
+        BeanStore.getGenericOIDService().getOID(this)
+    }
+
+    def getObject() { // TODO ERMS-5862
+
+             if (this.license)      { this.license }
+        else if (this.org)          { this.org }
+        else if (this.provider)     { this.provider }
+        else if (this.subscription) { this.subscription }
+        else if (this.surveyInfo)   { this.surveyInfo }
+        else if (this.task)         { this.task }
+        else if (this.vendor)       { this.vendor }
+        else if (this.propertyOID)  { BeanStore.getGenericOIDService().resolveOID(propertyOID) }
+        else if (this.oid)          { BeanStore.getGenericOIDService().resolveOID(oid) }            // FALLBACK
+        else {
+            log.warn 'DueDateObject.getObject( ' + this.id + ' ) FAILED'
+        }
+    }
+
+    static DueDateObject getByObjectAndAttributeName(def object, String attribute_name) {
+        return DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+
+        // TODO: ERMS-5862
+//        DueDateObject ddo
+//
+//        String propName = object.getClass().simpleName.uncapitalize()
+//        if (this.hasProperty(propName) && this.hasProperty(propName).getType().getCanonicalName() == object.getClass().getCanonicalName()) {
+//            ddo = DueDateObject.findWhere("${propName}": object, attribute_name: attribute_name)
+//        }
+//        else {
+//            if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+//                ddo = DueDateObject.findWhere(propertyOID: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+//            }
+//            else {
+//                ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)   // FALLBACK
+//            }
+//        }
+//        return ddo
+    }
 }

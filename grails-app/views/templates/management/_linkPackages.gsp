@@ -1,20 +1,19 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Package; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService; de.laser.SubscriptionPackage; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>--}%
             <g:if test="${validPackages}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
                         <div class="item">
-                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
+                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} <ui:ieAndPkgSize sp="${subPkg}" /></g:link>
 
                             <div class="right floated content">
-                                <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
+                                <button class="${Btn.MODERN.NEGATIVE} la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
                                         data-package="${subPkg.pkg.id}" data-subscription="${subPkg.subscription.id}">
-                                    <i class="${Icons.CMD_UNLINK} icon"></i>
+                                    <i class="${Icon.CMD.UNLINK}"></i>
                                 </button>
                             </div>
                         </div>
@@ -28,24 +27,14 @@
     </g:if>
 
     <g:if test="${isLinkingRunning || isUnlinkingRunning}">
-        <div class="ui icon warning message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header">Info</div>
-
-                <p>${message(code: 'subscriptionsManagement.isLinkingRunning.info')}</p>
-            </div>
-        </div>
+        <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.package')}</h3>
 
-    <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form"
-            method="post"
-            class="ui form packagesForm">
-        <%--<g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>--%>
-        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+    <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form" method="post" class="ui form packagesForm">
 
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <div class="ui segments">
         <div class="ui segment">
             <div class="field required">
@@ -54,57 +43,97 @@
 
                     <label><g:message code="subscriptionsManagement.package.label"
                                       args="${args.superOrgType}"/> <g:message code="messageRequiredField"/></label>
-
-                    <g:if test="${validPackages}">
-                        <g:select class="ui multiple search dropdown"
-                                  optionKey="${{ it.pkg.id }}" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
-                                  from="${validPackages}" name="selectedPackages" value=""
-                                  required=""
-                                  noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
+                    <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                        <g:if test="${validPackages}">
+                            <g:select class="ui multiple search dropdown"
+                                      optionKey="${{ it.pkg.id }}" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
+                                      from="${validPackages}" name="selectedPackages" value=""
+                                      required=""
+                                      noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
+                        </g:if>
+                        <g:else>
+                            <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
+                        </g:else>
                     </g:if>
                     <g:else>
-                        <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
+                        <g:message code="subscriptionsManagement.packagesInherited" />
                     </g:else>
                 </g:if>
 
                 <g:if test="${controllerName == "myInstitution"}">
-                    <g:select class="ui multiple search dropdown"
+                    <div class="ui multiple search selection dropdown" id="selectedPackages">
+                        <input type="hidden" name="selectedPackages">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"></div>
+                    </div>
+                    %{--<g:select class="ui multiple search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
                               from="${validPackages}" name="selectedPackages" value=""
                               required=""
-                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>--}%
                 </g:if>
             </div>
 
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button class="${Btn.POSITIVE}" disabled="disabled" type="submit"
+                                    name="processOption"
+                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkViaParent')}</button>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                            </g:if>
+                            <g:else>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
-                        <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui green button" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                                <div class="or" data-text="${message(code: 'default.or')}"></div>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                            </g:else>
+                        </g:else>
                     </div>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE.confirm')}"
-                                data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                data-confirm-id="processLinkPackagesMembers"
-                                value="unlinkIEonly">${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}</button>
-
-                        <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui button negative js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
-                                data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                data-confirm-id="processLinkPackagesMembers"
-                                value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</button>
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button class="${Btn.NEGATIVE_CONFIRM}" disabled="disabled" type="submit"
+                                    name="processOption"
+                                    value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkInfo.onlyViaParent')}</button>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button class="${Btn.NEGATIVE_CONFIRM}"
+                                        data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
+                                        data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        data-confirm-id="processLinkPackagesMembers"
+                                        value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkGeneral')}</button>
+                            </g:if>
+                            <g:else>
+                                <button class="${Btn.NEGATIVE_CONFIRM}"
+                                        data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE.confirm')}"
+                                        data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        data-confirm-id="processLinkPackagesMembers"
+                                        value="unlinkIEonly">${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}</button>
+                                <div class="or" data-text="${message(code: 'default.or')}"></div>
+                                <button class="${Btn.NEGATIVE_CONFIRM}"
+                                        data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
+                                        data-confirm-term-how="ok" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        data-confirm-id="processLinkPackagesMembers"
+                                        value="unlinkwithIE">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</button>
+                            </g:else>
+                        </g:else>
                     </div>
                 </div>
             </div>
@@ -127,7 +156,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
@@ -148,7 +177,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -161,8 +192,8 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -174,16 +205,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved}">
-                                    <span data-position="top right"
-                                          class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="grey la-thumbtack-regular icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                             <g:if test="${params.showMembersSubWithMultiYear}">
                                 ${sub.referenceYear}
@@ -201,16 +223,22 @@
                             <div class="ui middle aligned selection list">
                                 <g:each in="${sub.packages}" var="sp">
                                     <div class="item"><div class="content">
-                                        <g:if test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
+                                        <g:if test="${auditService.getAuditConfig(sub.instanceOf, 'holdingSelection')}">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
-                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                                ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                             </g:link>
                                         </g:if>
+                                        <g:elseif test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
+                                            <g:link controller="subscription" action="index" id="${sub.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
+                                            </g:link>
+                                        </g:elseif>
                                         <g:else>
                                             <g:link controller="subscription" action="addEntitlements" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
-                                                ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                                ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                             </g:link>
                                         </g:else>
                                         <g:if test="${editable && childWithCostItems.find { Package row -> row.id == sp.pkg.id }}">
@@ -228,10 +256,10 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </td>
                     </tr>
@@ -261,6 +289,34 @@
         else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $("input[name=selectedSubs]").checkbox({
@@ -286,6 +342,32 @@
             });
      }
 
+     JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
+        let values = [];
+        if(valuesString.includes(',')) {
+            values = valuesString.split(',');
+        }
+        else if(valuesString.length > 0) {
+            values.push(valuesString);
+        }
+        selector.dropdown({
+            apiSettings: {
+                url: url,
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 0
+        });
+        if(values.length > 0) {
+            selector.dropdown('queryRemote', '', () => {
+                selector.dropdown('set selected', values);
+            });
+        }
+    }
+
+    JSPC.app.ajaxDropdown($("#selectedPackages"), "${createLink([controller:"ajaxJson", action:"lookupPackages"])}?query={query}", '');
+
+    /*
     $('.packagesForm').form({
         on: 'blur',
         inline: true,
@@ -301,6 +383,7 @@
             }
         }
     });
+    */
 </laser:script>
 
 

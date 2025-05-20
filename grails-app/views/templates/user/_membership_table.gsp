@@ -1,9 +1,17 @@
-<%@ page import="de.laser.helper.Icons; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
+    <g:if test="${controllerName == 'profile'}"> %{-- tmp: new --}%
+        <div class="ui top attached label">
+            ${message(code: 'profile.membership.existing')}
+        </div>
+    </g:if>
+
     <div class="content">
-    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+        <g:if test="${controllerName != 'profile'}"> %{-- tmp: default --}%
+            <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+        </g:if>
 
     <table class="ui fixed celled la-js-responsive-table la-table table">
         <thead>
@@ -11,7 +19,9 @@
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'default.role.label')}</th>
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
         </tr>
         </thead>
@@ -47,17 +57,17 @@
                             <g:if test="${! userInstance.isLastInstAdminOf(userInstance.formalOrg)}">
                                     <g:link controller="ajax" action="unsetAffiliation"
                                             params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
                                             data-confirm-term-how="unlink"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </g:link>
                             </g:if>
                             <g:else>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
-                                    <button class="ui icon negative button la-modern-button" disabled="disabled">
-                                        <i class="${Icons.CMD_UNLINK} icon"></i>
+                                <span class="la-popup-tooltip" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
+                                    <button class="${Btn.MODERN.NEGATIVE}" disabled="disabled">
+                                        <i class="${Icon.CMD.UNLINK}"></i>
                                     </button>
                                 </span>
                             </g:else>

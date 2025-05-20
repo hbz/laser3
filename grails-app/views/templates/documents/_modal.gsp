@@ -1,28 +1,27 @@
-<%@page import="de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
+<%@page import="de.laser.interfaces.CalculatedType; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText
     String submitButtonLabel
     String formUrl
     String modalId
-    boolean docForAll = false
+
     if(docctx && doc) {
         modalText = message(code:'template.documents.edit')
         submitButtonLabel = message(code:'default.button.edit.label')
-        formUrl = createLink(controller:'docstore', action:'editDocument')
+        formUrl = createLink(controller:'document', action:'editDocument')
         modalId = "modalEditDocument_${docctx.id}"
     }
     else if(owntp == 'surveyConfig') {
         modalText = message(code:'surveyConfigDocs.createSurveyDoc')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
+        formUrl = createLink(controller: 'document', action:'uploadDocument')
         modalId = "modalCreateDocument"
-        docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
+        formUrl = createLink(controller: 'document', action:'uploadDocument')
         modalId = newModalId ?: "modalCreateDocument"
     }
 %>
@@ -56,8 +55,8 @@
                         <div class="ui fluid action input">
                             <input type="text" name="upload_file_placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                             <input type="file" name="upload_file" style="display: none;">
-                            <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                                <i class="attach icon"></i>
+                            <div class="${Btn.ICON.SIMPLE}" style="padding-left:30px; padding-right:30px">
+                                <i class="${Icon.CMD.ATTACHMENT}"></i>
                             </div>
                         </div>
                     </dd>
@@ -94,7 +93,7 @@
                         }
                     %>
                     <g:select from="${documentTypes}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
@@ -109,7 +108,7 @@
                 </dt>
                 <dd>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="confidentiality-${labelId}"
@@ -131,7 +130,7 @@
                     </dl>
                 </g:if>
                 <g:elseif test="${controllerName == 'organisation'}">
-                    <g:hiddenField name="targetOrg" value="${ownobj.id}"/>
+                    <g:hiddenField name="targetOrg" id="targetOrg-${labelId}" value="${ownobj.id}"/>
                 </g:elseif>
             </g:if>
             <%
@@ -139,12 +138,19 @@
                 if(docctx) {
                     value = docctx.shareConf?.id
                 }
-                Set<RefdataValue> availableConfigs = []
+                List<RefdataValue> availableConfigs = []
                 if(controllerName == 'organisation') {
                     availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
                 }
-                else if(controllerName in ['license', 'subscription']) {
+                else if(controllerName == 'subscription') {
                     availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+                }
+                else if(controllerName == 'license') {
+                    if(ownobj?.getAllLicensee()?.size() == 1) {
+                        availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+                    }
+                    else if(ownobj?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                        availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_ALL]
                 }
                 if(inContextOrg)
                     availableConfigs.remove(RDStore.SHARE_CONF_UPLOADER_AND_TARGET)
@@ -170,21 +176,8 @@
                     <dd><g:checkBox id="setSharing-${labelId}" name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
                 </dl>
             </g:if>
-        <g:if test="${docForAll}">
-            <dl>
-                <dt>
-                </dt>
-                <dd>
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="docForAllSurveyConfigs">
-                        <label>${message(code: 'surveyconfig.documents.docForAllSurveyConfigs')}</label>
-                    </div>
-                </dd>
-            </dl>
-        </g:if>
 
         </div>
-
     </g:form>
 
 </ui:modal>

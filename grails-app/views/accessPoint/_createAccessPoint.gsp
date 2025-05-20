@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
     <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
@@ -13,9 +13,9 @@
             <laser:render template="name" model="${[nameOptions: [], name: '']}"/>
             <div class="field required">
                 <label>URL
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code: "accessPoint.url.help")}">
-                        <i class="grey question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:textField name="url" value="${url}" />
             </div>
@@ -23,9 +23,9 @@
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_OA}">
             <div class="field required">
                 <label>${message(code: 'accessPoint.oa.name.label')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code:'accessPoint.oa.help')}">
-                        <i class="grey question circle icon la-popup"></i></span>  <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span>  <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
@@ -40,9 +40,9 @@
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH}">
             <div class="field required">
                 <label>${message(code: 'accessPoint.shibboleth.name.label')}
-                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                    <span class="la-long-tooltip la-popup-tooltip"
                           data-content="${message(code:'accessPoint.shibboleth.help')}">
-                        <i class="grey question circle icon la-popup"></i></span> <g:message code="messageRequiredField" />
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i></span> <g:message code="messageRequiredField" />
                 </label>
                 <g:field type="text" name="name" value="" />
             </div>
@@ -58,5 +58,5 @@
             <label>${message(code:'default.note.label')}</label>
             <g:field type="text" name="note" value="" />
         </div>
-        <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+        <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
     </ui:form>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Platform" %>
+<%@ page import="de.laser.wekb.Platform" %>
 
 <table class="ui sortable celled la-js-responsive-table la-table table ignore-floatThead la-bulk-header">
     <thead>

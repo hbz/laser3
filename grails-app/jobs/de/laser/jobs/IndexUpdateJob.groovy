@@ -29,7 +29,7 @@ class IndexUpdateJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start()) {
+        if (! simpleStart(false)) {
             return false
         }
         try {
@@ -40,6 +40,6 @@ class IndexUpdateJob extends AbstractJob {
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop()
+        simpleStop(false)
     }
 }

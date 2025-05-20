@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.FinanceControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
 import de.laser.helper.Params
 import de.laser.helper.Profiler
@@ -25,16 +24,21 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller manages the survey-related calls
@@ -48,13 +52,13 @@ class SurveyController {
     ContextService contextService
     ComparisonService comparisonService
     CopyElementsService copyElementsService
+    CustomerTypeService customerTypeService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
     ExportService exportService
     GenericOIDService genericOIDService
     FilterService filterService
     FinanceControllerService financeControllerService
-    FinanceService financeService
     LinksGenerationService linksGenerationService
     ProviderService providerService
     SubscriptionService subscriptionService
@@ -77,9 +81,9 @@ class SurveyController {
      * Redirects the call to the survey details view
      * @return the survey details view of the given survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> redirectSurveyConfig() {
         SurveyConfig surveyConfig = SurveyConfig.get(params.id)
@@ -92,9 +96,9 @@ class SurveyController {
      * Loads for the context consortium the currently running surveys
      * @return a table view of the current surveys
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
@@ -103,7 +107,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -112,30 +116,30 @@ class SurveyController {
         //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_IN_PROCESSING.id])
         prf.setBenchmark("before properties")
 
-        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: contextService.getOrg()]).groupBy {it}.collect {it.key}
 
         prf.setBenchmark("after properties")
 
         prf.setBenchmark("before surveyYears")
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: contextService.getOrg()]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
-                result.surveyYears << newYear
+                result.surveyYears.push(newYear)
             }
             params.validOnYear = [newYear]
         }
 
         prf.setBenchmark("after surveyYears and before current org ids of providers and vendors")
-        result.providers = providerService.getCurrentProviders( (Org) result.institution )
+        result.providers = providerService.getCurrentProviders( contextService.getOrg() )
         prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()])
         prf.setBenchmark("after subscriptions and before survey config query")
-        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), contextService.getOrg())
         if (fsr.isFilterSet) { params.filterSet = true }
 
         prf.setBenchmark("after query, before survey config execution")
@@ -151,7 +155,7 @@ class SurveyController {
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, contextService.getOrg())
             }else{
                 SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
@@ -159,7 +163,7 @@ class SurveyController {
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, contextService.getOrg())
             }
             
             wb.write(response.outputStream)
@@ -182,16 +186,16 @@ class SurveyController {
      * Loads the current surveys with their workflows for the given consortium. The workflow list may also be exported as Excel worksheet
      * @return the table view of the current surveys with their attached workflows
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> workflowsSurveysConsortia() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -200,28 +204,28 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: contextService.getOrg()]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
-                result.surveyYears << newYear
+                result.surveyYears.push(newYear)
             }
             params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: contextService.getOrg()]).groupBy {it}.collect {it.key}
 
         result.providers = providerService.getCurrentProviders( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()])
 
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution as Org)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, sdFormat, contextService.getOrg())
         if (fsr.isFilterSet) { params.filterSet = true }
 
         result.surveys = SurveyInfo.executeQuery(fsr.query, fsr.queryParams, params)
@@ -233,7 +237,7 @@ class SurveyController {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(SurveyConfig.findAllByIdInList(result.surveys.collect {it[1].id}), result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(SurveyConfig.findAllByIdInList(result.surveys.collect {it[1].id}), contextService.getOrg())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -255,15 +259,15 @@ class SurveyController {
      * Call to create a general survey
      * @return the new survey form
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         result
     }
@@ -272,15 +276,15 @@ class SurveyController {
      * Takes the given parameters and creates a new general survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -319,6 +323,7 @@ class SurveyController {
                         packageSurvey: (params.packageSurvey ?: false),
                         invoicingInformation: (params.invoicingInformation ?: false),
                         vendorSurvey: (params.vendorSurvey ?: false),
+                        subscriptionSurvey: (params.subscriptionSurvey ?: false)
                 )
                 if(!(surveyConfig.save())){
                     surveyInfo.delete()
@@ -338,9 +343,9 @@ class SurveyController {
      * Call to create a subscription survey
      * @return the new survey form
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createSubscriptionSurvey() {
         Map<String, Object> result = [:]
@@ -348,6 +353,11 @@ class SurveyController {
         result.user = contextService.getUser()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        String consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextService.getOrg()])
+        result.referenceYears = availableReferenceYears
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         def date_restriction
@@ -358,7 +368,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -373,42 +383,73 @@ class SurveyController {
 
         result.providers = providerIds.isEmpty() ? [] : Provider.findAllByIdInList(providerIds).sort { it?.name }
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
-
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())
         result.filterSet = tmpQ[2]
-        List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
-        //,[max: result.max, offset: result.offset]
+        List<Subscription> subscriptions
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
 
-        if (params.sort && params.sort.indexOf("§") >= 0) {
-            switch (params.sort) {
-                case "orgRole§provider":
-                    subscriptions.sort { x, y ->
-                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
-                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
-                        a.compareToIgnoreCase b
+        if(params.sort == "provider") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
                     }
-                    if (params.order.equals("desc"))
-                        subscriptions.reverse(true)
-                    break
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                if(!cmp)
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                cmp
             }
         }
+        else if(params.sort == "vendor") {
+            subscriptions.sort { Subscription s1, Subscription s2 ->
+                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                int cmp
+                if(params.order == "asc") {
+                    if(!sortname1) {
+                        if(!sortname2)
+                            cmp = 0
+                        else cmp = 1
+                    }
+                    else {
+                        if(!sortname2)
+                            cmp = -1
+                        else cmp = sortname1 <=> sortname2
+                    }
+                }
+                else cmp = sortname2 <=> sortname1
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
+                }
+                if(!cmp) {
+                    cmp = params.order == 'asc' ? s1.startDate <=> s2.startDate : s2.startDate <=> s1.startDate
+                }
+                cmp
+            }
+        }
+        result.allSubscriptions = subscriptions
+
+        result.date_restriction = date_restriction
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
         result.num_sub_rows = subscriptions.size()
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
-        result.allLinkedLicenses = [:]
-        Set<Links> allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndLinkType(result.subscriptions ,RDStore.LINKTYPE_LICENSE)
-        allLinkedLicenses.each { Links li ->
-            Subscription s = li.destinationSubscription
-            License l = li.sourceLicense
-            Set<License> linkedLicenses = result.allLinkedLicenses.get(s)
-            if(!linkedLicenses)
-                linkedLicenses = []
-            linkedLicenses << l
-            result.allLinkedLicenses.put(s,linkedLicenses)
-        }
+        if(subscriptions)
+            result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
 
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         result
 
     }
@@ -417,9 +458,9 @@ class SurveyController {
      * Call to create a title survey
      * @return the new survey form
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
@@ -438,7 +479,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -499,15 +540,15 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSubtoSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
@@ -516,7 +557,6 @@ class SurveyController {
         }
 
         result
-
     }
 
     /**
@@ -524,40 +564,45 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSubtoIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
-        if (!result.subscription) {
+        //double-check needed because menu is not being refreshed after xEditable change on sub/show
+        if(AuditConfig.getConfig(result.subscription, 'holdingSelection')) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
+            redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
+            return
+        }
+        else if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
             return
         }
 
         result
-
     }
 
     /**
      * Takes the given parameters and creates a new subscription survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -658,15 +703,15 @@ class SurveyController {
      * Takes the given parameters and creates a new title survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -714,7 +759,8 @@ class SurveyController {
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
                         pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess),
-                        issueEntitlementGroupName: params.issueEntitlementGroupNew
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew,
+                        vendorSurvey: (params.vendorSurvey ?: false)
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -734,9 +780,9 @@ class SurveyController {
      * Shows the given survey's details
      * @return the survey details view
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     @Check404(domain=SurveyInfo)
     def show() {
@@ -751,13 +797,27 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def editComment() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SurveyControllerService.STATUS_ERROR) {
+            render template: "/templates/generic_modal403", model: result
+        }else {
+            result.commentTyp   = params.commentTyp
+            render template: "modal_comment_edit", model: result
+        }
+    }
+
     /**
      * Lists the titles subject of the given survey
      * @return a list view of the issue entitlements linked to the given survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyTitles() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyTitles(params)
@@ -776,9 +836,9 @@ class SurveyController {
      * Lists the documents attached to the given survey configuration
      * @return a list of the survey config documents
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyConfigDocs() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -797,9 +857,9 @@ class SurveyController {
      * Lists the participants of the given survey. The result may be filtered
      * @return the participant list for the given tab
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyParticipants(params)
@@ -809,6 +869,33 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
+            ctrlResult.result
+        }
+
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def addSurveyParticipants() {
+        Map<String,Object> ctrlResult = surveyControllerService.addSurveyParticipants(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -818,9 +905,9 @@ class SurveyController {
      * Lists the costs linked to the given survey, reflecting upcoming subscription costs
      * @return a list of costs linked to the survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyCostItems() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyCostItems(params)
@@ -830,6 +917,45 @@ class SurveyController {
                 return
             }
         }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is null and ci.sub is null and ci.pkg is null) and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -839,9 +965,9 @@ class SurveyController {
      * Lists the costs linked to the given survey, reflecting upcoming subscription costs
      * @return a list of costs linked to the survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyCostItemsPackages() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemsPackages(params)
@@ -851,6 +977,47 @@ class SurveyController {
                 return
             }
         }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is null and ci.sub is null and ci.pkg is not null) and ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -861,9 +1028,9 @@ class SurveyController {
      * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
      * if a package UUID has been submitted with the call
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def linkSurveyPackage() {
         Map<String,Object> ctrlResult = surveyControllerService.linkSurveyPackage(params)
@@ -883,9 +1050,135 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveyPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveyPackage(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveyPackages', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def linkSurveySubscription() {
+        Map<String,Object> ctrlResult = surveyControllerService.linkSurveySubscription(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            flash.message = ctrlResult.result.message
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveySubscription() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveySubscription(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveySubscriptions', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> surveyCostItemsSubscriptions() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemsSubscriptions(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is not null and ci.sub is null and ci.pkg is null) and ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
+            ctrlResult.result
+        }
+
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
     })
     def linkSurveyVendor() {
         Map<String,Object> ctrlResult = surveyControllerService.linkSurveyVendor(params)
@@ -905,14 +1198,37 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveyVendor() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveyVendor(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveyVendors', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
     /**
      * Call to list the potential package candidates for linking
      * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
      * if a package UUID has been submitted with the call
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def surveyPackages() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyPackages(params)
@@ -931,9 +1247,9 @@ class SurveyController {
             }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     def surveyVendors() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyVendors(params)
@@ -953,12 +1269,38 @@ class SurveyController {
     }
 
     /**
+     * Call to list the potential package candidates for linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def surveySubscriptions() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveySubscriptions(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    /**
      * Takes the given input and processes the change on the selected survey cost items
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processSurveyCostItemsBulk() {
         Map<String,Object> ctrlResult = surveyControllerService.processSurveyCostItemsBulk(params)
@@ -980,9 +1322,9 @@ class SurveyController {
      *
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor_denySupport(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     Map<String, Object> processSurveyCostItemsBulkWithUpload() {
         Map<String, Object> ctrlResult = surveyControllerService.processSurveyCostItemsBulkWithUpload(params)
@@ -1003,9 +1345,9 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def templateForSurveyCostItemsBulkWithUpload() {
         log.debug("templateForSurveyCostItemsBulkWithUpload :: ${params}")
@@ -1013,7 +1355,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
+        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
@@ -1022,6 +1364,9 @@ class SurveyController {
                        message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
+        if(ctrlResult.surveyConfig.packageSurvey){
+            titles.add('Anbieter-Produkt-ID')
+        }
         ArrayList rowData = []
         ArrayList row
         SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
@@ -1032,7 +1377,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-
+            row.add(org.globalUID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
@@ -1061,7 +1406,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1073,9 +1418,9 @@ class SurveyController {
     }
 
 
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def templateForSurveyParticipantsBulkWithUpload() {
         log.debug("templateForSurveyParticipantsBulkWithUpload :: ${params}")
@@ -1083,7 +1428,8 @@ class SurveyController {
 
         String filename = "template_survey_participants_import"
 
-        params.orgType = RDStore.OT_INSTITUTION.id
+        //params.orgType = RDStore.OT_INSTITUTION.id
+        params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
 
@@ -1091,7 +1437,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
+        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -1103,7 +1449,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-
+            row.add(org.globalUID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
@@ -1121,7 +1467,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1136,9 +1482,9 @@ class SurveyController {
      * Marks the given survey as finished
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyWorkFlowInfos() {
         Map<String,Object> ctrlResult = surveyControllerService.setSurveyWorkFlowInfos(params)
@@ -1162,9 +1508,9 @@ class SurveyController {
      * Marks the given survey property (i.e. survey question) as mandatory to fill out
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> actionsForSurveyProperty() {
         Map<String,Object> ctrlResult = surveyControllerService.actionsForSurveyProperty(params)
@@ -1175,7 +1521,7 @@ class SurveyController {
             }
         }else {
 
-            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+            if(params.actionForSurveyProperty in ['deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
                 ctrlResult.result.surveyConfig.refresh()
 
                 Map<String, Object> modelMap = [
@@ -1192,7 +1538,7 @@ class SurveyController {
                     modelMap.surveyProperties = ctrlResult.result.surveyConfig.getPrivateSurveyConfigProperties()
                     modelMap.selectablePrivateProperties = true
                 }
-                else if(params.props_div == 'survey_grouped_custom_properties'){
+                else if(params.props_div == "survey_grouped_custom_properties_${params.pdg_id}"){
                     PropertyDefinitionGroup pdg = PropertyDefinitionGroup.get(Long.valueOf(params.pdg_id))
                     if(pdg) {
                         modelMap.surveyProperties = ctrlResult.result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
@@ -1229,9 +1575,9 @@ class SurveyController {
      * Marks the given transfer procedure as (un-)checked
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyTransferConfig() {
         Map<String,Object> ctrlResult = surveyControllerService.setSurveyTransferConfig(params)
@@ -1256,9 +1602,9 @@ class SurveyController {
      * exported as (configurable) Excel worksheet
      * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0, ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyEvaluation() {
         //TODO: TODO MOE 2024
@@ -1292,7 +1638,7 @@ class SurveyController {
 
                 if (params.fileformat == 'xlsx') {
                     try {
-                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS, params.chartFilter)
                         // Write the output to a file
 
                         response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1313,7 +1659,7 @@ class SurveyController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
+                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV, params.chartFilter))
                     }
                     out.close()
                 }
@@ -1328,9 +1674,9 @@ class SurveyController {
      * exported as (configurable) Excel worksheet
      * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyPackagesEvaluation() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyPackagesEvaluation(params)
@@ -1344,9 +1690,25 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def surveySubscriptionsEvaluation() {
+        Map<String,Object> ctrlResult = surveyControllerService.surveySubscriptonsEvaluation(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyVendorsEvaluation() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyVendorsEvaluation(params)
@@ -1364,9 +1726,9 @@ class SurveyController {
      * Call to open the participant transfer view
      * @return the participant list with their selections
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> surveyTransfer() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyTransfer(params)
@@ -1385,9 +1747,9 @@ class SurveyController {
      * Call to transfer the survey participants onto the next year's subscription
      * @return the subscription comparison view for the given subscriptions (the predecessor and the successor instances)
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processTransferParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.processTransferParticipants(params)
@@ -1409,9 +1771,9 @@ class SurveyController {
      * Call to list the members; either those who completed the survey or those who did not
      * @return a list of the participants in the called tab view
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> openParticipantsAgain() {
         Map<String,Object> ctrlResult = surveyControllerService.openParticipantsAgain(params)
@@ -1430,9 +1792,9 @@ class SurveyController {
      * Call to list the members; either those who completed the survey or those who did not
      * @return a list of the participants in the called tab view
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> participantsReminder() {
         Map<String,Object> ctrlResult = surveyControllerService.participantsReminder(params)
@@ -1451,9 +1813,9 @@ class SurveyController {
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> actionsForParticipant() {
         Map<String,Object> ctrlResult = surveyControllerService.actionsForParticipant(params)
@@ -1474,9 +1836,9 @@ class SurveyController {
      * Evaluates the general selection and the costs of the participant
      * @return the participant evaluation view
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> ctrlResult = surveyControllerService.evaluationParticipant(params)
@@ -1486,6 +1848,9 @@ class SurveyController {
                 return
             }
         }else {
+            if(ctrlResult.result.error){
+                flash.error = ctrlResult.result.error
+            }
             ctrlResult.result
         }
     }
@@ -1494,9 +1859,9 @@ class SurveyController {
      * Generates a summary of the survey in PDF format for the survey participant
      * @return the PDF document to download
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     @Deprecated // Muss überarbeitet werden wegen Umbau der Teilnehmersicht auf die Umfrage
     Map<String,Object> generatePdfForParticipant() {
@@ -1589,7 +1954,7 @@ class SurveyController {
         }
 
         result.institution = result.participant
-        result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
+        result.ownerView = (contextService.getOrg().id == result.surveyInfo.owner.id)
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
@@ -1613,9 +1978,9 @@ class SurveyController {
      * Call to list all possible survey properties (i.e. the questions which may be asked in a survey)
      * @return a list of properties for the given consortium
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1625,7 +1990,7 @@ class SurveyController {
                 return
             }
         }
-        if (!contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
+        if (!contextService.isInstUser( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
@@ -1640,9 +2005,9 @@ class SurveyController {
      * Adds the given institutions to the given survey as new participants
      * @return the updated survey participants list
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> actionSurveyParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.actionSurveyParticipants(params)
@@ -1665,7 +2030,7 @@ class SurveyController {
             }
 
             ctrlResult.result
-            redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: params.actionSurveyParticipants == 'addSubMembersToSurvey' ? 'selectedSubParticipants' : params.tab]
+            redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: params.tab]
             return
         }
 
@@ -1678,9 +2043,9 @@ class SurveyController {
      * Call to delete the given documents from the survey
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteDocuments() {
         log.debug("deleteDocuments ${params}")
@@ -1699,8 +2064,7 @@ class SurveyController {
             }
         }
         if(result.editable) {
-
-            docstoreService.unifiedDeleteDocuments(params)
+            docstoreService.deleteDocument(params)
         }
 
         redirect(uri: request.getHeader('referer'))
@@ -1710,9 +2074,9 @@ class SurveyController {
      * Deletes the entire survey with attached objects
      * @return the survey list in case of success, a redirect to the referer otherwise
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteSurveyInfo() {
         Map<String,Object> ctrlResult = surveyControllerService.deleteSurveyInfo(params)
@@ -1743,9 +2107,9 @@ class SurveyController {
      * Marks the survey as being in evaluation
      * @return redirects to the renewal evaluation view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setStatus() {
         Map<String,Object> ctrlResult = surveyControllerService.setStatus(params)
@@ -1782,9 +2146,9 @@ class SurveyController {
      * Sets the given comment for the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setSurveyConfigComment() {
         Map<String,Object> ctrlResult = surveyControllerService.setSurveyConfigComment(params)
@@ -1812,9 +2176,9 @@ class SurveyController {
      * Excel worksheet
      * @return the evaluation view for the given renewal survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> renewalEvaluation() {
         //TODO: MOE 2024
@@ -1882,9 +2246,9 @@ class SurveyController {
      * Call to copy the given survey
      * @return the view with the base parameters for the survey copy
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySurvey() {
         Map<String,Object> ctrlResult = surveyControllerService.copySurvey(params)
@@ -1903,9 +2267,9 @@ class SurveyController {
      * Takes the submitted base parameters and creates a copy of the given survey
      * @return either the survey list view for consortia or the survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processCopySurvey() {
         Map<String,Object> ctrlResult = surveyControllerService.processCopySurvey(params)
@@ -1935,9 +2299,9 @@ class SurveyController {
      * Initialises the subscription renewal for the parent subscription after a survey
      * @return the view for the successor subscription base parameter's configuration
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> renewSubscriptionConsortiaWithSurvey() {
         Map<String,Object> ctrlResult = surveyControllerService.renewSubscriptionConsortiaWithSurvey(params)
@@ -1956,9 +2320,9 @@ class SurveyController {
      * linked to the predecessor instance. The element copy workflow is triggered right after
      * @return the subscription element copy starting view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      def processRenewalWithSurvey() {
         Map<String,Object> ctrlResult = surveyControllerService.processRenewalWithSurvey(params)
@@ -1983,9 +2347,9 @@ class SurveyController {
      * Exports the survey costs in an Excel worksheet
      * @return an Excel worksheet containing the survey cost data
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2029,9 +2393,9 @@ class SurveyController {
      * Takes the submitted input and creates cost items based on the given parameters for every selected survey participant
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
      Map<String,Object> createSurveyCostItem() {
         Map<String,Object> ctrlResult = surveyControllerService.createSurveyCostItem(params)
@@ -2053,9 +2417,9 @@ class SurveyController {
      * Call for the transfer view of the participants in a renewal survey
      * @return a list of members for each subscription
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> compareMembersOfTwoSubs() {
         Map<String,Object> ctrlResult = surveyControllerService.compareMembersOfTwoSubs(params)
@@ -2074,9 +2438,9 @@ class SurveyController {
      * Call to copy the packages of subscription
      * @return a list of each participant's packages
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySubPackagesAndIes() {
         Map<String,Object> ctrlResult = surveyControllerService.copySubPackagesAndIes(params)
@@ -2090,9 +2454,9 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySurveyPackages() {
         Map<String,Object> ctrlResult = surveyControllerService.copySurveyPackages(params)
@@ -2106,9 +2470,9 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySurveyVendors() {
         Map<String,Object> ctrlResult = surveyControllerService.copySurveyVendors(params)
@@ -2122,9 +2486,9 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> proccessCopySubPackagesAndIes() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySubPackagesAndIes(params)
@@ -2141,9 +2505,9 @@ class SurveyController {
 
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> proccessCopySurveyPackages() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyPackages(params)
@@ -2160,9 +2524,9 @@ class SurveyController {
 
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> proccessCopySurveyVendors() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyVendors(params)
@@ -2183,9 +2547,9 @@ class SurveyController {
      * Call to copy the survey cost items
      * @return a list of each participant's survey costs
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copySurveyCostItems() {
         Map<String,Object> ctrlResult = surveyControllerService.copySurveyCostItems(params)
@@ -2199,12 +2563,12 @@ class SurveyController {
         }
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySurveyCostItemPackage() {
-        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemPackage(params)
+        Map<String,Object> ctrlResult = surveyControllerService.copySurveyCostItemPackage(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -2219,9 +2583,9 @@ class SurveyController {
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
      * @return the survey cost copy overview
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopySurveyCostItems() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyCostItems(params)
@@ -2241,9 +2605,9 @@ class SurveyController {
 
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> proccessCopySurveyCostItemPackage() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyCostItemPackage(params)
@@ -2267,9 +2631,9 @@ class SurveyController {
      * Call to open the transfer of survey cost items into the respective member subscriptions
      * @return a list of participants with their respective survey cost items
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copySurveyCostItemsToSub() {
         Map<String,Object> ctrlResult = surveyControllerService.copySurveyCostItemsToSub(params)
@@ -2288,9 +2652,9 @@ class SurveyController {
      * Takes the submitted parameters and copies the survey cost items into the subscriptions
      * @return the survey-subscription cost transfer view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopySurveyCostItemsToSub() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopySurveyCostItemsToSub(params)
@@ -2314,9 +2678,9 @@ class SurveyController {
      * Call to open the property copying view from one subscription into another
      * @return the list of properties for each year ring
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copyProperties() {
         Map<String,Object> ctrlResult = surveyControllerService.copyProperties(params)
@@ -2335,9 +2699,9 @@ class SurveyController {
      * Takes the submitted data and creates copies of the selected properties into the successor subscriptions
      * @return the property copy overview
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopyProperties() {
         Map<String,Object> ctrlResult = surveyControllerService.proccessCopyProperties(params)
@@ -2366,9 +2730,9 @@ class SurveyController {
      * the following year along with their depending data
      * @return a redirect to the member comparison view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processTransferParticipantsByRenewal() {
         Map<String,Object> ctrlResult = surveyControllerService.processTransferParticipantsByRenewal(params)
@@ -2394,15 +2758,14 @@ class SurveyController {
      * the call will process copying of the given survey elements
      * @return the given tab with the copy parameters
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copyElementsIntoSurvey() {
         def result             = [:]
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
 
         flash.error = ""
         flash.message = ""
@@ -2422,9 +2785,9 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: result.contextOrg])
+        result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: contextService.getOrg()])
         //Nur Umfragen, die noch in Bearbeitung sind da sonst Umfragen-Prozesse zerstört werden.
-        result.allObjects_writeRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg and surInfo.status = :status order by surInfo.name", [contextOrg: result.contextOrg, status: RDStore.SURVEY_IN_PROCESSING])
+        result.allObjects_writeRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg and surInfo.status = :status order by surInfo.name", [contextOrg: contextService.getOrg(), status: RDStore.SURVEY_IN_PROCESSING])
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
@@ -2470,9 +2833,9 @@ class SurveyController {
      * Lists the tasks attached to the given survey
      * @return the list of tasks of the given survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
@@ -2496,9 +2859,9 @@ class SurveyController {
      * Lists the notes attached to the given survey
      * @return the list of notes of the given survey
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def notes() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2515,9 +2878,9 @@ class SurveyController {
      * Set link to license or provider
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setProviderOrLicenseLink() {
         Map<String,Object> ctrlResult = surveyControllerService.setProviderOrLicenseLink(params)
@@ -2541,9 +2904,9 @@ class SurveyController {
      * Set link to another survey
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = 1)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyLink() {
         Map<String,Object> ctrlResult = surveyControllerService.setSurveyLink(params)
@@ -2568,9 +2931,9 @@ class SurveyController {
      * @return a redirect to the referer
      * @see SurveyUrl
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSurveyUrl() {
         Map<String,Object> ctrlResult = surveyControllerService.addSurveyUrl(params)
@@ -2596,9 +2959,9 @@ class SurveyController {
      * Call to copy the mail addresses of all participants
      * @return the modal containing the participant's mail addresses
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
@@ -2613,9 +2976,9 @@ class SurveyController {
         render(template: "/templates/copyEmailaddresses", model: result)
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     Map<String,Object> openTransferParticipantsModal() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2649,9 +3012,9 @@ class SurveyController {
      * Call to edit the given survey cost item
      * @return the cost item editing modal
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     Map<String,Object> editSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2683,7 +3046,14 @@ class SurveyController {
         result.mode = result.costItem ? "edit" : ""
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
-        result.selectedPkg = params.selectedPkg
+        if(params.selectPkg == "true"){
+            result.selectPkg = params.selectPkg
+        }
+
+        result.selectedSurveyConfigSubscriptionID = params.selectedSurveyConfigSubscriptionID ? Long.valueOf(params.selectedSurveyConfigSubscriptionID) : null
+        if(params.selectSubscription == "true"){
+            result.selectSubscription = params.selectSubscription
+        }
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         result.modalID = 'surveyCostItemModal'
@@ -2694,9 +3064,9 @@ class SurveyController {
      * Call to add a new survey cost item to every participant
      * @return the new cost item modal
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     Object addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2730,13 +3100,20 @@ class SurveyController {
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
 
-        if(params.selectedPkg){
-            result.selectedPkg = true
+        if(params.selectPkg == "true"){
+            result.selectPkg = params.selectPkg
         }
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
 
+        result.selectedSurveyConfigSubscriptionID = params.selectedSurveyConfigSubscriptionID ? Long.valueOf(params.selectedSurveyConfigSubscriptionID) : null
+        if(params.selectSubscription == "true"){
+            result.selectSubscription = params.selectSubscription
+        }
+
+        result.modalID = 'addForAllSurveyCostItem'
+        result.idSuffix = 'addForAllSurveyCostItem'
         render(template: "/survey/costItemModal", model: result)
     }
 
@@ -2745,9 +3122,9 @@ class SurveyController {
      * @return a modal to show the differences between this and next year ring's subscription parameters (= the selected
      * parameters by each member)
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> showPropertiesChanged() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2779,7 +3156,7 @@ class SurveyController {
         if(params.exportXLSX) {
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportPropertiesChanged(result.surveyConfig, result.participants, result.contextOrg)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportPropertiesChanged(result.surveyConfig, result.participants, contextService.getOrg())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2796,8 +3173,8 @@ class SurveyController {
                             [parentSub  : result.surveyConfig.subscription,
                              participant: surveyOrg.org
                             ])[0]
-                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
-                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, contextService.getOrg())
+                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextService.getOrg())
 
                     if (surveyResult && subscriptionProperty) {
                         String surveyValue = surveyResult.getValue()

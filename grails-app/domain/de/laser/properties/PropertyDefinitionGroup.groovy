@@ -4,8 +4,8 @@ import de.laser.CacheService
 import de.laser.GenericOIDService
 import de.laser.License
 import de.laser.Org
-import de.laser.Person
-import de.laser.Platform
+import de.laser.addressbook.Person
+import de.laser.wekb.Platform
 import de.laser.Subscription
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
@@ -101,6 +101,22 @@ class PropertyDefinitionGroup {
             }
         }
         */
+        result
+    }
+
+    /**
+     * Retrieves the currently contained properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) of {@link PropertyDefinition} types contained in this group, owned by a given {@link Org} or which are openly visible
+     * @param currentObject the object whose properties should be queried
+     * @param tenant the {@link Org} which owns the property (!)
+     * @return a {@link List} of properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) contained by the given object in this group of {@link PropertyDefinition}s
+     */
+    List getCurrentVisibleProperties(def currentObject, Org tenant) {
+        List result = []
+        List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Class propertyClass = getOwnerClass(currentObject)
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and (prop.tenant = :tenant or prop.isPublic = true or prop.instanceOf != null) order by pd.${localizedName}"
+        result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds, tenant: tenant]))
         result
     }
 

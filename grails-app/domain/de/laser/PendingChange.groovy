@@ -7,6 +7,9 @@ import de.laser.finance.PriceItem
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat

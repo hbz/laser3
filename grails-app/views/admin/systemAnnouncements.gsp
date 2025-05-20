@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.admin.announcements" />
 
     <ui:breadcrumbs>
@@ -50,11 +50,11 @@ ${currentAnnouncement?.getCleanContent()}
 
             <div class="field">
                 <g:if test="${currentAnnouncement}">
-                    <g:link controller="admin" action="systemAnnouncements" role="button" class="ui button">${message(code:'default.button.reset.label')}</g:link>
-                    <input type="submit" class="ui button" value="${message(code:'default.button.save_changes')}"/>
+                    <g:link controller="admin" action="systemAnnouncements" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.reset.label')}</g:link>
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.save_changes')}"/>
                 </g:if>
                 <g:else>
-                    <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label')}" />
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'announcement.create.button.label')}" />
                 </g:else>
             </div>
         </ui:form>
@@ -75,7 +75,7 @@ ${currentAnnouncement?.getCleanContent()}
             <div class="ui segment">
                 <h3 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h3>
                 <g:if test="${sa.isPublished}">
-                    <div class="ui green ribbon label"><i class="ui icon exclamation circle"></i>${message(code:'announcement.published')}</div>
+                    <div class="ui green ribbon label"><i class="icon check circle"></i>${message(code:'announcement.published')}</div>
                 </g:if>
 
                 <div class="ui divider"></div>
@@ -145,21 +145,21 @@ ${currentAnnouncement?.getCleanContent()}
                     <g:if test="${sa.isPublished}">
                         <br />
                         <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" role="button"
-                                class="ui button" onclick="return confirm('${message(code:'announcement.undo.confirm')}')">${message(code:'default.publish_undo.label')}</g:link>
+                                class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.undo.confirm')}')">${message(code:'default.publish_undo.label')}</g:link>
                     </g:if>
                     <g:else>
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="ui negative icon button la-modern-button"
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="${Btn.MODERN.NEGATIVE}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i aria-hidden="true" class="${Icons.CMD_DELETE} icon"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="ui icon button la-modern-button"><i aria-hidden="true" class="edit icon"></i></g:link>
+                            <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i></g:link>
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.SIMPLE}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
 
                         <g:if test="${mailDisabled}">
-                            <button class="ui button" disabled="disabled">${message(code:'default.publish.label')}</button>
+                            <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>
                         </g:if>
                         <g:else>
                             <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button"
-                                    class="ui button" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
+                                    class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
 
                         </g:else>
                      </g:else>

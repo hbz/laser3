@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.ProviderRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor">
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
@@ -58,7 +58,7 @@
                         <fieldset>
                             <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
-                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown clearable "
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
                                 optionValue="${{ it.getName() }}"
                                 name="consortia" noSelection="${['' : message(code:'default.select.choose.label')]}" value="${params.consortia}"/>
@@ -67,8 +67,8 @@
                     </div>
 
                     <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}">
+                        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>
@@ -140,7 +140,7 @@
                     </td>
                     <td>
                         <g:if test="${gasco_infolink}">
-                            <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
+                            <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
                                 <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
@@ -150,7 +150,7 @@
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
-                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                 <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
@@ -161,9 +161,9 @@
                         </g:each>
                     </td>
                     <td>
-                        ${gasco_verhandlername ?: sub.getConsortia()?.name}
+                        ${gasco_verhandlername ?: sub.getConsortium()?.name}
                         <br />
-                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortium())}" var="personRole">
                             <g:set var="person" value="${personRole.getPrs()}" />
                             <g:if test="${person.isPublic}">
                             <div class="ui list">
@@ -174,16 +174,16 @@
                                         </div>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe la-list-icon"></i>
-                                                <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                <i class="${Icon.SYM.URL} la-list-icon"></i>
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
                                             </div>
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
-                                                <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -196,12 +196,12 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="flyoutLink ui icon button blue la-modern-button" controller="gasco" action="json" data-key="${sub.id}">
-                                <i class="icon info"></i>
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
+                                <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
                                 <i class="icon grey minus circle"></i>
                             </span>
                         </g:else>
@@ -211,18 +211,20 @@
         </tbody>
     </table>
 
-    <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
+    <div id="gascoFlyout" class="ui very wide flyout">
         <div class="ui header">
-            <i class="info icon"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content"></div>
         </div>
         <div class="content">
+            <h3><g:message code="gasco.flyout.infoHeader"/></h3>
+            <div class="info"></div>
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
                 <div class="ui buttons mini">
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
                 </div>
             </div>
             <div class="charts"></div>
@@ -264,6 +266,8 @@
             ui: {
                 $flyout: $('#gascoFlyout'),
                 $title:  $('#gascoFlyout > .header > .content'),
+                $info:   $('#gascoFlyout > .content > .info'),
+                $infoHeader: $('#gascoFlyout > .content > h3'),
                 $filter: $('#gascoFlyout > .content > .filter'),
                 $charts: $('#gascoFlyout > .content > .charts'),
 
@@ -331,6 +335,13 @@
                 }
             }).done (function (data) {
                 JSPC.app.gasco.ui.$title.html (data.title);
+                JSPC.app.gasco.ui.$info.html (data.info);
+                if(data.info !== null) {
+                    JSPC.app.gasco.ui.$infoHeader.show ();
+                }
+                else {
+                    JSPC.app.gasco.ui.$infoHeader.hide ();
+                }
 
                 data.data.forEach (function (dd) {
                     JSPC.app.gasco.ui.$charts.append ('<p class="ui header chartHeader">' + dd.title + '</p>');
@@ -342,6 +353,10 @@
                     let echart = echarts.init ( $('#chartWrapper-' + dd.key)[0] );
                     echart.setOption (chartCfg);
                     JSPC.app.gasco.current.charts[dd.key] = echart;
+
+                    $(window).resize(function () {
+                        JSPC.app.gasco.current.charts[dd.key].resize();
+                    });
                 });
                 JSPC.app.gasco.ui.commit();
                 JSPC.app.gasco.ui.$flyout.flyout ('show');

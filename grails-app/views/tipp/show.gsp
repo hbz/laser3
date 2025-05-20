@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
@@ -14,12 +14,17 @@
     <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
 
 <ui:messages data="${flash}"/>
 
+<laser:render template="/templates/reportTitleToProvider/flyoutAndTippTask" model="${[tipp: tipp]}"/>
 
 <div class="la-inline-lists">
     <g:if test="${participantPerpetualAccessToTitle}">
@@ -34,12 +39,12 @@
                         <div class="item">
                             <div class="sixteen wide column">
                                 <i class="icon clipboard outline la-list-icon"></i>
-                                <g:if test="${pt.subscription.getConsortia() != contextOrg}">
-                                    ${pt.getPermanentTitleInfo(contextOrg)}
+                                <g:if test="${pt.subscription.getConsortium() != contextService.getOrg()}">
+                                    ${pt.getPermanentTitleInfo()}
                                 </g:if><g:else>
                                     <g:link controller="subscription"
                                             action="index"
-                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention()}</g:link>
                                     &nbsp;
                                     <br/>
                                     <br/>
@@ -93,7 +98,7 @@
 
             <div class="la-icon-list">
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                     <div class="content">
@@ -103,7 +108,7 @@
                 </div>
 
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                     <div class="content">
@@ -159,7 +164,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey icon gift scale la-popup-tooltip la-delay"
+                <i class="grey ${Icon.PACKAGE} la-popup-tooltip"
                    data-content="${message(code: 'package.label')}"></i>
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
@@ -184,17 +189,15 @@
 
                 <br/>
                 <br/>
-                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                        var="gokbAPI">
+
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
-                           class="ui icon tiny blue button la-popup-tooltip la-delay"
+                           class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
-                           target="_blank"><i class="la-gokb  icon"></i>
+                           href="${Wekb.getURL() + '/public/packageContent/?id=' + tipp.pkg.gokbId}"
+                           target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
-                </g:each>
 
             </div>
         </div>
@@ -207,7 +210,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="${Icons.PLATFORM} grey icon la-popup-tooltip la-delay"
+                <i class="${Icon.PLATFORM} grey la-popup-tooltip"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">
@@ -219,8 +222,7 @@
                 </g:else>
 
                 <g:if test="${tipp.hostPlatformURL}">
-                    <ui:linkWithIcon
-                            href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                    <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
             </div>
 
@@ -234,24 +236,22 @@
 
             <div class="item">${message(code: 'platform.primaryURL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-modern-button la-popup-tooltip la-delay"
+                    <a role="button" class="${Btn.MODERN.SIMPLE_TOOLTIP} mini"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="${Icons.LINK_EXTERNAL} icon"></i></a>
+                       target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>
                 </g:if>
             </div>
             <br/>
-            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                    var="gokbAPI">
+
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
-                       class="ui icon tiny blue button la-popup-tooltip la-delay"
+                       class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                        data-content="${message(code: 'wekb')}"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
-                       target="_blank"><i class="la-gokb  icon"></i>
+                       href="${Wekb.getURL() + '/public/platformContent/?id=' + tipp.platform.gokbId}"
+                       target="_blank"><i class="${Icon.WEKB}"></i>
                     </a>
                 </g:if>
-            </g:each>
 
         </div>
     </div>
@@ -264,7 +264,7 @@
 
         <div class="content">
 
-            <table class="ui celled la-js-responsive-table la-table table ">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     --}%%{--<th><g:message code="title.edit.component_id.label"/></th>--}%%{--

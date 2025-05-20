@@ -1,8 +1,9 @@
 package de.laser
 
-
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 import java.text.SimpleDateFormat
@@ -19,7 +20,7 @@ import java.text.SimpleDateFormat
  * and thus a double purchase should be avoided
  * @see Subscription
  * @see IssueEntitlement
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  */
 class PermanentTitle {
 
@@ -49,11 +50,10 @@ class PermanentTitle {
     }
 
     /**
-     * Retrieves the subscription information about the permanent title record for the given context institution
-     * @param contextOrg the current user's institution
+     * Retrieves the subscription information about the permanent title record for the current context institution
      * @return a concatenated string containing the subscription within which permanent access has been purchased
      */
-    String getPermanentTitleInfo(Org contextOrg){
+    String getPermanentTitleInfo(){
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = subscription.startDate ? sdf.format(subscription.startDate)  : ''
 
@@ -64,13 +64,12 @@ class PermanentTitle {
         String statusString = subscription.status ? subscription.status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
         String debugInfo = SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? " (${subscription.id})" : ""
 
-        Org consortia = subscription.getConsortia()
+        Org cons = subscription.getConsortium()
 
-        if(consortia && consortia != contextOrg){
-            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortia()?.name})${debugInfo}"
+        if(cons && cons.id != BeanStore.getContextService().getOrg().id){
+            return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortium()?.name})${debugInfo}"
 
         } else {
-
             return subscription.name + ' - ' + statusString + ' ' +period + debugInfo
         }
     }

@@ -1,33 +1,31 @@
 package de.laser.api.v0
 
+import de.laser.AuditConfig
 import de.laser.ExportService
 import de.laser.AlternativeName
-import de.laser.DeweyDecimalClassification
+import de.laser.wekb.DeweyDecimalClassification
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
-import de.laser.InvoicingVendor
 import de.laser.IssueEntitlement
-import de.laser.Language
+import de.laser.wekb.Language
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Person
-import de.laser.PersonRole
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.addressbook.PersonRole
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
-import de.laser.Vendor
-import de.laser.VendorRole
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import de.laser.base.AbstractCoverage
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.Address
-import de.laser.Contact
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
@@ -36,8 +34,7 @@ import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-
-import java.sql.Array
+import groovyx.gpars.GParsPool
 
 /**
  * This class delivers given lists as maps of stubs or full objects
@@ -54,7 +51,7 @@ class ApiCollectionReader {
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->   // de.laser.Address
+        list.each { it ->   // de.laser.addressbook.Address
             Map<String, Object> tmp = [:]
 
             tmp.street1         = it.street_1
@@ -105,7 +102,7 @@ class ApiCollectionReader {
     static Collection<Object> getContactCollection(Collection<Contact> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->       // de.laser.Contact
+        list.each { it ->       // de.laser.addressbook.Contact
             Map<String, Object> tmp = [:]
 
             tmp.content         = it.content
@@ -207,7 +204,7 @@ class ApiCollectionReader {
     /**
      * Builds a collection of custom (= general) properties for the given object and respecting the settings of the requestor institution
      * @param list the {@link Collection} of properties to enumerate
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.addressbook.Person} or {@link de.laser.wekb.Platform})
      * @param context the requestor institution ({@link Org})
      * @return a {@link Collection} of {@link Map}s containing property details for API output
      */
@@ -357,7 +354,11 @@ class ApiCollectionReader {
                 [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         */
-        Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id]
+        Subscription targetSub
+        if(subPkg.subscription.instanceOf && (AuditConfig.getConfig(subPkg.subscription.instanceOf, 'holdingSelection')))
+            targetSub = subPkg.subscription.instanceOf
+        else targetSub = subPkg.subscription
+        Map<String, Object> subParams = [subId: targetSub.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: targetSub.id, pkg: subPkg.pkg.id]
         int limit = 50000, ieCount = sql.rows("select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", ieParams)[0]["count"]
         List<GroovyRowResult> ieRows = []
         for(int i = 0; i < ieCount; i += limit) {
@@ -397,48 +398,51 @@ class ApiCollectionReader {
         Map<String, Object> pkgData = packageOfSubscription.get(0)
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
-        ieRows.eachWithIndex{ GroovyRowResult row, int i ->
-            //println "now processing row ${i}"
-            //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
-            Map<String, Object> ie = [globalUID: row['ie_guid']]
-            //ie.name = row['ie_name']
-            ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
-            ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
-            ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
-            //RefdataValues - both removed as of API version 2.0
-            //ie.medium = row['ie_medium']
-            ie.status = row['ie_status']
-            ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
-            ie.coverages = coverageMap.containsKey(row['tipp_id']) ? coverageMap.get(row['tipp_id']) : []
-            ie.priceItems = priceItemMap.containsKey(row['tipp_id']) ? priceItemMap.get(row['tipp_id']) : []
-            //References
-            row.ids = identifierMap.containsKey(row['tipp_id']) ? identifierMap.get(row['tipp_id']) : []
-            row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
-            row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
-            row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
-            row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
-            if(ignoreRelation != ApiReader.IGNORE_ALL) {
-                //println "processing references"
-                if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                    //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
-                    row.pkg = pkgData
-                    ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
-                }
-                else {
-                    if(ignoreRelation != ApiReader.IGNORE_TIPP) {
-                        //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
-                        row.pkg = pkgData
-                        ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.TitleInstancePackagePlatform
+        GParsPool.withPool(8) {
+            ieRows.eachWithIndexParallel{ GroovyRowResult row, int i ->
+                Subscription.withTransaction {
+                    //println "now processing row ${i}"
+                    //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
+                    Map<String, Object> ie = [globalUID: row['ie_guid']]
+                    //ie.name = row['ie_name']
+                    ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
+                    ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
+                    ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
+                    //RefdataValues - both removed as of API version 2.0
+                    //ie.medium = row['ie_medium']
+                    ie.status = row['ie_status']
+                    ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
+                    ie.coverages = coverageMap.containsKey(row['tipp_id']) ? coverageMap.get(row['tipp_id']) : []
+                    ie.priceItems = priceItemMap.containsKey(row['tipp_id']) ? priceItemMap.get(row['tipp_id']) : []
+                    //References
+                    row.ids = identifierMap.containsKey(row['tipp_id']) ? identifierMap.get(row['tipp_id']) : []
+                    row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
+                    row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
+                    row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
+                    row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
+                    if(ignoreRelation != ApiReader.IGNORE_ALL) {
+                        //println "processing references"
+                        if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
+                            //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                            row.pkg = pkgData
+                            ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+                        }
+                        else {
+                            if(ignoreRelation != ApiReader.IGNORE_TIPP) {
+                                //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                                row.pkg = pkgData
+                                ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.wekb.TitleInstancePackagePlatform
+                            }
+                            if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
+                                ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.wekb.TitleInstancePackagePlatform
+                            }
+                        }
                     }
-                    if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                        ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.TitleInstancePackagePlatform
-                    }
+                    //println "processing finished"
+                    result << ApiToolkit.cleanUp(ie, true, true)
                 }
             }
-            //println "processing finished"
-            result << ApiToolkit.cleanUp(ie, true, true)
         }
-
         return ApiToolkit.cleanUp(result, true, true)
     }
 
@@ -483,13 +487,13 @@ class ApiCollectionReader {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // de.laser.License
             }
             if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.Package
+                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.wekb.Package
             }
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
             }
             if (it.tipp && (ApiReader.IGNORE_TIPP != ignoreRelationType)) {
-                tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.titles.TitleInstancePackagePlatform
+                tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -546,14 +550,14 @@ class ApiCollectionReader {
 
     /**
      * Delivers a package stub map without titles
-     * @param list the {@link Collection} of {@link de.laser.Package}s which should be returned
+     * @param list the {@link Collection} of {@link de.laser.wekb.Package}s which should be returned
      * @return a {@link Collection<Object>} reflecting the packages
      */
-    static Collection<Object> getPackageCollection(Collection<de.laser.Package> list) {
+    static Collection<Object> getPackageCollection(Collection<de.laser.wekb.Package> list) {
         Collection<Object> result = []
 
         list.each { pkg ->
-            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.Package
+            Map<String, Object> pkgMap = ApiUnsecuredMapReader.getPackageStubMap(pkg) // de.laser.wekb.Package
             result << pkgMap
         }
 
@@ -570,7 +574,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.wekb.Package
             result << pkg
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
@@ -591,7 +595,7 @@ class ApiCollectionReader {
         Collection<Object> result = []
 
         list.each { plat ->
-            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.Platform
+            Map<String, Object> platformMap = ApiUnsecuredMapReader.getPlatformStubMap(plat) // de.laser.wekb.Platform
             result << platformMap
         }
 
@@ -661,7 +665,7 @@ class ApiCollectionReader {
 
     /**
      * Collects the properties (general and private) of the given object and outputs the collections
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Package} or {@link de.laser.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.wekb.Package} or {@link de.laser.wekb.Platform})
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @param ignoreFlag should certain properties being left out from output (private or custom)?
      * @return a {@link Collection} of both general and private properties
@@ -688,7 +692,7 @@ class ApiCollectionReader {
      * @param allowedContactTypes the types of contacts which can be returned
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @return a {@link List} of map entries reflecting the contact entity details
-     * @see de.laser.Person
+     * @see de.laser.addressbook.Person
      */
     static Collection<Object> getPrsLinkCollection(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         List result = []
@@ -702,7 +706,7 @@ class ApiCollectionReader {
                 def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
-                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.Person
+                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.addressbook.Person
 
                     // export public
                     if(it.prs.isPublic) {
@@ -716,7 +720,7 @@ class ApiCollectionReader {
                     }
                 }
 
-                Map<String, Object> role    = [:] // de.laser.PersonRole
+                Map<String, Object> role    = [:] // de.laser.addressbook.PersonRole
                 role.startDate              = ApiToolkit.formatInternalDate(it.start_date)
                 role.endDate                = ApiToolkit.formatInternalDate(it.end_date)
 
@@ -743,7 +747,7 @@ class ApiCollectionReader {
                         role.license = ApiStubReader.resolveLicenseStub(it.lic, context) // de.laser.License
                     }
                     if (it.pkg) {
-                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.Package
+                        role.package = ApiStubReader.resolvePackageStub(it.pkg, context) // de.laser.wekb.Package
                     }
                     if (it.sub) {
                         role.subscription = ApiStubReader.resolveSubscriptionStub(it.sub, context) // de.laser.Subscription
@@ -796,7 +800,7 @@ class ApiCollectionReader {
     static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
 
-        list.each { TitleInstancePackagePlatform it -> // de.laser.TitleInstancePackagePlatform
+        list.each { TitleInstancePackagePlatform it -> // de.laser.wekb.TitleInstancePackagePlatform
             result << ApiMapReader.getTippMap(it, ignoreRelation, context)
         }
 

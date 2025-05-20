@@ -1,19 +1,19 @@
 <!-- A: templates/properties/_genericFilter -->
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
     <label for="filterPropDef">${label}
-        <i class="grey question circle icon la-popup"></i>
+        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
         <span class="ui popup">
-            <i class="${Icons.PRIVATE_PROPERTY} icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icon.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
     <%-- value="${params.filterPropDef}" --%>
     <ui:dropdown id="filterPropDef" name="${newfilterPropDefName ?: 'filterPropDef'}"
-                 class="la-filterPropDef"
+                 class="la-filterPropDef clearable"
                  from="${propList}"
-                 iconWhich="${Icons.PRIVATE_PROPERTY}"
+                 iconWhich="${Icon.PROP.IS_PRIVATE}"
                  optionKey="${{
                      it.refdataCategory ?
                              "${it}\" data-rdc=\"${it.refdataCategory}" :

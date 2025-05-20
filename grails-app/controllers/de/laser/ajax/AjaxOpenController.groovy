@@ -17,15 +17,6 @@ class AjaxOpenController {
     ContextService contextService
 
     /**
-     * Test call method
-     */
-    @Secured(['permitAll'])
-    def test() {
-        Map test = [ a: 1, b: 2, status: 'test_only', time: System.currentTimeMillis() ]
-        render test as JSON
-    }
-
-    /**
      * Call to load the modal for login when a user makes an AJAX request and its session is expired
      */
     @Secured(['permitAll'])
@@ -62,6 +53,6 @@ class AjaxOpenController {
      */
     @Secured(['permitAll'])
     def messages() {
-        render template: '/templates/system/messages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
+        render template: '/templates/system/messages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL)]
     }
 }

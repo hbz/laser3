@@ -1,9 +1,7 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" serviceInjection="true" />
-
-    <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
+<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" />
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -21,13 +19,13 @@
     </ui:controlButtons>
 %{--</g:if>--}%
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" >
+<ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 
@@ -42,7 +40,7 @@
 <div class="ui bottom attached tab active segment">
 
     <g:if test="${params.tab == 'identifier'}">
-    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) --%>
         <table class="ui table la-js-responsive-table la-table">
             <thead>
             <tr>
@@ -111,8 +109,8 @@
                             />
                         </div>
                         <div class="field la-field-right-aligned">
-                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                         </div>
                     </div>
                 </g:form>
@@ -132,7 +130,7 @@
                 </thead>
                 <tbody>
                     <g:each in="${customerIdentifier}" var="ci" status="rowno">
-                        <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
+                        <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                             <tr>
                                 <td>${rowno+1}</td>
@@ -146,20 +144,20 @@
                                 <td>
                                     %{-- TODO: erms-5495 --}%
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        %{--}<button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        %{--}<button class="${Btn.MODERN.SIMPLE}" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="write icon"></i>
+                                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                         </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
                                                 params="${[deleteCI:ci.id]}"
-                                                class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="${Icons.CMD_DELETE} icon"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

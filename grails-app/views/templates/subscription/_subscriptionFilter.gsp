@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -10,17 +10,20 @@
         <g:if test="${packageInstance}">
             <input type="hidden" name="id" value="${packageInstance.id}"/>
         </g:if>
+        <g:if test="${surveyInfo}">
+            <input type="hidden" name="id" value="${surveyInfo.id}"/>
+            <input type="hidden" name="surveyConfigID" value="${surveyConfig.id}"/>
+        </g:if>
         <g:if test="${actionName == 'subscriptionsManagement'}">
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
         </g:if>
-        <div class="five fields">
-            %{--<div class="four fields">--}%
+        <div class="four fields">
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="grey question circle icon"></i>
+                    <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'default.search.tooltip.subscription')}">
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -33,8 +36,8 @@
             <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="grey question circle icon"></i>
+                    <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -61,18 +64,6 @@
                     </g:each>
                 </select>
             </div>
-            <% /*
-            <!-- 1-4 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
-                                  placeholder="filter.placeholder" value="${params.renewalDate}"/>
-            </div>
-            <!-- 1-5 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
-                                  id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
-            </div>
-            */ %>
             <% /* 1-5 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
@@ -81,8 +72,8 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
                         <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
-                        value="${status.id}">
-                        ${status.getI10n('value')}
+                                value="${status.id}">
+                            ${status.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
@@ -90,33 +81,8 @@
         </div>
 
         <div class="four fields">
-
-            <% /* 2-1 and 2-2 */ %>
+            <% /* 2-1/2 */ %>
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
-            <%--
-                        <!-- 2-1 -->
-                        <div class="field disabled">
-                            <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                            <ui:select name="status" class="ui dropdown"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                          optionKey="id"
-                                          optionValue="value"
-                                          value="${params.consortium}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-
-                        </div>
-                        <!-- 2-2 -->
-                        <div class="field disabled">
-                            <label>${message(code: 'default.status.label')}</label>
-                            <ui:select name="status" class="ui dropdown"
-                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                          optionKey="id"
-                                          optionValue="value"
-                                          value="${params.status}"
-                                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-                        </div>
-
-                       --%>
             <% /* 2-3 */ %>
             <div class="field">
                 <label for="form"><g:message code="subscription.form.label"/></label>
@@ -133,38 +99,22 @@
             </div>
             <% /* 2-4 */ %>
             <div class="field">
-                <label for="resource"><g:message code="subscription.resource.label"/></label>
-                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
-                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
-                        value="${resource.id}">
-                        ${resource.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-        </div>
-
-        <div class="four fields">
-            <% /* 3-1 */ %>
-            <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
                         <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}">
-                        ${subKind.getI10n('value')}
+                                value="${subKind.id}">
+                            ${subKind.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
-
             </div>
-            <% /* 3-2 */ %>
+        </div>
+
+        <div class="four fields">
+            <% /* 3-1 */ %>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
                 <ui:select class="ui fluid dropdown" name="isPublicForApi"
@@ -174,7 +124,7 @@
                               value="${params.isPublicForApi}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <% /* 3-3 */ %>
+            <% /* 3-2 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
                 <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
@@ -184,7 +134,7 @@
                               value="${params.hasPerpetualAccess}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <% /* 3-4 */ %>
+            <% /* 3-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPublishComponent.label')}</label>
                 <ui:select class="ui fluid dropdown" name="hasPublishComponent"
@@ -194,9 +144,52 @@
                               value="${params.hasPublishComponent}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
+            <% /* 3-4 */ %>
+            <div class="field">
+                <label for="resource"><g:message code="subscription.resource.label"/></label>
+                <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
+                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
+                                value="${resource.id}">
+                            ${resource.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
         </div>
 
         <div class="four fields">
+            <% /* 4-1 */ %>
+            <div class="field">
+                <label for="provider"><g:message code="provider.label"/></label>
+                <select id="provider" name="provider" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${providerService.getCurrentProviders(contextService.getOrg())}" var="provider">
+                        <option <%=Params.getLongList(params, 'provider').contains(provider.id) ? 'selected="selected"' : ''%>
+                                value="${provider.id}">
+                            ${provider.name}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+            <% /* 4-2 */ %>
+            <div class="field">
+                <label for="vendor"><g:message code="vendor.label"/></label>
+                <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${vendorService.getCurrentVendors(contextService.getOrg())}" var="vendor">
+                        <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%>
+                                value="${vendor.id}">
+                            ${vendor.name}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+            <% /*4-3 */ %>
             <div class="field">
                 <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
                 <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
@@ -210,6 +203,7 @@
                     </g:each>
                 </select>
             </div>
+            <% /* 4-4 */ %>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -229,8 +223,10 @@
                     </div>
                 </div>
             </div>
-            <% /* 4-2 */ %>
-        <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
+        </div>
+
+        <div class="three fields">
+            <% /* 5-1 */ %>
             <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div class="field">
                     <label></label>
@@ -255,6 +251,7 @@
                 <div class="field"></div>
             </g:else>
 
+            <% /* 5-2 */ %>
             <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                 <div class="field">
                     <fieldset>
@@ -269,11 +266,15 @@
                     </fieldset>
                 </div>
             </g:if>
-            <div class="field la-field-right-aligned">
-                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
-            </div>
+            <g:else>
+                <div class="field"></div>
+            </g:else>
 
+            <% /* 5-3 */ %>
+            <div class="field la-field-right-aligned">
+                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
+            </div>
         </div>
 
     </g:form>

@@ -45,7 +45,7 @@ class SubscriptionsQueryService {
 
         RefdataValue role_sub            = RDStore.OR_SUBSCRIBER
         RefdataValue role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIUM
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
@@ -99,7 +99,7 @@ class SubscriptionsQueryService {
             base_qry += "       and cr.org = :consortia"
             base_qry += " )"
 
-            qry_params.put('rtSubCons', RDStore.OR_SUBSCRIPTION_CONSORTIA)
+            qry_params.put('rtSubCons', RDStore.OR_SUBSCRIPTION_CONSORTIUM)
             qry_params.put('consortia', consortia)
         }
 
@@ -166,7 +166,7 @@ class SubscriptionsQueryService {
         if (params.provider) {
             try {
                 qry_params.put('provider', (params.provider as Long)) //first because of exception thrown; base_qry will then added correctly
-                base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :provider) )")
+                base_qry += (" and exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id = :provider )")
             }
             catch (NumberFormatException ignored) {
                 base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.sortname, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.sortname, :provider) = true) ) )")
@@ -178,6 +178,14 @@ class SubscriptionsQueryService {
         if (params.providers && params.providers != "") {
             base_qry += (" and ( exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:providers)) or exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id in (:providers)) )")
             qry_params.put('providers', Params.getLongList(params, 'providers'))
+            filterSet = true
+        }
+
+        if (params.vendor) {
+            qry_params.put('vendor', (params.vendor as Long))
+            //TODO ERMS-6337, ERMS-6320 and ERMS-6333
+            //base_qry += (" and exists ( select vr from VendorRole as vr where (vr.subscription = s or vr.subscription.instanceOf = s) and vr.vendor.id = :vendor )")
+            base_qry += (" and exists ( select vr from VendorRole as vr where vr.subscription = s and vr.vendor.id = :vendor )")
             filterSet = true
         }
 
@@ -196,7 +204,7 @@ class SubscriptionsQueryService {
                             " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
                                 " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
                                 " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
-                            " ) )" + // filter by Lieferant (Vendor ex Agency)
+                            " ) )" + // filter by Library Supplier (Vendor ex Agency)
                          " ) "
             )
             qry_params.put('name_filter', params.q)

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.survey.SurveyPackageResult" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.survey.SurveyPackageResult" %>
 
 <%
     def elementSign = 'notSet'
@@ -9,7 +9,7 @@
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
 
     <g:set var="surveyPackages"
-           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: institution, surveyConfig: surveyConfig])}"/>
+           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: participant, surveyConfig: surveyConfig])}"/>
 
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
@@ -17,11 +17,11 @@
     <g:set var="costItemsSubsc"
            value="${subscription ? CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElement cie where ci.owner in :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.surveyOrg = null and ci.costItemStatus != :deleted and ci.pkg in (:pkgs)' +
                    ' order by cie.value_' + LocaleUtils.getCurrentLang(),
-                   [owner: [subscription.getConsortia()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages]) : null}"/>
+                   [owner: [subscription.getConsortium()], sub: subscription, deleted: RDStore.COST_ITEM_DELETED, pkgs: surveyPackages]) : null}"/>
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${(costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -63,34 +63,7 @@
                     <g:each in="${costItemsSubsc}" var="costItem">
                         <tr>
                             <td>
-                                <%
-                                    elementSign = 'notSet'
-                                    icon = ''
-                                    dataTooltip = ""
-                                    if (costItem.costItemElementConfiguration) {
-                                        elementSign = costItem.costItemElementConfiguration
-                                    }
-                                    switch (elementSign) {
-                                        case RDStore.CIEC_POSITIVE:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                            icon = '<i class="plus green circle icon"></i>'
-                                            break
-                                        case RDStore.CIEC_NEGATIVE:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                            icon = '<i class="minus red circle icon"></i>'
-                                            break
-                                        case RDStore.CIEC_NEUTRAL:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                            icon = '<i class="circle yellow icon"></i>'
-                                            break
-                                        default:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="grey question circle icon"></i>'
-                                            break
-                                    }
-                                %>
-                                <span class="la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${dataTooltip}">${raw(icon)}</span>
+                                <ui:costSign ci="${costItem}"/>
 
                                 ${costItem.costItemElement?.getI10n('value')}
                             </td>
@@ -135,34 +108,7 @@
                                 <g:each in="${surveyCostItems}"
                                         var="costItemSurvey">
                                     <td>
-                                        <%
-                                            elementSign = 'notSet'
-                                            icon = ''
-                                            dataTooltip = ""
-                                            if (costItemSurvey.costItemElementConfiguration) {
-                                                elementSign = costItemSurvey.costItemElementConfiguration
-                                            }
-                                            switch (elementSign) {
-                                                case RDStore.CIEC_POSITIVE:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                    icon = '<i class="plus green circle icon"></i>'
-                                                    break
-                                                case RDStore.CIEC_NEGATIVE:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                    icon = '<i class="minus red circle icon"></i>'
-                                                    break
-                                                case RDStore.CIEC_NEUTRAL:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                    icon = '<i class="circle yellow icon"></i>'
-                                                    break
-                                                default:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="grey question circle icon"></i>'
-                                                    break
-                                            }
-                                        %>
-                                        <span class="la-popup-tooltip la-delay" data-position="right center"
-                                              data-content="${dataTooltip}">${raw(icon)}</span>
+                                        <ui:costSign ci="${costItemSurvey}"/>
 
                                         ${costItemSurvey.costItemElement?.getI10n('value')}
                                     </td>
@@ -202,11 +148,11 @@
                                         <g:if test="${costItemSurvey.costDescription}">
                                             <br/>
 
-                                            <div class="ui icon la-popup-tooltip la-delay"
+                                            <div class="ui icon la-popup-tooltip"
                                                  data-position="right center"
                                                  data-variation="tiny"
                                                  data-content="${costItemSurvey.costDescription}">
-                                                <i class="question small circular inverted icon"></i>
+                                                <i class="${Icon.TOOLTIP.HELP}"></i>
                                             </div>
                                         </g:if>
                                     </td>
@@ -250,35 +196,7 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <%
-                                        elementSign = 'notSet'
-                                        icon = ''
-                                        dataTooltip = ""
-                                        if (costItemSurvey.costItemElementConfiguration) {
-                                            elementSign = costItemSurvey.costItemElementConfiguration
-                                        }
-                                        switch (elementSign) {
-                                            case RDStore.CIEC_POSITIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                icon = '<i class="plus green circle icon"></i>'
-                                                break
-                                            case RDStore.CIEC_NEGATIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                icon = '<i class="minus red circle icon"></i>'
-                                                break
-                                            case RDStore.CIEC_NEUTRAL:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                icon = '<i class="circle yellow icon"></i>'
-                                                break
-                                            default:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="grey question circle icon"></i>'
-                                                break
-                                        }
-                                    %>
-
-                                    <span class="la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <ui:costSign ci="${costItemSurvey}"/>
 
                                     ${costItemSurvey.costItemElement?.getI10n('value')}
 
@@ -321,11 +239,11 @@
                                     <g:if test="${costItemSurvey.costDescription}">
                                         <br/>
 
-                                        <div class="ui icon la-popup-tooltip la-delay"
+                                        <div class="ui icon la-popup-tooltip"
                                              data-position="right center"
                                              data-variation="tiny"
                                              data-content="${costItemSurvey.costDescription}">
-                                            <i class="question small circular inverted icon"></i>
+                                            <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </div>
                                     </g:if>
                                 </td>
@@ -345,12 +263,12 @@
 
 <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id}">
     <g:set var="surveyPackages"
-           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: institution, surveyConfig: surveyConfig])}"/>
+           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: participant, surveyConfig: surveyConfig])}"/>
 
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && costItemsSurvey}">
+    <g:if test="${costItemsSurvey}">
 
         <div class="ui card la-time-card">
 
@@ -376,35 +294,7 @@
                     <g:each in="${costItemsSurvey}" var="costItemSurvey">
                         <tr>
                             <td>
-                                <%
-                                    elementSign = 'notSet'
-                                    icon = ''
-                                    dataTooltip = ""
-                                    if (costItemSurvey.costItemElementConfiguration) {
-                                        elementSign = costItemSurvey.costItemElementConfiguration
-                                    }
-                                    switch (elementSign) {
-                                        case RDStore.CIEC_POSITIVE:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                            icon = '<i class="plus green circle icon"></i>'
-                                            break
-                                        case RDStore.CIEC_NEGATIVE:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                            icon = '<i class="minus red circle icon"></i>'
-                                            break
-                                        case RDStore.CIEC_NEUTRAL:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                            icon = '<i class="circle yellow icon"></i>'
-                                            break
-                                        default:
-                                            dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                            icon = '<i class="grey question circle icon"></i>'
-                                            break
-                                    }
-                                %>
-
-                                <span class="la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${dataTooltip}">${raw(icon)}</span>
+                                <ui:costSign ci="${costItemSurvey}"/>
 
                                 ${costItemSurvey.costItemElement?.getI10n('value')}
 
@@ -447,11 +337,11 @@
                                 <g:if test="${costItemSurvey.costDescription}">
                                     <br/>
 
-                                    <div class="ui icon la-popup-tooltip la-delay"
+                                    <div class="ui icon la-popup-tooltip"
                                          data-position="right center"
                                          data-variation="tiny"
                                          data-content="${costItemSurvey.costDescription}">
-                                        <i class="question small circular inverted icon"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </div>
                                 </g:if>
                             </td>

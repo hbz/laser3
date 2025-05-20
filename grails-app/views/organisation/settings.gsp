@@ -1,12 +1,12 @@
-<%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Icon; de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="org.nav.dataTransfer" serviceInjection="true" />
+<laser:htmlStart message="org.nav.dataTransfer" />
 
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-        <ui:h1HeaderWithIcon text="${orgInstance.name}">
+        <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
             <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
         </ui:h1HeaderWithIcon>
 
@@ -14,7 +14,7 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
+        <ui:objectStatus object="${orgInstance}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
@@ -55,7 +55,7 @@
                                 <laser:script file="${this.getGroovyPageFileName()}">
 
                                     $('body #natstat_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
@@ -67,7 +67,7 @@
                                     });
 
                                     $('body #oamonitor_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
@@ -79,7 +79,7 @@
                                     });
 
                                     $('body #ezb_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
@@ -96,18 +96,18 @@
                                         <td>
                                             ${message(code:"org.setting.${os.key}", default: "${os.key}")}
                                             <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
-                                                    <i class="grey question circle icon"></i>
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.NATSTAT_SERVER_ACCESS.tooltip')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:if>
                                             <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
-                                                    <i class="grey question circle icon"></i>
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.OAMONITOR_SERVER_ACCESS.tooltip')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                             <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'org.setting.EZB.tooltip')}">
-                                                    <i class="grey question circle icon"></i>
+                                                <span class="la-popup-tooltip" data-content="${message(code:'org.setting.EZB.tooltip')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </span>
                                             </g:elseif>
                                         </td>
@@ -165,17 +165,9 @@
                                             </g:if>
                                             <g:else>
 
-                                                <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
-                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                                                        <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${os.getValue()?.getI10n('value')}
-                                                    </g:else>
-                                                </g:if>
-                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                <g:if test="${os.key.type == RefdataValue}">
                                                     ${os.getValue()?.getI10n('value')}
-                                                </g:elseif>
+                                                </g:if>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')}
                                                 </g:elseif>
@@ -191,30 +183,6 @@
                         </table>
                         </div><!-- .content -->
                     </div>
-                    </g:if>
-
-                    <g:if test="${params.tab == 'general'}">
-                        <ui:flagDeprecated />
-
-                        <div class="ui card la-dl-no-table">
-                            <div class="content">
-                                <h2 class="ui header">
-                                    ${message(code:'org.confProperties')}
-                                </h2>
-
-                                <div id="custom_props_div_1">
-                                    <laser:render template="/templates/properties/custom" model="${[
-                                            prop_desc: PropertyDefinition.ORG_CONF,
-                                            ownobj: orgInstance,
-                                            orphanedProperties: orgInstance.propertySet,
-                                            custom_props_div: "custom_props_div_1" ]}"/>
-                                </div>
-                            </div><!-- .content -->
-                        </div><!-- .card -->
-
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                        </laser:script>
                     </g:if>
 
 

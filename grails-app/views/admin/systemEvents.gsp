@@ -14,28 +14,28 @@
             <div class="five fields">
                 <div class="field">
                     <label for="filter_category">${message(code:'default.category.label')}</label>
-                    <g:select name="filter_category" class="ui selection dropdown liveFilter"
+                    <g:select name="filter_category" class="ui selection dropdown clearable liveFilter"
                               from="${SystemEvent.CATEGORY.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_category}"
                     />
                 </div>
                 <div class="field">
                     <label for="filter_relevance">${message(code:'default.relevance.label')}</label>
-                    <g:select name="filter_relevance" class="ui selection dropdown liveFilter"
+                    <g:select name="filter_relevance" class="ui selection dropdown clearable liveFilter"
                               from="${SystemEvent.RELEVANCE.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_relevance}"
                     />
                 </div>
                 <div class="field">
                     <label for="filter_source">${message(code:'default.source.label')}</label>
-                    <g:select name="filter_source" class="ui selection dropdown liveFilter"
+                    <g:select name="filter_source" class="ui selection dropdown clearable liveFilter"
                               from="${SystemEvent.getAllSources( events )}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_source}"
                     />
                 </div>
                 <div class="field">
                     <label for="filter_exclude">Exclude <sup>!</sup></label>
-                    <g:select name="filter_exclude" class="ui selection dropdown liveFilter"
+                    <g:select name="filter_exclude" class="ui selection dropdown clearable liveFilter"
                               from="${SystemEvent.getAllSources( events )}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_exclude}"
                     />
@@ -102,8 +102,8 @@
                     case 'warning'  : tdClass = 'warning'; break
                     case 'error'    : tdClass = 'error'; break
                 }
-                if (el.hasChanged) {
-                    tdClass += ' sf_underline'
+                if (! el.hasChanged) {
+                    tdClass += ' sf_simple'
                 }
             %>
             <tr

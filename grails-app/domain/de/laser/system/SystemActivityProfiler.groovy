@@ -43,7 +43,7 @@ class SystemActivityProfiler {
     static void addActiveUser(User user) {
         if (user) {
             EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
-            ttl1800.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
+            ttl1800.put(user.id.encodeAsMD5() as String, [user.id, System.currentTimeMillis()])
         }
     }
 
@@ -69,7 +69,8 @@ class SystemActivityProfiler {
         ttl1800.getKeys().each{ k ->
             try {
                 String key = k.replaceFirst( CACHE_KEY_ACTIVE_USER + EhcacheWrapper.SEPARATOR, '' )
-                if (System.currentTimeMillis() - (ttl1800.get(key) as Long) <= ms) {
+                List<Long> entry = ttl1800.get(key) as List<Long>
+                if (System.currentTimeMillis() - entry[1] <= ms) {
                     result.add( key )
                 }
             } catch (Exception e) {

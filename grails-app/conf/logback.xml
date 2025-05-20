@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -16,7 +17,7 @@
                     if (formattedMessage.contains("HHH90001005")) return true;
                     <!-- warn -->
                     if (formattedMessage.contains("Replaced rule for '")) return true;
-                    if (formattedMessage.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
+                    if (formattedMessage.contains("299 Elasticsearch-7.17.")) return true;
                     <!-- info -->
                     if (formattedMessage.contains("(for example: not eligible for auto-proxying)")) return true;
                     if (formattedMessage.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;

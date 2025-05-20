@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.storage.RDStore;" %>
 <ui:subNav actionName="${actionName}">
 
     <ui:subNavItem controller="package" action="show" params="${[id:params.id]}" message="package.show.nav.details" />

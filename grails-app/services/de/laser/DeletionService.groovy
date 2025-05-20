@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Person
 import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.finance.*
@@ -8,16 +9,29 @@ import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveySubscriptionResult
+import de.laser.survey.SurveyTransfer
+import de.laser.survey.SurveyVendorResult
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
 import de.laser.convenience.Marker
+import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.Language
+import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import groovy.util.logging.Slf4j
@@ -282,7 +296,7 @@ class DeletionService {
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
-        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfigInList(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
         SurveyInfo surveyInfo
         // collecting informations
@@ -479,7 +493,21 @@ class DeletionService {
 
                             SurveyResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
 
+                            SurveyPackageResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveySubscriptionResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyPersonResult.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyTransfer.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
                             SurveyConfigProperties.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigPackage.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigSubscription.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
+
+                            SurveyConfigVendor.findAllBySurveyConfig(tmp).each { tmp2 -> tmp2.delete() }
 
                             SurveyOrg.findAllBySurveyConfig(tmp).each { tmp2 ->
 
@@ -504,10 +532,22 @@ class DeletionService {
 
                             SurveyResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
 
+                            SurveyPackageResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveySubscriptionResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyPersonResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyVendorResult.findAllByParticipantAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
+                            SurveyTransfer.findAllByOrgAndSurveyConfig(tmp.org, tmp.surveyConfig).each { tmp2 -> tmp2.delete() }
+
                             tmp.delete()
 
                         }
                     }
+
+                    SurveyTransfer.findAllByOrgAndSubscription(sub.getSubscriber(), sub).each { tmp2 -> tmp2.delete() }
 
                     if (surveyInfo){
                         surveyInfo.delete()
@@ -552,7 +592,6 @@ class DeletionService {
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)
 
-        List orgTypes      = new ArrayList(org.orgType)
         List orgLinks      = new ArrayList(org.links)
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
@@ -580,7 +619,7 @@ class DeletionService {
         List invoices           = Invoice.findAllByOwner(org)
         List orderings          = Order.findAllByOwner(org)
 
-        List dashboardDueDates  = DashboardDueDate.findAllByResponsibleOrg(org)
+        List dashboardDueDates  = DashboardDueDate.executeQuery('select distinct d from DashboardDueDate d where d.responsibleUser.formalOrg = :org', [org: org])
         List documents          = Doc.findAllByOwner(org)
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
@@ -609,7 +648,6 @@ class DeletionService {
         result.info << ['Combos (out)', outgoingCombos]
         result.info << ['Combos (in)', incomingCombos, FLAG_BLOCKER]
 
-        result.info << ['Typen', orgTypes]
         result.info << ['OrgRoles', orgLinks, FLAG_BLOCKER]
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
@@ -699,10 +737,6 @@ class DeletionService {
                     // outgoingCombos
                     org.outgoingCombos.clear()
                     outgoingCombos.each{ tmp -> tmp.delete() }
-
-                    // orgTypes
-                    //org.orgType.clear()
-                    //orgTypes.each{ tmp -> tmp.delete() }
 
                     // orgSettings
                     Set<String> specialAccess = []
@@ -800,6 +834,7 @@ class DeletionService {
         List userSettings       = UserSetting.findAllWhere(user: user)
         List reportingFilter    = ReportingFilter.findAllByOwner(user)
         List systemAnnouncements  = SystemAnnouncement.findAllByUser(user)
+        List marker             = Marker.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -817,6 +852,7 @@ class DeletionService {
         result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
         result.info << ['Ankündigungen', systemAnnouncements, FLAG_SUBSTITUTE]
+        result.info << ['Beobachtungsliste', marker]
 
         // checking constraints and/or processing
 
@@ -855,6 +891,8 @@ class DeletionService {
                     ddds.each { tmp -> tmp.delete() }
 
                     reportingFilter.each { tmp -> tmp.delete() }
+
+                    marker.each { tmp -> tmp.delete() }
 
                     tasks.each { tmp ->
                         if (tmp.creator.id == user.id) {

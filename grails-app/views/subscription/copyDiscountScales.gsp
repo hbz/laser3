@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="subscription.details.copyDiscountScales.label" />
 
 <laser:serviceInjection/>
@@ -34,9 +34,9 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
-                          class="la-popup-tooltip la-delay"
+                          class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -54,7 +54,7 @@
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable" name="status"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                            optionKey="id"
                            optionValue="value"
@@ -71,7 +71,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code: 'subscription.form.label')}</label>
-                <ui:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown clearable" name="form"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                            optionKey="id"
                            optionValue="value"
@@ -81,7 +81,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code: 'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown clearable" name="resource"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                            optionKey="id"
                            optionValue="value"
@@ -94,7 +94,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown search" name="provider"
+                <g:select class="ui dropdown clearable search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"
@@ -103,10 +103,8 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -141,7 +139,7 @@
 
 
     <div class="ui icon message">
-        <i class="info icon"></i>
+        <i class="${Icon.UI.INFO}"></i>
          <div class="content">
     <div class="header">
         ${message(code: 'subscription.details.copyDiscountScales.process.info')}
@@ -176,17 +174,17 @@
 
 
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="${Icons.ORG} large icon"></i>
+                                <i class="${Icon.ORG} large"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="money bill large icon"></i>
+                                <i class="${Icon.FNC.COST} large"></i>
                             </a>
                         </th>
                         <th rowspan="2">
@@ -218,7 +216,7 @@
                                             -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
-                                            <g:if test="${s.consortia && s.consortia == institution}">
+                                            <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
                                                 ( ${s.getSubscriberRespConsortia().name} )
                                             </g:if>
                                         </g:if>
@@ -227,7 +225,7 @@
                                         <g:if test="${s == row.destinationSubscription}">
                                             <g:set var="license" value="${row.sourceLicense}"/>
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icons.LICENSE} icon la-list-icon"></i>
+                                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                             </div>
                                         </g:if>
@@ -238,7 +236,7 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="${Icons.PACKAGE} icon la-list-icon"></i>
+                                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
                                                         title="${sp.pkg.provider?.name}">
@@ -303,7 +301,7 @@
         <br />
 
         <div class="paginateButtons" style="text-align:center">
-            <button type="submit" name="processCopyButton" value="yes" class="ui button">${message(code: 'subscription.details.copyDiscountScales.process')}</button>
+            <button type="submit" name="processCopyButton" value="yes" class="${Btn.SIMPLE}">${message(code: 'subscription.details.copyDiscountScales.process')}</button>
         </div>
 
         <g:if test="${num_sub_rows}">

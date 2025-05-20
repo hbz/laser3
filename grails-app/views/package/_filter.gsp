@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <ui:filter>
     <g:form action="${actionName}" params="${params}" method="get" class="ui form">
         <input type="hidden" name="sort" value="${params.sort}">
@@ -30,8 +31,8 @@
                 <ui:datepicker label="package.compare.filter.accessEndDate" id="accessEndDate" name="accessEndDate" value="${params.accessEndDate}" />
             </div>
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label')}" />
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'package.compare.filter.submit.label')}" />
             </div>
         </div>
     </g:form>

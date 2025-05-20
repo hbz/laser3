@@ -1,10 +1,10 @@
-<%@ page import="de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.wekb.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>
 <g:set var="configMap" value="${configMap ?: params}"/>
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}" />
-<g:set var="disableFilter" value="${(allTippsCounts && allTippsCounts > 100000) || (allTippCounts && allTippCounts > 100000)}" />
+<g:set var="disableFilter" value="${(num_tipp_rows && num_tipp_rows > 100000)}" />
 
 <g:if test="${action == 'currentPermanentTitles'}">
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
@@ -23,18 +23,18 @@
         <div class="four fields">
             <div class="field">
                 <label for="filter">${message(code: 'default.search.text')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.tipp')}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="filter" id="filter" value="${params.filter}"/>
             </div>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.identifier')}">
-                        <i class="grey question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
                 <input name="identifier" id="identifier" value="${params.identifier}"/>
@@ -43,7 +43,7 @@
             <g:if test="${controllerName == 'subscription'}">
                 <div class="field">
                     <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
-                    <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
+                    <select class="ui dropdown clearable" name="pkgfilter" id="pkgfilter">
                         <option value="">${message(code: 'default.all')}</option>
                         <g:each in="${subscription.packages}" var="sp">
                             <option value="${sp.pkg.id}" ${sp.pkg.id == params.long('pkgfilter') ? 'selected=true' : ''}>${sp.pkg.name}</option>
@@ -51,14 +51,17 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${params.mode != 'advanced' && !showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
+            <%-- removed as of ERMS-6370
+            <g:if test="${!showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
                     <ui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
-            <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
+            --%>
+
+            <g:if test="${!disableStatus && !showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
                     <label for="status">${message(code: 'default.status.label')}</label>
                     <select name="status" id="status" multiple=""
@@ -74,6 +77,7 @@
                     </select>
                 </div>
             </g:if>
+            <%-- removed as of ERMS-6370
             <div class="field">
                 <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
                 <div class="ui search selection fluid multiple dropdown" id="coverageDepth">
@@ -82,9 +86,41 @@
                     <i class="dropdown icon"></i>
                 </div>
             </div>
+            --%>
         </div>
 
         <div class="four fields">
+            <div class="field">
+                <label for="provider">${message(code: 'tipp.provider')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="provider">
+                    <input type="hidden" name="provider"/>
+                    <div class="default text"><g:message code="select2.minChars.note"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="publishers">${message(code: 'tipp.publisher')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="publishers">
+                    <input type="hidden" name="publishers"/>
+                    <div class="default text"><g:message code="select2.minChars.note"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="first_author">${message(code: 'tipp.firstAuthor')}</label>
+                <input name="first_author" id="first_author" value="${params.first_author}"/>
+            </div>
+
+            <div class="field">
+                <label for="first_editor">${message(code: 'tipp.firstEditor')}</label>
+                <input name="first_editor" id="first_editor" value="${params.first_editor}"/>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <%--
             <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="series_names">
@@ -92,7 +128,7 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--
+
                 <select name="series_names" id="series_names" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -104,7 +140,35 @@
                         </option>
                     </g:each>
                 </select>
-                --%>
+
+            </div>
+            --%>
+
+            <div class="field">
+                <label for="title_types">${message(code: 'default.search.titleTyp')}
+                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip"
+                          data-content="${message(code: 'default.search.tooltip.titleTyp')}">
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                    </span>
+                </label>
+                <div class="ui search selection fluid multiple dropdown" id="title_types">
+                    <input type="hidden" name="title_types"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="openAccess">${message(code: 'tipp.openAccess')}</label>
+                <select name="openAccess" id="openAccess" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_OA_TYPE)+RDStore.GENERIC_NULL_VALUE}" var="openAccess">
+                        <option <%=(Params.getRefdataList(params, 'openAccess')?.contains(openAccess)) ? 'selected="selected"' : ''%> value="${openAccess.id}">
+                            ${openAccess.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field ${disableFilter ? 'disabled' : ''}">
@@ -127,6 +191,7 @@
                 </select>--%>
             </div>
 
+            <%-- removed as of ERMS-6370
             <div class="field">
                 <label for="ddcs">${message(code: 'titleInstance.ddc.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="ddcs">
@@ -144,10 +209,12 @@
                     <i class="dropdown icon"></i>
                 </div>
             </div>
+            --%>
         </div>
 
-        <div class="four fields">
-            <div class="field">
+        <%-- removed as of ERMS-6370
+        <div class="five fields">
+            <%-- rem <div class="field">
                 <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="yearsFirstOnline">
                     <input type="hidden" name="yearsFirstOnline"/>
@@ -165,29 +232,7 @@
                 </div>
             </div>
 
-            <div class="field">
-                <label for="title_types">${message(code: 'default.search.titleTyp')}
-                    <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'default.search.tooltip.titleTyp')}">
-                        <i class="grey question circle icon"></i>
-                    </span>
-                </label>
-                <div class="ui search selection fluid multiple dropdown" id="title_types">
-                    <input type="hidden" name="title_types"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="publishers">${message(code: 'tipp.publisher')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="publishers">
-                    <input type="hidden" name="publishers"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
-        </div>
+        </div>--%>
 
         <div class="three fields">
             <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
@@ -227,7 +272,7 @@
 
         <g:if test="${controllerName == 'subscription' && showStatsFilter}">
             <g:if test="${revision == AbstractReport.COUNTER_4}">
-                <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+                <ui:msg class="info" showIcon="true" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" hideClose="true"/>
             </g:if>
             <div class="five fields" id="filterDropdownWrapper">
                 <div class="field">
@@ -317,8 +362,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input name="filterSet" type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>
@@ -346,9 +391,15 @@
         });
     </g:if>
 
-    JSPC.app.ajaxDropdown = function(selector, url, valuesRaw) {
+    JSPC.app.ajaxDropdown = function(selector, url, valuesRaw, fieldName, minLength) {
         let values = [];
         let valuesString = valuesRaw.replace(/&amp;quot;/g, '&quot;');
+        let minLengthInit = 0;
+        if (typeof(minLength) !== 'undefined')
+            minLengthInit = minLength;
+        let fieldNameQuery = '';
+        if (typeof(fieldName) !== 'undefined')
+            fieldNameQuery = '&fieldName='+fieldName;
         if (valuesString.includes(',')) {
             values = valuesString.split(',');
         }
@@ -360,13 +411,13 @@
             let by = 'pkg';
             let obj = '${genericOIDService.getOID(packageInstance)}';
         </g:if>
+        <g:elseif test="${controllerName == 'title' || action in ['linkTitle', 'currentPermanentTitles']}">
+            let by = 'status';
+            let obj;
+        </g:elseif>
         <g:elseif test="${controllerName == 'subscription'}">
             let by = 'sub';
             let obj = '${genericOIDService.getOID(subscription)}';
-        </g:elseif>
-        <g:elseif test="${controllerName == 'title' || action == 'currentPermanentTitles'}">
-            let by = 'status';
-            let obj;
         </g:elseif>
         <g:else>
             let by;
@@ -375,12 +426,12 @@
 
         selector.dropdown('destroy').dropdown({
             apiSettings: {
-                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${forTitles}&query={query}',
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${forTitles}'+fieldNameQuery+'&query={query}',
                 cache: false
             },
             clearable: true,
             throttle: 500,
-            minCharacters: 0
+            minCharacters: minLengthInit
         });
         if (values.length > 0) {
             selector.dropdown('queryRemote', '', () => {
@@ -389,13 +440,14 @@
         }
     }
 
-    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${configMap}"/>', '${params.series_names}');
-    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.series_names}', 'seriesName', 1);
+    JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}', 1);
     JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${configMap}"/>', '${params.ddcs}');
     JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${configMap}"/>', '${params.languages}');
     JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${configMap}"/>', '${params.yearsFirstOnline}');
     JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${configMap}"/>', '${params.medium}');
     JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${configMap}"/>', '${params.title_types}');
-    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${configMap}"/>', '${params.publishers}');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.publishers}', 'publisherName', 1);
+    JSPC.app.ajaxDropdown($('#provider'),           '<g:createLink controller="ajaxJson" action="getAllPossibleProviders" params="${configMap}"/>', '${params.provider}', 1);
     JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${configMap}"/>', '${params.coverageDepth}');
 </laser:script>

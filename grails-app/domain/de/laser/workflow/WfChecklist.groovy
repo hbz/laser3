@@ -1,10 +1,12 @@
 package de.laser.workflow
 
 import de.laser.*
-import de.laser.helper.Icons
+import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 
@@ -18,8 +20,6 @@ class WfChecklist {
 
     static final String KEY = 'WF_CHECKLIST'
 
-//    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATUS)
-//    RefdataValue status
 
     String title                // instantiate
     String description          // instantiate
@@ -40,7 +40,6 @@ class WfChecklist {
     static mapping = {
                    id column: 'wfcl_id'
               version column: 'wfcl_version'
-//               status column: 'wfcl_status_rv_fk'
                 title column: 'wfcl_title'
           description column: 'wfcl_description', type: 'text'
               comment column: 'wfcl_comment', type: 'text'
@@ -106,35 +105,35 @@ class WfChecklist {
             info.target = GrailsHibernateUtil.unwrapIfProxy(license)
             info.targetName = license.reference
             info.targetTitle = ms.getMessage('license.label', null, locale)
-            info.targetIcon = Icons.LICENSE
+            info.targetIcon = Icon.LICENSE
             info.targetController = 'lic'
         }
         else if (org) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(org)
             info.targetName = org.name
             info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('provider.label', null, locale)
-            info.targetIcon = Icons.ORG
+            info.targetIcon = Icon.ORG
             info.targetController = 'org'
         }
         else if (provider) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(provider)
             info.targetName = provider.name
             info.targetTitle = ms.getMessage('provider.label', null, locale)
-            info.targetIcon = Icons.PROVIDER
+            info.targetIcon = Icon.PROVIDER
             info.targetController = 'provider'
         }
         else if (subscription) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(subscription)
             info.targetName = subscription.name
             info.targetTitle = ms.getMessage('subscription.label', null, locale)
-            info.targetIcon = Icons.SUBSCRIPTION
+            info.targetIcon = Icon.SUBSCRIPTION
             info.targetController = 'subscription'
         }
         else if (vendor) {
             info.target = GrailsHibernateUtil.unwrapIfProxy(vendor)
             info.targetName = vendor.name
             info.targetTitle = ms.getMessage('vendor.label', null, locale)
-            info.targetIcon = Icons.VENDOR
+            info.targetIcon = Icon.VENDOR
             info.targetController = 'vendor'
         }
 

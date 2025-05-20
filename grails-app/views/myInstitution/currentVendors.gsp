@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue; de.laser.Vendor" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.RefdataValue; de.laser.wekb.Vendor" %>
 
 <laser:htmlStart message="menu.my.vendors" />
 
@@ -25,7 +25,7 @@
         <g:form action="currentVendors" method="get" class="ui form">
             <laser:render template="/templates/filter/vendorFilter"
                       model="[
-                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value'], ['subStatus', 'subPerpetualAccess', 'isMyX']],
+                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX'], ['subStatus', 'subPerpetualAccess', '']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -36,7 +36,7 @@
         <laser:render template="/templates/filter/vendorFilterTable"
                   model="[orgList: vendorList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'platform', 'currentSubscriptions', 'marker', 'isWekbCurated']
+                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'currentSubscriptions', 'marker', 'isWekbCurated']
                   ]"/>
         </g:if>
         <g:else>

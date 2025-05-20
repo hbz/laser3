@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.utils.AppUtils
@@ -78,7 +78,7 @@ class DashboardDueDatesService {
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
 //                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
-                _removeInvalidDueDates()
+                // _removeInvalidDueDates()
 
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
@@ -103,8 +103,9 @@ class DashboardDueDatesService {
         }
     }
 
-    private _removeInvalidDueDates() {
+    private int _removeInvalidDueDates() {
         log.debug '_removeInvalidDueDates' // missing fk constraint
+        int countInvalid = 0
 
         DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
 
@@ -114,10 +115,12 @@ class DashboardDueDatesService {
 
                 ddd.each { did ->
                     DashboardDueDate.get(did).delete()
+                    countInvalid++
                 }
                 DueDateObject.get(it[0]).delete()
             }
         }
+        countInvalid
     }
 
     /**
@@ -128,6 +131,8 @@ class DashboardDueDatesService {
     private _updateDashboardTableInDatabase(def flash){
         SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_2')
 
+        int countNew = 0, countUpdated = 0, countDeleted = 0, countInvalid = _removeInvalidDueDates()
+
         Date now = new Date();
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
@@ -135,41 +140,42 @@ class DashboardDueDatesService {
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             if (user.formalOrg) {
-                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user.formalOrg, user)
+                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user)
                 dueObjects.each { obj ->
                     String attributeName = DashboardDueDate.getAttributeName(obj, user)
                     String oid = genericOIDService.getOID(obj)
                     DashboardDueDate das = DashboardDueDate.executeQuery(
                             """select das from DashboardDueDate as das join das.dueDateObject ddo 
-                            where das.responsibleUser = :user and das.responsibleOrg = :org and ddo.attribute_name = :attribute_name and ddo.oid = :oid
+                            where das.responsibleUser = :user and ddo.attribute_name = :attribute_name and ddo.oid = :oid
                             order by ddo.date""",
                             [user: user,
-                             org: user.formalOrg,
                              attribute_name: attributeName,
                              oid: oid
                             ])[0]
+                    // TODO ERMS-5862
+//                    das = DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser(obj, attributeName, user)
 
-                    if (das) {//update
-                        das.update(messageSource, obj)
-                        log.debug("DashboardDueDatesService UPDATE: " + das);
-                    } else {//insert
-                        das = new DashboardDueDate(messageSource, obj, user, user.formalOrg, false, false)
+                    if (das) { //update
+                        das.update(obj)
+                        log.debug('DashboardDueDatesService UPDATE: ' + das + ' > ' + obj)
+                        countUpdated++
+                    }
+                    else { // insert
+                        das = new DashboardDueDate(obj, user)
                         das.save()
                         dashboarEntriesToInsert << das
-                        log.debug("DashboardDueDatesService INSERT: " + das);
+                        log.debug('DashboardDueDatesService INSERT: ' + das + ' < ' + obj)
+                        countNew++
                     }
                 }
             }
         }
 
-        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_2', [count: dashboarEntriesToInsert.size()])
-
         DashboardDueDate.withTransaction { session ->
             try {
                 // delete (not-inserted and non-updated entries, they are obsolet)
-                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
-                log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
-                log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size())
+                countDeleted = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
+                log.debug("DashboardDueDatesService DELETES: " + countDeleted)
 
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
             } catch (Throwable t) {
@@ -177,11 +183,15 @@ class DashboardDueDatesService {
                 SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': tMsg])
 
                 session.setRollbackOnly()
+                countDeleted = -1
                 log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
-
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
         }
+
+        log.debug( '_updateDashboardTableInDatabase() -> new: ' + countNew + ', updated: ' + countUpdated + ', deleted: ' + countDeleted + ', INVALID: ' + countInvalid + ')')
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_2', [new: countNew, updated: countUpdated, deleted: countDeleted, INVALID: countInvalid])
+
         log.debug("Finished DashboardDueDatesService updateDashboardTableInDatabase")
 
         flash
@@ -195,26 +205,27 @@ class DashboardDueDatesService {
     private _sendEmailsForDueDatesOfAllUsers(def flash) {
         SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
-        int userCount = 0
+        int userCount = 0, mailCount = 0
         try {
-            List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+            List<User> users = User.findAllByEnabledAndAccountExpired(true, false)
             users.each { user ->
-                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
-                if (userWantsEmailReminder) {
-                    if (user.formalOrg) {
-                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg, false, false)
-                        _sendEmail(user, user.formalOrg, dashboardEntries)
-                        userCount++
+                    boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
+                    if (userWantsEmailReminder) {
+                        if (user.formalOrg) {
+                            List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user)
+                            if (_sendEmail(user, user.formalOrg, dashboardEntries)) {
+                                mailCount++
+                            }
+                            userCount++
+                        }
                     }
-                }
             }
-
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
             e.printStackTrace()
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
-        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_3', [count: userCount])
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_3', [users: userCount, mails: mailCount])
 
         flash
     }
@@ -224,8 +235,11 @@ class DashboardDueDatesService {
      * @param user the {@link User} who should be reminded
      * @param org the context {@link Org} the object is settled in
      * @param dashboardEntries the {@link List} of {@link DashboardDueDate}s to process
+     * @return isMailed
      */
-    private void _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
+    private boolean _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
+        boolean isMailed = false
+
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
@@ -246,7 +260,9 @@ class DashboardDueDatesService {
             dashboardEntries.each { DashboardDueDate dashDueDate ->
                 Map<String, Object> dashDueDateRow = [:]
                 def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
-                if(obj) {
+//                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
+
+                if (obj) {
                     if(userLang == RDStore.LANGUAGE_DE)
                         dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)
                     else dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_en)
@@ -256,6 +272,7 @@ class DashboardDueDatesService {
                     else if(SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date))
                         dashDueDateRow.importance = '!!'
                     else dashDueDateRow.importance = ' '
+
                     if(obj instanceof Subscription) {
                         dashDueDateRow.classLabel = messageSource.getMessage('subscription', null, language)
                         dashDueDateRow.link = grailsLinkGenerator.link(controller: 'subscription', action: 'show', id: obj.id, absolute: true)
@@ -280,7 +297,7 @@ class DashboardDueDatesService {
                         dashDueDateRow.classLabel = messageSource.getMessage('attribute', null, language)+': '
                         if (obj.owner instanceof Person) {
                             dashDueDateRow.classLabel += "${messageSource.getMessage('default.person.label', null, language)}: "
-                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "person", action: "show", id: obj.owner?.id, absolute: true])
+                            // dashDueDateRow.link
                             dashDueDateRow.objLabel = obj.owner?.first_name+' '+obj.owner?.last_name
                         }
                         else if (obj.owner instanceof Subscription) {
@@ -327,6 +344,7 @@ class DashboardDueDatesService {
                         subject mailSubject
                         html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                     }
+                    isMailed = true
                 }
                 catch (Exception e) {
                     log.error "Unable to perform email due to exception: ${e.message}"
@@ -340,6 +358,7 @@ class DashboardDueDatesService {
                         subject mailSubject
                         html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                     }
+                    isMailed = true
                 }
                 catch (Exception e) {
                     log.error "Unable to perform email due to exception: ${e.message}"
@@ -347,59 +366,48 @@ class DashboardDueDatesService {
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
+
+        isMailed
     }
 
     /**
-     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks
+     * Gets all due dates of the given user in the given context org; matching hidden=false and done=false
      * @param user the {@link User} whose due dates are to be queried
-     * @param org the {@link Org} whose context is requested
-     * @param isHidden are the tasks hidden?
-     * @param isDone are the tasts done?
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
-        List liste = DashboardDueDate.executeQuery(
-                """select das from DashboardDueDate as das 
-                        join das.dueDateObject ddo 
-                        where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+    List<DashboardDueDate> getDashboardDueDates(User user) {
+        DashboardDueDate.executeQuery(
+                """select das from DashboardDueDate as das join das.dueDateObject ddo 
+                        where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone
                         order by ddo.date""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone])
-        liste
+                [user: user, isHidden: false, isDone: false])
     }
 
     /**
-     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks and paginated
+     * Gets all due dates of the given user in the given context org; matching hidden=false and done=false with pagination
      * @param user the {@link User} whose due dates are to be queried
-     * @param org the {@link Org} whose context is requested
-     * @param isHidden are the tasks hidden?
-     * @param isDone are the tasts done?
      * @param max the maximum count of entries to load
      * @param offset the number of entry to start from
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
-        List liste = DashboardDueDate.executeQuery(
+    List<DashboardDueDate> getDashboardDueDates(User user, max, offset){
+        DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
-                where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+                where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone
                 order by ddo.date""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone], [max: max, offset: offset])
-
-        liste
+                [user: user, isHidden: false, isDone: false], [max: max, offset: offset])
     }
 
     /**
-     * Counts the {@link DashboardDueDate}s the responsible user has set, matching the given hidden and done flag
+     * Counts the {@link DashboardDueDate}s the responsible user has set, matching hidden=false and done=false
      * @param user the user whose due dates should be counted
-     * @param org the institution responsible for the due date
-     * @param isHidden are the due dates to be counted hidden?
-     * @param isDone are the due dates to be counted completed?
      * @return the count of the due dates matching the flags
      */
-    int countDashboardDueDates(User user, Org org, isHidden, isDone){
+    int countDashboardDueDates(User user){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 
-                where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone])[0]
+                where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone""",
+                [user: user, isHidden: false, isDone: false])[0]
     }
 
 }

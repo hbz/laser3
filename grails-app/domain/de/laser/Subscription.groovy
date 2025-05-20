@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -17,6 +18,10 @@ import de.laser.survey.SurveyOrg
 import de.laser.traits.ShareableTrait
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -56,16 +61,16 @@ import static java.time.temporal.ChronoUnit.DAYS
  * to consortial subscriptions; they then get institution subscriptions. Basic members and single users may have institution subscriptions, but they have
  * reading rights only. Members may add notes to the subscriptions; single users may add above that own documents, tasks, notes and properties to the
  * institution subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
- * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members. Shared
- * items are thus visible on both levels - on parent and on member level. The inheritance may be configured to take effect automatically or only after accepting it -
- * this is controlled by the {@link #isSlaved} flag. Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
+ * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members.
+ * Shared items are thus visible on both levels - on parent and on member level.
+ * Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
  * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
  * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
- * @see Platform
- * @see Package
+ * @see de.laser.wekb.Platform
+ * @see de.laser.wekb.Package
  * @see SubscriptionPackage
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see IssueEntitlement
  * @see CostItem
  * @see License
@@ -91,8 +96,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.SUBSCRIPTION_HOLDING)
     RefdataValue holdingSelection
 
-    // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-    boolean isSlaved = false
 	boolean isPublicForApi = false
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false
@@ -174,10 +177,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       ]
 
     static transients = [
-            'isSlavedAsString', 'provider', 'multiYearSubscription',
+            'provider', 'multiYearSubscription',
             'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
-            'subscriberRespConsortia', 'providers', 'agencies', 'consortia'
+            'subscriberRespConsortia', 'providers', 'agencies', 'consortium'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -201,7 +204,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         referenceYear            column:'sub_reference_year', index: 'sub_reference_year_idx'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
-        isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access'
         //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
         hasPublishComponent column: 'sub_has_publish_component'
@@ -311,8 +313,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def beforeUpdate() {
         Map<String, Object> changes = super.beforeUpdateHandler()
-        log.debug ("beforeUpdate() " + changes.toMapString())
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
@@ -498,17 +498,17 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
-        if(getConsortia() && !getAllSubscribers() && !instanceOf) {
+        if (getConsortium() && !getSubscriber() && !instanceOf) {
             if(administrative) {
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
         }
-        else if(getConsortia() && instanceOf) {
+        else if (getConsortium() && instanceOf) {
             result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
-        else if(getAllSubscribers() && !instanceOf) {
+        else if (getSubscriber() && !instanceOf) {
             result = TYPE_LOCAL
         }
         result
@@ -516,7 +516,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all providers linked to this subscription
-     * @return a {@link List} of {@link Provider}s
+     * @return a {@link List} of {@link de.laser.wekb.Provider}s
      */
     List<Provider> getProviders() {
         Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
@@ -534,7 +534,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     /**
      * Retrieves all vendors linked to this subscription
-     * @return a {@link List} of linked {@link Vendor}s
+     * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
         Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',
@@ -548,15 +548,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Vendor> getSortedVendors(String order) {
         Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname '+order,
                 [sub: this])
-    }
-
-    /**
-     * Outputs the {@link #isSlaved} flag as string; isSlaved means whether changes on a consortial parent subscription should be
-     * passed directly to the members or if they need to be accepted before applying them
-     * @return 'Yes' if isSlaved is true, 'No' otherwise
-     */
-    String getIsSlavedAsString() {
-        isSlaved ? "Yes" : "No"
     }
 
     /**
@@ -586,7 +577,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       if ( or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id] )
         result = or.org
         
-      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIA.id )
+      if ( or.roleType.id == RDStore.OR_SUBSCRIPTION_CONSORTIUM.id )
         cons = or.org
     }
     
@@ -596,19 +587,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     
     result
   }
-
-    /**
-     * Retrieves all subscribers to this subscription
-     * @return a {@link List} of institutions ({@link Org}) subscribing this subscription
-     */
-    List<Org> getAllSubscribers() {
-        List<Org> result = []
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] )
-                result.add(or.org)
-            }
-        result
-    }
 
     /**
      * Gets the content provider of this subscription
@@ -625,8 +603,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Gets the consortium of this subscription
      * @return the {@link Org} linked as 'Subscription Consortia' to this subscription or null if none exists (this is the case for local subscriptions)
      */
-    Org getConsortia() { // TODO getConsortium()
-        Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIA, this)?.org //null check necessary because of single users!
+    Org getConsortium() {
+        Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIUM, this)?.org //null check necessary because of single users!
+        result
+    }
+
+    Org getSubscriber() {
+        Org result = OrgRole.findBySubAndRoleTypeInList(this, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])?.org
         result
     }
 
@@ -637,7 +620,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
-        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.sortname']).collect{it.org}
     }
 
     /**
@@ -704,22 +687,26 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     boolean isMultiYearSubscription() {
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
-        return (startDate && endDate && (DAYS.between(startDate, endDate) > 366))
+        return (isMultiYear && startDate && endDate && (DAYS.between(startDate, endDate) > 366))
     }
 
     /**
      * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the subscription
      * @return true if we are within the given multi-year range, false otherwise
      */
-    boolean isCurrentMultiYearSubscriptionNew() {
+
+
+/*    boolean isCurrentMultiYearSubscriptionNew() {
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
-    }
+    }*/
 
     /**
      * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the parent subscription
      * @return true if we are within the given multi-year range, false otherwise
      */
+
+
     boolean isCurrentMultiYearSubscriptionToParentSub() {
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         return (this.isMultiYear && endDate && this.instanceOf && DAYS.between(DateUtils.dateToLocalDate(this.instanceOf.startDate), endDate) > 366)
@@ -775,7 +762,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         Org contextOrg = contextService.getOrg()
 
         if (user.isFormal(contextOrg)) {
-            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA )
+            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIUM )
             OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER_CONS )
             OrgRole subscr     = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER )
 
@@ -783,7 +770,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getContextService().isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if (BeanStore.getContextService().isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }
@@ -847,7 +834,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
         Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
         SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
-        List<RefdataValue> viableRoles = [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]
+        List<RefdataValue> viableRoles = [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]
     
     hqlParams.put('viableRoles', viableRoles)
 
@@ -889,7 +876,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
      * @return a {@link List} of ISIL identifier strings
      * @see SubscriptionPackage
-     * @see Package
+     * @see de.laser.wekb.Package
      */
   String getCommaSeperatedPackagesIsilList() {
       List<String> result = []
@@ -905,7 +892,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves a set of access points linked to this subscription and attached to the given institution and platform
      * @param org the institution ({@link Org}) who created the access point
-     * @param platform the {@link Platform} to which the access point link is attached to
+     * @param platform the {@link de.laser.wekb.Platform} to which the access point link is attached to
      * @return a set (as {@link List} with distinct in query) of access point links
      * @see OrgAccessPoint
      */
@@ -931,7 +918,7 @@ select distinct oap from OrgAccessPoint oap
   String dropdownNamingConvention() {
       dropdownNamingConvention(BeanStore.getContextService().getOrg())
   }
-
+    
     /**
      * Displays this subscription's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
      * @param contextOrg the institution whose perspective should be taken
@@ -953,7 +940,7 @@ select distinct oap from OrgAccessPoint oap
            orgRelations.each { or ->
                orgRelationsMap.put(or.roleType.id,or.org)
            }
-           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIA.id)?.id == contextOrg.id) {
+           if(orgRelationsMap.get(RDStore.OR_SUBSCRIPTION_CONSORTIUM.id)?.id == contextOrg.id) {
                if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id))
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS.id)?.sortname
                else if(orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id))

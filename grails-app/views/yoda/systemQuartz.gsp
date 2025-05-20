@@ -1,4 +1,4 @@
-<%@ page import="grails.util.Holders; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.Icon; grails.util.Holders; de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="menu.yoda.systemQuartz" />
 
 <ui:breadcrumbs>
@@ -8,10 +8,10 @@
 
 <ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" type="yoda" />
 
-<ui:msg class="info" noClose="true">
-    <i class="check icon"></i> Job is active <br />
-    <i class="stop icon"></i> Job is NOT active <br />
-    <i class="exclamation triangle icon"></i> Job is NOT available - due deactivation oder missing configuration <br />
+<ui:msg class="info" hideClose="true">
+    <i class="${Icon.UI.SUCCESS} icon"></i> Job is active <br />
+    <i class="${Icon.SYM.SQUARE} icon"></i> Job is NOT active <br />
+    <i class="${Icon.UI.ERROR}"></i> Job is NOT available - due deactivation oder missing configuration <br />
 </ui:msg>
 
 <g:each in="${quartz}" var="groupKey, group">

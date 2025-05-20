@@ -24,6 +24,9 @@
     ${linkToSurvey}
     <br />
     <br />
+    <g:message code="email.survey.general.text3" args="${[formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}" locale="${language}"/>
+    <br />
+    <br />
     <g:if test="${survey.isMandatory}">
         <g:if test="${renewalSurvey}">
             <g:message code="email.survey.reminder.renewal.text.isMandatory" locale="${language}"/>
@@ -77,6 +80,9 @@
         </g:elseif>
         <br />
         ${linkToSurvey}
+        <br />
+        <br />
+        <g:message code="email.survey.general.text3" args="${[formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}" locale="${language}"/>
         <br />
         <br />
         <g:if test="${survey.isMandatory}">

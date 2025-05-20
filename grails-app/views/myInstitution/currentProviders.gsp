@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Provider; de.laser.ExportClickMeService; de.laser.RefdataValue" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ExportClickMeService; de.laser.RefdataValue" %>
 
 <laser:htmlStart message="menu.my.providers" />
 
@@ -27,7 +27,7 @@
             <laser:render template="/templates/filter/providerFilter"
                       model="[
                               propList: propList,
-                              tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'], ['property&value'], ['subStatus', 'subPerpetualAccess', 'isMyX']],
+                              tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'], ['property&value', 'isMyX'], ['subStatus', 'subPerpetualAccess', '']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

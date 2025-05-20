@@ -1,11 +1,11 @@
-<%@page import="de.laser.helper.Icons; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.utils.RandomUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
 
     //for ERMS-2393/3933: this is a request parameter for the DMS rights management interface
     if(instance instanceof Subscription) {
-        if(contextService.getOrg().id == instance.getConsortia()?.id && instance.instanceOf) {
+        if(contextService.getOrg().id == instance.getConsortium()?.id && instance.instanceOf) {
             if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
@@ -25,7 +25,7 @@
     int trCounter = 1
 
     List<DocContext> securityWorkaroundList = []
-    String randomId = RandomStringUtils.randomAlphanumeric(8)
+    String randomId = RandomUtils.getHtmlID()
 %>
 
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
@@ -45,7 +45,9 @@
                     <th>${message(code:'org.docs.table.targetFor')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
-                <th scope="col" class="${colWide[cwCounter]} wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                <th scope="col" class="${colWide[cwCounter]} wide center aligned" rowspan="2">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code:'license.docs.table.fileName')}</th>
@@ -76,9 +78,9 @@
                     if(docctx.targetOrg)
                         inTargetOrg = contextService.getOrg().id == docctx.targetOrg.id
                     else if(docctx.subscription)
-                        inTargetOrg = contextOrg.id == docctx.subscription.getSubscriberRespConsortia().id
+                        inTargetOrg = contextService.getOrg().id == docctx.subscription.getSubscriberRespConsortia().id
                     else if(docctx.license)
-                        inTargetOrg = contextOrg.id in docctx.license.getDerivedLicensees().id
+                        inTargetOrg = contextService.getOrg().id in docctx.license.getDerivedLicensees().id
                     switch(docctx.shareConf) {
                         case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
                             break
@@ -125,7 +127,7 @@
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
-                                    <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                    <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
                                     ${docctx.owner.title}
@@ -133,6 +135,11 @@
                             </strong>
                             <br />
                             ${docctx.owner.filename}
+                            <g:if test="${docctx.owner.ckey}">
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'license.docs.table.encrypted')}">
+                                    <i class="icon award pink"></i>
+                                </span>
+                            </g:if>
                         </td>
                         <td>
                             ${docctx.getDocType()?.getI10n('value')}
@@ -149,68 +156,87 @@
                         %{--
                             <td>
                                 <g:if test="${docctx.org}">
-                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icons.ORG} icon small"></i> ${docctx.org.name}</g:link>
+                                    <g:link controller="organisation" action="show" params="[id:docctx.org.id]"><i class="${Icon.ORG} small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icons.LICENSE} icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="${Icon.LICENSE} small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
-                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icons.PACKAGE} icon small"></i> ${docctx.pkg.name}</g:link>
+                                    <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="${Icon.PACKAGE} small"></i> ${docctx.pkg.name}</g:link>
                                 </g:elseif>
                             </td>
                         --}%
                         </g:if>
-                        <td class="center aligned x">
+                        <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                            <i class="grey alternate share icon"></i>
+                                        <span class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                                         </span>
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
-                                        <g:if test="${docctx.isShared}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
-                                                        params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="alternate share icon"></i>
-                                                </g:link>
-                                            </span>
+                                        <g:if test="${editable}">
+                                            <g:if test="${docctx.isShared}">
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
+                                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
+                                                    </g:link>
+                                                </span>
+                                            </g:if>
+                                            <g:else>
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
+                                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
+                                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
+                                                    </g:link>
+                                                </span>
+                                            </g:else>
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
-                                                        params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                                    <i class="la-share slash icon"></i>
-                                                </g:link>
-                                            </span>
+                                            %{-- TODO: ERMS-6253 - show shared icon --}%
+                                            <g:if test="${docctx.isShared}">
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                                    <span class="${Btn.MODERN.SIMPLE} disabled">
+                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
+                                                    </span>
+                                                </span>
+                                            </g:if>
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
-                                <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                <g:if test="${userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>
                                 </g:if>
-                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
+                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
                                     <%
                                         String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
                                     %>
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    <g:set var="linkParams" value="${[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+%{--                                    params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'--}%
+                                    <g:link controller="document" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
+                                            params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="${Icons.CMD_DELETE} icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:if>
+                                <g:else>
+                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                        <icon:placeholder /><%-- Hidden Fake Button --%>
+                                    </div>
+                                </g:else>
                             </g:if>
                         </td>
                     </tr>
@@ -230,7 +256,7 @@
                     <td></td>
                     <td>
                         <form id="bulk_form_${randomId}" class="ui form" method="POST">
-                            <ui:select class="ui dropdown search"
+                            <ui:select class="ui dropdown clearable search"
                                        name="bulk_docConf" id="bulk_docConf_${randomId}"
                                        from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
                                        optionKey="id"
@@ -244,7 +270,7 @@
                         <td></td>
                     </g:if>
                     <td>
-                        <button id="bulk_submit_${randomId}" class="ui button primary">Übernehmen</button>
+                        <button id="bulk_submit_${randomId}" class="${Btn.PRIMARY}">Übernehmen</button>
                     </td>
                 </tr>
             </tfoot>

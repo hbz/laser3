@@ -8,7 +8,7 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="vendor" action="tasks" params="${[id: vendor.id]}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="vendor" action="documents" params="${[id: vendor.id]}" counts="${docsCount}" message="default.documents.label" />
 
-    <g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowService.hasREAD()}">
         <ui:subNavItem controller="vendor" action="workflows" counts="${checklistCount}" params="${[id: vendor.id]}" message="workflow.plural"/>
     </g:if>
     <g:elseif test="${contextService.getOrg().isCustomerType_Basic()}">

@@ -94,12 +94,12 @@ class ApiIssueEntitlement {
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
+                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
                     result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_SUBSCRIPTION, context)
-                    // de.laser.TitleInstancePackagePlatform
+                    // de.laser.wekb.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
                     result.subscription = ApiStubReader.requestSubscriptionStub(ie.subscription, context)

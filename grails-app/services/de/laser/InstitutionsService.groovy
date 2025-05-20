@@ -5,6 +5,8 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 
 import java.nio.file.Files
@@ -49,8 +51,7 @@ class InstitutionsService {
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
                 instanceOf: base,
-                openEnded: base.openEnded,
-                isSlaved: true //is default as of June 25th with ticket ERMS-2635
+                openEnded: base.openEnded
         )
 
         Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)
@@ -103,7 +104,6 @@ class InstitutionsService {
                         new DocContext(
                                 owner: dctx.owner,
                                 license: licenseInstance,
-                                domain: dctx.domain,
                                 status: dctx.status,
                                 sharedFrom: dctx
                         ).save()
@@ -131,8 +131,8 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
-                            server: dctx.owner.server
+                            server: dctx.owner.server,
+                            ckey: dctx.owner.ckey
                     ).save()
 
                     String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
@@ -144,7 +144,6 @@ class InstitutionsService {
                     new DocContext(
                             owner: clonedContents,
                             license: licenseInstance,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }

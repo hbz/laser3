@@ -4,7 +4,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
-import org.apache.commons.lang3.RandomStringUtils
+import de.laser.utils.RandomUtils
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
@@ -114,8 +114,8 @@ class ApiToolkit {
         }
         else {
             OrgSetting.add(org, OrgSetting.KEYS.API_LEVEL, apiLevel)
-            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomStringUtils.randomAlphanumeric(24))
-            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomStringUtils.randomAlphanumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomUtils.getAlphaNumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomUtils.getAlphaNumeric(24))
         }
     }
 

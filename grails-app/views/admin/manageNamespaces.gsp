@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
@@ -46,7 +46,7 @@
 
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
                         <label for="nsType"><g:message code="default.type.label" /></label>
-                        <g:select id="nsType" name="nsType" class="ui dropdown la-clearable"
+                        <g:select id="nsType" name="nsType" class="ui dropdown clearable"
                                   from="${IdentifierNamespace.AVAILABLE_NSTYPES}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>
@@ -78,41 +78,75 @@
 
                 <input name="isHidden" type="hidden" value="false" />
 
-                <button type="submit" class="ui button">
+                <button type="submit" class="${Btn.SIMPLE}">
                     <g:message code="default.button.create.label"/>
                 </button>
         </ui:form>
 
         <g:if test="${cmd == 'details'}">
 
-            <g:link controller="admin" action="manageNamespaces" class="ui button right floated"><g:message code="default.button.back"/></g:link>
+            <g:link controller="admin" action="manageNamespaces" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
 
-            &nbsp;&nbsp;
-
-            <h2 class="ui header"><g:message code="identifierNamespace.detailsStats" args="${[identifierNamespaceInstance.ns]}" /></h2>
-
-            <g:each in="${detailsStats}" var="list">
-                <g:if test="${list && list.value}">
-                    <p><strong>${list.key} - ${list.value.size()} <g:message code="default.matches.label"/></strong></p>
-                </g:if>
-            </g:each>
-
-            &nbsp;
-
-            <g:each in="${detailsStats}" var="list">
-                <g:if test="${list && list.value}">
-                    <p><strong><i class="ui icon angle right"></i> ${list.key}</strong></p>
-                    <div class="ui list">
-                        <g:each in="${list.value}" var="entry" status="i">
-                            <div class="item" <%= ((i+1)%10)==0 ? 'style="margin-bottom:1.2em"':''%>>
-                                ${entry[0]}
-                                &nbsp;&nbsp;&nbsp;&nbsp; &rarr; &nbsp;&nbsp;&nbsp;&nbsp;
-                                <a href="${list.key}/${entry[1]}">${list.key}/${entry[1]}</a>
-                            </div>
+            <div class="ui fluid card">
+                <div class="content">
+                    <table class="ui striped very compact table">
+                        <thead>
+                            <tr>
+                                <th><g:message code="identifierNamespace.detailsStats" args="${[identifierNamespaceInstance.ns]}" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <g:each in="${detailsStats}" var="list">
+                            <g:if test="${list && list.value}">
+                                <tr>
+                                    <td>${list.key} - <strong>${list.value.size()}</strong> <g:message code="default.matches.label"/></td>
+                                </tr>
+                            </g:if>
                         </g:each>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <g:each in="${detailsStats}" var="list">
+                <g:if test="${list && list.value}">
+                    <g:set var="listSize" value="${list.value.size()}" />
+                    <g:set var="list1" value="${listSize > 50 ? list.value.subList(0, Math.ceil(listSize/2).intValue()) : list.value}" />
+                    <g:set var="list2" value="${listSize > 50 ? list.value.subList(Math.ceil(listSize/2).intValue(), listSize) : []}" />
+
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <table class="ui striped very compact table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="6"><icon:arrow /> ${list.key}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <g:each in="${list1}" var="entry" status="i">
+                                        <tr>
+                                            <td><span class="ui text grey">${1 + i}.</span></td>
+                                            <td><a href="${list.key}/${entry[1]}">${list.key}/${entry[1]}</a></td>
+                                            <td>${entry[0]}</td>
+                                            <g:if test="${list2[i]}">
+                                                <td><span class="ui text grey">${1 + i + list1.size()}.</span></td>
+                                                <td><a href="${list.key}/${list2[i][1]}">${list.key}/${list2[i][1]}</a></td>
+                                                <td>${list2[i][0]}</td>
+                                            </g:if>
+                                            <g:else>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </g:else>
+                                        </tr>
+                                    </g:each>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </g:if>
             </g:each>
+
         </g:if>
         <g:else>
                 <table class="ui celled la-js-responsive-table la-table compact table">
@@ -137,14 +171,14 @@
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
                                         ${idNs.ns}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
-                                        </span>
-                                        <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
+                                            <i class="${Icon.PROP.IN_USE}"></i>
+                                        </span>
                                     </td>
                                     <td></td>
                                     <td>
@@ -194,10 +228,10 @@
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
                                             <g:link controller="admin" action="manageNamespaces"
-                                                    params="${[cmd: 'deleteNamespace', oid: IdentifierNamespace.class.name + ':' + idNs.id]}" class="ui icon negative button  la-modern-button"
+                                                    params="${[cmd: 'deleteNamespace', ns: idNs.id]}" class="${Btn.MODERN.NEGATIVE}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>
@@ -205,14 +239,14 @@
                                 <g:else>
                                     <td>
                                         ${idNs.ns}
-                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="info circle icon blue"></i>
-                                        </span>
-                                        <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                        <g:if test="${!idNs.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
+                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
+                                            <i class="${Icon.PROP.IN_USE}"></i>
+                                        </span>
                                     </td>
                                     <td>
                                         ${Identifier.countByNs(idNs)}
@@ -266,9 +300,9 @@
                                         %>
                                         <g:if test="${tooltip}">
                                             <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
-                                                  class="la-long-tooltip la-popup-tooltip la-delay">
-                                                <g:link class="ui button icon" controller="admin" action="manageNamespaces"
-                                                        params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="ui icon question"></i></g:link>
+                                                  class="la-long-tooltip la-popup-tooltip">
+                                                <g:link class="${Btn.MODERN.SIMPLE}" controller="admin" action="manageNamespaces"
+                                                        params="${[cmd: 'details', ns: idNs.id]}"><i class="${Icon.UI.INFO}"></i></g:link>
                                             </span>
                                         </g:if>
                                     </td>

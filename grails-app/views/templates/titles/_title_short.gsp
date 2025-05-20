@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 
@@ -28,7 +28,7 @@
 
     <g:if test="${ie}">
         <div class="item">
-            <i class="grey save icon la-popup-tooltip la-delay"
+            <i class="grey save icon la-popup-tooltip"
                data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
             <div class="content">
@@ -45,7 +45,7 @@
                 </g:if>
                 <g:else>
                     <%
-                        if(contextOrg || surveyService.hasParticipantPerpetualAccessToTitle3(contextOrg, tipp)){
+                        if (contextService.getOrg() || surveyService.hasParticipantPerpetualAccessToTitle3(contextService.getOrg(), tipp)){
                             if (ie.perpetualAccessBySub) {
                                 println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
                             }else {
@@ -63,8 +63,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon user circle la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.firstAuthor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_AUTHOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstAuthor') + ':'} ${tipp.firstAuthor}
@@ -74,8 +73,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon industry circle la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.firstEditor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_EDITOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstEditor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
@@ -85,7 +83,7 @@
 
     <div class="ui grid">
         <div class="right aligned wide column">
-            <a class="ui mini button" onclick="JSPC.app.showAllTitleInfos(${tipp.id}, ${ie ? ie.id : null});">
+            <a class="${Btn.SIMPLE} mini" onclick="JSPC.app.showAllTitleInfos(${tipp.id}, ${ie ? ie.id : null});">
                 <g:message code="title.details"/>
             </a>
         </div>

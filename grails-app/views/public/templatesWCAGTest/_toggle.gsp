@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons" %>
-<button aria-expanded="true" class="ui button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="${Icons.LINK_FILTERED} icon"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<button aria-expanded="true" class="ui button la-inline-labeled la-js-filterButton la-clearfix">    Filter    <i aria-hidden="true" class="${Icon.LNK.FILTERED}"></i>   <span class="ui circular label la-js-filter-total hidden">0</span></button>
 
 
 
@@ -31,8 +31,8 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <a href="/laser/myInstitution/tasks" class="ui reset secondary button">Filter zurücksetzen</a>
-            <input type="submit" class="ui primary button" value="Filtern">
+            <a href="/laser/myInstitution/tasks" class="${Btn.SECONDARY} reset">Filter zurücksetzen</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="Filtern">
         </div>
     </form>--}%
 </div>

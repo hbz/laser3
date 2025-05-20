@@ -1,6 +1,6 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
-<laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
+<laser:htmlStart message="search.advancedSearch" />
 
 <%
     SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
@@ -68,7 +68,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable "
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption"
                           valueMessagePrefix="search.advancedSearch.option"
@@ -83,7 +83,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption2"
                           valueMessagePrefix="search.advancedSearch.option"
@@ -98,7 +98,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption3"
                           valueMessagePrefix="search.advancedSearch.option"
@@ -112,7 +112,7 @@
         </div>
 
         <div class="field">
-            <g:if test="${contextOrg.isCustomerType_Consortium()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="ui checkbox">
                     <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
                     <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
@@ -155,8 +155,8 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.searchreset.label')}</a>
-                <button name="search" type="submit" value="true" class="ui primary button">
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.searchreset.label')}</a>
+                <button name="search" type="submit" value="true" class="${Btn.PRIMARY}">
                     <g:message code="search.button" />
                 </button>
             </div>
@@ -239,7 +239,7 @@
                                 </g:else>
 
                                 <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
-                                    <i class="delete icon"></i>
+                                    <i class="${Icon.SYM.NO}"></i>
                                 </g:link>
                             </span>
                         </g:each>
@@ -267,7 +267,7 @@
                         <tr>
                             <g:if test="${object.rectype == 'Org'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.'+object.rectype.toLowerCase())}">
                                         <i class="circular icon la-organisation"></i>
                                     </span>
@@ -305,7 +305,7 @@
                             <g:if test="${object.rectype == 'Package'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -334,7 +334,7 @@
                             <g:if test="${object.rectype == 'Platform'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -360,7 +360,7 @@
 
                             <g:if test="${object.rectype == 'Provider'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.provider')}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -397,7 +397,7 @@
 
                             <g:if test="${object.rectype == 'Subscription'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -407,9 +407,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -436,12 +436,12 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.membersCount && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members"
                                                 id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.members && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
@@ -450,7 +450,7 @@
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextOrg.isCustomerType_Consortium())}">
+                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextService.getOrg().isCustomerType_Consortium())}">
                                     <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
 
@@ -467,7 +467,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'License'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -477,9 +477,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -506,11 +506,11 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.membersCount && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="license" action="members" id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.members && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members" id="${object.dbId}"> ${object.members.size()}</g:link>
                                         <article class="la-readmore">
@@ -520,7 +520,7 @@
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${!(contextOrg.isCustomerType_Consortium())}">
+                                    <g:if test="${!(contextService.getOrg().isCustomerType_Consortium())}">
                                         <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
                                 </td>
@@ -529,9 +529,9 @@
                             <g:if test="${object.rectype == 'SurveyConfig'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular icon inverted pink"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="survey" action="show"
@@ -541,9 +541,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -561,7 +561,7 @@
                                     <br />
                                     <strong>${message(code: 'renewalEvaluation.period')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'surveyParticipants.label')}</strong>: ${object.membersCount}
                                     </g:if>
                                 </td>
@@ -570,9 +570,9 @@
                             <g:if test="${object.rectype == 'SurveyOrg'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.SURVEY} circular icon inverted pink"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
@@ -581,9 +581,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -604,9 +604,9 @@
 
                             <g:if test="${object.rectype == 'Task'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.TASK} circular icon inverted green"></i>
+                                        <i class="${Icon.TASK} circular inverted green"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="tasks" params="[taskName: object.name]">${object.name}</g:link>
@@ -614,9 +614,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -644,7 +644,7 @@
 
                             <g:if test="${object.rectype == 'Vendor'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.vendor')}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
@@ -673,7 +673,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'Note'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                             <i class="circular icon inverted grey sticky note"></i>
                                     </span>
@@ -683,9 +683,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -702,9 +702,9 @@
                             <g:if test="${object.rectype == 'Document'}">
                                 <td>
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="${Icons.DOCUMENT} icon circular inverted grey"></i>
+                                        <i class="${Icon.DOCUMENT} circular inverted grey"></i>
                                     </span>
 
                                     <g:link controller="${object.objectClassName}" action="documents" id="${object.objectId}">${object.name}</g:link>
@@ -712,9 +712,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -729,7 +729,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'IssueEntitlement'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular la-book icon"></i>
                                     </span>
@@ -739,9 +739,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -756,7 +756,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'SubscriptionProperty'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         Subscription<i class="circular la-subscription icon"></i>
                                     </span>
@@ -766,9 +766,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -783,7 +783,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'LicenseProperty'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                             <i class="circular la-license icon" ></i>
                                     </span>
@@ -793,9 +793,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="${Icons.PRIVATE_PROPERTY} grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>

@@ -1,8 +1,8 @@
 package de.laser.api.v0.entities
 
-import de.laser.Address
+import de.laser.RefdataValue
+import de.laser.addressbook.Address
 import de.laser.Combo
-import de.laser.DeletionService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.Org
@@ -68,7 +68,10 @@ class ApiOrg {
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {
-            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+            // result.validateDeletedStatus_2('status', RefdataValue.getByValueAndCategory('Deleted', 'org.status')) // TODO: erms-6224 - check needed if org.status removed?
+            if ((result.obj as Org).isArchived()) {
+                result.status = Constants.OBJECT_STATUS_DELETED // TODO: ERMS-6238 -> REMOVE
+            }
         }
         result
     }
@@ -115,16 +118,17 @@ class ApiOrg {
         result.linkResolverBaseURL = org.linkResolverBaseURL
         result.legalPatronName     = org.legalPatronName
 
-        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
-        result.links               = []
+//        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null // todo: ERMS-6238
+        result.retirementDate      = org.archiveDate ? ApiToolkit.formatInternalDate(org.archiveDate) : null // todo: ERMS-6238 -> REMOVE
 
-        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
-        links.each { Combo c ->
-            if(c.fromOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
-            else if(c.toOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
-        }
+        result.links = [] // TODO: ERMS-6223 - remove Link_Org - remove #122-129
+//        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
+//        links.each { Combo c ->
+//            if(c.fromOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
+//            else if(c.toOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
+//        }
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -139,18 +143,19 @@ class ApiOrg {
         result.funderHskType  = org.funderHskType?.value
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
-        result.type           = org.orgType?.collect{ it.value }
-        result.status         = org.status?.value
+        result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
+//        result.status         = org.status?.value // TODO: ERMS-6224 - remove org.status
+        result.status         = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
 
         // References
         Map<String, Object> queryParams = [org:org]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 

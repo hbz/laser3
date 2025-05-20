@@ -1,13 +1,13 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.OrganisationService
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.utils.LocaleUtils
@@ -45,7 +45,6 @@ class OrgExport extends BaseDetailsExport {
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'customerType'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'libraryType'       : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'libraryNetwork'    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'funderHskType'     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -238,7 +237,7 @@ class OrgExport extends BaseDetailsExport {
 
                     List entries = []
                     List<Long> semIdList = f.value.findAll{ it.startsWith('sem-') }.collect{ Long.parseLong( it.replace('sem-', '') ) }
-                    List<Integer> ddList = f.value.findAll{ it.startsWith('dd-') }.collect{ Integer.parseInt( it.replace('dd-', '') ) } // integer - hql
+                    List<Integer> yearList = f.value.findAll{ it.startsWith('yr-') }.collect{ Integer.parseInt( it.replace('yr-', '') ) } // integer - hql
 
                     if (semIdList) {
 
@@ -255,16 +254,16 @@ class OrgExport extends BaseDetailsExport {
                             }.findAll().join(', ')
                         } )
                     }
-                    if (ddList) {
+                    if (yearList) {
 
-                        Map<String,Map<String, ReaderNumber>> dueDateMap = organisationService.groupReaderNumbersByProperty(
+                        Map<String,Map<String, ReaderNumber>> yearMap = organisationService.groupReaderNumbersByProperty(
                                 ReaderNumber.executeQuery(
-                                        'select rn from ReaderNumber rn where rn.org = :org and YEAR(rn.dueDate) in (:ddList)',
-                                        [org: org, ddList: ddList]
-                                ), "dueDate"
+                                        'select rn from ReaderNumber rn where rn.org = :org and rn.year in (:yearList)',
+                                        [org: org, yearList: yearList]
+                                ), "year"
                         )
 
-                        entries.addAll( dueDateMap.collect { sem ->
+                        entries.addAll( yearMap.collect { sem ->
                             DateUtils.getLocalizedSDF_noTime().format( sem.key ) + ': ' + sem.value.collect { rn ->
                                 rn.value.value ? (rn.key + ' ' + rn.value.value) : null
                             }.findAll().join(', ')

@@ -41,3 +41,35 @@
 .ui.accordion.la-namedetails:not(.styled) .title~.content {
     padding: 0;
 }
+
+// Show Buttons always and align button in lists
+.la-accordion-altName {
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        table-layout: unset;
+    }
+    .ui.divided.middle.list.la-flex-center {
+        .ui.selection.list .list>.item,
+        .ui.selection.list>.item {
+            padding: 0;
+        }
+        margin: 0;
+        .item {
+            display: flex;
+            align-items: center;
+            justify-content:space-between;
+            table-layout: unset;
+            padding-left: 0;
+            padding-right: 0;
+            .content {
+                flex-grow: 1;
+            }
+        }
+        .ui.button {
+            display: inline-block !important;
+            padding: .78571429em .78571429em .78571429em !important;
+        }
+    }
+}

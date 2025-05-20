@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.Icons; de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.ReportingFilter;de.laser.reporting.export.GlobalExportHelper;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.reporting.report.ReportingCache;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
@@ -14,9 +14,9 @@
                     <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
+                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE} large reporting-callLink"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <i class="ui icon ${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
+                                <i class="${BaseConfig.getIcon(meta.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -36,12 +36,12 @@
                             <g:if test="${ReportingFilter.findByToken(fhRCache.token)}">
                             %{--
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icons.CMD_DELETE} icon"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                                     --}%
                             </g:if>
                             <g:else>
                                 <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'addBookmark', token: "${fhRCache.token}", tab: 'history']}"
-                                        class="ui small icon positive la-modern-button button right floated"><i class="icon plus"></i></g:link>
+                                        class="${Btn.MODERN.POSITIVE} small right floated"><i class="${Icon.CMD.ADD}"></i></g:link>
                             </g:else>
                         </td>
                     </tr>
@@ -50,7 +50,7 @@
         </div>
         <div style="margin-top: 1em">
             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteHistory']}"
-                    elementId="history-delete" class="ui button">${message(code:'reporting.ui.global.history.delete')}</g:link>
+                    elementId="history-delete" class="${Btn.SIMPLE}">${message(code:'reporting.ui.global.history.delete')}</g:link>
         </div>
     </div>
 </g:if>
@@ -64,9 +64,9 @@
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui large icon button blue la-modern-button reporting-callLink"
+                            <g:link controller="myInstitution" action="reporting" class="${Btn.MODERN.SIMPLE} large reporting-callLink"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <i class="ui icon ${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
+                                <i class="${BaseConfig.getIcon(fav.filter)}" aria-hidden="true"></i>
                             </g:link>
                         </td>
                         <td>
@@ -87,7 +87,7 @@
                         </td>
                         <td>
                             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteBookmark', token: "${fav.token}", tab: 'bookmark']}"
-                                    class="ui small icon negative la-modern-button button right floated"><i class="${Icons.CMD_DELETE} icon"></i></g:link>
+                                    class="${Btn.MODERN.NEGATIVE} small right floated"><i class="${Icon.CMD.DELETE}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>

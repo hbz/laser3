@@ -1,4 +1,5 @@
-<laser:htmlStart message="financials.editCost" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn" %>
+<laser:htmlStart message="financials.editCost" />
 
 <ui:breadcrumbs>
     <g:if test="${costItem.sub}">
@@ -28,7 +29,7 @@
     </g:else>
 </ui:h1HeaderWithIcon>
 
-<ui:objectStatus object="${costItem}" status="${costItem.costItemStatus}"/>
+<ui:objectStatus object="${costItem}" />
 <ui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
@@ -47,8 +48,7 @@
             <laser:render template="costItemInput"/>
 
             <g:if test="${editable}">
-                <input type="submit" class="ui button green" name="save"
-                       value="${g.message(code: 'default.button.save.label')}"/>
+                <input type="submit" class="${Btn.POSITIVE}" name="save" value="${g.message(code: 'default.button.save.label')}"/>
             </g:if>
         </g:form>
 

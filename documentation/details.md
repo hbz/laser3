@@ -1,15 +1,22 @@
 
-## Details: Upgrade from [Grails 5.3.3](./grails5/details.md) to Grails 6.1.2
+## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.3
+
+### Database Migration Plugin
+
+ * Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+ * Database Migration Plugin will be merged into **gorm-hibernate5**  (9.0.0-M3)
+
+### Asset Pipeline Plugin
+
+Upgrade to 5.x -> Switch back to usual asset include for swagger-ui
+
+### Grails Mail Plugin
+
+Upgrade to 4.0.0 -> TODO: circular references
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
-
-### ~~Fallbacks~~
-
-~~The following fallbacks have been set for faster migration. They can be treated later.~~
-
-* ~~hibernate.allow_update_outside_transaction: true~~
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in -> TODO: replacement
 
 ### HTTP Status Codes
 
@@ -33,8 +40,12 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 
 ### Quartz jobs
 
-*de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and unify job implementations. 
+*de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and standardize job implementations. 
 These should be used to wrap the execution logic.
+
+### RandomUtils
+
+*de.laser.utils.RandomUtils* offers various methods for generating random IDs, UUIDs, passwords and more.
 
 ### Service usage in Domain Classes
 
@@ -57,15 +68,15 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### Apache Commons IO
 
-    *org.apache.commons.io* is only used in one file.
+    *org.apache.commons.io* is only used in one file (Api).
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files.
+    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files (StatsSync, Yoda)
 
 * #### Juniversalchardet
 
-    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in two files.
+    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in three files  (AjaxHtml, MyInstitution, Survey).
 
 
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
@@ -13,7 +13,9 @@
             <th class="six wide" scope="col" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="five wide" scope="col" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" scope="col" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide center aligned" scope="col" rowspan="2">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.dateCreated.label')}</th>
@@ -44,20 +46,20 @@
                     ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                 </td>
                 <td class="center aligned">
-                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
+                    <g:if test="${workflowService.hasWRITE()}"><!-- TODO: workflows-permissions -->
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
                     </g:if>
-                    <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon search"></i></button>
+                    <g:elseif test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.WORKFLOW}"></i></button>
                     </g:elseif>
-                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                    <g:if test="${workflowService.hasWRITE()}"><!-- TODO: workflows-permissions -->
+                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"
                                 controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="${Icons.CMD_DELETE} icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -68,7 +70,7 @@
 </g:if>
 
 <div id="wfModal" class="ui modal"></div>
-<div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll"></div>
+<div id="wfFlyout" class="ui very wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on ('click', function(e) {

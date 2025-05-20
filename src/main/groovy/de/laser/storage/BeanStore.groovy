@@ -1,10 +1,13 @@
 package de.laser.storage
 
+import de.laser.BootStrapService
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
+import de.laser.FileCryptService
 import de.laser.GenericOIDService
 import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
+import de.laser.HelpService
 import de.laser.MailSendService
 import de.laser.PendingChangeService
 import de.laser.AccessService
@@ -17,13 +20,13 @@ import de.laser.EscapeService
 import de.laser.FinanceService
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
-import de.laser.OrgTypeService
 import de.laser.OrganisationService
 import de.laser.PropertyService
 import de.laser.ProviderService
 import de.laser.ShareService
 import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
+import de.laser.SurveyService
 import de.laser.SystemService
 import de.laser.UserService
 import de.laser.VendorService
@@ -145,6 +148,13 @@ class BeanStore {
     }
 
     /**
+     * @return the currently holding {@link BootStrapService}
+     */
+    static BootStrapService getBootStrapService() {
+        Holders.grailsApplication.mainContext.getBean('bootStrapService') as BootStrapService
+    }
+
+    /**
      * @return the currently holding {@link CacheService}
      */
     static CacheService getCacheService() {
@@ -193,6 +203,10 @@ class BeanStore {
         Holders.grailsApplication.mainContext.getBean('ESWrapperService') as ESWrapperService
     }
 
+    static FileCryptService getFileCryptService() {
+        Holders.grailsApplication.mainContext.getBean('fileCryptService') as FileCryptService
+    }
+
     /**
      * @return the currently holding {@link FinanceControllerService}
      */
@@ -228,6 +242,10 @@ class BeanStore {
         Holders.grailsApplication.mainContext.getBean('gokbService') as GokbService
     }
 
+    static HelpService getHelpService() {
+        Holders.grailsApplication.mainContext.getBean('helpService') as HelpService
+    }
+
     /**
      * @return the currently holding {@link LicenseService}
      */
@@ -261,13 +279,6 @@ class BeanStore {
      */
     static OrganisationService getOrganisationService() {
         Holders.grailsApplication.mainContext.getBean('organisationService') as OrganisationService
-    }
-
-    /**
-     * @return the currently holding {@link OrgTypeService}
-     */
-    static OrgTypeService getOrgTypeService() {
-        Holders.grailsApplication.mainContext.getBean('orgTypeService') as OrgTypeService
     }
 
     /**
@@ -307,6 +318,13 @@ class BeanStore {
      */
     static SubscriptionsQueryService getSubscriptionsQueryService() {
         Holders.grailsApplication.mainContext.getBean('subscriptionsQueryService') as SubscriptionsQueryService
+    }
+
+    /**
+     * @return the currently holding {@link SurveyService}
+     */
+    static SurveyService getSurveyService() {
+        Holders.grailsApplication.mainContext.getBean('surveyService') as SurveyService
     }
 
     /**

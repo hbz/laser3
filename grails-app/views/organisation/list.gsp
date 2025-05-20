@@ -1,5 +1,5 @@
 <%@ page import="de.laser.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart message="menu.public.all_orgs" serviceInjection="true"/>
+<laser:htmlStart message="menu.public.all_orgs" />
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
@@ -53,10 +53,9 @@
             <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'type'],
-                                                   ['country&region', 'libraryNetwork'],
-                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex'],
-                                                   ['libraryType', 'subjectGroup']],
+                                  tmplConfigShow: [['name', 'identifier', 'customerType'],
+                                                   ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -65,7 +64,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'region', 'libraryNetwork', 'libraryType', 'status']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'customerType', 'region', 'libraryNetwork', 'libraryType', 'status']
               ]"/>
 
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />

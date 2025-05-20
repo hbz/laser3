@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
 <ui:breadcrumbs>
@@ -24,7 +24,9 @@
                         <th>Attribut</th>
                         <th>${message(code:'default.value.label')}</th>
                         <th>Vorkommen</th>
-                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <ui:optionsIcon />
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -37,7 +39,7 @@
                                         ${entry[1]}
                                     </td>
                                     <td class="x">
-                                        <button class="ui mini button icon" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="ui icon search"></i></button>
+                                        <button class="${Btn.ICON.SIMPLE} mini" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="${Icon.UI.INFO}"></i></button>
                                     </td>
                                 </tr>
                             </g:each>
@@ -107,7 +109,7 @@
                         mergeables.push(elem.id)
                     }
                     if (elem.deletable) {
-                        markup += ' <i class="${Icons.CMD_DELETE} icon negative"></i> '
+                        markup += ' <i class="${Icon.CMD.DELETE} negative"></i> '
                         deletables.push(elem.id)
                     }
                     markup += '</a></div>'
@@ -118,12 +120,12 @@
                 if (mergeables.length > 0) {
                     var mergeUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=merge&objType=Org";
                     mergeUrl += '&objId=' + mergeables.join('&objId=')
-                    $html.append( '<a href="' + mergeUrl + '" class="ui button positive"><i class="icon recycle"></i> Zusammenführen</a>' )
+                    $html.append( '<a href="' + mergeUrl + '" class="${Btn.POSITIVE}"><i class="icon recycle"></i> Zusammenführen</a>' )
                 }
                 if (deletables.length > 0) {
                     var deleteUrl = "<g:createLink controller="admin" action="dataConsistency" />?task=delete&objType=Org";
                     deleteUrl += '&objId=' + deletables.join('&objId=')
-                    $html.append( '<a href="' + deleteUrl + '" class="ui button negative"><i class="${Icons.CMD_DELETE} icon"></i> Löschen</a>' )
+                    $html.append( '<a href="' + deleteUrl + '" class="${Btn.NEGATIVE}"><i class="${Icon.CMD.DELETE}"></i> Löschen</a>' )
                 }
                 $('#modalConsistencyCheck').modal('show')
             }

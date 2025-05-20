@@ -1,5 +1,8 @@
 package de.laser
 
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
@@ -7,10 +10,21 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
 import de.laser.helper.Profiler
 import de.laser.properties.PropertyDefinition
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.ElectronicBilling
+import de.laser.wekb.ElectronicDeliveryDelayNotification
+import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorLink
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
@@ -30,7 +44,6 @@ class VendorController {
     LinksGenerationService linksGenerationService
     PropertyService propertyService
     TaskService taskService
-    UserService userService
     VendorService vendorService
     WorkflowService workflowService
 
@@ -38,26 +51,26 @@ class VendorController {
             'list' : 'menu.public.all_vendors'
     ]
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         redirect action: 'list'
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def list() {
         Profiler prf = new Profiler()
         prf.startSimpleBench()
         Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg())
         prf.setBenchmark("get curatory groups")
-        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         prf.setBenchmark("get we:kb vendors")
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
@@ -124,11 +137,11 @@ class VendorController {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
-            vendorQuery += " order by v.sortname "
+            vendorQuery += " order by v.name "
         prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
         prf.setBenchmark("get subscribed vendors")
-        result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+        result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = [], f2Result = []
@@ -206,9 +219,9 @@ class VendorController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Vendor)
     def show() {
@@ -216,24 +229,27 @@ class VendorController {
         if(params.containsKey('id')) {
             Vendor vendor = Vendor.get(params.id)
             result.vendor = vendor
-            result.editable = vendor.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
-            result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
-            result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
+            result.editable = vendor.gokbId ? false : contextService.isInstEditor()
+            result.subEditable = contextService.isInstEditor()
+            result.isMyVendor = vendorService.isMyVendor(vendor)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
-            if(result.institution.isCustomerType_Consortium()) {
+            if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            Set<Package> allPackages = vendor.packages?.pkg
+            Set<Package> allPackages = vendor.packages?.pkg.sort { Package pkg -> pkg.name }
+            Set<Package> allMyPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp, OrgRole oo join oo.sub s where sp.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
+            Set<Package> myPackages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr where pkg in (:myPkgs) and vr.subscription in (select s from OrgRole oo join oo.sub s where s.status = :current and oo.org = :context '+subscriptionConsortiumFilter+') order by pkg.name', [myPkgs: allMyPackages, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
             result.allPackages = allPackages
-            result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.sortname, p.name', [allPackages: allPackages]).toSet()
-            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context order by pkg.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
-            result.platforms = Platform.executeQuery('select plat from PackageVendor pv join pv.pkg pkg join pkg.nominalPlatform plat, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context order by plat.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, vendor)
-            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
-            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
-            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
-            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.packages = myPackages
+            result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.name', [allPackages: allPackages]).toSet()
+            result.myProviders = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:myPkgs) order by p.name', [myPkgs: myPackages]).toSet()
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, vendor)
+            result.links = VendorLink.executeQuery('select vl from VendorLink vl where vl.from = :vendor or vl.to = :vendor', [vendor: vendor])
+            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]
+            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: contextService.getOrg()])[0]
+            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: contextService.getOrg()])[0]
+            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: contextService.getOrg()])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
             if (result.vendor.createdBy) {
@@ -262,9 +278,9 @@ class VendorController {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createVendor() {
         Vendor.withTransaction {
@@ -289,9 +305,9 @@ class VendorController {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findVendorMatches() {
 
@@ -307,16 +323,22 @@ class VendorController {
     /**
      * Links two vendors with the given params
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def link() {
         linksGenerationService.linkProviderVendor(params, VendorLink.class.name)
-        redirect action: 'show', id: params.context
+        redirect action: 'show', id: params.context.split(':')[1]
     }
 
     /**
      * Removes the given link between two vendors
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def unlink() {
         linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
@@ -326,9 +348,9 @@ class VendorController {
      * Call to list the public contacts of the given provider
      * @return a table view of public contacts
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Vendor)
     def addressbook() {
@@ -403,9 +425,9 @@ class VendorController {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Vendor)
     def tasks() {
@@ -414,14 +436,14 @@ class VendorController {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Vendor) result.vendor)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Vendor) result.vendor)['cmbTaskInstanceList']
 
         result
     }
 
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -437,9 +459,9 @@ class VendorController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Vendor)
     def notes() {
@@ -457,9 +479,9 @@ class VendorController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Vendor)
     def documents() {
@@ -473,48 +495,6 @@ class VendorController {
             docstoreService.bulkDocOperation(params, result, flash)
         }
         result
-    }
-
-    /**
-     * Call to edit the given document. Beware: edited are the relations between the document and the object
-     * it has been attached to; content editing of an uploaded document is not possible in this app!
-     * @return the modal to edit the document parameters
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def editDocument() {
-        Map<String, Object> result = vendorService.getResultGenerics(params)
-        if(!result) {
-            response.sendError(401)
-            return
-        }
-        result.ownobj = result.institution
-        result.owntp = 'vendor'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
-    }
-
-    /**
-     * Call to delete a given document
-     * @return the document table view ({@link #documents()})
-     * @see DocstoreService#unifiedDeleteDocuments()
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'vendor', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
     /**

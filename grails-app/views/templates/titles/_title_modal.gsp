@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore;" %>
 <ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
@@ -31,11 +31,11 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey calendar icon la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                 </g:if>
                 <g:else>
@@ -44,11 +44,11 @@
             </div>
 
             <div class="item">
-                <i class="grey calendar icon la-popup-tooltip la-delay"
+                <i class="grey ${Icon.SYM.DATE} la-popup-tooltip"
                    data-content="${message(code: 'subscription.details.access_end')}"></i>
                 <g:if test="${editable}">
                     <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                    <i class="${Icon.TOOLTIP.HELP} la-popup-tooltip"
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
                 <g:else>
@@ -95,8 +95,7 @@
             <g:if test="${ie.ieGroups}">
                 <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                     <div class="item">
-                        <i class="grey icon object group la-popup-tooltip la-delay"
-                           data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
+                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip" data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
 
                         <div class="content">
                             <g:link controller="subscription" action="index"
@@ -129,7 +128,7 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                 <div class="content">
@@ -139,7 +138,7 @@
             </div>
 
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                 <div class="content">

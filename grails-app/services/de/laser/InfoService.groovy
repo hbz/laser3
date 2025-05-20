@@ -5,6 +5,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
@@ -46,9 +47,23 @@ class InfoService {
             map.collectEntries{ k,v -> [(k):(v.collect{ it[1] })] }
         }
 
+        static Map<Long, List> getTimelineCatsMap(Map timelineMap) {
+            Map<Long, List> cats = [:]
+            timelineMap.collect{ k,v -> v }.each { y ->
+                y.each { fc ->
+                    Long fcKey = Long.valueOf(fc.key)
+                    if (!cats.containsKey(fcKey)) {
+                        cats.put(fcKey, [])
+                    }
+                    cats.put(fcKey, (cats.get(fcKey) + fc.value).unique())
+                }
+            }
+            cats
+        }
+
         static Map getTimelineMap(struct) {
             Map<String, Map> years = [:]
-            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 4)..(Integer.parseInt(Year.now().toString()) + 3)
+            IntRange timeline = (Integer.parseInt(Year.now().toString()) - 3)..(Integer.parseInt(Year.now().toString()) + 2)
 
             timeline.each { year ->
                 String y = year.toString()
@@ -100,8 +115,9 @@ class InfoService {
 //        println base_qry; println qry_params
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
-        result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
+//        result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
         result.subscriptionTimelineMap = Helper.getTimelineMap(subStruct)
+        result.subscriptionMap = Helper.getTimelineCatsMap(result.subscriptionTimelineMap)
 
 //        println '\nsubStruct: ' + subStruct; println '\nsubscriptionMap: ' + result.subscriptionMap; println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
@@ -119,8 +135,9 @@ class InfoService {
                     activeInst: contextService.getOrg(),
                     roleTypeC: RDStore.OR_LICENSING_CONSORTIUM
         ])
-        result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
+//        result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
         result.licenseTimelineMap = Helper.getTimelineMap(licStruct)
+        result.licenseMap = Helper.getTimelineCatsMap(result.licenseTimelineMap)
 
 //        println '\nlicStruct: ' + licStruct; println '\nlicenseMap: ' + result.licenseMap; println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
@@ -160,7 +177,7 @@ class InfoService {
 //                        [
 //                                owner               : consortium,
 //                                sub                 : sub,
-//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                                roleType            : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
 //                                deleted             : RDStore.COST_ITEM_DELETED
 //                        ]
 //                )
@@ -228,7 +245,7 @@ class InfoService {
 
         List<CostItem> consCostItems = CostItem.executeQuery( costItemQuery, [
                 org                 : consortium,
-                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
                 subscrType          : [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
                 filterConsMembers   : [member],
                 filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,
@@ -258,8 +275,9 @@ class InfoService {
 //        println base_qry; println qry_params
 
         List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
-        result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
+//        result.subscriptionMap = Helper.reduceMap(Helper.listToMap(subStruct))
         result.subscriptionTimelineMap = Helper.getTimelineMap(subStruct)
+        result.subscriptionMap = Helper.getTimelineCatsMap(result.subscriptionTimelineMap)
 
 //        println '\nsubStruct: ' + subStruct; println '\nsubscriptionMap: ' + result.subscriptionMap; println '\nsubscriptionTimelineMap: ' + result.subscriptionTimelineMap
 
@@ -274,8 +292,9 @@ class InfoService {
                     org: institution,
                     roleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
         ])
-        result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
+//        result.licenseMap = Helper.reduceMap(Helper.listToMap(licStruct))
         result.licenseTimelineMap = Helper.getTimelineMap(licStruct)
+        result.licenseMap = Helper.getTimelineCatsMap(result.licenseTimelineMap)
 
 //        println '\nlicStruct: ' + licStruct; println '\nlicenseMap: ' + result.licenseMap; println '\nlicenseTimelineMap: ' + result.licenseTimelineMap
 
@@ -360,7 +379,7 @@ class InfoService {
 //
 //        List<CostItem> consCostItems = CostItem.executeQuery( costItemQuery, [
 //                org                 : institution,
-//                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+//                consortialType      : RDStore.OR_SUBSCRIPTION_CONSORTIUM,
 //                subscrType          : [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
 //                filterConsMembers   : [institution],
 //                filterSubStatus     : RDStore.SUBSCRIPTION_CURRENT,

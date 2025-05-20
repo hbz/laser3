@@ -21,8 +21,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     boolean isRequired = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -49,7 +47,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
@@ -78,7 +75,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         lastUpdated column: 'surre_last_updated'
         lastUpdatedCascading column: 'surre_last_updated_cascading'
         stringValue column: 'surre_string_value', type: 'text'
-        intValue    column: 'surre_int_value'
         longValue   column: 'surre_long_value'
         decValue    column: 'surre_dec_value'
         refValue    column: 'surre_ref_value_rv_fk', index: 'surre_ref_value_idx'
@@ -133,7 +129,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
      * @return
      */
     List<CostItem> getCostItems(){
-        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNullAndSurveyConfigSubscriptionIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
     /**

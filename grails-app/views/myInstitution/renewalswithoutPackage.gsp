@@ -1,7 +1,8 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
     <ui:crumb message="myinst.renewals" class="active"/>
 </ui:breadcrumbs>
@@ -25,7 +26,7 @@
     <div>
         <hr />
 
-            ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br />
+            ${message(code: 'myinst.renewalUpload.noupload.note', args: [contextService.getOrg().name])}<br />
             <table class="ui celled la-js-responsive-table la-table table">
                 <tbody>
                 <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
@@ -58,8 +59,7 @@
 
             <div class="la-float-right">
 
-                    <button type="submit"
-                            class="ui button">${message(code: 'myinst.renewalUpload.accept')}</button>
+                    <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.accept')}</button>
 
             </div>
 

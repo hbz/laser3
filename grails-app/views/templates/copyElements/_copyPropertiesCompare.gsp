@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
     <g:if test="${!fromSurvey && !isRenewSub}">
@@ -24,7 +24,7 @@
             <g:if test="${privateProperties?.size() > 0}">
 
                 <div class="content">
-                    <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextOrg.name}</h2>
+                    <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextService.getOrg().name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'surveyconfig.properties') + ': ' + contextService.getOrg().name]"/>
@@ -45,10 +45,10 @@
 
                             <g:if test="${showConsortiaFunctions}">
                                 <g:if test="${groupedProps.getValue().binding?.isVisibleForConsortiaMembers}">
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'financials.isVisibleForSubscriber')}"
                                           style="margin-left:10px">
-                                        <i class="ui icon eye orange"></i>
+                                        <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                                     </span>
                                 </g:if>
                             </g:if>
@@ -70,7 +70,7 @@
                 <div class="content">
                     <h2 class="ui header">
                         <g:if test="${groupedProperties?.size() > 0}">
-                            ${message(code: 'subscription.properties.orphaned')}
+                            ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
                         </g:if>
                         <g:else>
                             ${message(code: 'subscription.properties')}
@@ -89,7 +89,7 @@
             <g:if test="${privateProperties?.size() > 0}">
 
                 <div class="content">
-                    <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h2>
+                    <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
@@ -141,7 +141,7 @@
         </g:else>
 
         <div class="sixteen wide field" style="text-align: right;">
-            <input id="copyElementsSubmit" type="submit" class="ui button js-click-control" value="${submitButtonText}" ${submitDisabled}
+            <input id="copyElementsSubmit" type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" ${submitDisabled}
                    data-confirm-id="copyElements"
                    data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                    data-confirm-term-how="delete"/>

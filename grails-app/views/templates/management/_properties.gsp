@@ -1,8 +1,8 @@
-<%@ page import="de.laser.helper.Icons; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
-        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP))
+        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextService.getOrg(), PropertyDefinition.SUB_PROP))
     %>
 
 
@@ -17,8 +17,7 @@
                                           model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
 
                                 <div class="field la-field-noLabel" >
-                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                    <input type="submit" value="${message(code: 'template.orgLinksModal.select')}" class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -32,7 +31,7 @@
 
                                 <div class="field la-field-noLabel">
                                     <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui primary button"/>
+                                           class="${Btn.PRIMARY}"/>
                                 </div>
                             </div>
                         </g:form>
@@ -52,7 +51,7 @@
 
                     <div class="field la-field-noLabel">
                         <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                               class="ui primary button"/>
+                               class="${Btn.PRIMARY}"/>
                     </div>
                 </div>
             </g:form>
@@ -79,7 +78,7 @@
     %{--    <div class="ui segment">
             <h4 class="ui header">${message(code: 'subscriptionsManagement.deletePropertyInfo')}</h4>
 
-            <g:link class="ui button negative js-open-confirm-modal"
+            <g:link class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteProperty.button.confirm')}"
                     data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                     params="[processOption: 'deleteAllProperties', propertiesFilterPropDef: propertiesFilterPropDef, tab: params.tab]">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</g:link>
@@ -122,16 +121,16 @@
                                 <div class="item">
 
                                     <div class="right floated content">
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
+                                                    total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextService.getOrg(), subscription)}"/>
                                         </span>
                                     </div>
 
                                     <g:set var="customProperties"
-                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextService.getOrg(), sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${customProperties}">
                                         <g:each in="${customProperties}" var="customProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -174,10 +173,10 @@
 
                                                 <%
                                                     if (AuditConfig.getConfig(customProperty)) {
-                                                        if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                        if (subscription.instanceOf) {
+                                                            println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                         } else {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                            println '&nbsp;' + ui.auditIcon(type: 'default')
                                                         }
                                                     }
                                                 %>
@@ -187,7 +186,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -208,16 +207,16 @@
                                 <div class="item">
 
                                     <div class="right floated content">
-                                        <span class="la-popup-tooltip la-delay"
+                                        <span class="la-popup-tooltip"
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
+                                                    total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextService.getOrg(), subscription)}"/>
                                         </span>
                                     </div>
 
                                     <g:set var="privateProperties"
-                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef', [contextOrg: contextService.getOrg(), sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${privateProperties}">
                                         <g:each in="${privateProperties}" var="privateProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -246,15 +245,15 @@
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isRefdataValueType()}">
-                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue" config="${privateProperty.type.refdataCategory}"/>
+                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue" config="${privateProperty.type.refdataCategory}" constraint="removeValues_processingProvOrVendor"/>
                                                 </g:elseif>
 
                                                 <%
                                                     if (AuditConfig.getConfig(privateProperty)) {
-                                                        if (subscription.isSlaved) {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                        if (subscription.instanceOf) {
+                                                            println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                         } else {
-                                                            println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                            println '&nbsp;' + ui.auditIcon(type: 'default')
                                                         }
                                                     }
                                                 %>
@@ -264,7 +263,7 @@
                                     </g:if><g:else>
                                     <div class="content">
                                         ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                        <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                        <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                 params="[
                                                         propIdent    : propertiesFilterPropDef.id,
                                                         ownerId      : subscription.id,
@@ -285,10 +284,10 @@
 
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -297,7 +296,7 @@
         </div>
 
         <div class="ui icon info message">
-            <i class="info icon"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content">
                 <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/> <br />
 
@@ -322,12 +321,20 @@
         <div class="ui segments">
         <div class="ui segment">
             <div class="field required">
+                <%
+                    List<RefdataValue> propValues = []
+                    if(propertiesFilterPropDef.isRefdataValueType()) {
+                        propValues = RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)
+                        if(propertiesFilterPropDef == PropertyStore.SUB_PROP_INVOICE_PROCESSING && subscription)
+                            propValues.remove(RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR)
+                    }
+                %>
                 <div class="inline field">
                     <label>${message(code: 'subscriptionsManagement.propertySelected')}:</label>
 
                     <strong>${propertiesFilterPropDef.getI10n('name')}
                         <g:if test="${propertiesFilterPropDef.tenant != null}">
-                            <i class="${Icons.PRIVATE_PROPERTY} icon"></i>
+                            <i class="${Icon.PROP.IS_PRIVATE}"></i>
                         </g:if>
                     </strong>
                 </div>
@@ -336,7 +343,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
+                    <g:each in="${propValues}" var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                         </g:if>
@@ -351,7 +358,7 @@
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}"
+                              from="${propValues}"
                               name="filterPropValue" value="${params.filterPropValue}"
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
@@ -365,7 +372,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
                     </div>
@@ -373,7 +380,7 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="${Btn.NEGATIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
                     </div>
@@ -396,7 +403,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
@@ -438,16 +445,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                            <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"
-                                      class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="grey la-thumbtack-regular icon"></i>
-                                </span>
-                            </g:if>
-
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -478,16 +476,16 @@
                                     <div class="item">
 
                                         <div class="right floated content">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
+                                                        total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextService.getOrg(), sub)}"/>
                                             </span>
                                         </div>
 
                                         <g:set var="customProperties"
-                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextService.getOrg(), sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                         <g:if test="${customProperties}">
                                             <g:each in="${customProperties}" var="customProperty">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -514,15 +512,16 @@
                                                     <g:elseif test="${customProperty.type.isRefdataValueType()}">
                                                         <ui:xEditableRefData owner="${customProperty}" type="text"
                                                                                 field="refValue"
-                                                                                config="${customProperty.type.refdataCategory}"/>
+                                                                                config="${customProperty.type.refdataCategory}"
+                                                                             constraint="removeValues_processingProvOrVendor"/>
                                                     </g:elseif>
 
                                                     <%
                                                         if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
-                                                            if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            if (sub.instanceOf) {
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -532,7 +531,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noCustomProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addCustomPropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addCustomPropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -550,16 +549,16 @@
 
                                     <div class="item">
                                         <div class="right floated content">
-                                            <span class="la-popup-tooltip la-delay"
+                                            <span class="la-popup-tooltip"
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
+                                                        total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextService.getOrg(), sub)}"/>
                                             </span>
                                         </div>
 
                                         <g:set var="privateProperties"
-                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef ', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef ', [contextOrg: contextService.getOrg(), sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
 
                                         <g:if test="${privateProperties}">
                                             <g:each in="${privateProperties}" var="privateProperty">
@@ -592,10 +591,10 @@
 
                                                     <%
                                                         if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
-                                                            if (sub.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                            if (sub.instanceOf) {
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -605,7 +604,7 @@
                                         </g:if><g:else>
                                         <div class="content">
                                             ${message(code: 'subscriptionsManagement.noPrivateProperty')}
-                                            <g:link class="ui button" controller="ajax" action="addPrivatePropertyValue"
+                                            <g:link class="${Btn.SIMPLE}" controller="ajax" action="addPrivatePropertyValue"
                                                     params="[
                                                             propIdent    : propertiesFilterPropDef.id,
                                                             ownerId      : sub.id,
@@ -626,10 +625,10 @@
 
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>
@@ -683,6 +682,7 @@
         }
     });
 
+    /*
     $('.propertiesForm').form({
         on: 'blur',
         inline: true,
@@ -698,5 +698,6 @@
             }
         }
     });
+    */
 </laser:script>
 

@@ -85,4 +85,35 @@ class FilterLogic {
 
         result
     }
+
+    static Map<String, Object> resolveTabAndStatusForRenewalTabsMenu(GrailsParameterMap params) {
+        log.debug('resolveTabAndStatusForRenewalTabsMenu( .. )')
+
+        String debug = '[tab: ' + params.tab + ', subTab: ' + params.subTab + ', status: ' + params.list('status') + ']'
+        Map<String, Object> result = [:]
+
+        if (params.tab) {
+            switch(params.tab) {
+                case ['allTipps', 'usage']: result.status = [RDStore.TIPP_STATUS_CURRENT]
+                    break
+                case 'selectedIEs': Map stResult = resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
+                    result.subTab = stResult.tab
+                    result.status = stResult.status
+                    break
+                case 'currentPerpetualAccessIEs': result.status = [RDStore.TIPP_STATUS_CURRENT]
+                    break
+            }
+
+        }
+        else {
+            result.tab = 'allTipps'
+            Map stResult = resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
+            result.subTab = stResult.tab
+            result.status = stResult.status
+        }
+
+        println '! ' + debug + ' -> [tab: ' + params.tab + ', subTab: ' + params.subTab + ', status: ' + params.list('status') + ']'
+
+        result
+    }
 }

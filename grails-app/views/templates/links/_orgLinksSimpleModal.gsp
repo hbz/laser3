@@ -1,11 +1,11 @@
-<%@ page import="de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org" %>
 <g:if test="${editmode}">
-    <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button" class="${Btn.SIMPLE}" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
     <div class="ui info message">
-        <i class="info circle icon"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
+        <i class="${Icon.UI.INFO}"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
     </div>
     <g:form id="create_org_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />

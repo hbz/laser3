@@ -1,9 +1,6 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <g:if test="${editable}">
-    <a class="ui button" data-ui="modal" href="#${modalId}">
-        <g:message code="${buttonText}"/>
-    </a>
-
     <ui:modal id="${modalId}" message="${buttonText}">
         <g:form class="ui form" url="[controller: controllerName, action: addAction]" method="post">
             <div class="field">
@@ -12,7 +9,7 @@
                 <label for="attributeSelection_${modalId}"><g:message code="${label}"/>:</label>
 
                 <g:select from="${availableAttributes}"
-                          class="ui dropdown fluid"
+                          class="ui dropdown clearable fluid"
                           id="attributeSelection_${modalId}"
                           optionKey="${{ genericOIDService.getOID(it) }}"
                           optionValue="${{ it instanceof de.laser.RefdataValue ? it.getI10n('value') : it.name }}"

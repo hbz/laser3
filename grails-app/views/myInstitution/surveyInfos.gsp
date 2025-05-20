@@ -1,5 +1,5 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
-<laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
+<laser:htmlStart text="${surveyInfo.type.getI10n('value')}" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
@@ -22,26 +22,16 @@
 <ui:messages data="${flash}"/>
 
 <br/>
-<g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
+<g:if test="${surveyConfig.isResultsSetFinishByOrg(contextService.getOrg())}">
+    <ui:msg class="success" showIcon="true" hideClose="true">
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message
                         code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info' : 'surveyResult.finish.info'}"/>.
-            </p>
-        </div>
-    </div>
+    </ui:msg>
 </g:if>
 
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
-
-
     <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
@@ -61,7 +51,7 @@
                             <g:set var="oldEditable" value="${editable}"/>
                             <g:set var="editable" value="${false}" scope="request"/>
                             <g:each in="${choosenOrgCPAs}" var="gcp">
-                                <laser:render template="/templates/cpa/person_details"
+                                <laser:render template="/addressbook/person_details"
                                               model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                             </g:each>
                             <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -71,20 +61,6 @@
                 </tbody>
             </table>
         </g:if>
-
-        <div class="ui form la-padding-left-07em">
-            <div class="field">
-                <label>
-                    <g:message code="surveyInfo.comment.label"/>
-                </label>
-                <g:if test="${surveyInfo.comment}">
-                    <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
-                </g:if>
-                <g:else>
-                    <g:message code="surveyConfigsInfo.comment.noComment"/>
-                </g:else>
-            </div>
-        </div>
     </ui:greySegment>
 </g:if>
 
@@ -95,18 +71,41 @@
 <br/>
 
 <g:if test="${editable}">
-        <g:link class="ui button green js-open-confirm-modal"
-                data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
-                data-confirm-term-how="concludeBinding"
-                data-confirm-replaceHeader="true"
-                controller="myInstitution"
-                action="surveyInfoFinish"
-                data-targetElement="surveyInfoFinish"
-                id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id]">
-            <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
-        </g:link>
+    <button class="${Btn.POSITIVE} triggerSurveyFinishModal"
+            data-href="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishModal', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
+            role="button"
+            aria-label="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}">
+        <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
+    </button>
 </g:if>
 <br/>
 <br/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.triggerSurveyFinishModal').on('click', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: $(this).attr('data-href')
+        }).done( function (data) {
+            $('.ui.dimmer.modals > #surveyFinishModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+               onShow: function () {
+                    r2d2.initDynamicUiStuff('#surveyFinishModal');
+                    $("html").css("cursor", "auto");
+                },
+                detachable: true,
+                autofocus: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('#surveyFinishModal .ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        })
+    });
+</laser:script>
+
 <laser:htmlEnd/>

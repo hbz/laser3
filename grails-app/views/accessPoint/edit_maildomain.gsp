@@ -1,7 +1,7 @@
-<%@ page import="de.laser.helper.Icons; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorWithPermsBasic" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+<g:if test="${isInstEditorWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -67,7 +67,9 @@
             <thead>
             <tr>
                 <th class="fifteen wide">Mail-Domain</th>
-                <th class="one wide">${message(code: 'default.actions.label')}</th>
+                <th class="one wide center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -75,14 +77,14 @@
                 <tr>
                     <td>${accessPointData.mailDomain}</td>
                     <td class="center aligned">
-                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+                        <g:if test="${isInstEditorWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
-                                    class="ui negative icon button js-open-confirm-modal"
+                                    class="${Btn.ICON.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
                                     data-confirm-term-how="delete"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="${Icons.CMD_DELETE} icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                     </td>
@@ -91,7 +93,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -105,7 +107,7 @@
                             <label for="mailDomain_id">Mail-Domain</label>
                             <g:field type="text" name="mailDomain" id="mailDomain_id" value="${mailDomain}"/>
                         </div>
-                        <input type="submit" class="ui button" value="${message(code: 'accessPoint.button.add')}"/>
+                        <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
             </div>

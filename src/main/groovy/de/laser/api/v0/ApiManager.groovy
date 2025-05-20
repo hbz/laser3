@@ -5,11 +5,11 @@ import de.laser.Doc
 import de.laser.GlobalService
 import de.laser.License
 import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.api.v0.special.ApiEZB
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
@@ -38,7 +38,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '3.3'
+    static final VERSION = '3.7'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making

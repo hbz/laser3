@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.storage.PropertyStore; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
 <laser:render template="/myInstitution/reporting/details/details_top" />
@@ -6,7 +6,6 @@
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.platformESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)} ?: []}"/>
-<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <g:set var="useLocalFields" value="${false}"/>%{-- DEBUG --}%
 
@@ -113,13 +112,13 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-proxySupported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-otherProxies">
 
                         <g:if test="${useLocalFields}">
                             <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_PROXY.id}" />
                         </g:if>
                         <g:else>
-                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="otherProxies" records="${esRecords}" />
                         </g:else>
                     </uiReporting:detailsTableTD>
 
@@ -150,16 +149,6 @@
                         </g:if>
                         <g:else>
                             <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" />
-                        </g:else>
-                    </uiReporting:detailsTableTD>
-
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
-
-                        <g:if test="${useLocalFields}">
-                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R3_REPORTS.id}" />
-                        </g:if>
-                        <g:else>
-                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
                         </g:else>
                     </uiReporting:detailsTableTD>
 
@@ -203,6 +192,18 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="accessPlatform">
+
+                        ${plt.accessPlatform?.getI10n('value')}
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="accessibilityStatementUrl">
+
+                        <g:if test="${plt.accessibilityStatementUrl}">
+                            <a href="${plt.accessibilityStatementUrl}" target="_blank">${plt.accessibilityStatementUrl}</a>
+                        </g:if>
+                    </uiReporting:detailsTableTD>
+
                     <g:if test="${dtConfig.containsKey('_dtField_?_propertyLocal')}">
                         <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_?_propertyLocal">
 
@@ -228,8 +229,8 @@
                                 <ui:wekbIconLink type="platform" gokbId="${plt.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
-                                    <i class="icon times grey"></i>
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
+                                    <i class="${Icon.SYM.NO} grey"></i>
                                 </span>
                             </g:else>
                         </g:if>

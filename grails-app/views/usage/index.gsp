@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="default.usage.adminPage.mainHeader" />
 
 <ui:breadcrumbs>
@@ -16,7 +16,7 @@
         <div class="three fields">
             <div class="field">
                 <label for="supplier">${message(code: 'platform.label')}</label>
-                <g:select class="ui dropdown" id="supplier" name="supplier"
+                <g:select class="ui dropdown clearable " id="supplier" name="supplier"
                               from="${providerList}"
                               optionKey="id"
                               optionDisabled="optionDisabled"
@@ -26,7 +26,7 @@
             </div>
             <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" id="institution" name="institution"
+                <g:select class="ui dropdown clearable " id="institution" name="institution"
                           from="${institutionList}"
                           optionKey="id"
                           optionValue="name"
@@ -36,17 +36,17 @@
         </div>
             <div class="fields">
                 <div class="field">
-                    <g:actionSubmit action="fetchSelection" class="ui primary button" value="${message(code: 'default.usage.adminPage.button.fetchSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')"/>
+                    <g:actionSubmit action="fetchSelection" class="${Btn.PRIMARY}" value="${message(code: 'default.usage.adminPage.button.fetchSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')"/>
                 </div>
                 <div class="field">
-                    <g:actionSubmit action="deleteSelection" class="ui primary button" value="${message(code: 'default.usage.adminPage.button.deleteSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsDeleteSelection')}')"/>
+                    <g:actionSubmit action="deleteSelection" class="${Btn.PRIMARY}" value="${message(code: 'default.usage.adminPage.button.deleteSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsDeleteSelection')}')"/>
                 </div>
                 <div class="field">
-                    <g:actionSubmit action="deleteAll" value="${message(code: 'default.usage.adminPage.button.deleteAll')}" class="ui button red" onclick="return confirm('${message(code:'confirm.start.StatsDelete')}')"/>
+                    <g:actionSubmit action="deleteAll" value="${message(code: 'default.usage.adminPage.button.deleteAll')}" class="${Btn.NEGATIVE}" onclick="return confirm('${message(code:'confirm.start.StatsDelete')}')"/>
                 </div>
                 <g:if test="${statsSyncService.running}">
                     <div class="field">
-                        <g:actionSubmit action="abort" value="${message(code: 'default.usage.adminPage.button.abortProcess')}" class="ui button red" onclick="return confirm('${message(code:'confirm.start.StatsAbort')}')"/>
+                        <g:actionSubmit action="abort" value="${message(code: 'default.usage.adminPage.button.abortProcess')}" class="${Btn.NEGATIVE}" onclick="return confirm('${message(code:'confirm.start.StatsAbort')}')"/>
                     </div>
                 </g:if>
             </div>
@@ -87,14 +87,14 @@
         <div class="two fields">
             <div class="field">
                 <label for="supplier">${message(code: 'default.usage.adminPage.natStatSupplierLabel')}</label>
-                <g:select class="ui dropdown" id="supplier" name="supplier"
+                <g:select class="ui dropdown clearable" id="supplier" name="supplier"
                           from="${natstatProviders}"
                           value="${params.supplier}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
             <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" name="institution"
+                <g:select class="ui dropdown clearable" name="institution"
                           from="${natstatInstitutions}"
                           optionKey="${{it.last().value}}"
                           optionValue="${{it.first().name + ' (' + it.last().value + ')'}}"
@@ -105,8 +105,8 @@
 
         <div class="field">
             <div class="field la-filter-search">
-                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -139,8 +139,8 @@
 
     <g:if test="${statsError.size()!=0}">
       <td class="x">
-        <button class="ui icon button" data-target="stats-error-content-${i}">
-          <i class="info icon"></i>
+        <button class="${Btn.ICON.SIMPLE}" data-target="stats-error-content-${i}">
+          <i class="${Icon.UI.INFO}"></i>
         </button>
       </td>
     </g:if>

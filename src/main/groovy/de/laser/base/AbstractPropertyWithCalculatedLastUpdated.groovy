@@ -75,7 +75,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
-        log.debug("beforeUpdateHandler() " + changes.toMapString())
+        log.debug("beforeUpdateHandler() " + this.getDirtyPropertyNames())
         return changes
     }
 
@@ -106,6 +106,10 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract def beforeDelete()     /* { beforeDeleteHandler() } */
 
     abstract def afterDelete()      /* { afterDeleteHandler() } */
+
+    boolean isVisibleExternally() {
+        isPublic
+    }
 
     Date _getCalculatedLastUpdated() {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated

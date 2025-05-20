@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.wekb.InvoicingVendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -21,8 +21,8 @@
                 <div class="field">
                     <label for="nameContains">
                         <g:message code="org.search.provider.contains"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.provider.contains.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input type="text" id="nameContains" name="nameContains"
@@ -79,8 +79,8 @@
                 <div class="field">
                     <label for="privateContact">
                         <g:message code="contact.name"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="grey question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.contact.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
@@ -197,13 +197,17 @@
                     <label for="qp_invoicingVendors">${message(code: 'vendor.invoicing.vendors.label')}</label>
                     <select name="qp_invoicingVendors" id="qp_invoicingVendors" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${InvoicingVendor.executeQuery('select v from InvoicingVendor iv join iv.vendor v order by v.sortname').toSet()}" var="invoicingVendors">
+                        <g:each in="${InvoicingVendor.executeQuery('select distinct(v) from InvoicingVendor iv join iv.vendor v order by v.name')}" var="invoicingVendors">
                             <option <%=Params.getLongList(params, 'qp_invoicingVendors').contains(invoicingVendors.id) ? 'selected=selected"' : ''%> value="${invoicingVendors.id}">
-                                ${invoicingVendors.sortname}
+                                ${invoicingVendors.name}
                             </option>
                         </g:each>
                     </select>
                 </div>
+            </g:if>
+
+            <g:if test="${field.equals('')}">
+                <div class="field"></div>
             </g:if>
         </g:each>
     <g:if test="${numberOfFields > 1}">
@@ -214,11 +218,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -233,7 +237,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

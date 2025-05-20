@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
 
-<laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
+<laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th colspan="5">
-                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </th>
                 </tr>
@@ -23,7 +23,7 @@
                     <th>Titel</th>
                     <th>Status we:kb</th>
                     <th>Status LAS:eR</th>
-                    <th>betroffener Lizenzbestand</th>
+                    <th>betroffene Titel in Lizenzen</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,7 +46,7 @@
             <tfoot>
                 <tr>
                     <td colspan="5">
-                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
+                        <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                 </tr>

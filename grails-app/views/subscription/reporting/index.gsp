@@ -1,5 +1,5 @@
-<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
@@ -23,10 +23,10 @@
         <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="${Btn.SIMPLE} small"><icon:bug /> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
-        <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+        <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
@@ -138,6 +138,9 @@
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
+                            $(window).resize(function () {
+                                JSPC.app.reporting.current.chart.echart.resize();
+                            });
 
                             let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
                             let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
@@ -161,6 +164,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

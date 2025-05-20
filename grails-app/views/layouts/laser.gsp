@@ -1,11 +1,10 @@
-<%@ page import="org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.api.v0.ApiManager; de.laser.ui.Icon; org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
 <g:set var="currentServer" scope="page" />
 <g:set var="currentLang" scope="page" />
 <g:set var="currentTheme" scope="page" />
-<g:set var="contextOrg" scope="page" />
 <g:set var="contextUser" scope="page" />
 
 <%
@@ -14,7 +13,6 @@
     currentTheme    = 'laser'
 
     contextUser     = contextService.getUser()
-    contextOrg      = contextService.getOrg()
 
     if (contextUser) {
         RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RDStore.LANGUAGE_DE)?.getValue()
@@ -36,7 +34,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
-    <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
@@ -76,8 +73,8 @@
 
                     %{-- menu: public, my objects, my institution --}%
 
-                    <g:if test="${contextOrg}">
-                        <g:if test="${contextOrg.isCustomerType_Support()}">
+                    <g:if test="${contextService.getOrg()}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Support()}">
                             <laser:render template="/layouts/laser/menu_support" />
                         </g:if>
                         <g:else>
@@ -99,6 +96,14 @@
                         <laser:render template="/layouts/laser/menu_yoda" />
                     </sec:ifAnyGranted>
 
+                    %{-- menu: devDocs --}%
+
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
+                        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
+                            <laser:render template="/layouts/laser/menu_devDocs" />
+                        </g:if>
+                    </sec:ifAnyGranted>
+
                     <div class="right menu la-right-menuPart">
 
                         %{-- menu: global search --}%
@@ -107,46 +112,23 @@
                             <div class="ui icon input">
                                 <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
                                        aria-label="${message(code:'spotlight.search.placeholder')}">
-                                <i class="search icon" id="btn-search"></i>
+                                <i class="${Icon.SYM.SEARCH}" id="btn-search"></i>
                             </div>
                             <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                         </div>
 
-                        <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip la-delay" controller="search" action="index"
+                        <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip" controller="search" action="index"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
-                                <i class="search icon"></i>
+                                <i class="${Icon.SYM.SEARCH}"></i>
                                 <i class="top right grey corner plus icon"></i>
                             </i>
                         </ui:link>
 
-                        %{-- menu: context menu --}%
+                        %{-- menu: user --}%
 
                         <g:if test="${contextUser}">
-                            <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
-                                <a class="title">
-                                    <i class="dropdown icon"></i> ${contextUser.displayName}
-                                </a>
-
-                                <div class="menu" role="menu">
-                                    <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
-                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
-                                    <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
-
-                                    <div class="divider"></div>
-                                    <ui:link class="la-highlightedMenueItem" addItemAttributes="true" controller="public" action="licensingModel"><i class="smile outline icon"></i>${message(code:'menu.user.licensingModel')}</ui:link>
-                                    <div class="divider"></div>
-
-                                    <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
-                                    <div class="divider"></div>
-                                    <div class="header">
-                                        Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
-                                    </div>
-                                    <div class="header">
-                                        ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
-                                    </div>
-                                </div>
-                            </div>
+                            <laser:render template="/layouts/laser/menu_user" />
                         </g:if>
                     </div>
 
@@ -172,17 +154,39 @@
 
         <div class="pusher">
             <main id="mainContent" class="ui main container hidden">
+                <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
+                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
+                        <div id="dev-tmp-help">
+                            institution               : ${institution?.getName()} <br />
+                            contextOrg                : ${contextOrg?.getName()} <br />
+                            orgInstance               : ${orgInstance?.getName()} <br />
+                            inContextOrg              : <strong>${inContextOrg}</strong> <br />
+                            institutionalView         : <strong>${institutionalView}</strong> <br />
+                            consortialView            : <strong>${consortialView}</strong>
+                        </div>
+                        <style>
+                        #dev-tmp-help {
+                            position: absolute;
+                            top: 10px;
+                            right: 0;
+                            height: 5em;
+                            padding: 0.25em 1em;
+                            border: 1px solid red;
+                            overflow: hidden;
+                            z-index: 0;
+                        }
+                        #dev-tmp-help:hover {
+                            height: auto;
+                            background-color: #f4f8f9;
+                            z-index: 1111;
+                        }
+                        </style>
+                    </g:if>
+                </sec:ifAnyGranted>
 
-                %{-- system messages --}%
+                %{-- systemMessages: TYPE_GLOBAL --}%
 
-                <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
-                    <div id="systemMessages" class="ui message large warning">
-                        <laser:render template="/templates/system/messages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
-                    </div>
-                </g:if>
-                <g:else>
-                    <div id="systemMessages" class="ui message large warning hidden"></div>
-                </g:else>
+                <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_GLOBAL]}"/>
 
                 %{-- content --}%
 
@@ -191,15 +195,13 @@
                 %{-- system info --}%
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <g:if test="${ConfigMapper.getShowSystemInfo()}">
-                        <laser:render template="/templates/system/info" />
-                    </g:if>
-
                     <div id="system-profiler" class="ui label hidden la-debugInfos">
-                        <i class="clock icon"></i> <span></span>
+                        <i class="clock outline icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
-
+                <button style="display: none"  class="circular ui icon huge button icon la-scrollTopButton" id="la-js-topButton">
+                    <i class="angle double up icon"></i>
+                </button>
             </main>
         </div>
 
@@ -256,6 +258,28 @@
                 </g:if>
 
                 JSPC.app.workaround_targetBlank = function(e) { e.stopPropagation() }
+
+                $('#la-js-topButton').on('click', function() {
+                    scrollToTop()
+                });
+                // Function to scroll up
+                function scrollToTop() {
+                    $('html, body').animate({ scrollTop: 0 }, 'slow');
+                }
+                // show button only if scrolling down on long sites
+                $(window).scroll(function() {
+                    if ( $(this).scrollTop() > 200 ) {
+                        $('button#la-js-topButton').stop().fadeTo('slow',1);
+                    } else {
+                        $('button#la-js-topButton').stop().fadeTo('slow',0);
+                    }
+                });
+                if ( $('#system-profiler').length || $('#showDebugInfo').length ) {
+
+                }
+                else{
+                    $('button#la-js-topButton').css("bottom","10px");
+                }
             })
         </script>
     </body>

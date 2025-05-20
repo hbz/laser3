@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; org.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; org.grails.orm.hibernate.cfg.GrailsHibernateUtil; de.laser.survey.SurveyConfig;de.laser.License; de.laser.properties.SubscriptionProperty; de.laser.properties.LicenseProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.Subscription" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -69,15 +69,15 @@
 
         boolean showProp = false
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
-            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic)))) ||
-                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic))))) {
+            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextService.getOrg().id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic)))) ||
+                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextService.getOrg().id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic))))) {
                 showProp = true
             }
         }
 
         if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
-            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || !propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)))) ||
-                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf)))) {
+            if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextService.getOrg().id || !propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)))) ||
+                    ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextService.getOrg().id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf)))) {
                 showProp = true
             }
         }
@@ -90,9 +90,9 @@
                 <g:if test="${propKey.getI10n('expl') != null && !propKey.getI10n('expl').contains(' °')}">
                     ${propKey.getI10n('name')}
                     <g:if test="${propKey.getI10n('expl')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${propKey.getI10n('expl')}">
-                            <i class="grey question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                 </g:if>
@@ -100,9 +100,9 @@
                     ${propKey.getI10n('name')}
                 </g:else>
                 <g:if test="${propKey.multipleOccurrence}">
-                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                    <span data-position="top right" class="la-popup-tooltip"
                           data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
-                        <i class="redo icon orange"></i>
+                        <i class="${Icon.PROP.MULTIPLE}"></i>
                     </span>
                 </g:if>
             </td>
@@ -147,21 +147,26 @@
                                         </g:else>
                                         &nbsp;
                                         <g:if test="${propValue.note}">
-                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                  data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
+                                        <g:if test="${sourceObject instanceof License && propValue.paragraphNumber}">
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip"
+                                                 data-content="${propValue.paragraphNumber}">#</div><br />
+                                        </g:if>
+
                                         <g:if test="${sourceObject instanceof License && propValue.paragraph}">
-                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                  data-content="${propValue.paragraph}">§</div><br />
                                         </g:if>
 
                                         <g:if test="${propValues.get(sourceObject)?.size() > 1}"><br /></g:if>
                                     </g:if>
                                     <g:else>
-                                        <span data-position="top left" class="la-popup-tooltip la-delay"
+                                        <span data-position="top left" class="la-popup-tooltip"
                                               data-content="${message(code: "default.compare.propertyValueNotSet")}">
-                                            <i class="close icon"></i></span>
+                                            <i class="${Icon.SYM.NO}"></i></span>
                                     </g:else>
                                 </div>
                             </div>
@@ -170,7 +175,7 @@
                     </g:if>
                     <g:else>
                         <div class="la-copyElements-flex-item">
-                            <a class="ui circular label la-popup-tooltip la-delay"
+                            <a class="ui circular label la-popup-tooltip"
                                data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
                         </div>
                     </g:else>
@@ -214,7 +219,7 @@
                     </g:if>
                     <g:else>
                         <div class="la-copyElements-flex-item">
-                            <a class="ui circular label la-popup-tooltip la-delay"
+                            <a class="ui circular label la-popup-tooltip"
                                data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong></a>
                         </div>
                     </g:else>
@@ -277,20 +282,24 @@
                                         </g:else>
                                         &nbsp;
                                         <g:if test="${propValue.note}">
-                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                            <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                  data-content="${propValue.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                         </g:if>
 
+                                            <g:if test="${targetObject instanceof License && propValue.paragraphNumber}">
+                                                <div class="ui circular large label la-long-tooltip la-popup-tooltip"
+                                                     data-content="${propValue.paragraphNumber}">#</div><br />
+                                            </g:if>
                                             <g:if test="${targetObject instanceof License && propValue.paragraph}">
-                                                <div class="ui circular large label la-long-tooltip la-popup-tooltip la-delay"
+                                                <div class="ui circular large label la-long-tooltip la-popup-tooltip"
                                                      data-content="${propValue.paragraph}">§</div><br />
                                             </g:if>
                                             <g:if test="${propValues.get(targetObject)?.size() > 1}"><br /></g:if>
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${message(code: "default.compare.propertyValueNotSet")}">
-                                                <i class="close icon"></i></span>
+                                                <i class="${Icon.SYM.NO}"></i></span>
                                         </g:else>
                                     </div>
 
@@ -301,26 +310,20 @@
                                                 <g:set var="consortium" value="${targetObject.getLicensingConsortium()}"/>
                                             </g:if>
                                             <g:elseif test="${targetObject instanceof Subscription}">
-                                                <g:set var="consortium" value="${targetObject.getConsortia()}"/>
+                                                <g:set var="consortium" value="${targetObject.getConsortium()}"/>
                                                 <g:set var="atSubscr"
                                                        value="${targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                             </g:elseif>
                                             <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
-                                                <g:if test="${targetObject.isSlaved}">
-                                                    <span class="la-popup-tooltip la-delay"
-                                                          data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                          data-position="top right"><i class="icon grey la-thumbtack-regular"></i>
-                                                    </span>
+                                                <g:if test="${targetObject.instanceOf}">
+                                                    <ui:auditIcon type="auto" />
                                                 </g:if>
                                                 <g:else>
-                                                    <span class="la-popup-tooltip la-delay"
-                                                          data-content="${message(code: 'property.audit.target.inherit')}"
-                                                          data-position="top right"><i class="icon thumbtack grey"></i>
-                                                    </span>
+                                                    <ui:auditIcon type="default" />
                                                 </g:else>
                                             </g:if>
                                             <g:elseif test="${propValue.tenant?.id == consortium?.id && atSubscr}">
-                                                <span class="la-popup-tooltip la-delay"
+                                                <span class="la-popup-tooltip"
                                                       data-content="${message(code: 'property.notInherited.fromConsortia')}"
                                                       data-position="top right"><i
                                                         class="large icon cart arrow down grey"></i></span>
@@ -334,7 +337,7 @@
                         </g:if>
                         <g:else>
                             <div class="la-copyElements-flex-item">
-                                <a class="ui circular label la-popup-tooltip la-delay"
+                                <a class="ui circular label la-popup-tooltip"
                                    data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </div>
@@ -364,7 +367,7 @@
                         </g:if>
                         <g:else>
                             <div class="la-copyElements-flex-item">
-                                <a class="ui circular label la-popup-tooltip la-delay"
+                                <a class="ui circular label la-popup-tooltip"
                                    data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </div>

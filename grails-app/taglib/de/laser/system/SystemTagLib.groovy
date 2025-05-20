@@ -1,5 +1,6 @@
 package de.laser.system
 
+import de.laser.ui.Btn
 import de.laser.utils.SwissKnife
 
 class SystemTagLib {
@@ -18,20 +19,25 @@ class SystemTagLib {
         g.set( var:'contextService',                bean:'contextService' )
         g.set( var:'controlledListService',         bean:'controlledListService' )
         g.set( var:'customerTypeService',           bean:'customerTypeService' )
+        g.set( var:'dashboardService',              bean:'dashboardService')
         g.set( var:'deletionService',               bean:'deletionService')
         g.set( var:'docstoreService',               bean:'docstoreService' )
         g.set( var:'escapeService',                 bean:'escapeService')
         g.set( var:'exportClickMeService',          bean:'exportClickMeService')
         g.set( var:'exportService',                 bean:'exportService')
         g.set( var:'financeService',                bean:'financeService')
+        g.set( var:'fileCryptService',              bean:'fileCryptService' )
         g.set( var:'filterService',                 bean:'filterService' )
         g.set( var:'formService',                   bean:'formService' )
         g.set( var:'genericOIDService',             bean:'genericOIDService' )
         g.set( var:'gokbService',                   bean:'gokbService' )
+        g.set( var:'helpService',                   bean:'helpService' )
         g.set( var:'identifierService',             bean:'identifierService' )
+        g.set( var:'issueEntitlementService',       bean:'issueEntitlementService' )
+        g.set( var:'licenseService',                bean:'licenseService' )
         g.set( var:'linksGenerationService',        bean:'linksGenerationService' )
         g.set( var:'markerService',                 bean:'markerService' )
-        g.set( var:'orgTypeService',                bean:'orgTypeService' )
+        g.set( var:'managementService',             bean:'managementService' )
         g.set( var:'packageService',                bean:'packageService')
         g.set( var:'pendingChangeService',          bean:'pendingChangeService')
         g.set( var:'propertyService',               bean:'propertyService')
@@ -50,6 +56,8 @@ class SystemTagLib {
 
     // DO NOT use for templates, pdf or email generation
 
+    // <laser:htmlStart text="" message="" description="" />
+
     def htmlStart = { attrs, body ->
 
         String title = message(code: 'laser')
@@ -62,11 +70,14 @@ class SystemTagLib {
             title = title + ' : ' + message(code: attrs.message, args: attrs.args)
         }
 
-        if (attrs.serviceInjection) {
-            laser.serviceInjection()
-        }
+        laser.serviceInjection()
+
         out << '<!doctype html><html><head>'
         out << '<meta name="layout" content="laser">'
+
+        if (attrs.description) {
+            out << '<meta name="description" content="' + attrs.description + '">'
+        }
         out << '<title>' + title + '</title>'
         out << body()
         out << '</head>'
@@ -88,7 +99,7 @@ class SystemTagLib {
         }
         out << body()
         out << '      <br />'
-        out << '      <p> <button class="ui button" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
+        out << '      <p> <button class="' + Btn.SIMPLE + '" onclick="JSPC.helper.goBack()">' + message(code: 'default.button.back') + '</button> </p>'
         out << '    </div>'
         out << '  </div>'
         out << '</div>'

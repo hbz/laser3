@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
 <laser:render template="/subscription/reporting/details/timeline/base.part1" />

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart text="Datenbereinigung - Vertragsverknüpfungen ohne Einrichtungsverknüpfung" />
 
     <ui:breadcrumbs>
@@ -31,7 +32,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">
-                        <g:link action="updateOrgLicRoles" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.createOrgLicLinks')}"
+                        <g:link action="updateOrgLicRoles" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-tokenMsg="${message(code: 'confirmation.content.createOrgLicLinks')}"
                                 data-confirm-term-how="ok">Einrichtungen verknüpfen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
                     </td>
                 </tr>

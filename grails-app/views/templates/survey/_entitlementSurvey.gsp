@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <div class="ui card la-time-card">
     <div class="content">
         <div class="header"><g:message code="renewEntitlementsWithSurvey.selectableTitles"/></div>
@@ -11,7 +12,7 @@
                     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
                             id="${subscription.id}"
                             params="${[surveyConfigID: surveyConfig.id]}"
-                            class="ui button">
+                            class="${Btn.SIMPLE}">
                         <g:message code="surveyInfo.toIssueEntitlementsSurvey"/>
                     </g:link>
                 </div>
@@ -28,9 +29,9 @@
             code="renewEntitlementsWithSurvey.currentTitlesSelect"/></a>
 
     <a class="item" data-tab="currentTitles"><g:message code="renewEntitlementsWithSurvey.currentTitles"/>
-        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
               data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
-            <i class="grey question circle icon"></i>
+            <i class="${Icon.TOOLTIP.HELP}"></i>
         </span>
     </a>
 
@@ -70,7 +71,7 @@
             id="${subscription.id}"
             params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'selectedIEs']}"
-            class="ui button">
+            class="${Btn.SIMPLE}">
         <g:message code="renewEntitlementsWithSurvey.currentTitlesSelect.button"/>
     </g:link>
 
@@ -95,7 +96,7 @@
             id="${subscription.id}"
             params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'currentPerpetualAccessIEs']}"
-            class="ui button">
+            class="${Btn.SIMPLE}">
         <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
     </g:link>
 
@@ -109,7 +110,7 @@
                 id="${subscription.id}"
                 params="${[surveyConfigID: surveyConfig.id,
                            tab           : 'topUsed']}"
-                class="ui button">
+                class="${Btn.SIMPLE}">
             <g:message code="renewEntitlementsWithSurvey.stats.button"/>
         </g:link>
 

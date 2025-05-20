@@ -10,6 +10,8 @@ import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
@@ -150,7 +152,7 @@ class PlatformFilter extends BaseFilter {
 
                         queryParts.add('OrgRole ro')
                         whereParts.add('ro.roleType in (:p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
+                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
 
@@ -171,7 +173,7 @@ class PlatformFilter extends BaseFilter {
 
                         queryParts.add('OrgRole ro')
                         whereParts.add('ro.roleType in (:p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ])
+                        queryParams.put('p' + pCount, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS ])
                         whereParts.add('ro.org = :p' + (++pCount) + ' and ro.sub = sub')
                         queryParams.put('p' + pCount, contextService.getOrg())
 

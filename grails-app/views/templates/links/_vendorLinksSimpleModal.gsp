@@ -1,13 +1,32 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${editmode}">
-    <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button"
+       class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+       data-ui="modal"
+       href="#${tmplModalID}"
+       data-content="${tmplTooltip}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 </g:if>
 
 <ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
     <div class="ui info message">
-        <i class="info circle icon"></i> ${message(code: 'subscription.details.linkAgency.minTwoLetters')}
+        <i class="${Icon.UI.INFO}"></i> ${message(code: 'subscription.details.linkAgency.minTwoLetters')}
     </div>
     <g:form id="create_vendor_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addVendorRole']" method="post">
-        <input type="hidden" name="parent" value="${parent}" />
+        <g:if test="${parent}">
+            <input type="hidden" name="parent" value="${parent}" />
+        </g:if>
+        <g:if test="${withToggler}">
+            <input type="hidden" name="refererController" value="${controllerName}" />
+            <input type="hidden" name="takeSelectedSubs" value="/${controllerName}/subscriptionManagement/${params.tab}/${user.id}" />
+            <input type="hidden" name="membersListToggler" class="membersListToggler_modal" value="false" />
+        </g:if>
         <input type="hidden" name="recip_prop" value="${recip_prop}" />
 
         <label for="${tmplModalID}_vendorSearch">${message(code: 'title.search')}</label>
@@ -28,7 +47,12 @@
             }
             searchTimer = setTimeout(function() {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&query="+searchVal,
+                    <g:if test="${parent}">
+                        url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&parent=${parent}&query="+searchVal,
+                    </g:if>
+                    <g:else>
+                        url: "<g:createLink controller="ajaxHtml" action="lookupVendors"/>?tableView=true&query="+searchVal,
+                    </g:else>
                     success: function (data) {
                         $('#${tmplModalID}_vendorResultWrapper').html(data);
                     }

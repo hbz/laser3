@@ -1,6 +1,6 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
-<laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
+<laser:htmlStart message="createSubscriptionSurvey.label" />
 
 <ui:breadcrumbs>
 
@@ -14,12 +14,12 @@
 
     <ui:form controller="survey" action="processCreateSubscriptionSurvey">
         <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
-        <div class="field required ">
+        <div class="field required">
             <label>${message(code: 'surveyInfo.name.label')} ${message(code: 'messageRequiredField')}</label>
             <input type="text" name="name" placeholder="" value="${subscription?.name ?: params.name}" required />
         </div>
 
-        <div class="two fields ">
+        <div class="two fields">
             <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
@@ -37,8 +37,8 @@
         </g:if><g:else>
 
         <div class="field">
-            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
-            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="grey question circle icon"></i></label>
+            <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
+            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="${Icon.TOOLTIP.HELP}"></i></label>
             </span>
             <div class="field disabled">
                 <input type="checkbox" name="subSurveyUseForTransfer">
@@ -74,13 +74,13 @@
             </div>
         </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
             <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>
         </div>
 
-        <input type="submit" class="ui button"
+        <input type="submit" class="${Btn.SIMPLE}"
                value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </ui:form>

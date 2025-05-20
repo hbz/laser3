@@ -2,8 +2,8 @@ package de.laser.api.v0
 
 
 import de.laser.Org
-import de.laser.Person
-import de.laser.TitleInstancePackagePlatform
+import de.laser.addressbook.Person
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.sql.GroovyRowResult
 
 class ApiMapReader {
@@ -33,8 +33,8 @@ class ApiMapReader {
             result.contactType     = prs.contactType?.value
 
             // References
-            result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.Contact
-            //result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.Address - obsolete for 3.2
+            result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.addressbook.Contact
+            //result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.addressbook.Address - obsolete for 3.2
             result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // de.laser.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
@@ -60,7 +60,7 @@ class ApiMapReader {
         result.name             = tipp.name
         result.medium           = tipp.medium?.value
         result.status           = tipp.status?.value
-        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.TIPPCoverage
+        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.wekb.TIPPCoverage
         result.priceItems       = ApiCollectionReader.getPriceItemCollection(tipp.priceItems) //de.laser.finance.PriceItem with pi.tipp != null
         result.altnames          = ApiCollectionReader.getAlternativeNameCollection(tipp.altnames)
         result.firstAuthor       = tipp.firstAuthor
@@ -82,7 +82,7 @@ class ApiMapReader {
 
         // References
         result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
-        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.wekb.Platform
         result.ddcs                 = ApiCollectionReader.getDeweyDecimalCollection(tipp.ddcs)  //de.laser.DeweyDecimalClassification
         result.languages            = ApiCollectionReader.getLanguageCollection(tipp.languages) //de.laser.Language
         //unsure construction; remains open u.f.n.
@@ -90,7 +90,7 @@ class ApiMapReader {
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
-                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.Package
+                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.wekb.Package
             }
             //result.providers        = ApiCollectionReader.getOrgLinkCollection(tipp.orgs, ApiReader.IGNORE_TIPP, context) //de.laser.OrgRole
         }
@@ -156,12 +156,12 @@ class ApiMapReader {
 
         // References
         result.identifiers          = row['ids']       // de.laser.Identifier
-        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.wekb.Platform
         result.publishers           = row['publishers']
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
-                result.package = ApiUnsecuredMapReader.getPackageStubMapWithSQL(row['pkg']) // de.laser.Package
+                result.package = ApiUnsecuredMapReader.getPackageStubMapWithSQL(row['pkg']) // de.laser.wekb.Package
             }
         }
 

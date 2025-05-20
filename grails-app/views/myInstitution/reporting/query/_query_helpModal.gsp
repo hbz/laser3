@@ -1,14 +1,14 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
-    String icon_blue   = '<i class="icon circle blue"></i>'
-    String icon_green  = '<i class="icon circle green"></i>'
-    String icon_yellow = '<i class="icon circle yellow"></i>'
-    String icon_pink   = '<i class="icon circle pink"></i>'
-    String icon_teal   = '<i class="icon circle teal"></i>'
+    String icon_blue   = '<i class="' + Icon.SYM.CIRCLE + ' blue"></i>'
+    String icon_green  = '<i class="' + Icon.SYM.CIRCLE + ' green"></i>'
+    String icon_yellow = '<i class="' + Icon.SYM.CIRCLE + ' yellow"></i>'
+    String icon_pink   = '<i class="' + Icon.SYM.CIRCLE + ' pink"></i>'
+    String icon_teal   = '<i class="' + Icon.SYM.CIRCLE + ' teal"></i>'
 
     Closure hh_header = { de, en ->
         println """<p class="ui header"> ${lang == 'de' ? de : en} </p>"""
@@ -16,9 +16,9 @@
 
     Closure hh_no_x = { de, en ->
         if (lang == 'de') {
-            println """<p> ${de[0]} ohne ${de[1]} werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne ${de[2]}</strong> zusammmen gefasst. </p>"""
+            println """<p> ${de[0]} ohne ${de[1]} werden in der Gruppe <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* ohne ${de[2]}</strong> zusammmen gefasst. </p>"""
         } else {
-            println """<p> ${en[0]} without ${en[1]} are summarized in the group <i class="icon circle pink"></i><strong>* no ${en[2]}</strong>. </p>"""
+            println """<p> ${en[0]} without ${en[1]} are summarized in the group <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* no ${en[2]}</strong>. </p>"""
         }
     }
 
@@ -284,8 +284,8 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="icon circle blue"></i> Die Lizenz verweist direkt auf den Anbieter, <br />
-                <i class="icon circle green"></i> Der Anbieter kann über ein referenziertes Paket ermittelt werden <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Anbieter, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> Der Anbieter kann über ein referenziertes Paket ermittelt werden <br />
             </p>
         </g:if>
         <g:else>
@@ -295,8 +295,8 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="icon circle blue"></i> The subscription refers directly to the provider, <br />
-                <i class="icon circle green"></i> The provider can be identified via a referenced package <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> The subscription refers directly to the provider, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> The provider can be identified via a referenced package <br />
             </p>
         </g:else>
         ${hh_no_x( ['Lizenzen', 'ermittelbare Anbieter', 'Anbieter'], ['Subscriptions', 'assignable providers', 'Provider'] )}
@@ -312,7 +312,7 @@
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Anbieter.
             </p>
             <p>
-                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
@@ -322,7 +322,7 @@
                 The basic search determines the number of subscriptions, participant subscriptions and providers considered.
             </p>
             <p>
-                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="icon circle pink"></i><strong>* no Match</strong>.
+                Participant subscriptions without a designated provider or without a suitable match are grouped together in the <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* no Match</strong>.
             </p>
         </g:else>
     </div>
@@ -337,8 +337,8 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-                <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus den lizenzierten Titeln ermittelt werden, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
         </g:if>
         <g:else>
@@ -348,8 +348,8 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="icon circle blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
-                <i class="icon circle green"></i> The provider assigned to a subscription refers to a platform <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> The platform can be determined directly by a reference from the subscription entitlements, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> The provider assigned to a subscription refers to a platform <br />
             </p>
         </g:else>
         ${hh_no_x( ['Lizenzen', 'ermittelbare Plattformen', 'Plattform'], ['Subscriptions', 'assignable platforms', 'Platform'] )}
@@ -394,17 +394,17 @@
     </div>
 
     <div class="help-section" data-help-section="subscription-x-vendor">
-        ${hh_header( 'Lieferanten von Lizenzen', 'Vendors of subscriptions' )}
+        ${hh_header( 'Library Supplier von Lizenzen', 'Vendors of subscriptions' )}
 
         <g:if test="${lang == 'de'}">
             <p>
-                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Lizenzen konkret zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Lieferanten.
+                Gelistet werden alle relevanten Library Supplier - also Library Supplier, die Lizenzen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Library Supplier.
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="icon circle blue"></i> Die Lizenz verweist direkt auf den Lieferanten, <br />
-                <i class="icon circle green"></i> Der Lieferant kann über ein referenziertes Paket ermittelt werden <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Library Supplier, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> Der Library Supplier kann über ein referenziertes Paket ermittelt werden <br />
             </p>
         </g:if>
         <g:else>
@@ -414,11 +414,11 @@
             </p>
             <p>
                 The following variants are possible: <br />
-                <i class="icon circle blue"></i> The subscription refers directly to the vendor, <br />
-                <i class="icon circle green"></i> The vendor can be identified via a referenced package <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> The subscription refers directly to the vendor, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> The vendor can be identified via a referenced package <br />
             </p>
         </g:else>
-        ${hh_no_x( ['Lizenzen', 'ermittelbare Lieferanten', 'Lieferant'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
+        ${hh_no_x( ['Lizenzen', 'ermittelbare Library Supplier', 'Library Supplier'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
     </div>
 
     %{-- license --}%
@@ -469,12 +469,12 @@
     </div>
 
     <div class="help-section" data-help-section="license-x-vendor">
-        ${hh_header( 'Lieferanten von Verträgen', 'Vendors of licenses' )}
+        ${hh_header( 'Library Supplier von Verträgen', 'Vendors of licenses' )}
 
         <g:if test="${lang == 'de'}">
             <p>
-                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Verträgen konkret zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Lieferanten.
+                Gelistet werden alle relevanten Library Supplier - also Library Supplier, die Verträgen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Library Supplier.
             </p>
         </g:if>
         <g:else>
@@ -483,7 +483,7 @@
                 The basic search determines the number of licenses and vendors considered.
             </p>
         </g:else>
-        ${hh_no_x( ['Verträge', 'ausgewiesene Lieferanten', 'Lieferant'], ['Licenses', 'designated vendors', 'Vendor'] )}
+        ${hh_no_x( ['Verträge', 'ausgewiesene Library Supplier', 'Library Supplier'], ['Licenses', 'designated vendors', 'Vendor'] )}
     </div>
 
     %{-- org --}%
@@ -530,7 +530,7 @@
 
     <div class="help-section" data-help-section="vendor-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+            ${hc_identifier( 'Library Supplier', 'Library Supplier', 'Library Supplier' )}
         </g:if>
         <g:else>
             ${hc_identifier( 'vendors', 'vendors', 'Vendors')}
@@ -539,7 +539,7 @@
 
     <div class="help-section" data-help-section="vendor-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+            ${hc_property( 'Library Supplier', 'Library Supplier', 'Library Supplier' )}
         </g:if>
         <g:else>
             ${hc_property( 'vendors', 'vendors', 'Vendors' )}
@@ -648,8 +648,8 @@
                 </ol>
             </p>
             <p>
-                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="${Icon.SYM.CIRCLE} teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
             </p>
         </g:if>
         <g:else>
@@ -663,8 +663,8 @@
                 </ol>
             </p>
             <p>
-                Packages without corresponding properties are summarized in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
-                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
+                Packages without corresponding properties are summarized in the group <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
+                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under <i class="${Icon.SYM.CIRCLE} teal"></i><strong>* no web:kb object</strong>. <br />
             </p>
         </g:else>
     </div>

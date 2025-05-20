@@ -72,7 +72,7 @@
                             </div>
                             <div class="text-container">
                                 <h5>PRIMARY</h5>
-                                <p>CSS-Klasse: <b>blue la-modern-button</b> bei Icon-Buttons, die nur bei Hover ausgefüllt sind
+                                <p>CSS-Klasse: <b>la-modern-button</b> bei Icon-Buttons, die nur bei Hover ausgefüllt sind
                                 <p>CSS-Klasse: <b>primary</b> bei Submit-Buttons
                             </div>
                         </div>

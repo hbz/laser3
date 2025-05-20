@@ -4,6 +4,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.interfaces.CalculatedType
 import de.laser.storage.BeanStore
 import grails.plugins.orm.auditable.Auditable
 
@@ -19,8 +20,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     boolean isPublic = false
 
     String           stringValue
-    @Deprecated
-    Integer          intValue
     Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
@@ -31,6 +30,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     License owner
     LicenseProperty instanceOf
+    String paragraphNumber
     String paragraph
 
     Date dateCreated
@@ -41,7 +41,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         id          column: 'lp_id'
         version     column: 'lp_version'
         stringValue column: 'lp_string_value', type: 'text'
-        intValue    column: 'lp_int_value'
         longValue   column: 'lp_long_value'
         decValue    column: 'lp_dec_value'
         refValue    column: 'lp_ref_value_rv_fk', index: 'lp_ref_value_idx'
@@ -49,6 +48,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         note        column: 'lp_note', type: 'text'
         dateValue   column: 'lp_date_value'
         instanceOf  column: 'lp_instance_of_fk', index: 'lp_instance_of_idx'
+        paragraphNumber column: 'lp_paragraph_number'
         paragraph   column: 'lp_paragraph', type: 'text'
         owner       column: 'lp_owner_fk', index:'lcp_owner_idx'
         type        column: 'lp_type_fk', index: 'lp_type_idx'
@@ -61,7 +61,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     static constraints = {
         stringValue (nullable: true)
-        intValue    (nullable: true)
         longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
@@ -69,6 +68,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         note        (nullable: true)
         dateValue   (nullable: true)
         instanceOf  (nullable: true)
+        paragraphNumber (nullable: true)
         paragraph   (nullable: true)
 
         lastUpdated (nullable: true)
@@ -86,7 +86,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      */
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'longValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+        [ 'stringValue', 'longValue', 'decValue', 'refValue', 'paragraphNumber', 'paragraph', 'note', 'dateValue' ]
     }
 
     /**
@@ -127,15 +127,32 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     }
 
     /**
-     * Extends the superclass method by the license paragraph
+     * Extends the superclass method by the license paragraph and paragraph number
      * @param newProp the new license property to be processed
-     * @return the property enriched with this copy base's values and the paragraph
+     * @return the property enriched with this copy base's values, the paragraph and its number
      */
     @Override
     def copyInto(AbstractPropertyWithCalculatedLastUpdated newProp){
         newProp = super.copyInto(newProp)
 
+        newProp.paragraphNumber = paragraphNumber
         newProp.paragraph = paragraph
         newProp
+    }
+
+    String getParagraphNumber() {
+        paragraphNumber ?: '0'
+    }
+
+    @Override
+    boolean isVisibleExternally() {
+        Org contextOrg = BeanStore.getContextService().getOrg()
+        boolean result = contextOrg == tenant //default
+        if(!result) {
+            if(isPublic)
+                result = (owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && contextOrg == owner.getLicensingConsortium()) || instanceOf != null
+            else result = instanceOf != null
+        }
+        result
     }
 }

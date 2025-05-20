@@ -14,18 +14,25 @@ import de.laser.utils.LocaleUtils
 class SystemMessage {
 
     /**
-     * Messages of this type are showing up on top of each page, to be used for alerts
+     * Messages of this type are displayed on top of each page
      */
-    static final String TYPE_ATTENTION = "TYPE_ATTENTION"
+    static final String TYPE_GLOBAL = "TYPE_GLOBAL"
     /**
-     * Messages of this type are global announcements
+     * Messages of this type are displayed on the dashboard
      */
-    static final String TYPE_STARTPAGE_NEWS = "TYPE_STARTPAGE_NEWS"
+    static final String TYPE_DASHBOARD = "TYPE_DASHBOARD"
+    /**
+     * Global announcements on the start page
+     */
+    static final String TYPE_STARTPAGE = "TYPE_STARTPAGE"
+
 
     String content_de
     String content_en
     String type
     boolean isActive = false
+
+    SystemMessageCondition.CONFIG condition
 
     Date dateCreated
     Date lastUpdated
@@ -36,18 +43,21 @@ class SystemMessage {
         id          column: 'sm_id'
         version     column: 'sm_version'
 
-        content_de  column: 'sm_content_de'
-        content_en  column: 'sm_content_en'
-        type        column: 'sm_type'
-        isActive    column: 'sm_is_active'
+        content_de column: 'sm_content_de'
+        content_en column: 'sm_content_en'
+        type       column: 'sm_type'
+        condition  column: 'sm_condition'
+        isActive   column: 'sm_is_active'
+
         dateCreated column: 'sm_date_created'
         lastUpdated column: 'sm_last_updated'
     }
 
     static constraints = {
-        content_de  (nullable:true,  blank:true)
-        content_en  (nullable:true,  blank:true)
-        type        (blank:false)
+        content_de          (nullable:true,  blank:true)
+        content_en          (nullable:true,  blank:true)
+        type                (blank:false)
+        condition           (nullable:true)
     }
 
     /**
@@ -55,7 +65,7 @@ class SystemMessage {
      * @return a {@link List} of types
      */
     static getTypes() {
-        [TYPE_ATTENTION, TYPE_STARTPAGE_NEWS]
+        [TYPE_GLOBAL, TYPE_DASHBOARD, TYPE_STARTPAGE]
     }
 
     /**
@@ -85,6 +95,18 @@ class SystemMessage {
             default:
                 return content_en
                 break
+        }
+    }
+
+    boolean isDisplayed() {
+        // logic:
+        // display message - isActive == true
+        // hide message    - isDisplayed() == false
+
+        if (condition) {
+            ! SystemMessageCondition.isDone(condition)
+        } else {
+            true
         }
     }
 }

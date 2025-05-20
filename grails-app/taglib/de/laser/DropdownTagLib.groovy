@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ui.Icon
 import de.laser.utils.SwissKnife
 
 class DropdownTagLib {
@@ -15,8 +16,8 @@ class DropdownTagLib {
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
-        out <<     '<i class="download icon"></i>'
+        out << '<div class="ui simple dropdown clearable button">'
+        out <<     '<i class="' + Icon.CMD.DOWNLOAD + '"></i>'
         out <<     '<div class="menu">'
         out <<         body()
         out <<     '</div>'
@@ -34,7 +35,7 @@ class DropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown clearable button">'
         out <<     '<i class="magic icon"></i>'
         out <<     '<div class="menu" style="left:auto; right:0">'
         out <<         body()
@@ -50,7 +51,7 @@ class DropdownTagLib {
         String href      = attrs.href ? attrs.href : '#'
 
         if (attrs.tooltip && attrs.tooltip != '') {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
         if (this.pageScope.variables?.actionName == attrs.action && !attrs.notActive) {
             cssClass = cssClass + ' active'
@@ -86,7 +87,7 @@ class DropdownTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String tooltip = attrs.tooltip ?: "Die Funktion '${message}' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item disabled la-popup-tooltip la-delay" data-content="' + tooltip + '">' + message + '</a>'
+        out << '<a href="#" class="item disabled la-popup-tooltip" data-content="' + tooltip + '">' + message + '</a>'
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->
@@ -177,7 +178,7 @@ class DropdownTagLib {
         String noSelection  = attrs.noSelection ?: ''
 
         out << '<label>' + message(code: 'form.label.sort') + '</label>'
-        out << '<select class="ui  selection dropdown la-js-sorting la-not-clearable ' + cssClass + '">'
+        out << '<select class="ui selection dropdown la-js-sorting la-not-clearable ' + cssClass + '">'
         out <<     '<option value="">' + noSelection + '</option>'
         attrs.from.eachWithIndex { sortKey, sortValue, i ->
             String selectedAsc = attrs.sort == sortKey && attrs.order == 'asc' ? 'selected' : ''

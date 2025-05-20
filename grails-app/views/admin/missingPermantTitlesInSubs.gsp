@@ -46,7 +46,7 @@
                         -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                     </g:else>
                     <g:if test="${s.instanceOf}">
-                        <g:if test="${s.consortia && s.consortia == institution}">
+                        <g:if test="${s.getConsortium() && s.getConsortium() == contextService.getOrg()}">
                             ( ${s.getSubscriberRespConsortia()?.name} )
                         </g:if>
                     </g:if>

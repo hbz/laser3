@@ -3,11 +3,11 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.OrgSetting
-import de.laser.Provider
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.auth.Role
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
@@ -342,7 +342,7 @@ class SubscriptionFilter extends BaseFilter {
             queryParams.subscriptionIdList = filterResult.data.get('memberSubscriptionIdList') // if memberSubscription filter is set
         }
         if (partKey == 'consortium') {
-            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIA] )
+            queryParams.put( 'roleTypes', [RDStore.OR_SUBSCRIPTION_CONSORTIUM] )
         }
 //        if (partKey == 'provider') {
 //            queryParams.put( 'roleTypes', [RDStore.OR_PROVIDER] )
@@ -400,13 +400,6 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

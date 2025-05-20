@@ -1,11 +1,9 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.wekb.Package" %>
 
       <ui:breadcrumbs>
           <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
           <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
       </ui:breadcrumbs>
-
-      <ui:modeSwitch controller="package" action="${params.action}" params="${params}" />
 
       <ui:controlButtons>
           <ui:exportDropdown>
@@ -59,7 +57,7 @@
                       </g:link>
                   </g:if>
                   <g:else>
-                      <g:link class="item" action="${actionName}"
+                      <g:link class="item kbartExport  js-no-wait-wheel" action="${actionName}"
                               params="${params + [exportKBart: true]}">KBART Export</g:link>
                   </g:else>
               </ui:exportDropdownItem>
@@ -80,6 +78,8 @@
 
   <laser:render template="nav"/>
 
+  <div id="downloadWrapper"></div>
+
   <ui:messages data="${flash}" />
 
   <ui:errors bean="${packageInstance}" />
@@ -87,10 +87,8 @@
     <laser:render template="/templates/filter/tipp_ieFilter"/>
 
     <h3 class="ui icon header la-clear-before la-noMargin-top">
-        <span class="ui circular label">${num_tipp_rows}</span> <g:message code="title.filter.result"/>
+        <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
     </h3>
-
-<div id="downloadWrapper"></div>
 
 <div class="ui form">
     <div class="three wide fields">
@@ -120,7 +118,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="current" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="${actionName}" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

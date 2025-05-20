@@ -3,6 +3,8 @@ package de.laser
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**
@@ -35,6 +37,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String GND_ORG_NR  = "gnd_org_nr"
     public static final String ISIL        = "ISIL"
     public static final String ISNI        = "isni"
+    public static final String RINGGOLD_ID = "ringgold"
     public static final String ROR_ID      = "ROR ID"
     public static final String LEIT_ID     = "Leitweg-ID"
     public static final String LEIT_KR     = "Leitkriterium (intern)"
@@ -81,6 +84,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             DBIS_ORG_ID,
             DEAL_ID,
             VAT,
+            RINGGOLD_ID,
             WIKIDATA_ID,
             LEIT_ID,
             LEIT_KR,

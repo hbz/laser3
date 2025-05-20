@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 
 %{-- menu: public --}%
@@ -12,8 +12,8 @@
 
         <div class="divider"></div>
 
-        <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco"><i class="ui icon layer group"></i> ${message(code:'menu.public.gasco_monitor')}</ui:link>
-        <a href="${message(code:'url.wekb.' + currentServer)}" id="wekb" class="item" role="menuitem" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)"><i class="ui icon la-gokb"></i> we:kb</a>
+        <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco"><i class="${Icon.GASCO}"></i> ${message(code:'menu.public.gasco_monitor')}</ui:link>
+        <a href="${message(code:'url.wekb.' + currentServer)}" id="wekb" class="item" role="menuitem" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)"><i class="${Icon.WEKB}"></i> we:kb</a>
     </div>
 </div>
 
@@ -47,7 +47,7 @@
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org.show')}</ui:link>
+        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextService.getOrg().id]">${message(code:'menu.institutions.org.show')}</ui:link>
 
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
         <div class="divider"></div>

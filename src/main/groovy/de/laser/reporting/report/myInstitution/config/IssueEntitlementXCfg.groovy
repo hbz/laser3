@@ -1,8 +1,9 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.IssueEntitlement
-import de.laser.Platform
-import de.laser.Provider
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
 import de.laser.annotations.UnstableFeature
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -107,7 +108,7 @@ class IssueEntitlementXCfg extends BaseConfig {
 
             package : [
                     meta : [
-                            class:  de.laser.Package,
+                            class:  de.laser.wekb.Package,
                             cfgKey: BaseConfig.KEY_PACKAGE
                     ],
                     source : [

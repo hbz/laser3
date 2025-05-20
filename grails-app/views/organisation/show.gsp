@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.addressbook.Contact" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -7,7 +7,7 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
-<laser:htmlStart message="${'menu.institutions.org.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.org.show'}" />
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">
@@ -16,7 +16,6 @@
     </div>
 </ui:debugInfo>
 
-
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
@@ -24,34 +23,31 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" >
-    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+<ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}" />
 </ui:h1HeaderWithIcon>
-
-<ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
-               navPrev="${navPrevOrg}"/>
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
-        <i class="info icon"></i>
+        <i class="${Icon.UI.WARNING}"></i>
         <div class="content">
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
             <div class="ui bulleted list">
-            <g:if test="${missing.eInvoicePortal}">
-                <div class="item">${missing.eInvoicePortal}</div>
-            </g:if>
-            <g:if test="${missing.leitID}">
-                <div class="item">${missing.leitID}</div>
-            </g:if>
-        </div>
+                <g:if test="${missing.eInvoicePortal}">
+                    <div class="item">${missing.eInvoicePortal}</div>
+                </g:if>
+                <g:if test="${missing.leitID}">
+                    <div class="item">${missing.leitID}</div>
+                </g:if>
+            </div>
         </div>
     </div>
 </g:if>
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
@@ -63,78 +59,81 @@
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
 
-                    <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
-                        <a href="#" class="ui icon la-float-right mailInfos-flyout-trigger" data-orgId="${orgInstance.id}">
-                            <i class="icon circular info inverted"></i>
+                    <g:if test="${!inContextOrg && contextService.getOrg().isCustomerType_Consortium()}">
+                        <a href="#" class="ui icon la-float-right infoFlyout-trigger" data-template="org" data-org="${orgInstance.id}">
+                            <i class="icon circular blue info inverted"></i>
                         </a>
                     </g:if>
 
-
                     <dl>
-                        <dt><g:message code="default.name.label" /></dt>
+                        <dt class="control-label"><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" field="name"
-                                    overwriteEditable="${editable}"/>
+                            <ui:xEditable owner="${orgInstance}" field="name" overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
-                    <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
+                    <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                         <dl>
-                            <dt><g:message code="org.sortname.label" /></dt>
+                            <dt class="control-label"><g:message code="org.sortname.label" /></dt>
                             <dd>
                                 <ui:xEditable owner="${orgInstance}" field="sortname" overwriteEditable="${editable}"/>
                             </dd>
                         </dl>
                     </g:if>
                     <dl>
-                        <dt><g:message code="org.altname.label" /></dt>
+                        <dt class="control-label"><g:message code="altname.plural" /></dt>
                         <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="item title" id="altname_title">
-                                        <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                            <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                    <div class="ui divided middle aligned selection list la-flex-center">
+                                        <div class="item title" id="altname_title"  data-objId="altname-${orgInstance.altnames[0].id}">
+                                            <div class="content la-space-right">
+                                                <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            </div>
                                             <g:if test="${editable}">
-                                                <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
-                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="${Icons.CMD_DELETE} icon"></i>
+                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${orgInstance.altnames[0].id}')">
+                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
-                                        </div>
-                                        <div class="ui icon blue button la-show-button la-modern-button la-popup-tooltip la-delay"
-                                             data-content="${message(code: 'org.altname.show')}">
-                                            <i class="ui angle double down icon"></i>
-                                        </div>
-                                    </div>
-                                    <div class="content">
-                                        <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
-                                            <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                                <div class="content la-space-right">
-                                                    <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
-                                                </div>
-                                                <g:if test="${editable}">
-                                                    <div class="content la-space-right">
-                                                        <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icons.CMD_DELETE} icon"></i>
-                                                            </ui:remoteLink>
-                                                        </div>
-                                                    </div>
-                                                </g:if>
+                                            <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button" data-content="${message(code: 'altname.showAll')}">
+                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
                                             </div>
-                                        </g:each>
+                                        </div>
+                                        <div class="content" style="padding:0">
+                                            <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
+                                                <div class="ui item" data-objId="altname-${altname.id}">
+                                                    <div class="content la-space-right">
+                                                        <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                    </div>
+                                                    <g:if test="${editable}">
+                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${altname.id}')">
+                                                            <i class="${Icon.CMD.DELETE}"></i>
+                                                        </ui:remoteLink>
+                                                    </g:if>
+                                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                        <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                        </div>
                                     </div>
                                 </g:if>
-                            </div>
+                            </div><!-- #altnames -->
+                        </dd>
+                        <dd>
                             <g:if test="${editable}">
-                                <input name="addAltname" id="addAltname" type="button" class="ui button addListValue" data-objtype="altname" value="${message(code: 'org.altname.add')}">
+                                <button data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname" class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
+                                    <i class="${Icon.CMD.ADD}"></i>
+                                </button>
                             </g:if>
                         </dd>
                     </dl>
+                    <div></div>%{-- Breaks DL for a reason --}%
                     <dl>
-                        <dt><g:message code="default.url.label"/></dt>
+                        <dt class="control-label"><g:message code="default.url.label"/></dt>
                         <dd>
                             <ui:xEditable owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable}"/>
                             <g:if test="${orgInstance.url}">
@@ -142,40 +141,27 @@
                             </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${orgInstance.getCustomerType()}">
+
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
                         <dl>
-                            <dt><g:message code="org.customerType.label"/></dt>
+                            <dt class="control-label">
+                                <g:message code="org.libraryType.label" />
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                      data-content="${message(code: 'org.libraryType.expl')}">
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                </span>
+                            </dt>
                             <dd>
-                                ${orgInstance.getCustomerTypeI10n()}
+                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
                             </dd>
                         </dl>
                     </g:if>
-                    <g:if test="${orgInstance.isCustomerType_Inst()}">
+
+                    <g:if test="${orgInstance.getCustomerType()}">
                         <dl>
-                            <dt>
-                                <g:message code="org.legalPatronName.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
+                            <dt class="control-label"><g:message code="org.customerType.label"/></dt>
                             <dd>
-                                <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.urlGov.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
-                                <g:if test="${orgInstance.urlGov}">
-                                    <ui:linkWithIcon href="${orgInstance.urlGov}" />
-                                </g:if>
+                                ${orgInstance.getCustomerTypeI10n()}
                             </dd>
                         </dl>
                     </g:if>
@@ -183,26 +169,145 @@
             </div><!-- .card -->
 
             <g:if test="${orgInstance.isCustomerType_Inst()}">
+                <div class="ui two doubling stackable cards">
+                    <div class="ui card">
+                        <div class="content">
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.libraryNetwork.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.libraryNetwork.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config="${RDConstants.LIBRARY_NETWORK}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.legalPatronName.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.legalPatronName.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.urlGov.label"/>
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.urlGov.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
+                                    <g:if test="${orgInstance.urlGov}">
+                                        <ui:linkWithIcon href="${orgInstance.urlGov}" />
+                                    </g:if>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.funderType.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.funderType.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.funderHSK.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.funderHSK.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="address.country.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.country.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                    &nbsp
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.region.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.region.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
+                                    <g:if test="${editable}">
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    </g:if>
+                                    <g:else>
+                                        ${orgInstance.region?.getI10n("value")}
+                                    </g:else>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div><!-- .card -->
+
+                    <div class="ui card">
+                        <div class="content">
+                            <dl>
+                                <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
+                                <dd>
+                                    <%
+                                        List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    %>
+                                    <laser:render template="orgSubjectGroupAsList"
+                                                  model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+
+                                    <laser:render template="orgSubjectGroupModal"
+                                                  model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                                </dd>
+                                <dd>
+                                    <g:if test="${editable}">
+                                        <a  data-content="<g:message code="org.subjectGroup.add.label"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#subjectGroup" >
+                                            <i class="${Icon.CMD.ADD}"></i>
+                                        </a>
+                                    </g:if>
+                                </dd>
+                            </dl>
+%{--                            <div class="ui header">${message(code:'org.subjectGroup.label')}</div>--}%
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
+            <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt>
-                                <g:message code="org.linkResolverBase.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="org.eInvoice.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${message(code: 'org.eInvoice.expl')}">
-                                    <i class="grey question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -210,11 +315,11 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="org.eInvoicePortal.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${message(code: 'org.eInvoicePortal.expl')}">
-                                    <i class="grey question circle icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
@@ -225,151 +330,29 @@
                 </div><!-- .card -->
             </g:if>
 
-            <%--
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt>${message(code: 'default.status.label')}</dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor}"/>
-                        </dd>
-                    </dl>
-                    <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
-                        <dl>
-                            <dt>${message(code: 'org.retirementDate.label')}</dt>
-                            <dd>
-                                <g:formatDate date="${orgInstance.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
-                            </dd>
-                        </dl>
-                    </g:if>
-                </div>
-            </div><!-- .card -->
-            --%>
-
-            <g:if test="${links || isGrantedOrgRoleAdminOrOrgEditor}">
-                <div class="ui card">
-                    <div class="content">
-                        <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
-                        <g:if test="${links}">
-                            <table class="ui three column table">
-                                <g:each in="${links}" var="row">
-                                    <%
-                                        String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
-                                        int perspectiveIndex
-                                        Org pair
-                                        if(orgInstance == row.fromOrg) {
-                                            perspectiveIndex = 0
-                                            pair = row.toOrg
-                                        }
-                                        else if(orgInstance == row.toOrg) {
-                                            perspectiveIndex = 1
-                                            pair = row.fromOrg
-                                        }
-                                    %>
-                                    <g:if test="${pair != null}">
-                                        <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                        <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                        <td class="right aligned">
-                                        <%--<laser:render template="/templates/links/subLinksModal"
-                                                  model="${[tmplText:message(code:'org.details.editLink'),
-                                                            tmplIcon:'write',
-                                                            tmplCss: 'icon la-selectable-button la-popup-tooltip la-delay',
-                                                            tmplID:'editLink',
-                                                            tmplModalID:"org_edit_link_${row.id}",
-                                                            editmode: editable,
-                                                            context: orgInstance,
-                                                            linkInstanceType: row.class.name,
-                                                            link: row
-                                                  ]}" />--%>
-                                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                    <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                            data-confirm-term-how="unlink"
-                                                            action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
-                                                            role="button"
-                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icons.CMD_UNLINK} icon"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
-                                        </td>
-                                    </g:if>
-                                </g:each>
-                            </table>
-                        </g:if>
-                        <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                            <div class="ui la-vertical buttons">
-                                <%
-                                    Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
-                                                                tmplID:'addLink',
-                                                                tmplButtonText:message(code: 'org.linking.addLink'),
-                                                                tmplModalID:'org_add_link',
-                                                                editmode: editable,
-                                                                linkInstanceType: Combo.class.name,
-                                                                context: orgInstance
-                                    ]
-                                %>
-                                <laser:render template="/templates/links/subLinksModal"
-                                              model="${model}" />
-                            </div>
-                        </g:if>
-                    </div>
-                </div>
-            </g:if>
-
-
-            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                <div class="ui card">
-                    <div class="content">
-                        <%-- ROLE_ADMIN: all --%>
-                        <dl>
-                            <dt><g:message code="org.orgType.label" /></dt>
-                            <dd>
-                                <laser:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
-                            </dd>
-                        </dl>
-
-                        <laser:render template="orgTypeModal"
-                                  model="${[org: orgInstance, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
-                    </div>
-                </div>
-            </g:if>
-
             <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
-                            <dt>
-                                <g:message code="org.libraryType.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="grey question circle icon"></i>
+                            <dt class="control-label">
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </dt>
                             <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                        config="${RDConstants.LIBRARY_TYPE}"/>
+                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
-                                <g:message code="org.subjectGroup.label" />
-                            </dt>
+                            <dt class="control-label"><g:message code="org.supportedLibrarySystem.label" /></dt>
                             <dd>
-                                <%
-                                    List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-                                %>
-                                <laser:render template="orgSubjectGroupAsList"
-                                          model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
-
-                                <laser:render template="orgSubjectGroupModal"
-                                          model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="supportedLibrarySystem" config="${RDConstants.SUPPORTED_LIBRARY_SYSTEM}"/>
                             </dd>
                         </dl>
                         <dl>
-                            <dt><g:message code="org.discoverySystems.frontend.label" /></dt>
+                            <dt class="control-label"><g:message code="org.discoverySystems.frontend.label" /></dt>
                             <dd>
                                 <laser:render template="discoverySystemAsList"
                                               model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
@@ -377,93 +360,39 @@
                                 <laser:render template="discoverySystemModal"
                                               model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
                             </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.discoverySystems.index.label" /></dt>
                             <dd>
-                                <laser:render template="discoverySystemAsList"
-                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
-
-                                <laser:render template="discoverySystemModal"
-                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.libraryNetwork.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                        config="${RDConstants.LIBRARY_NETWORK}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.funderType.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="org.funderHSK.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt>
-                                <g:message code="address.country.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.country.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
-                                &nbsp
-                            </dd>
-                            <dt>
-                                <g:message code="org.region.label" />
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                      data-content="${message(code: 'org.region.expl')}">
-                                    <i class="grey question circle icon"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
                                 <g:if test="${editable}">
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    <a class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'org.discoverySystems.frontend.add')}" data-ui="modal" href="#frontend">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
                                 </g:if>
-                                <g:else>
-                                    ${orgInstance.region?.getI10n("value")}
-                                </g:else>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label"><g:message code="org.discoverySystems.index.label" /></dt>
+                            <dd>
+                                <laser:render template="discoverySystemAsList"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+
+                                <laser:render template="discoverySystemModal"
+                                              model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+                            </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <a class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'org.discoverySystems.index.add')}" data-ui="modal" href="#index">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
                             </dd>
                         </dl>
                     </div>
-                </div><!-- .card -->
+                </div>
             </g:if>
 
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                 <div class="ui card">
                     <div class="content">
-                        <h2 class="ui header">Nur für Administratoren</h2>
+                        <ui:cardLabelAdminOnly />
                         <dl>
                             <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
                             <dd>
@@ -474,68 +403,75 @@
                 </div><!-- .card -->
             </g:if>
 
-                <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
-                    <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
-                        <div class="ui card">
-                            <div class="content">
-                                <g:if test="${orgInstance.createdBy}">
-                                    <dl>
-                                        <dt>
-                                            <g:message code="org.createdBy.label" />
-                                        </dt>
-                                        <dd>
-                                            <h5 class="ui header">
-                                                <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
-                                            </h5>
-                                            <g:if test="${createdByOrgGeneralContacts}">
-                                                <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
-                                                            person              : cbogc,
-                                                            personContext       : orgInstance.createdBy,
-                                                            tmplShowFunctions       : true,
-                                                            tmplShowPositions       : true,
-                                                            tmplShowResponsiblities : true,
-                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
-                                                            editable            : false
-                                                    ]}"/>
-                                                </g:each>
-                                            </g:if>
-                                        </dd>
-                                    </dl>
-                                </g:if>
-                                <g:if test="${orgInstance.legallyObligedBy}">
-                                    <dl>
-                                        <dt>
-                                            <g:message code="org.legallyObligedBy.label" />
-                                        </dt>
-                                        <dd>
-                                            <h5 class="ui header">
-                                                <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
-                                            </h5>
-                                            <g:if test="${legallyObligedByOrgGeneralContacts}">
-                                                <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
-                                                            person              : lobogc,
-                                                            personContext       : orgInstance.legallyObligedBy,
-                                                            tmplShowFunctions       : true,
-                                                            tmplShowPositions       : true,
-                                                            tmplShowResponsiblities : true,
-                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
-                                                            editable            : false
-                                                    ]}"/>
-                                                </g:each>
-                                            </g:if>
-                                        </dd>
-                                    </dl>
-                                </g:if>
-                            </div>
-                        </div><!-- .card -->
+        <g:set var="showAdminTab" value="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}" />
+
+        <g:if test="${showAdminTab && (orgInstance.createdBy || orgInstance.legallyObligedBy)}">
+            <div class="ui card">
+                <div class="content">
+                    <g:if test="${institution.isCustomerType_Consortium()}">
+                        <ui:cardLabelConsortiumOnly />
                     </g:if>
-                </g:if>
+                    <g:else>
+                        <ui:cardLabelAdminOnly />
+                    </g:else>
+                    <div class="ui stackable grid two column">
+                        <div class="column">
+                            <div class="control-label" style="font-weight:700">
+                                <g:message code="org.createdBy.label" />
+                            </div>
+
+                            <g:if test="${createdByOrgGeneralContacts}">
+                                <p style="margin:1rem 0.5rem; font-weight:bold">
+                                    <ui:customerTypeIcon org="${orgInstance.createdBy}" />
+                                    <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
+                                </p>
+
+                                <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                    <laser:render template="/addressbook/person_full_details" model="${[
+                                            person              : cbogc,
+                                            personContext       : orgInstance.createdBy,
+                                            tmplShowFunctions       : true,
+                                            tmplShowPositions       : true,
+                                            tmplShowResponsiblities : true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                            editable            : false
+                                    ]}"/>
+                                </g:each>
+                            </g:if>
+                        </div>
+                        <div class="column">
+                            <div class="control-label" style="font-weight:700">
+                                <g:message code="org.legallyObligedBy.label" />
+                            </div>
+
+                            <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                <p style="margin:1rem 0.5rem; font-weight:bold">
+                                    <ui:customerTypeIcon org="${orgInstance.legallyObligedBy}" />
+                                    <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
+                                </p>
+
+                                <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                    <laser:render template="/addressbook/person_full_details" model="${[
+                                            person              : lobogc,
+                                            personContext       : orgInstance.legallyObligedBy,
+                                            tmplShowFunctions       : true,
+                                            tmplShowPositions       : true,
+                                            tmplShowResponsiblities : true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                            editable            : false
+                                    ]}"/>
+                                </g:each>
+                            </g:if>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </g:if>
 
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
+                    <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg ]}"/>%{-- ERMS-6070 --}%
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
 
@@ -558,14 +494,14 @@
                                     <g:message code="org.publicContacts.label"/>
                                 </div>
                                 <div class="right aligned four wide column">
-                                    <g:if test="${inContextOrg}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
+                                    <g:if test="${inContextOrg && contextService.isInstEditor()}">
+                                        <a href="#createPersonModal" class=" ${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </g:if>
 %{--                                    <g:elseif test="${isProviderOrAgency}">--}%
-%{--                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
-%{--                                            <i aria-hidden="true" class="plus icon"></i>--}%
+%{--                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">--}%
+%{--                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>--}%
 %{--                                        </a>--}%
 %{--                                    </g:elseif>--}%
                                 </div>
@@ -575,9 +511,10 @@
                             <%--
                             <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                                 <g:link action="contacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
-                                        class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
+                                        class="${Btn.SIMPLE}">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>
+
                         <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution]) ||
                                 Address.executeQuery('select a from Address a where a.org = :org and (a.tenant = :ctx or a.tenant = null)', [org: orgInstance, ctx: institution])}">
                             <table class="ui compact table">
@@ -591,14 +528,20 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
+                                                                    <g:if test="${prs.preferredBillingPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                    </g:if>
+                                                                    <g:if test="${prs.preferredSurveyPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
+                                                                    </g:if>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -611,7 +554,7 @@
                                                                     <g:if test="${prs.contacts}">
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         overwriteEditable   : false,
                                                                                         contact             : contact,
                                                                                         tmplShowDeleteButton: false
@@ -620,7 +563,7 @@
                                                                         </g:each>
                                                                     </g:if>
                                                                     <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
+                                                                            <laser:render template="/addressbook/address"
                                                                                           model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
                                                                     </g:each>--%>
                                                                 </div>
@@ -631,14 +574,20 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${prs.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value')}</div>
+                                                                    <g:if test="${prs.preferredBillingPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                    </g:if>
+                                                                    <g:if test="${prs.preferredSurveyPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
+                                                                    </g:if>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -651,7 +600,7 @@
                                                                     <g:if test="${prs.contacts}">
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         overwriteEditable   : false,
                                                                                         contact             : contact,
                                                                                         tmplShowDeleteButton: false
@@ -660,7 +609,7 @@
                                                                         </g:each>
                                                                     </g:if>
                                                                     <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
+                                                                            <laser:render template="/addressbook/address"
                                                                                           model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
                                                                     </g:each>--%>
                                                                 </div>
@@ -706,14 +655,18 @@
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${publicAddresses}" var="a">
                                                                                 <g:if test="${a.org}">
-                                                                                    <laser:render template="/templates/cpa/address" model="${[
+                                                                                    <g:if test="${a.preferredForSurvey}">
+                                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'address.preferredForSurvey')}"></i>
+                                                                                    </g:if>
+                                                                                    <laser:render template="/addressbook/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,
                                                                                             tmplShowDeleteButton: false,
                                                                                             controller          : 'org',
                                                                                             action              : 'show',
                                                                                             id                  : orgInstance.id,
-                                                                                            editable            : false
+                                                                                            editable            : false,
+                                                                                            showPreferredForSurvey: true
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>
@@ -741,11 +694,13 @@
                                     <div class="twelve wide column">
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
-                                    <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
-                                        </a>
-                                    </div>
+                                    <g:if test="${contextService.isInstEditor()}">
+                                        <div class="right aligned four wide column">
+                                            <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForInstitution" data-ui="modal">
+                                                <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
+                                            </a>
+                                        </div>
+                                    </g:if>
                                 </div>
                             </div>
                             <%
@@ -763,10 +718,10 @@
                                                             <div class="row">
                                                                 <div class="two wide column">
                                                                     <g:if test="${person.isPublic}">
-                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                        <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                                     </g:if>
                                                                     <g:else>
-                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                        <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                                     </g:else>
                                                                 </div>
                                                                 <div class="fourteen wide column">
@@ -775,7 +730,7 @@
                                                                     <g:if test="${person.contacts}">
                                                                         <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         overwriteEditable   : editable,
                                                                                         contact             : contact,
                                                                                         tmplShowDeleteButton: editable
@@ -783,24 +738,6 @@
                                                                             </g:if>
                                                                         </g:each>
                                                                     </g:if>
-                                                                    <%--<g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/templates/cpa/address"
-                                                                                          model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                    </g:each>
-                                                                    <laser:render template="/templates/cpa/person_full_details" model="${[
-                                                                                    person                 : person,
-                                                                                    personContext          : orgInstance,
-                                                                                    tmplShowDeleteButton   : true,
-                                                                                    tmplShowFunctions      : false,
-                                                                                    tmplShowPositions      : true,
-                                                                                    tmplShowResponsiblities: true,
-                                                                                    tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
-                                                                                    controller             : 'organisation',
-                                                                                    action                 : 'show',
-                                                                                    id                     : orgInstance.id,
-                                                                                    editable               : false,
-                                                                                    noSelection            : true
-                                                                        ]}"/>--%>
                                                                 </div>
                                                             </div>
                                                         </g:each>
@@ -837,7 +774,7 @@
                                                                                     else respObjects << l
                                                                                 }
                                                                                 break
-                                                                            case 'pkg': de.laser.Package p = de.laser.Package.get(respRef[1])
+                                                                            case 'pkg': de.laser.wekb.Package p = de.laser.wekb.Package.get(respRef[1])
                                                                                 if(p.packageStatus != RDStore.PACKAGE_STATUS_REMOVED)
                                                                                     respObjects << p
                                                                                 break
@@ -855,10 +792,10 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${person.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                            <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                                         </g:if>
                                                                         <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                            <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">
@@ -876,7 +813,7 @@
                                                                                     <g:elseif test="${respObj instanceof License}">
                                                                                         (<g:link controller="license" action="show" id="${respObj.id}">${respObj.reference}</g:link>)
                                                                                     </g:elseif>
-                                                                                    <g:elseif test="${respObj instanceof de.laser.Package}">
+                                                                                    <g:elseif test="${respObj instanceof de.laser.wekb.Package}">
                                                                                         (<g:link controller="package" action="show" id="${respObj.id}">${respObj.name}</g:link>)
                                                                                     </g:elseif>
                                                                                     <g:if test="${respObj instanceof TitleInstancePackagePlatform}">
@@ -888,7 +825,7 @@
                                                                         <g:if test="${person.contacts}">
                                                                             <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                                                    <laser:render template="/addressbook/contact" model="${[
                                                                                             overwriteEditable   : false,
                                                                                             contact             : contact,
                                                                                             tmplShowDeleteButton: false
@@ -922,7 +859,7 @@
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${privateAddresses}" var="a">
                                                                                 <g:if test="${a.org}">
-                                                                                    <laser:render template="/templates/cpa/address" model="${[
+                                                                                    <laser:render template="/addressbook/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,
                                                                                             tmplShowDeleteButton: false,
@@ -954,7 +891,7 @@
     </aside>
 </div>
 
-<laser:render template="/templates/flyouts/mailInfos"/>
+<laser:render template="/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {
@@ -974,24 +911,12 @@
         }
     };
 
-    JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }
-
-    <%--JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }--%>
-
     <g:if test="${orgInstance.isCustomerType_Inst()}">
         if($("#country").length) {
             JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
         }
     </g:if>
-    $('.addListValue').click(function() {
+    $('.la-js-addItem').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
@@ -1020,7 +945,7 @@
     }
 
     JSPC.app.personCreate = function (contactFor, org, supportType = "") {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true' + supportType;
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }

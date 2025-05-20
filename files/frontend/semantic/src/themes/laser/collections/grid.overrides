@@ -36,7 +36,7 @@
 }
 .la-timeLineGrid {
   border-left: 2px dashed #dcdcdc;
-  margin-left: 25px;
+  margin-left: 3px;
   h2.ui.header{
     font-size: 1.1rem;
     padding-top:3px
@@ -66,7 +66,6 @@
 /*-------------------
       Stackable
 --------------------*/
-
 @media only screen and (max-width: @computerBreakpoint ) {
   .ui.stackable.grid {
     width: auto;

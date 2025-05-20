@@ -1,8 +1,10 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -13,7 +15,10 @@ class ClickMeController {
     ContextService contextService
     EscapeService escapeService
 
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
     Map<String,Object> exportClickMeModal() {
         Map<String,Object> result = [:]
 
@@ -45,14 +50,16 @@ class ClickMeController {
         result.currentTabNotice = false
         result.overrideFormat = null
         result.showClickMeConfigSave = true
-        result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.multiMap = false
+
+        result.editExportConfig = params.editExportConfig
 
         if(params.clickMeConfigId)
         {
             result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
             result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
-            result.showClickMeConfigSave = result.clickMeConfig ? false : true
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
         }
 
 
@@ -101,8 +108,9 @@ class ClickMeController {
                 result.subscription = Subscription.get(params.id)
                 result.formFields = exportClickMeService.getExportIssueEntitlementFieldsForUI()
                 result.exportController = 'subscription'
-                result.exportAction = 'index'
+                result.exportAction = 'exportHolding'
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'default.ie')
+                result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 break
             case ExportClickMeService.LICENSES:
                 result.formFields = exportClickMeService.getExportLicenseFieldsForUI()
@@ -135,6 +143,9 @@ class ClickMeController {
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportSurveyEvaluationFieldsForUI(result.surveyConfig)
                 result.contactSwitch = true
+                if(params.chartFilter){
+                    result.modalText = result.modalText + " (${params.chartFilter})"
+                }
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')
                 break
@@ -155,8 +166,13 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code: 'financials.costItem')
                 break
             case ExportClickMeService.TIPPS:
+                if(params.exportAction == 'addEntitlements')
+                    result.exportAction = 'exportPossibleEntitlements'
+                else if(params.exportAction == 'currentPermanentTitles')
+                    result.exportAction = 'exportPermanentTitles'
                 result.formFields = exportClickMeService.getExportTippFieldsForUI()
-                result.exportFileName = result.exportFileName ?: message(code:'default.title.label')
+                result.exportFileName = result.exportFileName ?: escapeService.escapeString(message(code:'menu.my.permanentTitles'))
+                result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 break
             case ExportClickMeService.VENDORS:
                 result.formFields = exportClickMeService.getExportVendorFieldsForUI()
@@ -169,6 +185,45 @@ class ClickMeController {
             result.formFields = exportClickMeService.getClickMeFields(result.clickMeConfig, result.formFields)
         }
 
+        if(result.editExportConfig){
+            result.exportController = 'clickMe'
+            result.exportAction = 'editExportConfig'
+        }
+
         render(template: templateName, model: result)
     }
+
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    Map<String,Object> editExportConfig() {
+        Map<String, Object> result = [:]
+
+        if(params.clickMeConfigId)
+        {
+            result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
+            result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
+        }
+
+        if(result.clickMeConfig && params.saveClickMeConfig){
+            Map<String, Object> selectedFields = [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it ->
+                if(it.value == 'on')
+                selectedFields.put( it.key.replaceFirst('iex:', ''), it.value )
+            }
+            String jsonConfig = (new JSON(selectedFields)).toString()
+            result.clickMeConfig.jsonConfig = jsonConfig
+            result.clickMeConfig.name = params.clickMeConfigName
+            result.clickMeConfig.note = params.clickMeConfigNote
+            result.clickMeConfig.save()
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+
 }

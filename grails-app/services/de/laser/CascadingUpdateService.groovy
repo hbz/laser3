@@ -1,7 +1,14 @@
 package de.laser
 
+import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyResult
+import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.Language
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 
 /**
  * This service updates timestamps of depending objects if an object update has been triggered. This is essential for
@@ -85,9 +92,13 @@ class CascadingUpdateService {
                 luc: luc, obj: obj
         ])
 
-        if (obj.pkg)      { update(obj.pkg, luc) }
-        if (obj.platform) { update(obj.platform, luc) }
-        if (obj.org)      { update(obj.org, luc) }
+        if (obj.license)       { update(obj.license, luc) }
+        if (obj.pkg)           { update(obj.pkg, luc) }
+        if (obj.platform)      { update(obj.platform, luc) }
+        if (obj.org)           { update(obj.org, luc) }
+        if (obj.provider)      { update(obj.provider, luc) }
+        if (obj.subscription)  { update(obj.subscription, luc) }
+        if (obj.vendor)        { update(obj.vendor, luc) }
     }
 
     /**

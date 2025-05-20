@@ -26,11 +26,14 @@
         JSPC.app.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');
             var selectedCountry = $("#filterCountry").val();
-            var selectedRegions = ${raw(params.list('region') as String)};
+            var selectedRegions = [];
+            <g:each in="${params.list('region')}" var="region">
+                selectedRegions.push(${region});
+            </g:each>
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
-            dropdownRegion.prop('selectedIndex', 0);
+            //dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+            //dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getRegions"/>' + '?country=' + selectedCountry + '&format=json',

@@ -1,16 +1,14 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.IdentifierNamespace
-import de.laser.Language
-import de.laser.Org
-import de.laser.Platform
-import de.laser.Package
-import de.laser.Provider
+import de.laser.wekb.Language
+import de.laser.wekb.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.Vendor
+import de.laser.wekb.Vendor
 import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -120,7 +118,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.eachWithIndex { it, idx ->
                     Map<String, Object> id = helper.get(it.key)
-                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.Package')
+                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(id.namespace, 'de.laser.wekb.Package')
                     String label = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched( id.namespaceName ?: id.namespace )
                     List d = [ ns ? ns.id : (idx * -1), label, it.value.size()]
 
@@ -245,7 +243,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.each {
                     Map<String, Object> cg = helper.get(it.key)
-                    String cgType = cg.type ? (RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: cg.type) : null
+                    String cgType = cg.type ? (RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: cg.type) : null
                     List d = [Long.parseLong(cg.curatoryGroup.split(':')[1]), cg.name + ( cgType ? ' (' + cgType + ')' : '' ), it.value.size()]
                     result.data.add( d )
                     result.dataDetails.add([

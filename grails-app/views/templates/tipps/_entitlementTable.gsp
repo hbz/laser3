@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <div class="eight wide column">
     <g:set var="counter" value="${1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
@@ -26,7 +26,9 @@
                 <th>${message(code: 'sidewide.number')}</th>
                 <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname" title="${message(code: 'title.label')}"/>
                 <th class="two wide"><g:message code="tipp.price"/></th>
-                <th class="two wide"><g:message code="default.actions.label"/></th>
+                <th class="two wide center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -119,17 +121,17 @@
                         <td>
 
                                 <g:if test="${side == 'target' && isContainedByTarget && editable}">
-                                    <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}" action="processRemoveEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="minus icon"></i>
+                                        <i class="${Icon.CMD.REMOVE}"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${side == 'source' && !isContainedByTarget && editable}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}" action="processAddEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="plus icon"></i>
+                                        <i class="${Icon.CMD.ADD}"></i>
                                     </g:link>
                                 </g:elseif>
 

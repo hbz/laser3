@@ -1,4 +1,5 @@
-    <nav aria-label="Hauptmenü für WCAG-Testseite">
+<%@ page import="de.laser.ui.Icon" %>
+<nav aria-label="Hauptmenü für WCAG-Testseite">
         <nav id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar" tabindex="0">
             <div class="ui container" role="none">
                 <a href="#" aria-label="Start" class="header item la-logo-item">
@@ -19,7 +20,7 @@
                     <div class="menu" role="menu">
                         <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
                         <a id="5" href="#" class="item" role="menuitem" >Meine Verträge</a>
-                        <a id="6"  href="#" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
+                        <a id="6"  href="#" class="item" role="menuitem" >Meine Anbieter & Library Supplier</a>
                         <a id="7" href="#" class="item" role="menuitem" >Meine Plattformen</a>
                         <a id="8" href="#" class="item" role="menuitem" >Meine Pakete</a>
                         <a id="9" href="#" class="item" role="menuitem" >Meine Titel</a>
@@ -50,14 +51,14 @@
                         <div class="ui icon input">
                             <input aria-label="Suche nach ..." type="search" id="spotlightSearch" class="prompt"
                                    placeholder="Suche nach ...">
-                            <i id="btn-search" class="search icon"></i>
+                            <i id="btn-search" class="${Icon.SYM.SEARCH}"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
-                    <a href="#" class="la-search-advanced la-popup-tooltip la-delay"
+                    <a href="#" class="la-search-advanced la-popup-tooltip"
                        data-content="Erweiterte Suche">
                         <i class="large icons">
-                            <i class="search icon"></i>
+                            <i class="${Icon.SYM.SEARCH}"></i>
                             <i class="top right grey corner plus icon"></i>
                         </i>
                     </a>
@@ -65,7 +66,7 @@
                         Ingrid Bluoss
                         <i class="dropdown icon"></i>
                         <div class="menu" role="menu">
-                            <a  id="23" href="#" class="item" role="menuitem" >DWI -
+                            <a id="23" href="#" class="item" role="menuitem" >DWI -
                             Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
                             <a id="24" href="#" class="item active">hbz
                             Konsortialstelle Digitale Inhalte</a>

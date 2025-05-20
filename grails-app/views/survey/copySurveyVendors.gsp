@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.VendorRole; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:htmlStart message="copySurveyVendors.transfer" serviceInjection="true"/>
+<%@ page import="de.laser.wekb.VendorRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<laser:htmlStart message="copySurveyVendors.transfer" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -17,20 +17,20 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br/>
 
-<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
     <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
+        <strong>${message(code: 'survey.notStarted')}</strong>
     </div>
 </g:if>
 <g:else>
@@ -39,9 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+ %{--   <h2 class="ui header">
         ${message(code: 'copySurveyVendors.transfer')}
-    </h2>
+    </h2>--}%
 
 
     <ui:greySegment>
@@ -96,7 +96,7 @@
 
         <g:form action="proccessCopySurveyVendors" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -125,7 +125,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyVendors && VendorRole.countByVendorInList(participant.surveyVendors) < participant.surveyVendors.size()}">
+                            <g:if test="${editable && participant.surveyVendors && !VendorRole.findByVendorInListAndSubscription(participant.surveyVendors, participant.newSub)}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
@@ -203,7 +203,7 @@
                             <g:if test="${participant.newSub}">
                                 <g:link controller="subscription" action="show"
                                         params="${[id: participant.newSub.id]}"
-                                        class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
 
                             <g:if test="${surveyConfig.subSurveyUseForTransfer}">
@@ -213,8 +213,7 @@
                                     <br>
                                     <br>
 
-                                    <div class="ui icon"
-                                         data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                    <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
                                         <i class="bordered colored info icon"></i>
                                     </div>
                                 </g:if>
@@ -224,9 +223,8 @@
                                 <br>
                                 <br>
 
-                                <div class="ui icon"
-                                     data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
-                                    <i class="bordered colored chart pie icon"></i>
+                                <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                    <i class="${Icon.SURVEY} bordered colored"></i>
                                 </div>
                             </g:if>
                         </td>
@@ -237,7 +235,7 @@
 
 
                     <div class="field" style="text-align: right;">
-                        <button class="ui button positive" ${!editable ? 'disabled="disabled"' : ''}
+                        <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''}
                                 name="processOption"
                                 type="submit">${message(code: 'copySurveyVendors.transfer')}</button>
                     </div>

@@ -1,8 +1,8 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.addressbook.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
 
-    <g:set var="isInstAdm" value="${contextService.isInstAdm_or_ROLEADMIN()}"/>
+    <g:set var="isInstAdm" value="${contextService.isInstAdm()}"/>
 
     <g:if test="${!fromSurvey && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -54,12 +54,12 @@
                 %{--DOCUMENTS:--}%
                 <tr data-element="copyObject.takeDocs">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="${Icons.DOCUMENT} icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icon.DOCUMENT}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height">
                                     <label>
-                                        <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                        <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                             <g:if test="${docctx.owner?.title}">
                                                 ${docctx.owner.title}
                                             </g:if>
@@ -106,12 +106,12 @@
                     </td>
                     <g:if test="${!copyObject && targetObject}">
                         <td data-element="target">
-                            <div class="la-min-height"><strong><i class="${Icons.DOCUMENT} icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
+                            <div class="la-min-height"><strong><i class="${Icon.DOCUMENT}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
                             <g:if test="${targetObject}">
                                     <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element la-min-height">
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
                                                         ${docctx.owner.title}
                                                     </g:if>
@@ -127,13 +127,13 @@
                                                 <g:if test="${docctx.getDocType()}">(${docctx.getDocType().getI10n("value")})</g:if>
                                                 <g:if test="${isConsortialObjects}">
                                                     <g:if test="${docctx.isShared}">
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                            <i class="la-share icon"></i>
+                                                        <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
+                                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                            <i class="la-share slash icon"></i>
+                                                        <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
+                                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                         </span>
                                                     </g:else>
                                                 </g:if>
@@ -166,10 +166,10 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr data-element="copyObject.takeAnnouncements">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icon.SYM.NOTE}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
-                                <div data-id="${docctx.id}" class="la-element la-min-height ">
+                            <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
+                                <div data-id="${docctx.id}" class="la-element la-min-height">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
                                             <strong>${docctx.owner.title}</strong>
@@ -190,7 +190,7 @@
                         <td class="center aligned">
                             <div class="la-min-height"></div>
                             <g:each in="${sourceDocuments}" var="docctx">
-                                <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
+                                <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                     <div class="ui checkbox la-toggle-radio la-inherit la-min-height">
                                         <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
                                                     checked="${docctx.isShared ? 'true' : 'false'}"/>
@@ -203,7 +203,7 @@
                     <td class="center aligned">
                         <div class="la-min-height"></div>
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
+                            <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace la-min-height">
@@ -216,10 +216,10 @@
                     </td>
                         <g:if test="${!copyObject && targetObject}">
                                     <td data-element="target">
-                                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                                        <div class="la-min-height"><strong><i class="${Icon.SYM.NOTE}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                                         <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
-                                                    <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
+                                                    <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                                         <div data-id="${docctx.id}" class="la-element la-min-height">
                                                             <g:if test="${docctx.owner.title}">
                                                                 <strong>${docctx.owner.title}</strong>
@@ -233,13 +233,13 @@
                                                                     date="${docctx.owner.dateCreated}"/>)
                                                             <g:if test="${isConsortialObjects}">
                                                                 <g:if test="${docctx.isShared}">
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon"></i>
+                                                                    <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon"></i>
+                                                                    <span data-position="top left" class="la-popup-tooltip la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                                     </span>
                                                                 </g:else>
                                                             </g:if>
@@ -247,13 +247,13 @@
 %{--                                                        <g:if test="${isConsortialObjects}">
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                                        <i class="la-share icon"></i>
+                                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                                        <i class="la-share slash icon"></i>
+                                                                    <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                                     </span>
                                                                 </g:else>
 
@@ -268,7 +268,7 @@
                                         <div class="la-min-height"></div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
-                                                    <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
+                                                    <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                                         %{--<div class="ui checkbox">--}%
                                                         <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
                                                             <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
@@ -286,7 +286,7 @@
                 %{--TASKS:--}%
                 <tr data-element="copyObject.takeTasks">
                     <td data-element="source">
-                        <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                        <div class="la-min-height"><strong><i class="${Icon.TASK}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element la-min-height">
                                 <label>
@@ -317,7 +317,7 @@
                     </g:if>
                     <g:if test="${!copyObject && targetObject}">
                                 <td data-element="target">
-                                    <div class="la-min-height"><strong><i class="${Icons.TASK} icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
+                                    <div class="la-min-height"><strong><i class="${Icon.TASK}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element la-min-height">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
@@ -351,7 +351,7 @@
                 %{--WORKFLOWS:--}%
                     <tr data-element="copyObject.takeWorkflows">
                         <td data-element="source">
-                            <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                            <div class="la-min-height"><strong><i class="${Icon.WORKFLOW}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                             <g:each in="${sourceWorkflows}" var="wf">
                                 <div data-id="${wf.id}" class="la-element la-min-height">
                                     <label>
@@ -383,7 +383,7 @@
                         </g:if>
                         <g:if test="${!copyObject && targetObject}">
                             <td data-element="target">
-                                <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                                <div class="la-min-height"><strong><i class="${Icon.WORKFLOW}"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                                 <g:each in="${targetWorkflows}" var="wf">
                                     <div data-id="${wf.id}" class="la-element la-min-height">
                                         <strong>${wf.title}</strong>
@@ -425,14 +425,14 @@
         <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
                 <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete" ${submitDisabled}/>
             </div>
         </g:if>
         <g:elseif test="${copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.copy.label')}"/>
+                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.copy.label')}"/>
             </div>
         </g:elseif>
         <g:else>
@@ -440,14 +440,14 @@
                 <div class="eight wide field" style="text-align: left;">
                     <g:set var="surveyConfig" value="${SurveyConfig.get(Long.valueOf(fromSurvey))}"/>
                     <g:if test="${surveyConfig.isSubSurveyUseForTransfer()}">
-                        <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="ui button js-click-control">
+                        <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" class="${Btn.SIMPLE_CLICKCONTROL}">
                             <g:message code="renewalEvaluation.back"/>
                         </g:link>
                     </g:if>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject)? '' : 'disabled'}"/>
-                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}" data-confirm-id="copyElements"
+                    <input type="submit" id="copyElementsSubmit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${submitButtonText}" data-confirm-id="copyElements"
                            data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                            data-confirm-term-how="delete" ${submitDisabled}/>
                 </div>

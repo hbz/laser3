@@ -1,6 +1,6 @@
 package de.laser.survey
 
-import de.laser.Package
+import de.laser.wekb.Package
 
 class SurveyConfigPackage {
 

@@ -2,7 +2,7 @@ package de.laser.api.v0.entities
 
 import de.laser.Identifier
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
@@ -14,7 +14,7 @@ import grails.converters.JSON
 class ApiPlatform {
 
     /**
-     * Locates the given {@link de.laser.Platform} and returns the object (or null if not found) and the request status for further processing
+     * Locates the given {@link Platform} and returns the object (or null if not found) and the request status for further processing
      * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Platform | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)

@@ -764,7 +764,7 @@
         scope: # mapping attr descr
           type: string
           description: The type of object to which the property may be attached to.
-          enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+          enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
           example: Subscription Property
         paragraph:
           type: string
@@ -1077,7 +1077,7 @@
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         supportedLibrarySystems:
           type: array
-          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM}.
+          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.SUPPORTED_LIBRARY_SYSTEM}.
           example: ["Alma", "Folio", "Sisis"]
           items:
             type: string
@@ -1233,7 +1233,7 @@
             type: string
             description: The type of tax for this cost item; maps to RefdataCategory "${RDConstants.TAX_TYPE}".
             enum: <% printRefdataEnum(RDConstants.TAX_TYPE, 12) %>
-            example: "${CostItem.TAX_TYPES.TAXABLE_7.taxRate.value}"
+            example: "${CostItem.TAX_TYPES.TAXABLE_7.taxRate}"
           taxRate:
             type: string
             description: The percent value of tax issues to this cost item.
@@ -1432,7 +1432,7 @@
         linktype:
           type: string
           description: Type of the link between two organisations
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
         org:
           $ref: "#/components/schemas/OrganisationStub"
 
@@ -1442,7 +1442,7 @@
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
         provider:
           $ref: "#/components/schemas/ProviderStub"
 
@@ -1462,7 +1462,7 @@
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
       vendor:
         $ref: "#/components/schemas/VendorStub"
 
@@ -1587,7 +1587,7 @@
           scope:
             type: string
             description: The type of object to which the property may be attached to.
-            enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+            enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
             example: Subscription Property
           type:
             type: string
@@ -1814,9 +1814,13 @@
             $ref: "#/components/schemas/Identifier"
         status:
           type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
+          description: Status of the organisation. Maps to the RefdataCategory "org.status".
+          enum:
+            - "Current"
+            - "Removed"
+            - "Deleted"
+            - "Retired"
+          example: Current
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
@@ -2408,9 +2412,13 @@
             $ref: "#/components/schemas/Identifier"
         status:
           type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
+          description: Status of the organisation. Maps to the RefdataCategory "org.status".
+          enum:
+            - "Current"
+            - "Removed"
+            - "Deleted"
+            - "Retired"
+          example: Current
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"

@@ -164,7 +164,7 @@
 @trackBorderRadius: 0;
 
 @thumbBorderRadius: 5px;
-@thumbBackground: rgba(0, 0, 0, 0.25);
+@thumbBackground: rgba(0, 0, 0, 0.8);
 @thumbTransition: color 0.2s ease;
 
 @thumbInactiveBackground: rgba(0, 0, 0, 0.15);
@@ -225,12 +225,13 @@
      Breakpoints
 --------------------*/
 
-@mobileBreakpoint            : 320px;
-@tabletBreakpoint            : 768px;
-@computerBreakpoint          : 992px;
-@largeMonitorBreakpoint      : 1200px;
-@laser-breakpoint            : 1496px;
-@widescreenMonitorBreakpoint : 1920px;
+@mobileBreakpoint                   : 320px;
+@tabletBreakpoint                   : 768px;
+@computerBreakpoint                 : 992px;
+@largeMonitorBreakpoint             : 1200px;
+@laser-breakpoint                   : 1496px;
+@widescreenMonitorBreakpoint        : 1920px;
+@extraWidescreenMonitorBreakpoint   : 2600px;
 
 /*-------------------
       Site Colors
@@ -1545,4 +1546,6 @@
 @la-contextBarZIndex: 101;      // gray context bar
 @mainMenueZIndex: 102;          // Main Menue
 @debugInfoZIndex: 103;                //System buttons and information label at right bottom
+
+
 

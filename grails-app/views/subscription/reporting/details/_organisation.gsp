@@ -35,7 +35,6 @@
                     <th>${message(code:'org.funderType.label')}</th>
                 </g:if>
                 --}%
-%{--                <th scope="col">${message(code:'org.orgType.label')}</th>--}%
                 <th scope="col">${message(code:'org.customerType.label')}</th>
         </tr>
         </thead>
@@ -79,11 +78,6 @@
                         <td>${org.funderType?.getI10n('value')}</td>
                     </g:if>
                     --}%
-%{--                    <td>--}%
-%{--                        <g:each in="${org.orgType}" var="ot">--}%
-%{--                            ${ot.getI10n('value')} <br/>--}%
-%{--                        </g:each>--}%
-%{--                    </td>--}%
                     <td>${org.getCustomerTypeI10n()}</td>
                 </tr>
             </g:each>

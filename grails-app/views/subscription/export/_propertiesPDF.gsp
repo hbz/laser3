@@ -22,7 +22,7 @@
 <div class="ui card la-dl-no-table">
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextOrg)}" />
+    <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -32,8 +32,8 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(subscription.getConsortia() && contextOrg.id != subscription.getConsortia().id)
-                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortia()))
+            if(subscription.getConsortium() && contextService.getOrg().id != subscription.getConsortium().id)
+                numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(subscription,subscription.getConsortium()))
 
             boolean isVisible = false
 
@@ -67,7 +67,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscription,contextOrg)}" />
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(subscription,contextService.getOrg())}" />
             <g:if test="${numberOfProperties.size() > 0}">
                 <%
                     hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
@@ -82,51 +82,53 @@
         </div>
     </g:if>
 
-<%-- orphaned properties --%>
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+    <%-- orphaned properties --%>
 
     <%--<div class="ui card la-dl-no-table"> --%>
-    <div class="content">
-        <h2 class="ui header">
-            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
-            </g:if>
-            <g:else>
-                ${message(code:'subscription.properties')}
-            </g:else>
-        </h2>
-        <div id="custom_props_div_props">
-            <g:render template="/templates/properties/custom" model="${[
-                    prop_desc: PropertyDefinition.SUB_PROP,
-                    ownobj: subscription,
-                    orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (!calledFromSurvey && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
-                    custom_props_div: "custom_props_div_props" ]}"/>
+        <div class="content">
+            <h2 class="ui header">
+                <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
+                    ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
+                </g:if>
+                <g:else>
+                    ${message(code: 'subscription.properties')}
+                </g:else>
+            </h2>
+
+            <div id="custom_props_div_props">
+                <g:render template="/templates/properties/custom" model="${[
+                        prop_desc         : PropertyDefinition.SUB_PROP,
+                        ownobj            : subscription,
+                        orphanedProperties: allPropDefGroups.orphanedProperties,
+                        editable          : (!calledFromSurvey && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
+                        custom_props_div  : "custom_props_div_props"]}"/>
+            </div>
         </div>
-    </div>
     <%--</div>--%>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
+                                               params='[oid: "${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
         </laser:script>
-
+    </g:if>
 </div><!--.card -->
 
 <%-- private properties --%>
 
 <!-- TODO div class="ui card la-dl-no-table" -->
-<div class="ui card la-dl-no-table ">
+<div class="ui card la-dl-no-table">
     <div class="content">
-        <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
-        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
         <div id="${propertyWrapper}">
             <g:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     propertyWrapper: "${propertyWrapper}",
-                    tenant: contextOrg]}"/>
+                    tenant: contextService.getOrg()]}"/>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextService.getOrg().id});
             </laser:script>
         </div>
     </div>

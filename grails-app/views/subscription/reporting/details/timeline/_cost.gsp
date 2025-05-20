@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.Org;" %>
 <laser:serviceInjection />
 
 <laser:render template="/subscription/reporting/details/timeline/base.part1" />
@@ -128,16 +128,16 @@
                     <%
                         switch (ci.costItemElementConfiguration) {
                             case RDStore.CIEC_POSITIVE:
-                                print '<i class="plus green circle icon"></i>'
+                                print '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEGATIVE:
-                                print '<i class="minus red circle icon"></i>'
+                                print '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                 break
                             case RDStore.CIEC_NEUTRAL:
-                                print '<i class="circle yellow icon"></i>'
+                                print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                 break
                             default:
-                                print'<i class="grey question circle icon"></i>'
+                                print'<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                 break
                         }
                     %>
@@ -227,16 +227,16 @@
                         <%
                             switch (ci.costItemElementConfiguration) {
                                 case RDStore.CIEC_POSITIVE:
-                                    print '<i class="plus green circle icon"></i>'
+                                    print '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEGATIVE:
-                                    print '<i class="minus red circle icon"></i>'
+                                    print '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
                                     break
                                 case RDStore.CIEC_NEUTRAL:
-                                    print '<i class="circle yellow icon"></i>'
+                                    print '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
                                     break
                                 default:
-                                    print'<i class="grey question circle icon"></i>'
+                                    print'<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                     break
                             }
                         %>

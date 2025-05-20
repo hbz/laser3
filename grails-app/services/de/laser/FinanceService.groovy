@@ -1,5 +1,10 @@
 package de.laser
 
+import com.opencsv.CSVParser
+import com.opencsv.CSVParserBuilder
+import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
@@ -11,6 +16,10 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -75,26 +84,26 @@ class FinanceService {
                 }
             }else {
 
-                if (params.newSubscription?.contains("${Subscription.class.name}:")) {
-                    subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                if (params.newSubscription) {
+                    subsToDo << Subscription.get(params.newSubscription)
                 }
                 switch (params.newLicenseeTarget) {
-                    case "${Subscription.class.name}:forParent":
+                    case "forParent":
                         // keep current
                         break
-                    case "${Subscription.class.name}:forAllSubscribers":
+                    case "forAllSubscribers":
                         // iterate over members
-                        Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                        Subscription parentSub = Subscription.get(params.newSubscription)
                         subsToDo = parentSub.getDerivedSubscriptions()
                         break
                     default:
                         if (params.newLicenseeTarget) {
                             subsToDo.clear()
                             if (params.newLicenseeTarget instanceof String)
-                                subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
+                                subsToDo << Subscription.get(params.newLicenseeTarget)
                             else if (params.newLicenseeTarget instanceof String[]) {
                                 params.newLicenseeTarget.each { newLicenseeTarget ->
-                                    subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
+                                    subsToDo << Subscription.get(newLicenseeTarget)
                                 }
                             }
                         }
@@ -102,17 +111,17 @@ class FinanceService {
                 }
             }
             Package pkg
-            if (params.newPackage?.contains("${de.laser.Package.class.name}:")) {
+            if (params.newPackage) {
                 try {
-                    if (params.newPackage.split(":")[1] != 'null') {
-                        pkg = (Package) genericOIDService.resolveOID(params.newPackage)
+                    if (params.newPackage != 'null') {
+                        pkg = Package.get(params.newPackage)
                     }
                 } catch (Exception e) {
                     log.error("Non-valid sub-package sent ${params.newPackage}",e)
                 }
             }
-            IssueEntitlement ie = params.newIE ? (IssueEntitlement) genericOIDService.resolveOID(params.newIE) : null
-            IssueEntitlementGroup issueEntitlementGroup = params.newTitleGroup ? (IssueEntitlementGroup) genericOIDService.resolveOID(params.newTitleGroup) : null
+            IssueEntitlement ie = params.newIE ? IssueEntitlement.get(params.newIE) : null
+            IssueEntitlementGroup issueEntitlementGroup = params.newTitleGroup ? IssueEntitlementGroup.get(params.newTitleGroup) : null
             Map<String, Object> configMap = setupConfigMap(params, result.institution)
             Boolean billingSumRounding = params.newBillingSumRounding == 'on'
             Boolean finalCostRounding = params.newFinalCostRounding == 'on'
@@ -171,6 +180,26 @@ class FinanceService {
                 newCostItem.invoiceDate = configMap.invoiceDate
                 newCostItem.financialYear = configMap.financialYear
                 newCostItem.reference = configMap.reference
+                if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                    newCostItem.costInformationDefinition = configMap.costInformationDefinition
+                    if(newCostItem.costInformationDefinition.type == RefdataValue.class.name) {
+                        newCostItem.costInformationRefValue = configMap.costInformationRefValue
+                        newCostItem.costInformationStringValue = null
+                    }
+                    else {
+                        newCostItem.costInformationStringValue = configMap.costInformationStringValue
+                        newCostItem.costInformationRefValue = null
+                    }
+                }
+                else if(configMap.costInformationDefinition != null) {
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
+                else {
+                    newCostItem.costInformationDefinition = null
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
                 if (newCostItem.save()) {
                     List<BudgetCode> newBcObjs = []
                     params.list('newBudgetCodes').each { newbc ->
@@ -249,9 +278,6 @@ class FinanceService {
                 if (costItems.cons) {
                     selectedCostItems = costItems.cons.ids
                 }
-                if(costItems.coll) {
-                    selectedCostItems = costItems.coll.ids
-                }
                 if (costItems.subscr) {
                     selectedCostItems = costItems.subscr.ids
                 }
@@ -291,8 +317,14 @@ class FinanceService {
                             if(ci.taxKey)
                                 taxRate = ci.taxKey.taxRate
 
-                            ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
-                            ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            if(ci.costInBillingCurrency != null)
+                                ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                            if(ci.costInLocalCurrency != null)
+                                ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                            if (ci.billingSumRounding) {
+                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                            }
 
                             if (ci.billingSumRounding) {
                                 ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
@@ -318,34 +350,33 @@ class FinanceService {
                 Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
                 CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
                     if(ci.sub) {
-                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
-                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
-                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
-                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
-                            if (ci.billingSumRounding) {
-                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
-                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
-                            }
+                        ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                        ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
+                        ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                        ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                        if (ci.billingSumRounding) {
+                            ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                            ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                        }
 
-                            int taxRate = 0 //fallback
-                            if(ci.taxKey)
-                                taxRate = ci.taxKey.taxRate
-
+                        int taxRate = 0 //fallback
+                        if(ci.taxKey)
+                            taxRate = ci.taxKey.taxRate
+                        if(ci.costInBillingCurrency != null)
                             ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                        if(ci.costInLocalCurrency != null)
                             ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                        if (ci.billingSumRounding) {
+                            ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                            ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                        }
 
-                            if (ci.billingSumRounding) {
-                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
-                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
-                            }
+                        if (ci.finalCostRounding) {
+                            ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                            ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                        }
 
-                            if (ci.finalCostRounding) {
-                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
-                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
-                            }
-
-
-                            ci.save()
+                        ci.save()
                     }
                 }
             }
@@ -372,14 +403,16 @@ class FinanceService {
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
-                        if(configMap.costBillingCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costBillingCurrency != null) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
-                        if(configMap.costLocalCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costLocalCurrency != null) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
@@ -404,6 +437,17 @@ class FinanceService {
                         costItem.invoiceDate = configMap.invoiceDate ?: costItem.invoiceDate
                         costItem.financialYear = configMap.financialYear ?: costItem.financialYear
                         costItem.reference = configMap.reference ?: costItem.reference
+                        if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                            costItem.costInformationDefinition = configMap.costInformationDefinition
+                            if(costItem.costInformationDefinition.type == RefdataValue.class.name) {
+                                costItem.costInformationRefValue = configMap.costInformationRefValue
+                                costItem.costInformationStringValue = null
+                            }
+                            else {
+                                costItem.costInformationStringValue = configMap.costInformationStringValue
+                                costItem.costInformationRefValue = null
+                            }
+                        }
                         if(costItem.save()) {
                             List<BudgetCode> newBcObjs = []
                             params.list('newBudgetCodes').each { newbc ->
@@ -558,6 +602,18 @@ class FinanceService {
         Date endDate = DateUtils.parseDateGeneric(params.newEndDate)
         String costDescription = params.newDescription ? params.newDescription.trim() : null
         Order order = resolveOrder(params.newOrderNumber, contextOrg)
+        CostInformationDefinition cif = null
+        RefdataValue costInformationRefValue = null
+        String costInformationStringValue = null
+        if(params.containsKey('newCostInformationDefinition') && (params.containsKey('newCostInformationStringValue') || params.containsKey('newCostInformationRefValue'))) {
+            cif = CostInformationDefinition.get(params.newCostInformationDefinition)
+            if(cif) {
+                if(cif.type == RefdataValue.class.name) {
+                    costInformationRefValue = RefdataValue.get(params.newCostInformationRefValue)
+                }
+                else costInformationStringValue = params.newCostInformationStringValue
+            }
+        }
         [costTitle: costTitle,
          isVisibleForSubscriber: isVisibleForSubscriber,
          costItemElement: costItemElement,
@@ -578,7 +634,11 @@ class FinanceService {
          startDate: startDate,
          endDate: endDate,
          costDescription: costDescription,
-         order: order]
+         order: order,
+         costInformationDefinition: cif,
+         costInformationRefValue: costInformationRefValue,
+         costInformationStringValue: costInformationStringValue
+        ]
     }
 
     /**
@@ -635,7 +695,7 @@ class FinanceService {
             Org org = (Org) configMap.institution
             prf.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
-            Map<String,Object> result = [filterPresets:filterQuery.filterData]
+            Map<String,Object> result = [filterPresets:filterQuery.filterData+filterQuery.checkboxFilters]
             SortedSet<String> costTitles = new TreeSet<String>()
             costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and (ci.sub = :sub or ci.sub.instanceOf = :sub) order by ci.costTitle asc', [ctx: org, sub: sub]))
             SortedSet<BudgetCode> budgetCodes = new TreeSet<BudgetCode>()
@@ -682,7 +742,7 @@ class FinanceService {
                         Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
                                 'order by '+ configMap.sortConfig.consSort + ' ' + configMap.sortConfig.consOrder,
-                            [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA]+genericExcludeParams+filterQuery.filterData)
+                            [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
@@ -695,7 +755,7 @@ class FinanceService {
                         prf.setBenchmark("before subscr")
                         Set<CostItem> subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
                                  genericExcludes + filterQuery.subFilter + filterQuery.ciFilter + ' order by ' + configMap.sortConfig.subscrSort + ' ' + configMap.sortConfig.subscrOrder + ', ciec.value desc nulls first, cie.value_'+LocaleUtils.getCurrentLang(),
-                                 [owner:[sub.getConsortia()],sub:sub]+genericExcludeParams+filterQuery.filterData)
+                                 [owner:[sub.getConsortium()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
@@ -729,7 +789,7 @@ class FinanceService {
         prf.setBenchmark("load filter params")
         params.filterKey = "global"
         Map<String,Object> filterQuery = processFilterParams(params)
-        Map<String,Object> result = [filterPresets:filterQuery.filterData]
+        Map<String,Object> result = [filterPresets:filterQuery.filterData+filterQuery.checkboxFilters]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
         SortedSet<String> ciTitles = new TreeSet<String>()
@@ -759,7 +819,7 @@ class FinanceService {
                         "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', ciec.value, cie.value_'+LocaleUtils.getCurrentLang()
                     prf.setBenchmark("execute own query")
                     Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
-                    if(!filterQuery.subFilter && !filterQuery.filterData.containsKey('filterCISub') && !instanceFilter) {
+                    if(!filterQuery.subFilter && !filterQuery.filterData.containsKey('filterCISub')) {
                         ownFilter.remove('filterSubStatus')
                         String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
                                 "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
@@ -790,7 +850,7 @@ class FinanceService {
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and oo.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
                         'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' desc',
-                        [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
                         Set<CostItem> consortialCostItems = consortialCostRows
@@ -816,7 +876,7 @@ class FinanceService {
                         'where orgC = roleC.org and roleC.roleType = :consType and oo.org = :org and oo.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
                         ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',
-                        [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
+                        [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems.id)
@@ -840,11 +900,11 @@ class FinanceService {
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
         Map<String,Object> result
         String subFilterQuery = "", costItemFilterQuery = ""
-        Map<String,Object> queryParams = [:]
+        Map<String,Object> queryParams = [:], checkboxFilters = [:]
         EhcacheWrapper cache = contextService.getUserCache("/finance/${params.filterKey}/filter/")
         if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null && !params.subDetailsPage) {
             Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
-            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
+            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData,checkboxFilters: cachedFilter.checkboxFilters]
         }
         else {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -939,7 +999,7 @@ class FinanceService {
                 List<Package> filterPackages = []
                 String[] packages = params.list('filterCIPkg')
                 packages.each { String pkg ->
-                    filterPackages.add((Package) genericOIDService.resolveOID(pkg))
+                    filterPackages.add(Package.get(pkg))
                 }
                 queryParams.filterCIPkg = filterPackages
             }
@@ -1052,6 +1112,7 @@ class FinanceService {
             }
             if(params.filterCIUnpaid) {
                 costItemFilterQuery += " and ci.datePaid is null "
+                checkboxFilters.filterCIUnpaid = true
             }
             else {
                 //paid from
@@ -1067,7 +1128,22 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
-            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
+            if(params.filterCIIDefinition) {
+                costItemFilterQuery += " and ci.costInformationDefinition = :filterCIIDefinition "
+                CostInformationDefinition filterCIIDefinition = genericOIDService.resolveOID(params.filterCIIDefinition)
+                queryParams.filterCIIDefinition = filterCIIDefinition
+                if(params.filterCIIValue) {
+                    if(filterCIIDefinition.type == RefdataValue.class.name) {
+                        costItemFilterQuery += " and ci.costInformationRefValue.id in (:filterCIIValue) "
+                        queryParams.filterCIIValue = Params.getLongList(params, 'filterCIIValue')
+                    }
+                    else {
+                        costItemFilterQuery += " and ci.costInformationStringValue in (:filterCIIValue) "
+                        queryParams.filterCIIValue = params.list('filterCIIValue')
+                    }
+                }
+            }
+            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams,checkboxFilters:checkboxFilters]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
         }
@@ -1312,13 +1388,13 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(contextService.getOrg().isCustomerType_Consortium())
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                     else if(contextService.getOrg().isCustomerType_Inst_Pro())
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
-                        mappingErrorBag.multipleSubError = subMatches.collect { sub -> sub.dropdownNamingConvention(contextOrg) }
+                        mappingErrorBag.multipleSubError = subMatches.collect { sub -> sub.dropdownNamingConvention() }
                     else if(subMatches.size() == 1) {
                         subscription = subMatches[0]
                         costItem.sub = subscription
@@ -1382,7 +1458,7 @@ class FinanceService {
                         if(!ieMatches)
                             mappingErrorBag.noValidEntitlement = ieIdentifier
                         else if(ieMatches.size() > 1)
-                            mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.name}" }
+                            mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention()} - ${entMatch.name}" }
                         else if(ieMatches.size() == 1) {
                             ie = ieMatches[0]
                             costItem.issueEntitlement = ie
@@ -1758,6 +1834,123 @@ class FinanceService {
         if(result.errors)
             [result:result,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
+    }
+
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, Subscription subscription) {
+        Map<String, Object> result = [:]
+        List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
+        Org contextOrg = contextService.getOrg()
+        //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
+        //rows.remove(0).split('\t') we should consider every row
+        //needed because cost item updates are not flushed immediately
+        Set<Long> updatedIDs = []
+        //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = 0
+        Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
+        tsvFile.getInputStream().withReader(encoding) { reader ->
+            char tab = '\t'
+            ICSVParser csvp = new CSVParserBuilder().withSeparator(tab).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+            CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
+            String[] line
+            while (line = csvr.readNext()) {
+                if (line[0]) {
+                    //wrong separator
+                    if (line.size() > 1) {
+                        totalRows++
+                        //rows.each { String row ->
+                        //List<String> cols = row.split('\t')
+                        String idStr = line[idCol], valueStr = line[valueCol]
+                        //try to match the subscription
+                        if (valueStr?.trim()) {
+                            //first: get the org
+                            Org match = null
+                            Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
+                            if (check.size() == 1)
+                                match = check[0]
+                            if (!match)
+                                match = Org.findByGlobalUID(idStr)
+                            if (!match) {
+                                check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
+                                if (check.size() == 1)
+                                    match = check[0]
+                            }
+                            //match success
+                            if (match) {
+                                //if-check prepares for opening for surveys
+                                if (subscription) {
+                                    List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: subscription, match: match])
+                                    if (memberCheck.size() == 1) {
+                                        Subscription memberSub = memberCheck[0]
+                                        CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
+                                        if (ci) {
+                                            //Regex to parse different sum entries
+                                            //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
+                                            Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
+                                            //step 1: strip the non-numerical part and try to parse a currency
+                                            //skipped as of comment of March 12th, '25
+                                            //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
+                                            //step 2: pass the numerical part to the value parser
+                                            Matcher costMatch = numericRegex.matcher(valueStr)
+                                            //if(costMatch.find() && billingCurrencyMatch.find()) {
+                                            if (costMatch.find()) {
+                                                String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
+                                                BigDecimal parsedCost = escapeService.parseFinancialValue(input)
+                                                ci.costInBillingCurrency = parsedCost
+                                                ci.costInLocalCurrency = parsedCost * ci.currencyRate
+                                                /*
+                                            switch(currency) {
+                                                case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
+                                                    break
+                                                case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
+                                                    break
+                                                case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
+                                                    break
+                                            }
+                                            */
+                                                if (ci.save()) {
+                                                    updatedIDs << ci.id
+                                                }
+                                                else
+                                                    log.error(ci.getErrors().getAllErrors().toListString())
+                                            }
+                                            /*
+                                        else if(!billingCurrencyMatch.find())
+                                            missingCurrencyCounter++
+                                        */
+                                        }
+                                        else {
+                                            noRecordCounter++
+                                            wrongIdentifiers << idStr
+                                        }
+                                    }
+                                }
+                                else {
+                                    wrongIdentifierCounter++
+                                    wrongIdentifiers << idStr
+                                }
+                            }
+                            else {
+                                wrongIdentifierCounter++
+                                wrongIdentifiers << idStr
+                            }
+                        }
+                    }
+                    else if(line.size() == 1) {
+                        result.wrongSeparator = true
+                        result.afterEnrichment = true
+                        result
+                    }
+                }
+            }
+        }
+        result.missingCurrencyCounter = missingCurrencyCounter
+        result.wrongIdentifiers = wrongIdentifiers
+        result.matchCounter = updatedIDs.size()
+        result.wrongIdentifierCounter = wrongIdentifierCounter
+        result.noRecordCounter = noRecordCounter
+        result.totalRows = totalRows
+        result.afterEnrichment = true
+        result
     }
 
     /**

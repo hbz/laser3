@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.utils.LocaleUtils" %>
 <laser:serviceInjection/>
 <g:set var="costItemsSurvey"
        value="${surveyOrg ? CostItem.findAllBySurveyOrgAndPkgIsNull(surveyOrg) : null}"/>
@@ -9,7 +9,7 @@
     String dataTooltip = ""
 %>
 
-<g:if test="${surveyInfo.owner.id != institution.id && costItemsSurvey}">
+<g:if test="${costItemsSurvey}">
 
     <div class="ui card la-time-card">
 
@@ -35,35 +35,7 @@
                 <g:each in="${costItemsSurvey}" var="costItemSurvey">
                     <tr>
                         <td>
-                            <%
-                                elementSign = 'notSet'
-                                icon = ''
-                                dataTooltip = ""
-                                if (costItemSurvey.costItemElementConfiguration) {
-                                    elementSign = costItemSurvey.costItemElementConfiguration
-                                }
-                                switch (elementSign) {
-                                    case RDStore.CIEC_POSITIVE:
-                                        dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                        icon = '<i class="plus green circle icon"></i>'
-                                        break
-                                    case RDStore.CIEC_NEGATIVE:
-                                        dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                        icon = '<i class="minus red circle icon"></i>'
-                                        break
-                                    case RDStore.CIEC_NEUTRAL:
-                                        dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="circle yellow icon"></i>'
-                                        break
-                                    default:
-                                        dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                        icon = '<i class="grey question circle icon"></i>'
-                                        break
-                                }
-                            %>
-
-                            <span class="la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${dataTooltip}">${raw(icon)}</span>
+                            <ui:costSign ci="${costItemSurvey}"/>
 
                             ${costItemSurvey.costItemElement?.getI10n('value')}
 
@@ -106,11 +78,11 @@
                             <g:if test="${costItemSurvey.costDescription}">
                                 <br/>
 
-                                <div class="ui icon la-popup-tooltip la-delay"
+                                <div class="ui icon la-popup-tooltip"
                                      data-position="right center"
                                      data-variation="tiny"
                                      data-content="${costItemSurvey.costDescription}">
-                                    <i class="question small circular inverted icon"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </div>
                             </g:if>
                         </td>

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.helper.Icons; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyPackagesEvaluation.label')})" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyPackagesEvaluation.label')})" />
 <laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>
@@ -21,30 +21,16 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icons.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <ui:messages data="${flash}"/>
 
 <br />
-
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icons.SUBSCRIPTION} icon la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyPackagesEvaluation.label')}
-</h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <div class="ui segment">
@@ -58,21 +44,21 @@
             controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-        <span class="ui floating blue circular label">${participantsFinishTotal}</span>
+        <ui:bubble float="true" count="${participantsFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
             controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-        <span class="ui floating blue circular label">${participantsNotFinishTotal}</span>
+        <ui:bubble float="true" count="${participantsNotFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
             controller="survey" action="surveyPackagesEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
-        <span class="ui floating blue circular label">${participantsTotal}</span>
+        <ui:bubble float="true" count="${participantsTotal}"/>
     </g:link>
 
 </div>
@@ -84,7 +70,8 @@
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
-                                                        tmplConfigShow   : tmplConfigShowList]"/>
+                                                        tmplConfigShow   : tmplConfigShowList,
+                                                        showIcons: params.tab == 'participantsView']"/>
 </div>
 
 
@@ -109,7 +96,14 @@
             },
             toolbox: {
                 feature: {
-                    saveAsImage: {}
+                    saveAsImage: {},
+                     mySortToggle: {
+                        title: 'Sort',
+                        icon: 'image://${resource(dir:'images', file:'loading.gif', absolute:true)}',
+                        onclick: function (){
+                            window.location.replace("<g:createLink controller="survey" action="surveyPackagesEvaluation" params="[id: params.id, surveyConfigID: surveyConfig.id, tab: params.tab]"/>"+'&chartSort=X');
+                        }
+                    },
                 }
             },
             dataset: {
