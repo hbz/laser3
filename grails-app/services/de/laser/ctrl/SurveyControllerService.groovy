@@ -3151,8 +3151,6 @@ class SurveyControllerService {
                 return
             }
 
-            result.editable = (result.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
-
             if (result.editable) {
 
                 try {
@@ -3175,9 +3173,17 @@ class SurveyControllerService {
 
                     SurveyVendorResult.executeUpdate("delete from SurveyVendorResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
+                    SurveySubscriptionResult.executeUpdate("delete from SurveySubscriptionResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyPersonResult.executeUpdate("delete from SurveyPersonResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
                     SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigSubscription.executeUpdate("delete from SurveyConfigSubscription sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyTransfer.executeUpdate("delete from SurveyTransfer sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyUrl.executeUpdate("delete from SurveyUrl surU where surU.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
