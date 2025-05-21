@@ -198,7 +198,7 @@ class SurveyControllerService {
                 if(!result.surveyConfig.subscription){
                     result.commentTab = 'commentForNewParticipants'
                 }else {
-                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs ? 'comment' : 'commentForNewParticipants'
+                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs && result.surveyConfig.comment ? 'comment' : 'commentForNewParticipants'
                 }
             }
 
