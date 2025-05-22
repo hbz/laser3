@@ -23,6 +23,9 @@
             Die Höchstlast lag bei <strong>${tmxBean.getPeakThreadCount()}</strong> Threads.
     </ui:msg>
 
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
         <tbody>
             <g:each in="${threads}" var="thread">
@@ -63,4 +66,6 @@
         </tbody>
     </table>
 
+    </div>
+</div>
 <laser:htmlEnd />

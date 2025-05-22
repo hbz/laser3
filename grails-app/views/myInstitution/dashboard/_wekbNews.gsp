@@ -203,7 +203,12 @@
                                 <g:each in="${ccProvider}" var="p1" status="i">
                                     <g:set var="p2" value="${wekbNews.provider.all.find{ it.uuid == p1 }}" />
                                     <g:if test="${i > 0}">, </g:if>
-                                    <g:link controller="provider" action="show" id="${p2.id}" target="_blank">${p2.name}</g:link>
+                                    <g:if test="${p2.id}">
+                                        <g:link controller="provider" action="show" id="${p2.id}" target="_blank">${p2.name}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${p2.name}
+                                    </g:else>
                                 </g:each>
                             </g:if>
                             <g:if test="${ccVendor.size()}">
@@ -211,10 +216,15 @@
                                 <div>
                                     <i class="${Icon.VENDOR} la-list-icon"></i><strong>Neue Library Supplier:</strong>
                                 </div>
-                                <g:each in="${ccVendor}" var="p1" status="i">
-                                    <g:set var="p2" value="${wekbNews.vendor.all.find{ it.uuid == p1 }}" />
+                                <g:each in="${ccVendor}" var="v1" status="i">
+                                    <g:set var="v2" value="${wekbNews.vendor.all.find{ it.uuid == v1 }}" />
                                     <g:if test="${i > 0}">, </g:if>
-                                    <g:link controller="vendor" action="show" id="${p2.id}" target="_blank">${p2.name}</g:link>
+                                    <g:if test="${v2.id}">
+                                        <g:link controller="vendor" action="show" id="${v2.id}" target="_blank">${v2.name}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${v2.name}
+                                    </g:else>
                                 </g:each>
                             </g:if>
                         </ui:msg>
