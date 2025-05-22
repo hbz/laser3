@@ -1,4 +1,4 @@
-<%@ page import="org.grails.web.util.GrailsApplicationAttributes" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper; org.grails.web.util.GrailsApplicationAttributes" %>
 <!doctype html>
 
 <html>
@@ -7,6 +7,9 @@
     <meta charset="utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
     <meta name="viewport" content="initial-scale = 1.0">
+    <g:if test="${AppUtils.getCurrentServer() == AppUtils.PROD && ConfigMapper.getGoogleSiteVerificationToken()}">
+        <meta name="google-site-verification" content="${ConfigMapper.getGoogleSiteVerificationToken()}" />
+    </g:if>
 
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 

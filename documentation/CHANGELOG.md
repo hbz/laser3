@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6604    22.05.2025  rc-3.5  3.5         David   Bug         500er beim Aufrufen von neuen Anbietern über die we:kb.news
+
 6508    20.05.2025  rc-3.5  3.5         David   Feature     DBM Changesets aufräumen
+
+### Release 3.5
 
 6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
 
