@@ -24,6 +24,7 @@
 %>
 
 <br />
+
 <div id="cfgFilter">
     <span class="ui label" data-class="*">Alle anzeigen</span>
     <span class="ui label" data-class="green"><i class="${Icon.SYM.SQUARE} green"></i>spring</span>
@@ -34,14 +35,11 @@
     <span class="ui label" data-class="native"><i class="${Icon.SYM.SQUARE} grey"></i>default</span>
 </div>
 
+<div class="ui fluid card">
+    <div class="content">
+
+
 <table id="cfgTable" class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
-    <thead>
-    <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-    </tr>
-    </thead>
     <tbody>
         <g:each in="${keySet}" var="key" status="i">
             <%
@@ -77,7 +75,11 @@
     </tbody>
 </table>
 
+    </div>
+</div>
+
 <style>
+    #cfgFilter { padding: 1em 2em; }
     #cfgFilter span[data-class]:hover { cursor: pointer }
 </style>
 

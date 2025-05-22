@@ -12,24 +12,25 @@
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>
 
-<div class="ui segment">
-    <p>ID: ${sessionCache.getSession().id}</p>
+<div class="ui fluid card">
+    <div class="content">
+        <p>ID: ${sessionCache.getSession().id}</p>
 
-    <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
+        <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
 
-    <g:if test="${sessionCache.list().size() > 0}">
-        <dl>
-            <g:each in="${contextService.getSessionCache().list()}" var="entry">
-                <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'session', key:entry.key]}" target="_blank"><icon:database /> ${entry.key}</g:link>
-                </dt>
-                <dd>
-                     ${entry.value} <em>(${entry.value.class?.name})</em>
-                </dd>
-            </g:each>
-        </dl>
-    </g:if>
-
+        <g:if test="${sessionCache.list().size() > 0}">
+            <dl>
+                <g:each in="${contextService.getSessionCache().list()}" var="entry">
+                    <dt style="margin-top:0.5em">
+                        <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'session', key:entry.key]}" target="_blank"><icon:database /> ${entry.key}</g:link>
+                    </dt>
+                    <dd>
+                         ${entry.value} <em>(${entry.value.class?.name})</em>
+                    </dd>
+                </g:each>
+            </dl>
+        </g:if>
+    </div>
 </div>
 
 <hr />
@@ -67,16 +68,15 @@
             </span>
         </h3>
 
-        <div class="ui segments">
-
-            <div class="ui segment">
+        <div class="ui fluid card">
+            <div class="content">
 
                 <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
 
-                <button class="${Btn.SIMPLE} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
+                <button class="${Btn.SIMPLE} small" onclick="$(this).parent('.content').parent('.card').find('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 
                 <g:if test="${cache.getKeysWithExpiryCheck().size() > 0}">
-                    <button class="${Btn.POSITIVE} small" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
+                    <button class="${Btn.POSITIVE} small" onclick="$(this).parent('.content').parent('.card').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
 
                     <div class="cacheContent hidden">
                         <dl>
@@ -108,7 +108,7 @@
                 </g:if>
             </div>
 
-            <div class="ui secondary segment cacheConfig hidden">
+            <div class="content cacheConfig hidden">
                 <%
                     Map<String, Object> cacheConfig = cache.getCacheConfiguration().getProperties().findAll {
                         it.value instanceof Number || it.value instanceof Boolean || it.value instanceof String
@@ -127,13 +127,13 @@
 
 <h2 class="ui header">Hibernate <span class="ui label">${hibernateSession.class}</span></h2>
 
-<div class="ui segment">
-    <g:each in="${hibernateSession.statistics}" var="hst">
-        ${hst} <br />
-    </g:each>
+<div class="ui fluid card">
+    <div class="content">
+        <g:each in="${hibernateSession.statistics}" var="hst">
+            ${hst} <br />
+        </g:each>
+    </div>
 </div>
-
-<hr />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.cacheContent-toggle').click( function() {

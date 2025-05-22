@@ -9,22 +9,26 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.databaseCollations" type="admin"/>
 
-<div class="ui secondary stackable pointing tabular la-tab-with-js menu">
+<div class="ui secondary stackable tabular la-tab-with-js menu">
     <a data-tab="first" class="item active">Übersicht</a>
     <a data-tab="second" class="item">Test (DE)</a>
     <a data-tab="third" class="item">Test (EN)</a>
 </div>
 
-<div data-tab="first" class="ui bottom attached tab active">
-    <div class="ui la-float-right">
-        <select id="firstFilter" class="ui dropdown la-not-clearable">
-            <option value="all" selected="selected">Alle anzeigen</option>
-            <option value="current">${collate_current} (default)</option>
-            <g:each in="${examples['country'].keySet() - [collate_de, current_de, collate_en, current_en]}" var="key">
-                <option value="${key}">${key}</option>
-            </g:each>
-        </select>
+<div data-tab="first" class="ui bottom attached tab fluid card active">
+    <div class="content">
+        <div class="ui la-float-right">
+            <select id="firstFilter" class="ui dropdown la-not-clearable">
+                <option value="all" selected="selected">Alle anzeigen</option>
+                <option value="current">${collate_current} (default)</option>
+                <g:each in="${examples['country'].keySet() - [collate_de, current_de, collate_en, current_en]}" var="key">
+                    <option value="${key}">${key}</option>
+                </g:each>
+            </select>
+        </div>
     </div>
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
@@ -78,21 +82,27 @@
             </g:each>
         </tbody>
     </table>
+
+    </div>
 </div>
 
 <style>
     img.mini-image { width:26px; vertical-align:middle;}
 </style>
 
-<div data-tab="second" class="ui bottom attached tab">
-    <div class="ui la-float-right">
-        <select id="secondFilter" class="ui dropdown la-not-clearable">
-            <option value="country" selected="selected">Merkmale: Länder</option>
-            <option value="ddc">Merkmale: DDC</option>
-            <option value="org">Organisationen</option>
-            <option value="title">Titel</option>
-        </select>
+<div data-tab="second" class="ui bottom attached tab fluid card">
+    <div class="content">
+        <div class="ui la-float-right">
+            <select id="secondFilter" class="ui dropdown la-not-clearable">
+                <option value="country" selected="selected">Merkmale: Länder</option>
+                <option value="ddc">Merkmale: DDC</option>
+                <option value="org">Organisationen</option>
+                <option value="title">Titel</option>
+            </select>
+        </div>
     </div>
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
     <thead>
         <tr>
@@ -123,17 +133,23 @@
             </g:each>
         </tbody>
     </table>
+
+    </div>
 </div>
 
-<div data-tab="third" class="ui bottom attached tab">
-    <div class="ui la-float-right">
-        <select id="thirdFilter" class="ui dropdown la-not-clearable">
-            <option value="country" selected="selected">Merkmale: Länder</option>
-            <option value="ddc">Merkmale: DDC</option>
-            <option value="org">Organisationen</option>
-            <option value="title">Titel</option>
-        </select>
+<div data-tab="third" class="ui bottom attached tab fluid card">
+    <div class="content">
+        <div class="ui la-float-right">
+            <select id="thirdFilter" class="ui dropdown la-not-clearable">
+                <option value="country" selected="selected">Merkmale: Länder</option>
+                <option value="ddc">Merkmale: DDC</option>
+                <option value="org">Organisationen</option>
+                <option value="title">Titel</option>
+            </select>
+        </div>
     </div>
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
@@ -164,6 +180,8 @@
             </g:each>
         </tbody>
     </table>
+
+    </div>
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">

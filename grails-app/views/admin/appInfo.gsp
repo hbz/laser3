@@ -9,6 +9,9 @@
 
     <ui:h1HeaderWithIcon message="menu.admin.appInfo" type="admin"/>
 
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Application</th><th class="nine wide"></th></tr>
@@ -35,6 +38,12 @@
             <tr><td>Build java version</td><td> ${AppUtils.getMeta('info.app.build.javaVersion')}</td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
@@ -91,6 +100,12 @@
         <tbody>
     </table>
 
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
@@ -101,6 +116,12 @@
             <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
 
@@ -256,5 +277,8 @@
             </td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
 
 <laser:htmlEnd />
