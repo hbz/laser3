@@ -16,6 +16,9 @@
         <icon:pointingHand /> ${message(code: 'system.maintenanceMode.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
     </ui:msg>
 
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
@@ -120,5 +123,8 @@
         </g:each>
         </tbody>
     </table>
+
+    </div>
+</div>
 
 <laser:htmlEnd />
