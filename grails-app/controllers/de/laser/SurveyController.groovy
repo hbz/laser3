@@ -1311,7 +1311,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params+[selectedCostItemElementID: params.bulkSelectedCostItemElementID])
+            redirect(url: request.getHeader('referer'))
             return
         }
 
