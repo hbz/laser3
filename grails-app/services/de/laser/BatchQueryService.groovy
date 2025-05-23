@@ -63,9 +63,9 @@ class BatchQueryService {
                 sql.executeInsert("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk ${perpetualAccessColHeader}) " +
                         "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), :subId, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_status_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_id = any(:idSubSet)", subQueryParams)
                 sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
-                        "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tc_tipp_fk and ie_subscription_fk = :subId), now(), now() from tippcoverage where tc_tipp_fk = any(:idSubSet)", subQueryParams)
+                        "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tc_tipp_fk and ie_subscription_fk = :subId and ie_status_rv_fk != :removed), now(), now() from tippcoverage where tc_tipp_fk = any(:idSubSet)", subQueryParams+[removed: RDStore.TIPP_STATUS_REMOVED.id])
                 sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid) " +
-                        "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = pi_tipp_fk and ie_subscription_fk = :subId), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item where pi_tipp_fk = any(:idSubSet)", subQueryParams)
+                        "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = pi_tipp_fk and ie_subscription_fk = :subId and ie_status_rv_fk != :removed), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item where pi_tipp_fk = any(:idSubSet)", subQueryParams+[removed: RDStore.TIPP_STATUS_REMOVED.id])
             }
         }
         if(hasPerpetualAccess) {
