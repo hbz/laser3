@@ -206,7 +206,14 @@
 
     </div>
     <aside class="five wide column la-sidekick">
+
+            <img class="ui fluid image previewImage"  data-src="${resource(dir: 'images', file: 'landingpage/laser-konsortialstelle-cd-laser-1400.png')}" style="cursor: zoom-in;" src="${resource(dir:'images', file:'landingpage/laser-konsortialstelle-cd-laser-1400.png', absolute:true)}" alt="E-Ressourcen intelligent in LAS:eR verwalten" />
+
+
     </aside>
+    <ui:modal modalSize="large" id="fullsizeImage" hideSubmitButton="true">
+        <img class="ui image" src="#" alt="fullsize image"/>
+    </ui:modal>
 </div>
 
     <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
@@ -240,6 +247,11 @@
                                 $img.attr("src", srcGif + "?t=" + new Date().getTime());
                             }
                         });
+                    });
+
+                    $('.previewImage').off('click').on('click', function () {
+                        $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
+                        $('#fullsizeImage').modal('show');
                     });
             </laser:script>
 
