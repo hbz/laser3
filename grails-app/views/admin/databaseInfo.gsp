@@ -9,7 +9,10 @@
 
     <ui:h1HeaderWithIcon message="menu.admin.databaseInfo" type="admin"/>
 
-    <h2 class="ui header">Überblick</h2>
+<h2 class="ui header">Überblick</h2>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
@@ -103,7 +106,13 @@
         <tbody>
     </table>
 
-    <h2 class="ui header">Aktivität</h2>
+    </div>
+</div>
+
+<h2 class="ui header">Aktivität</h2>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
@@ -127,6 +136,9 @@
         </g:each>
         <tbody>
     </table>
+
+    </div>
+</div>
 
     <g:if test="${dbInfo.default.dbStatistics}">
         <h2 class="ui header">Top ${dbInfo.default.dbStatistics.calls.size()} Datenbankabbfragen: ${dbInfo.default.dbName}</h2>
@@ -246,7 +258,10 @@
         </div>
     </g:if>
 
-    <h2 class="ui header">Nutzung (ungefähre/schnelle Berechnung)</h2>
+<h2 class="ui header">Nutzung (ungefähre/schnelle Berechnung)</h2>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
@@ -272,5 +287,8 @@
         </g:each>
         <tbody>
     </table>
+
+    </div>
+</div>
 
 <laser:htmlEnd />

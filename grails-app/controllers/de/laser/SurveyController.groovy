@@ -1311,7 +1311,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params+[selectedCostItemElementID: params.bulkSelectedCostItemElementID])
+            redirect(url: request.getHeader('referer'))
             return
         }
 
@@ -2092,10 +2092,12 @@ class SurveyController {
                 redirect action: 'currentSurveysConsortia'
                 return
             }
-
-            if(ctrlResult.result.error) {
+            else if(ctrlResult.result.error) {
                 flash.error = ctrlResult.result.error
 
+                redirect(uri: request.getHeader('referer'))
+                return
+            }else{
                 redirect(uri: request.getHeader('referer'))
                 return
             }

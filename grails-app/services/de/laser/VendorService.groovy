@@ -10,12 +10,14 @@ import de.laser.properties.VendorProperty
 import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyVendorResult
 import de.laser.traces.DeletedObject
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.LibrarySystem
 import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
@@ -133,10 +135,12 @@ class VendorService {
         List tasks          = Task.findAllByVendor(vendor)
         List packages       = new ArrayList(vendor.packages)
         List surveys        = new ArrayList(vendor.surveys)
+        List surveyResults   = SurveyVendorResult.findAllByVendor(vendor)
         List electronicBillings = new ArrayList(vendor.electronicBillings)
         List invoiceDispatchs = new ArrayList(vendor.invoiceDispatchs)
         List supportedLibrarySystems = new ArrayList(vendor.supportedLibrarySystems)
         List electronicDeliveryDelays = new ArrayList(vendor.electronicDeliveryDelays)
+        List invoicingFor   = InvoicingVendor.findAllByVendor(vendor)
 
         List customProperties       = new ArrayList(vendor.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(vendor.propertySet.findAll { it.type.tenant != null })
@@ -158,6 +162,8 @@ class VendorService {
         result.info << ['Dokumente', docContexts]
         result.info << ['Packages', packages]
         result.info << ['Umfragen', surveys]
+        result.info << ['Umfrage-Ergebnisse', surveyResults]
+        result.info << ['Rechnungsstellung', invoicingFor]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -322,6 +328,13 @@ class VendorService {
                         }
                         else eb.delete()
                     }
+                    invoicingFor.each { InvoicingVendor iv ->
+                        if(!InvoicingVendor.findAllByVendorAndProvider(replacement, iv.provider)) {
+                            iv.vendor = replacement
+                            iv.save()
+                        }
+                        else iv.delete()
+                    }
                     Set<SurveyConfigVendor> targetSurveyConfigs = replacement.surveys
                     vendor.surveys.clear()
                     surveys.each { SurveyConfigVendor scv ->
@@ -330,6 +343,13 @@ class VendorService {
                             scv.save()
                         }
                         else scv.delete()
+                    }
+                    surveyResults.each { SurveyVendorResult svr ->
+                        if(!SurveyVendorResult.findByVendorAndParticipantAndSurveyConfig(replacement, svr.participant, svr.surveyConfig)) {
+                            svr.vendor = replacement
+                            svr.save()
+                        }
+                        else svr.delete()
                     }
 
                     vendor.delete()
@@ -342,7 +362,7 @@ class VendorService {
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
-                    log.error('error while merging provider ' + vendor.id + ' .. rollback: ' + e.message)
+                    log.error('error while merging vendor ' + vendor.id + ' .. rollback: ' + e.message)
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR

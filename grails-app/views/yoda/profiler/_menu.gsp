@@ -1,6 +1,6 @@
 
 <g:if test="${hideWrapper != true}">
-    <nav class="ui secondary menu" style="margin-bottom:2em">
+    <nav class="ui secondary stackable menu" style="margin-bottom:2em">
 </g:if>
         <g:link controller="yoda" action="profilerLoadtime" class="item${actionName == 'profilerLoadtime' ? ' active' : ''}">Ladezeiten</g:link>
         <g:link controller="yoda" action="profilerTimeline" class="item${actionName == 'profilerTimeline' ? ' active' : ''}">Seitenaufrufe</g:link>
