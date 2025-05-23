@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6340    23.05.2025  rc-3.5  3.5-RC      Andreas Feature     Bereinigung von Anbietern und Library Suppliers
+
 6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
 
 6588    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         500er bei dauerhaften Käufen

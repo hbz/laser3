@@ -653,6 +653,7 @@ class YodaController {
     def cleanupLibrarySuppliers() {
         executorService.execute ({
             Thread.currentThread().setName('cleanupLibrarySuppliers')
+            yodaService.automergeProviders()
             yodaService.cleanupLibrarySuppliers()
         })
         redirect action: "systemThreads"

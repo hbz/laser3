@@ -7,6 +7,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
@@ -17,7 +18,10 @@ import de.laser.storage.Constants
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfigVendor
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
+import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
@@ -38,6 +42,7 @@ import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Session
+import org.hibernate.exception.ConstraintViolationException
 
 import java.sql.Connection
 import java.time.Duration
@@ -55,6 +60,7 @@ class YodaService {
     GlobalSourceSyncService globalSourceSyncService
     GlobalService globalService
     ExecutorService executorService
+    ProviderService providerService
     VendorService vendorService
 
     boolean bulkOperationRunning = false
@@ -182,6 +188,39 @@ class YodaService {
         }
     }
 
+    void automergeProviders() {
+        Map<String, String> mergers = [
+                "provider:f3dfbf45-1217-4c99-9582-b546ea143dd2": "provider:3ae993d5-f639-4190-ad13-37ea735fffc7",
+                "provider:88bc5ebf-f409-4238-8732-8d8ccf9bb3ff": "provider:bdfb7cf4-7233-447d-b8ef-a9721184fbef",
+                "provider:7e2a63e5-207c-4b3c-a703-e42dde46bd95": "provider:93c7fe0a-69b2-4ee3-a7dd-7b67afed66d5",
+                "provider:8b98cf58-3efa-49a8-a0d7-95d6c2522ab1": "provider:9001d35d-a632-4687-bff3-275bd31c6c19",
+                "provider:74eee2d9-bea3-4249-a41e-351cec5dc285": "provider:0b9a0e21-8449-46a1-843f-7799cd73434c",
+                "provider:01da6a6d-0785-4907-9958-5c76aca9ea9c": "provider:f7f86a9a-9274-459c-97db-b3665d940c75",
+                "provider:91b929d5-8b83-4aca-9f88-dad8c3ea920e": "provider:2fdf7cb8-dc1d-4729-bd8b-e96c3c92df92",
+                "provider:395781b4-896c-40ae-965b-734eb8e0058e": "provider:ed6c71c7-e2ed-4bdb-a463-71b70eeeb6fe",
+                "provider:52be47fc-44de-400d-b718-6d449c714cfc": "provider:f9a91c40-a02e-423f-bd97-e68d3b398b4b",
+                "provider:40a23493-f750-4547-aa80-b4e84e58647a": "provider:e6541cd9-8ae3-4b99-a801-ae3febf50cee",
+                "provider:c47229f9-0c8a-4131-89bf-24c92b1aa26f": "provider:e6541cd9-8ae3-4b99-a801-ae3febf50cee",
+                "provider:7b975306-969c-4dcb-b224-527db4ec92f0": "provider:23b8094f-4bd8-431e-a662-1392b48de83f",
+                "provider:9a6a2bfe-6b7a-48d3-8080-0dc15534cf40": "provider:ad48a3c8-5038-4745-bf5f-3fc059eb1870",
+                "provider:58b42e29-8805-4851-97eb-e47f6aa2dec3": "provider:a663a8a2-159e-4553-b653-affdc773bf64",
+                "provider:4752867c-6728-4a62-9726-f6b7c2d57732": "provider:a663a8a2-159e-4553-b653-affdc773bf64",
+                "provider:cea84834-5ee8-415d-b0e8-d479077cb0e6": "provider:a663a8a2-159e-4553-b653-affdc773bf64",
+                "provider:2507b025-7c0e-4acd-840a-153889799241": "provider:18c5804c-b70d-48f5-a79a-6ac44be6222b",
+                "provider:aa596db1-cdf6-4b5b-a6fb-5e0c757a19ff": "provider:7a08730d-e11c-4545-bbd4-02879cbbfe86",
+                "provider:1a27c057-34fb-42a6-8fd4-52360b08e490": "provider:bcd63ca4-ab52-4ce6-b0ba-c3201c67c32b",
+                "provider:23385155-a6a5-4682-a9ff-b05ab3961356": "provider:5542aa8d-a9ac-43e6-b999-a5bd36bca649",
+                "provider:d7960539-e570-4055-9a80-f4dc9040051d": "provider:6f93b85b-31ef-4dc6-95a2-a12d397e5b3e",
+                "provider:cc7f12e6-cc80-436e-b1e4-dc509ca10568": "provider:54a569b6-8f9e-405d-802a-5c921af08c0c"
+        ]
+        mergers.each { String from, String to ->
+            Provider source = Provider.findByGlobalUID(from), target = Provider.findByGlobalUID(to)
+            if(source && target) {
+                providerService.mergeProviders(source, target, false)
+            }
+        }
+    }
+
     void cleanupLibrarySuppliers() {
         //step 0: preparatory actions and mergers
         Map<String, String> mergers = ['vendor:f9a91c40-a02e-423f-bd97-e68d3b398b4b': 'vendor:52be47fc-44de-400d-b718-6d449c714cfc', //HGV
@@ -234,7 +273,8 @@ class YodaService {
                                 "vendor:63c7a61d-45b3-4c43-9471-d1fdadb6caff",
                                 "vendor:bd01da62-126a-4fc1-8431-ca6f07a35608",
                                 "vendor:96d4f2b7-1b4f-4914-8032-6f6587f99fa9",
-                                "vendor:2854b1d5-89af-4970-9724-864c3a58df9d"],
+                                "vendor:2854b1d5-89af-4970-9724-864c3a58df9d",
+                                "vendor:2ae2c418-406c-435e-80d6-1c5054b5b90c"],
                     lsToProviderGUIDs = ["vendor:a1879cee-6087-42dc-a083-a0bf104998b0",
                                          "vendor:0dd35676-7ef2-4f44-b335-3419363d3222",
                                          "vendor:3ebd3921-7fbe-4eb5-97a4-7f7929861c71",
@@ -246,25 +286,45 @@ class YodaService {
                                          "vendor:2dbf4b63-ea15-4ee2-bb7a-df06a7a79bc9",
                                          "vendor:bc6b0944-5c6d-469b-a94b-921e4eb1a48f",
                                          "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7"]
-        Map<String, String> lsConsortium = [:]
+        Map<String, RefdataValue> lsConsortium = [
+                "vendor:c94a234b-0ba0-4cf8-93f2-26a433362558": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:6cfbc5da-1321-48b4-961f-aefe49fca9f8": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:d189db7e-80cf-43bb-8671-ecabc1094a3f": RefdataValue.getByValueAndCategory('ZB MED', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:76e3c363-4b07-4cdb-8c80-7236cdbdd2b6": RefdataValue.getByValueAndCategory('ZB MED', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:864f7348-101c-4a72-97dd-5a833b4363c3": RefdataValue.getByValueAndCategory('FAK', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:613d2e73-3ef6-4243-bf4b-9da9fcd66441": null,
+                "vendor:96f40196-9ebe-4b8a-9e53-d582d066ebec": RefdataValue.getByValueAndCategory('hbz', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:0a65f3ad-71c9-4b42-99f3-5a318e4febcd": RefdataValue.getByValueAndCategory('hbz', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:5381cfcc-bd0f-4784-bbc6-ee4139ea5077": RefdataValue.getByValueAndCategory('hebis', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:ed30a705-e150-49e9-a732-1125857e46b3": RefdataValue.getByValueAndCategory('KonsBW', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:a556a42b-37c9-477a-a665-db9f76c8d515": RefdataValue.getByValueAndCategory('MPDLS', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:cbc34a19-4516-46f8-9c9d-dd04896761f4": RefdataValue.getByValueAndCategory('SUB', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:298159b0-3aa8-4a9f-9209-4ef3b2ba10f8": RefdataValue.getByValueAndCategory('SachsenKo', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:acdd6e1c-c232-41be-9701-3404d0f3c575": RefdataValue.getByValueAndCategory('SUB', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:3900e7b3-80dc-4496-b7e5-a814d8ed5619": RefdataValue.getByValueAndCategory('TIB', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:c1d2a075-5756-48e2-8ae9-a1bb5a2338dd": RefdataValue.getByValueAndCategory('hebis', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:acd59f10-d52d-4649-87f8-cdc769554562": RefdataValue.getByValueAndCategory('hebis', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:fd8599ff-80ce-48b5-aef9-22e0117abb5d": RefdataValue.getByValueAndCategory('ZBW', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
+                "vendor:58b76622-02b6-4c26-a5a7-2537cd63e2b4": RefdataValue.getByValueAndCategory('ZBW', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS)
+        ]
         /*
         step 1:
         library supplier should be kept
         1.1 create in addition a property Invoice Processing if not exists and set it to Library Supplier
-         */
+        */
         lsToKeep.eachWithIndex { String lsGUID, int i ->
             Vendor sourceVen = Vendor.findByGlobalUID(lsGUID)
-            log.debug("now processing library supplier to keep ${i} out of ${lsToKeep.size()}")
+            log.debug("now processing library supplier to keep ${i+1} out of ${lsToKeep.size()}")
             Set<VendorRole> rolesToProcess = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToProcess.eachWithIndex { VendorRole sourceVR, int j ->
-                log.debug("now marking subscription/license with property ${j} out of ${rolesToProcess.size()}")
+                log.debug("now marking subscription/license with property ${j+1} out of ${rolesToProcess.size()}")
                 if(sourceVR.subscription) {
                     Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
-                    setProcessingProperty(s, RDStore.INVOICE_PROCESSING_VENDOR, sourceVR.isShared)
+                    setProcessingProperty(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_VENDOR, sourceVR.isShared)
                 }
                 else if(sourceVR.license) {
                     License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
-                    setProcessingProperty(l, RDStore.INVOICE_PROCESSING_VENDOR, sourceVR.isShared)
+                    setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_VENDOR, sourceVR.isShared)
                 }
             }
         }
@@ -274,58 +334,104 @@ class YodaService {
         steps:
         2.1 create property Invoice Property and set the value to Provider
         2.2 match to provider with same UUID (should work because aftermath of separation) and link subscription to that (convert ProviderLink to corresponding VendorLink)
-         */
-        //library supplier GUIDs queried in database
-        lsToProviderGUIDs.eachWithIndex { String sourceGUID, int i ->
-            log.debug("now migrating library supplier to provider ${i} out of ${lsToProviderGUIDs.size()}")
-            String targetGUID = sourceGUID.replace('vendor', 'provider')
-            Vendor sourceVen = Vendor.findByGlobalUID(sourceGUID)
-            if(sourceVen) {
+        */
+        Set<String> treatedGUIDs = []
+        treatedGUIDs.addAll(mergers.values())
+        treatedGUIDs.addAll(lsToKeep)
+        treatedGUIDs.addAll(lsToProviderGUIDs)
+        treatedGUIDs.addAll(lsConsortium.keySet())
+        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID in (:guids)', [guids: lsToProviderGUIDs])
+        lsToProviders.addAll(Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs]))
+        lsToProviders.eachWithIndex{ Vendor sourceVen, int i ->
+            log.debug("checking existence of target ...")
+            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
+            //if(sourceVen.globalUID in lsToProviderGUIDs) {
                 Provider targetProv = Provider.findByGlobalUID(targetGUID)
                 if(!targetProv) {
                     log.debug("*** provider not found by target global UID ${targetGUID}, creating new")
                     targetProv = new Provider(guid: targetGUID, sortname: sourceVen.sortname, name: sourceVen.name)
                     targetProv.status = RefdataValue.getByValueAndCategory(sourceVen.status.value, RDConstants.PROVIDER_STATUS)
-                    if(targetProv.save()) {
-                        AlternativeName.executeUpdate('update AlternativeName altname set altname.provider = :target, altname.vendor = null where altname.vendor = :source', [target: targetProv, source: sourceVen])
-                    }
+                    targetProv.save()
                 }
-                targetProv.refresh()
-                Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
-                Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
-                rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
-                    log.debug("now migrating library supplier role to provider role ${j} out of ${rolesToMigrate.size()}")
-                    ProviderRole targetPVR = new ProviderRole(provider: targetProv, isShared: sourceVR.isShared)
-                    targetPVR.save()
-                    if(sourceVR.subscription) {
-                        Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
-                        targetPVR.subscription = s
-                        setProcessingProperty(s, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
-                        if(targetPVR.isShared) {
-                            s.updateShare(targetPVR)
-                        }
-                    }
-                    else if(sourceVR.license) {
-                        License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
-                        targetPVR.license = l
-                        setProcessingProperty(l, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
-                        if(targetPVR.isShared) {
-                            l.updateShare(targetPVR)
-                        }
-                    }
-                    sourceVR.delete()
-                }
-                int info = DocContext.executeUpdate('update DocContext dc set dc.provider = :target, dc.vendor = null where dc.vendor = :source', genericUpdateParams)
-                log.debug("doc contexts updated: ${info}")
-                info = Task.executeUpdate('update Task t set t.provider = :target, t.vendor = null where t.vendor = :source', genericUpdateParams)
-                log.debug("tasks updated: ${info}")
-                info = WfChecklist.executeUpdate('update WfChecklist wc set wc.provider = :target, wc.vendor = null where wc.vendor = :source', genericUpdateParams)
-                log.debug("workflow checklists updated: ${info}")
-                sourceVen.delete()
-            }
+            //}
+            /*
             else {
-                log.debug("vendor ${sourceGUID} already migrated")
+                log.info("library supplier unclear, further checks")
+                int addresses = Address.countByVendor(sourceVen)
+                int docs = DocContext.countByVendor(sourceVen)
+                int tasks = Task.countByVendor(sourceVen)
+                int workflows = WfChecklist.countByVendor(sourceVen)
+                int invoicingVendors = InvoicingVendor.countByVendor(sourceVen)
+                int surveyVendors = SurveyConfigVendor.countByVendor(sourceVen)
+
+                /*
+                if(!&& !tasks && !workflows && !invoicingVendors && !surveyVendors)
+                    sourceVen.delete()
+                else {
+                    if(addresses > 0)
+                        log.error("vendor ${sourceVen.name} in use in addresses: ${addresses} occurrences!")
+                    if(docs > 0)
+                        log.error("vendor ${sourceVen.name} in use in docs: ${docs} occurrences!")
+                    if(tasks > 0)
+                        log.error("vendor ${sourceVen.name} in use in tasks: ${tasks} occurrences!")
+                    if(workflows > 0)
+                        log.error("vendor ${sourceVen.name} in use in workflows: ${workflows} occurrences!")
+                    if(invoicingVendors > 0)
+                        log.error("vendor ${sourceVen.name} in use in invoicing: ${invoicingVendors} occurrences!")
+                    if(surveyVendors > 0)
+                        log.error("vendor ${sourceVen.name} in use in survey configs: ${surveyVendors} occurrences!")
+                }
             }
+        */
+        }
+        lsToProviders.eachWithIndex { Vendor sourceVen, int i ->
+            log.debug("now migrating library supplier to provider ${i+1} out of ${lsToProviders.size()}")
+            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
+            Provider targetProv = Provider.findByGlobalUID(targetGUID)
+            Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
+            Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
+            rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
+                log.debug("now migrating library supplier role to provider role ${j+1} out of ${rolesToMigrate.size()}")
+                ProviderRole targetPVR = new ProviderRole(provider: targetProv, isShared: sourceVR.isShared)
+                targetPVR.save()
+                if(sourceVR.subscription) {
+                    Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
+                    targetPVR.subscription = s
+                    setProcessingProperty(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                    if(targetPVR.isShared) {
+                        s.updateShare(targetPVR)
+                    }
+                }
+                else if(sourceVR.license) {
+                    License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
+                    targetPVR.license = l
+                    setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                    if(targetPVR.isShared) {
+                        l.updateShare(targetPVR)
+                    }
+                }
+                sourceVR.delete()
+            }
+            int info = Address.executeUpdate('update Address a set a.provider = :target, a.vendor = null where a.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: addresses updated: ${info}")
+            info = DocContext.executeUpdate('update DocContext dc set dc.provider = :target, dc.vendor = null where dc.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: doc contexts updated: ${info}")
+            info = Task.executeUpdate('update Task t set t.provider = :target, t.vendor = null where t.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: tasks updated: ${info}")
+            info = WfChecklist.executeUpdate('update WfChecklist wc set wc.provider = :target, wc.vendor = null where wc.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: workflow checklists updated: ${info}")
+            info = AlternativeName.executeUpdate('update AlternativeName altname set altname.provider = :target, altname.vendor = null where altname.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: alternative names updated: ${info}")
+            info = InvoicingVendor.executeUpdate('delete from InvoicingVendor iv where iv.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: invoicing vendor deleted: ${info}")
+            info = SurveyVendorResult.executeUpdate('delete from SurveyVendorResult svr where svr.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: survey vendor results deleted: ${info}")
+            info = SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: survey config vendors deleted: ${info}")
+            //if(sourceVen.globalUID in lsToProviderGUIDs) {
+                sourceVen.delete()
+            //}
+            globalService.cleanUpGorm()
         }
         /*
         step 3: consortia
@@ -350,18 +456,71 @@ class YodaService {
         "ZBW – Leibniz-Informationszentrum Wirtschaft"	"vendor:fd8599ff-80ce-48b5-aef9-22e0117abb5d"
         "ZBW – Leibniz-Informationszentrum Wirtschaft"	"vendor:58b76622-02b6-4c26-a5a7-2537cd63e2b4"
          */
+        lsConsortium.each { String sourceGUID, RefdataValue localConsortiumEquivalent ->
+            Vendor sourceVen = Vendor.findByGlobalUID(sourceGUID)
+            if(sourceVen) {
+                Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
+                rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
+                    log.debug("now remapping consortium ${j} out of ${rolesToMigrate.size()}")
+                    if(sourceVR.subscription) {
+                        Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
+                        setProcessingProperty(s, PropertyStore.SUB_PROP_PROCESSING_CONSORTIUM, localConsortiumEquivalent, sourceVR.isShared)
+                    }
+                    else if(sourceVR.license) {
+                        License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
+                        setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING_CONSORTIUM, localConsortiumEquivalent, sourceVR.isShared)
+                    }
+                    sourceVR.delete()
+                }
+                /*
+                int info = DocContext.executeUpdate('update DocContext dc set dc.provider = :target, dc.vendor = null where dc.vendor = :source', genericUpdateParams)
+                log.debug("doc contexts updated: ${info}")
+                info = Task.executeUpdate('update Task t set t.provider = :target, t.vendor = null where t.vendor = :source', genericUpdateParams)
+                log.debug("tasks updated: ${info}")
+                info = WfChecklist.executeUpdate('update WfChecklist wc set wc.provider = :target, wc.vendor = null where wc.vendor = :source', genericUpdateParams)
+                log.debug("workflow checklists updated: ${info}")
+                boolean blocker = SurveyVendorResult.countByVendor(sourceVen) > 0
+                if(blocker) {
+                    log.error("deleting of ${sourceVen.name} blocked due to existing SurveyVendors!")
+                }
+                */
+                SurveyVendorResult.executeUpdate('delete from SurveyVendorResult svr where svr.vendor = :vendor', [vendor: sourceVen])
+                SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
+                sourceVen.delete()
+            }
+            else {
+                log.debug("vendor ${sourceGUID} already migrated")
+            }
+        }
         /*
         step 4: find doublets where exists twice the same vendor link, one is shared, the other not
          */
+        Set<Subscription> doubletSubs = Subscription.executeQuery('select vr.subscription from VendorRole vr where exists (select v2 from VendorRole v2 where v2.subscription = vr.subscription and v2.sharedFrom = null) and exists (select v3 from VendorRole v3 where v3.subscription = vr.subscription and v3.sharedFrom != null)')
+        doubletSubs.each { Subscription doubletSub ->
+            int info = VendorRole.executeUpdate('delete from VendorRole vr where vr.subscription = :sub and vr.sharedFrom = null', [sub: doubletSub])
+            log.debug("doublet vendor subscription roles deleted: ${doubletSub.id}: ${info}")
+        }
+        Set<License> doubletLics = License.executeQuery('select vr.license from VendorRole vr where exists (select v2 from VendorRole v2 where v2.license = vr.license and v2.sharedFrom = null) and exists (select v3 from VendorRole v3 where v3.license = vr.license and v3.sharedFrom != null)')
+        doubletLics.each { License doubletLic ->
+            int info = VendorRole.executeUpdate('delete from VendorRole vr where vr.license = :lic and vr.sharedFrom = null', [lic: doubletLic])
+            log.debug("doublet vendor license roles deleted: ${doubletLic.id}: ${info}")
+        }
     }
 
-    void setProcessingProperty(ownObj, RefdataValue value, boolean isShared) {
+    void setProcessingProperty(ownObj, PropertyDefinition propType, RefdataValue value, boolean isShared) {
         if(ownObj instanceof Subscription) {
             Subscription s = (Subscription) ownObj
-            SubscriptionProperty property = SubscriptionProperty.findByOwnerAndType(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING)
-            if(!property)
-                property = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, s.getSubscriberRespConsortia())
-            property.refValue = value
+            SubscriptionProperty property = SubscriptionProperty.findByOwnerAndType(s, propType)
+            if(!property) {
+                //property = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, s, propType, s.getSubscriberRespConsortia())
+                boolean isPublic = false
+                Org tenant = s.getSubscriberRespConsortia()
+                if(s._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION]) {
+                    isPublic = true
+                    tenant = s.getConsortium()
+                }
+                property = new SubscriptionProperty(type: propType, owner: s, isPublic: isPublic, tenant: tenant, refValue: value, note: "")
+            }
             property.save()
             if(isShared) {
                 if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
@@ -369,7 +528,7 @@ class YodaService {
                         member = GrailsHibernateUtil.unwrapIfProxy(member)
                         SubscriptionProperty existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, property)
                         if (! existingProp) {
-                            List<SubscriptionProperty> matchingProps = SubscriptionProperty.findAllByOwnerAndTypeAndTenant(member, PropertyStore.SUB_PROP_INVOICE_PROCESSING, s.getSubscriberRespConsortia())
+                            List<SubscriptionProperty> matchingProps = SubscriptionProperty.findAllByOwnerAndTypeAndTenant(member, propType, s.getConsortium())
                             // unbound prop found with matching type, set backref
                             if (matchingProps) {
                                 matchingProps.each { SubscriptionProperty memberProp ->
@@ -380,7 +539,7 @@ class YodaService {
                             }
                             else {
                                 // no match found, creating new prop with backref
-                                SubscriptionProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, PropertyStore.SUB_PROP_INVOICE_PROCESSING, s.getSubscriberRespConsortia())
+                                SubscriptionProperty newProp = new SubscriptionProperty(type: propType, owner: member, tenant: member.getConsortium(), note: "")
                                 newProp = property.copyInto(newProp)
                                 newProp.instanceOf = property
                                 newProp.isPublic = true
@@ -394,10 +553,17 @@ class YodaService {
         }
         else if(ownObj instanceof License) {
             License l = (License) ownObj
-            LicenseProperty property = LicenseProperty.findByOwnerAndType(l, PropertyStore.LIC_LICENSE_PROCESSING)
-            if(!property)
-                property = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, l, PropertyStore.LIC_LICENSE_PROCESSING, l.getLicensee())
-            property.refValue = RDStore.INVOICE_PROCESSING_PROVIDER
+            LicenseProperty property = LicenseProperty.findByOwnerAndType(l, propType)
+            if(!property) {
+                //property = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, l, propType, licensee)
+                boolean isPublic = false
+                Org tenant = l.getLicensee()
+                if(l._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION]) {
+                    isPublic = true
+                    tenant = l.getLicensingConsortium()
+                }
+                property = new LicenseProperty(type: propType, owner: l, isPublic: isPublic, tenant: tenant, refValue: value, note: "")
+            }
             property.save()
             if(isShared) {
                 if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
@@ -405,7 +571,7 @@ class YodaService {
                         member = GrailsHibernateUtil.unwrapIfProxy(member)
                         LicenseProperty existingProp = LicenseProperty.findByOwnerAndInstanceOf(member, property)
                         if (! existingProp) {
-                            List<LicenseProperty> matchingProps = LicenseProperty.findAllByOwnerAndTypeAndTenant(member, PropertyStore.LIC_LICENSE_PROCESSING, l.getLicensee())
+                            List<LicenseProperty> matchingProps = LicenseProperty.findAllByOwnerAndTypeAndTenant(member, propType, member.getLicensingConsortium())
                             // unbound prop found with matching type, set backref
                             if (matchingProps) {
                                 matchingProps.each { LicenseProperty memberProp ->
@@ -416,7 +582,7 @@ class YodaService {
                             }
                             else {
                                 // no match found, creating new prop with backref
-                                LicenseProperty newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, PropertyStore.LIC_LICENSE_PROCESSING, l.getLicensee())
+                                LicenseProperty newProp = new LicenseProperty(type: propType, owner: member, tenant: member.getLicensingConsortium(), note: "")
                                 newProp = property.copyInto(newProp)
                                 newProp.instanceOf = property
                                 newProp.isPublic = true
