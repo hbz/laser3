@@ -116,7 +116,7 @@
                           </g:if>
                           <g:if test="${'processing' in licenseFilterTable}">
                               <td>
-                                  <% LicenseProperty processingProp = LicenseProperty.findByOwnerAndType(l, PropertyStore.LIC_PROCESSING) %>
+                                  <% LicenseProperty processingProp = LicenseProperty.findByOwnerAndType(l, PropertyStore.LIC_LICENSE_PROCESSING) %>
                                   <g:if test="${processingProp}">
                                       <g:if test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_CONSORTIUM}">
                                           <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.AUTH.ORG_CONSORTIUM}"></i></span>

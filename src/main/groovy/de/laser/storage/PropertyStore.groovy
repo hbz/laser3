@@ -64,6 +64,8 @@ class PropertyStore {
     public final static PropertyDefinition LIC_INDEMNIFICATION_BY_LICENSEE      = getPropertyDefinition('Indemnification by licensee clause indicator', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_INDEMNIFICATION_BY_LICENSOR      = getPropertyDefinition('Indemnification by licensor', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_INTELLECTUAL_PROPERTY_WARRANTY   = getPropertyDefinition('Intellectual property warranty', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_LICENSE_PROCESSING               = getPropertyDefinition('License Processing', PropertyDefinition.LIC_PROP)
+    public final static PropertyDefinition LIC_LICENSE_PROCESSING_CONSORTIUM    = getPropertyDefinition('License Processing Consortium', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_OBLIGATIONS             = getPropertyDefinition('Licensee obligations', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_TERMINATION_CONDITION   = getPropertyDefinition('Licensee termination condition', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_LICENSEE_TERMINATION_NOTICE_PERIOD = getPropertyDefinition('Licensee termination notice period', PropertyDefinition.LIC_PROP)
@@ -91,7 +93,6 @@ class PropertyStore {
     public final static PropertyDefinition LIC_POST_CANCELLATION_ONLINE_ACCESS  = getPropertyDefinition('Post Cancellation Online Access', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_PRINT_COPY                       = getPropertyDefinition('Print copy', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_PRINT_COPY_TERM_NOTE             = getPropertyDefinition('Print copy term note', PropertyDefinition.LIC_PROP)
-    public final static PropertyDefinition LIC_PROCESSING                       = getPropertyDefinition('License Processing', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_PUBLISHING_FEE                   = getPropertyDefinition('Publishing Fee', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_READING_FEE                      = getPropertyDefinition('Reading Fee', PropertyDefinition.LIC_PROP)
     public final static PropertyDefinition LIC_REPOSITORY                       = getPropertyDefinition('Repository', PropertyDefinition.LIC_PROP)
@@ -117,6 +118,7 @@ class PropertyStore {
     // -- Subscription Properties
 
     public final static PropertyDefinition SUB_PROP_INVOICE_PROCESSING          = getPropertyDefinition('Invoice Processing', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_PROCESSING_CONSORTIUM       = getPropertyDefinition('Processing Consortium', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_DISPLAY_NAME          = getPropertyDefinition('GASCO display name', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_ENTRY                 = getPropertyDefinition('GASCO Entry', PropertyDefinition.SUB_PROP)
     public final static PropertyDefinition SUB_PROP_GASCO_GENERAL_INFORMATION   = getPropertyDefinition('GASCO general information', PropertyDefinition.SUB_PROP)
