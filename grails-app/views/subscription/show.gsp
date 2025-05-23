@@ -450,7 +450,11 @@
                                                              config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
                                     </g:if>
                                     <g:else>
-                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection"
+                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
+                                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection.overwrite')}"
+                                                             data_confirm_term_how="ok"
+                                                             class="js-open-confirm-modal-xEditableRefData"
+                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
                                                              config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !subscription.instanceOf && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection') && (!SurveyConfig.findBySubscriptionAndType(subscription, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) && !SurveyConfig.findBySubscriptionAndType(subscription.instanceOf, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT))}"/>
                                     </g:else>
                                 </dd>
