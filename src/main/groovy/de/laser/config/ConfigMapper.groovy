@@ -29,6 +29,7 @@ class ConfigMapper {
     static final List FINANCIALS_CURRENCY           = ['financials.currency', String]
 
     static final List GLOBAL_DATA_SYNC_JOB_ACTIVE                   = ['globalDataSyncJobActive', Boolean]
+    static final List GOOGLE_SITE_VERIFICATION_TOKEN                = ['googleSiteVerificationToken', String]
     static final List GRAILS_MAIL_DISABLED                          = ['grails.mail.disabled',   Boolean]
     static final List GRAILS_PLUGIN_WKHTMLTOPDF_BINARY              = ['grails.plugin.wkhtmltopdf.binary',     String]
     static final List GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER          = ['grails.plugin.wkhtmltopdf.xvfbRunner', String]
@@ -70,7 +71,7 @@ class ConfigMapper {
             AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES,
             DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION, DOCUMENT_STORAGE_KEY,
             FINANCIALS_CURRENCY,
-            GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
+            GLOBAL_DATA_SYNC_JOB_ACTIVE, GOOGLE_SITE_VERIFICATION_TOKEN, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
             INDEX_UPDATE_JOB_ACTIVE, IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
             LASER_SYSTEM_ID,
             MULE_JOB_ACTIVE,
@@ -157,6 +158,9 @@ class ConfigMapper {
     }
     static boolean getGlobalDataSyncJobActive(int output = LOGGER) {
         readConfig( GLOBAL_DATA_SYNC_JOB_ACTIVE, output )
+    }
+    static String getGoogleSiteVerificationToken(int output = LOGGER) {
+        readConfig( GOOGLE_SITE_VERIFICATION_TOKEN, output )
     }
     static boolean getGrailsMailDisabled(int output = LOGGER) {
         readConfig( GRAILS_MAIL_DISABLED, output )

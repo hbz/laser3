@@ -35,6 +35,8 @@ financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
 globalDataSyncJobActive = false
 
+googleSiteVerificationToken = 'token'
+
 grails.mail.disabled        = true
 grails.mail.default.from    = 'laser@localhost'
 grails.mail.overrideAddress = 'laser@localhost'

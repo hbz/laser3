@@ -15,10 +15,11 @@
         <nav class="ui inverted stackable menu  la-top-menu" aria-label="${message(code:'wcag.label.mainMenu')}">
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
-                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
+                <g:link controller="public" action="licensingModel" class="item"><i class="icon table"></i>${message(code: 'landingpage.hero.button.licensingModel')}</g:link>
+                <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank"><i class="${Icon.UI.INFO}"></i>${message(code: 'landingpage.menu.about')}</a>
+                <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank"><i class="book reader icon"></i>Wiki</a>
                 <a class="item" href="${message(code:'url.wekb.' + currentServer)}" target="_blank"><i class="${Icon.WEKB}"></i> we:kb</a>
-                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
+                <g:link class="item" controller="gasco"><i class="${Icon.GASCO}"></i>${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
                     <a href="mailto:laser@hbz-nrw.de" class="ui blue button">
                         ${message(code: 'landingpage.feature.button')}
