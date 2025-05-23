@@ -1,0 +1,88 @@
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="
+        http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
+
+    <cache alias="default">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="TTL_300_CACHE" uses-template="TTL_CACHES">
+        <expiry>
+            <ttl unit="seconds">300</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="TTL_1800_CACHE" uses-template="TTL_CACHES">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="TTL_3600_CACHE" uses-template="TTL_CACHES">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="SHARED_ORG_CACHE" uses-template="SHARED_CACHES">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="SHARED_USER_CACHE" uses-template="SHARED_CACHES">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+    </cache>
+
+    <cache-template name="TTL_CACHES">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">10000</heap>
+    </cache-template>
+
+    <cache-template name="SHARED_CACHES">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+
+    <cache-template name="TTL_300_CACHE">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+
+    <cache-template name="TTL_1800_CACHE">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+
+    <cache-template name="TTL_3600_CACHE">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+
+    <cache-template name="SHARED_ORG_CACHE">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+
+    <cache-template name="SHARED_USER_CACHE">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+</config>
+

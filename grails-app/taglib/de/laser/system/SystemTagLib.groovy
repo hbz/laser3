@@ -15,6 +15,7 @@ class SystemTagLib {
         g.set( var:'addressbookService',            bean:'addressbookService' )
         g.set( var:'auditService',                  bean:'auditService' )
         g.set( var:'cacheService',                  bean:'cacheService' )
+        g.set( var:'cache3Service',                 bean:'cache3Service' )
         g.set( var:'compareService',                bean:'compareService' )
         g.set( var:'contextService',                bean:'contextService' )
         g.set( var:'controlledListService',         bean:'controlledListService' )

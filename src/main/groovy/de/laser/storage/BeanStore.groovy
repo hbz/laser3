@@ -1,6 +1,7 @@
 package de.laser.storage
 
 import de.laser.BootStrapService
+import de.laser.Cache3Service
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
 import de.laser.FileCryptService
@@ -159,6 +160,10 @@ class BeanStore {
      */
     static CacheService getCacheService() {
         Holders.grailsApplication.mainContext.getBean('cacheService') as CacheService
+    }
+
+    static Cache3Service getCache3Service() {
+        Holders.grailsApplication.mainContext.getBean('cache3Service') as Cache3Service
     }
 
     /**

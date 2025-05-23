@@ -21,6 +21,7 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemQuartz">${message(code:'menu.yoda.systemQuartz')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemCache">${message(code:'menu.yoda.systemCache')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="systemCache3">${message(code:'menu.yoda.systemCache')} (3)</ui:link>
 
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</ui:link>

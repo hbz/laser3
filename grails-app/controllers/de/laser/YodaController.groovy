@@ -69,6 +69,7 @@ class YodaController {
     SessionFactory sessionFactory
 
     CacheService cacheService
+    Cache3Service cache3Service
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     DataloadService dataloadService
@@ -255,6 +256,57 @@ class YodaController {
 
         result
     }
+
+    @Secured(['ROLE_YODA'])
+    def systemCache3() {
+        Map result = [:]
+
+        result.grailsApp = grailsApplication
+        result.appContext = getApplicationContext()
+
+        result.hibernateSession = sessionFactory
+        result.ehcacheManager = cache3Service.getEhcacheManager()
+
+        if (params.cmd && params.type) {
+
+            if (params.cmd == 'clearCache') {
+                if (params.type == 'session') {
+                    contextService.getSessionCache().clear()
+                }
+                else if (params.type == 'ehcache' && params.cache) {
+                    cache3Service.clear(cache3Service.getCache(result.ehcacheManager, params.cache))
+                }
+
+                params.remove('cmd')
+                params.remove('type')
+                params.remove('cache')
+
+                redirect controller: 'yoda', action: 'systemCache', params: params
+                return
+            }
+            else if (params.cmd == 'get') {
+                JSON entry
+
+                if (params.type == 'reporting' && params.token) {
+                    ReportingCache rCache = new ReportingCache(ReportingCache.CTX_GLOBAL, params.token as String)
+                    entry = rCache.get() as JSON
+                }
+                else if (params.type == 'session' && params.key) {
+                    entry = contextService.getSessionCache().get(params.key) as JSON
+                }
+                if (entry) {
+                    entry.prettyPrint = true
+                    response.setContentType("application/json")
+                    response.outputStream << entry
+
+                    return
+                }
+            }
+        }
+
+        result
+    }
+
 
     @Secured(['ROLE_YODA'])
     def profilerCurrent() {
