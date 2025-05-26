@@ -30,7 +30,6 @@ class ESSearchService{
                     'providerName':'providerName',
                     'availableToOrgs':'availableToOrgs',
                     'isPublic':'isPublic',
-                    'status':'status',
                     'publisher':'publisher',
                     'publishers':'publishers.name',
                     'name':'name',
@@ -106,13 +105,11 @@ class ESSearchService{
 
             if (params.actionName == 'index') {
 
-              NestedAggregationBuilder nestedAggregationBuilder = new NestedAggregationBuilder('status', 'status')
-
               searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('rectype').size(25).field('rectype.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('providerName').size(50).field('providerName.keyword'))
-              searchSourceBuilder.aggregation(AggregationBuilders.terms('altnames').size(50).field('altnames'))
-              searchSourceBuilder.aggregation(nestedAggregationBuilder.subAggregation(AggregationBuilders.terms('status').size(50).field('status.value')))
+              searchSourceBuilder.aggregation(AggregationBuilders.terms('altnames').size(50).field('altnames.keyword'))
+              searchSourceBuilder.aggregation(AggregationBuilders.terms('status_en').size(50).field('status_en.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('startYear').size(50).field('startYear.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('endYear').size(50).field('endYear.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('consortiaName').size(50).field('consortiaName.keyword'))
@@ -313,6 +310,12 @@ class ESSearchService{
       if(sw.toString()) sw.write(" AND ")
 
         sw.write(" visible:'Private' ")
+    }
+
+    if(params.status_en){
+      if(sw.toString()) sw.write(" AND ")
+
+      sw.write(" status.value_en:\"${params.status}\" ")
     }
 
     if(!params.showDeleted)

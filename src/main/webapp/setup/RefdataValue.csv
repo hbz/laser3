@@ -1942,7 +1942,7 @@ funder.hsk.type,"Private, Officially Recognized","Privat, staatlich anerkannt","
 gender,Female,Weiblich,Female,,
 gender,Male,Männlich,Male,,
 gender,Third Gender,Inter/Divers,Third Gender,,
-ie.access.status,Current,Current,Current,,
+ie.access.status,Current,Aktuell,Current,,
 ie.access.status,Expected,Expected,Expected,,
 ie.access.status,Expired,Expired,Expired,,
 ie.medium,Electronic,Elektronisch,Electronic,,
