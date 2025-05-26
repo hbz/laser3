@@ -35,6 +35,7 @@ class RDConstants {
     public static final String COMBO_TYPE             = 'combo.type'
     public static final String CONCURRENT_ACCESS      = 'concurrent.access'
     public static final String CONFIDENTIALITY        = 'confidentiality'
+    public static final String CONSORTIUM_FOR_LOCAL_SUBS = 'consortium.for.local.subs'
     public static final String CONTACT_CONTENT_TYPE   = 'contact.content.type'
     public static final String CONTACT_TYPE           = 'contact.type'
     public static final String COST_CONFIGURATION     = 'cost.configuration'
