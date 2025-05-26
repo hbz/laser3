@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.utils.DateUtils;" %>
 
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextService.getOrg())}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
 <div class="ui stackable grid">
     <div class="eleven wide column">
         <div class="la-inline-lists">
@@ -9,7 +9,7 @@
             <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">
                 <dl>
                     <dt class="control-label">
-                        ${message(code: 'surveyOrg.ownerComment.label', args: [contextService.getOrg().sortname])}
+                        ${message(code: 'surveyOrg.ownerComment.label', args: [surveyOrg.org.sortname])}
                     </dt>
                     <dd><ui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
 

@@ -82,7 +82,7 @@ class DevController  {
 
     @Secured(['ROLE_YODA'])
     def queryOutputChecker() {
-        Set<Subscription> result = Subscription.executeQuery("select s from Subscription s where (s.holdingSelection = :entire or (s.holdingSelection = :partial and exists(select ac from AuditConfig ac where ac.referenceClass = '"+Subscription.class.name+"' and ac.referenceId = s.instanceOf.id and ac.referenceField = 'holdingSelection'))) and s.instanceOf != null", [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, partial: RDStore.SUBSCRIPTION_HOLDING_PARTIAL])
+        Set<Subscription> result = Subscription.executeQuery('select vr.subscription from VendorRole vr where exists (select v2 from VendorRole v2 where v2.subscription = vr.subscription and v2.sharedFrom = null) and exists (select v3 from VendorRole v3 where v3.subscription = vr.subscription and v3.sharedFrom != null)')
         flash.message = "subs concerned: ${result.collect { Subscription s -> "${s.id} => ${s.name} => ${s.getSubscriberRespConsortia().collect { Org oo -> "${oo.name} (${oo.sortname})" }.join(',')}" }.join('<br>')}"
         redirect controller: 'yoda', action: 'index'
     }

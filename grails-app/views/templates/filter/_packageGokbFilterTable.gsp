@@ -540,8 +540,13 @@
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
                                 <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'addSurveyPackage', pkgUUID: record.uuid]}"><g:message
-                                        code="surveyPackages.linkPackage"/></g:link>
+                                        code="surveyPackages.linkPackage2"/></g:link>
                             </g:if>
+                            <g:elseif test="${editable && (uuidPkgs && (record.uuid in uuidPkgs))}">
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'removeSurveyPackage', pkgUUID: record.uuid]}"><g:message
+                                        code="surveyPackages.unlinkPackage2"/></g:link>
+                            </g:elseif>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'removeSurveyPackageResult'}">
@@ -549,7 +554,7 @@
                             <g:if test="${editable && (!uuidPkgs || !(record.uuid in uuidPkgs))}">
                                 <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
                                         params="${parame+ [viewTab: 'packageSurvey', actionsForSurveyPackages: 'removeSurveyPackage', pkgUUID: record.uuid]}"><g:message
-                                        code="surveyPackages.unlinkPackage"/></g:link>
+                                        code="surveyPackages.unlinkPackage2"/></g:link>
 
                             </g:if>
                         </td>
