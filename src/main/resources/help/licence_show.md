@@ -6,4 +6,4 @@ Unter den **allgemeinen Merkmalen** finden Sie in der Regel die wichtigsten Info
 
 Auf der rechten Seite finden Sie Verknüpfungen zu den relevanten **Akteuren** (Konsoritalstelle, Anbieter, Library Supplier).
 
-Sie haben die Möglichkeit die Vertragsinhalte als ein **PDF** oder in dem maschinenlesbaren Format **ONIX-PL** zu exportieren.
+Sie haben die Möglichkeit die Vertragsinhalte als ein **PDF** zu exportieren.
