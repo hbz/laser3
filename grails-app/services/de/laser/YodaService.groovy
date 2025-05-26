@@ -13,6 +13,7 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.properties.VendorProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
 import de.laser.storage.PropertyStore
@@ -471,21 +472,29 @@ class YodaService {
                     }
                     sourceVR.delete()
                 }
+                Map<String, Object> genericDeleteParams = [vendor: sourceVen]
+                int info = DocContext.executeUpdate('delete from DocContext dc where dc.vendor = :vendor', genericDeleteParams)
+                log.debug("doc contexts deleted: ${info}")
+                info = Task.executeUpdate('delete from Task t where t.vendor = :vendor', genericDeleteParams)
+                log.debug("tasks deleted: ${info}")
+                info = WfChecklist.executeUpdate('delete from WfChecklist wc where wc.vendor = :vendor', genericDeleteParams)
+                log.debug("workflow checklists deleted: ${info}")
+                info = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.vendor = :vendor', genericDeleteParams)
+                log.debug("alternative names deleted: ${info}")
+                info = SurveyVendorResult.executeUpdate('delete from SurveyVendorResult svr where svr.vendor = :vendor', genericDeleteParams)
+                log.debug("survey results deleted: ${info}")
+                info = SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', genericDeleteParams)
+                log.debug("survey vendors deleted: ${info}")
+                info = VendorProperty.executeUpdate('delete from VendorProperty vp where vp.owner = :vendor', genericDeleteParams)
+                log.debug("vendor properties deleted: ${info}")
                 /*
-                int info = DocContext.executeUpdate('update DocContext dc set dc.provider = :target, dc.vendor = null where dc.vendor = :source', genericUpdateParams)
-                log.debug("doc contexts updated: ${info}")
-                info = Task.executeUpdate('update Task t set t.provider = :target, t.vendor = null where t.vendor = :source', genericUpdateParams)
-                log.debug("tasks updated: ${info}")
-                info = WfChecklist.executeUpdate('update WfChecklist wc set wc.provider = :target, wc.vendor = null where wc.vendor = :source', genericUpdateParams)
-                log.debug("workflow checklists updated: ${info}")
                 boolean blocker = SurveyVendorResult.countByVendor(sourceVen) > 0
                 if(blocker) {
                     log.error("deleting of ${sourceVen.name} blocked due to existing SurveyVendors!")
                 }
                 */
-                SurveyVendorResult.executeUpdate('delete from SurveyVendorResult svr where svr.vendor = :vendor', [vendor: sourceVen])
-                SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
                 sourceVen.delete()
+                globalService.cleanUpGorm()
             }
             else {
                 log.debug("vendor ${sourceGUID} already migrated")
