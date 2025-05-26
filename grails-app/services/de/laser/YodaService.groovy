@@ -340,8 +340,7 @@ class YodaService {
         treatedGUIDs.addAll(lsToKeep)
         treatedGUIDs.addAll(lsToProviderGUIDs)
         treatedGUIDs.addAll(lsConsortium.keySet())
-        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID in (:guids)', [guids: lsToProviderGUIDs])
-        lsToProviders.addAll(Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs]))
+        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs])
         lsToProviders.eachWithIndex{ Vendor sourceVen, int i ->
             log.debug("checking existence of target ...")
             String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
