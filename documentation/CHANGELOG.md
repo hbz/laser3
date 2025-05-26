@@ -11,6 +11,8 @@
 
 6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe
 
+6573    26.05.2025  rc-3.5  3.5         Andreas Bug         Ausgabe der Paket- und Plattformnamen eingeschränkt
+
 6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
 
 6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers

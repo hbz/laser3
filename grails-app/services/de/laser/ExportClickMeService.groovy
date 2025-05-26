@@ -6165,6 +6165,7 @@ class ExportClickMeService {
     private void _setVendorRow(Vendor result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org context = contextService.getOrg()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
@@ -6217,12 +6218,24 @@ class ExportClickMeService {
                             row.add(createTableCell(format, nameOfLicenses.join('\n')))
                             break
                         case 'vendor.packages':
-                            row.add(createTableCell(format, result.packages.pkg.name.join('\n')))
+                            Set<Package> distinctPackages = []
+                            distinctPackages.addAll(result.packages.pkg)
+                            String pkgString
+                            Object[] count = [distinctPackages.size()-20]
+                            if(distinctPackages.size() >= 20)
+                                pkgString = "${distinctPackages.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPackages', count, locale)}"
+                            else pkgString = distinctPackages.name.join('\n')
+                            row.add(createTableCell(format, pkgString))
                             break
                         case 'vendor.platforms':
                             SortedSet<Platform> distinctPlatforms = new TreeSet<Platform>()
                             distinctPlatforms.addAll(result.packages.pkg.nominalPlatform)
-                            row.add(createTableCell(format, distinctPlatforms.name.join('\n')))
+                            String platString
+                            Object[] count = [distinctPlatforms.size()-20]
+                            if(distinctPlatforms.size() >= 20)
+                                platString = "${distinctPlatform.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPlatforms', count, locale)}"
+                            else platString = distinctPlatforms.name.join('\n')
+                            row.add(createTableCell(format, platString))
                             break
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
