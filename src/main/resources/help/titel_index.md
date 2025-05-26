@@ -3,6 +3,6 @@ Die anschließend generierte Trefferliste zeigt Ihnen den Titelnamen, den aktuel
 
 Pro-Nutzende und Konsortialstellen haben des Weiteren die Möglichkeit, Einzeltitel (samt Paket) direkt mit einer bestehenden Lizenz zu verknüpfen. Voraussetzung für die Verknüpfung ist, dass die Lizenz den Paketzuschnitt **Einzeltitel** besitzt.
 
-Mehr zu dem Thema **Paketzuschnitt** erfahren Sie [hier.]({{url_laser}}/sub/index)
+Mehr zu dem Thema **Paketzuschnitt** erfahren Sie unter **Meine Lizenzen** im Reiter **Paket**.
 
 
