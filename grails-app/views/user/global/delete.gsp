@@ -34,7 +34,12 @@
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+                <g:if test="${delResult.deletable}">
+                    <ui:msg class="warning" message="deletion.custom.msg.user.true" showIcon="true" />
+                </g:if>
+                <g:else>
+                    <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user.false" />
+                </g:else>
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
                 <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
