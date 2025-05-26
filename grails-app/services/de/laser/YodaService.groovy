@@ -244,6 +244,7 @@ class YodaService {
                                 "vendor:b6c6e2fe-5403-4aba-9a9a-c7b8935e2f65",
                                 "vendor:fc6ac6a2-7c45-4fc0-81b2-80fca0e47c59",
                                 "vendor:0b9a0e21-8449-46a1-843f-7799cd73434c",
+                                "vendor:ee89680e-ce2d-46eb-b8c2-496b8fe345b0",
                                 "vendor:6088bbc5-d420-403a-99bf-8da3bc13a201",
                                 "vendor:65f23d84-0d3a-4961-86e8-c6ed996a01d5",
                                 "vendor:0f5817c5-f0a4-4f99-9552-8d5d73ea9846",
