@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
+
+6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers
+
 6604    22.05.2025  rc-3.5  3.5         David   Bug         500er beim Aufrufen von neuen Anbietern über die we:kb.news
 
 6508    20.05.2025  rc-3.5  3.5         David   Feature     DBM Changesets aufräumen

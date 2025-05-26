@@ -6,14 +6,19 @@
         <ui:crumb message="profile.bc.profile" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="profile" />
+    <ui:h1HeaderWithIcon message="profile" type="user"/>
 
     <ui:messages data="${flash}" />
 
     <g:if test="${delResult}">
 
         <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-            <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+            <g:if test="${delResult.deletable}">
+                <ui:msg class="warning" message="deletion.custom.msg.user.true" showIcon="true" />
+            </g:if>
+            <g:else>
+                <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user.false" />
+            </g:else>
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
             <ui:msg class="error" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />

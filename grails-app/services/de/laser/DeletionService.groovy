@@ -867,9 +867,11 @@ class DeletionService {
                 result.status = RESULT_BLOCKED
                 result.deletable = false
             }
+        }
 
-            if (user.isLastInstAdminOf(user.formalOrg)) {
-                result.status = RESULT_CUSTOM
+        if (user.isLastInstAdminOf(user.formalOrg)) {
+            result.status = RESULT_CUSTOM
+            if (! user.formalOrg.isArchived()) {
                 result.deletable = false
             }
         }

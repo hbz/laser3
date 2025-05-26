@@ -47,9 +47,12 @@
                 </g:form>
             </ui:filter>
 
-            <g:if test="${participants.size() == 0 && participantsCount > 0}">
-                <strong><g:message code="default.search.empty"/></strong>
+            <g:if test="${participantsTotal == 0}">
+                <strong><g:message code="surveyParticipants.addParticipantsOverPencil"/></strong>
             </g:if>
+            <g:elseif test="${participants.size() == 0 && participantsTotal > 0}">
+                <strong><g:message code="default.search.empty"/></strong>
+            </g:elseif>
             <g:else>
                 <br/>
 
