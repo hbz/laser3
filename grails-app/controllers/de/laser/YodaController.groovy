@@ -214,7 +214,7 @@ class YodaController {
         result.appContext = getApplicationContext()
 
         result.hibernateSession = sessionFactory
-        result.ehcacheManager = cacheService.getEhcacheManager()
+        result.ehcacheManager = cacheService.getEhcache3Manager()
 
         if (params.cmd && params.type) {
 
@@ -223,7 +223,7 @@ class YodaController {
                     contextService.getSessionCache().clear()
                 }
                 else if (params.type == 'ehcache' && params.cache) {
-                    cacheService.clear(cacheService.getCache(result.ehcacheManager, params.cache))
+                    cacheService.clear(cacheService.getCache(params.cache))
                 }
 
                 params.remove('cmd')

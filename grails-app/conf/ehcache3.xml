@@ -1,0 +1,57 @@
+<config xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        >
+
+<!--    <cache alias="default">-->
+<!--        <expiry>-->
+<!--            <ttl unit="seconds">120</ttl>-->
+<!--        </expiry>-->
+<!--        <resources>-->
+<!--            <heap unit="entries">10000</heap>-->
+<!--        </resources>-->
+<!--    </cache>-->
+
+    <cache alias="TTL_300_CACHE" uses-template="TTL_CACHE_TMPL">
+        <expiry>
+            <ttl unit="seconds">300</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="TTL_1800_CACHE" uses-template="TTL_CACHE_TMPL">
+        <expiry>
+            <ttl unit="seconds">1800</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="TTL_3600_CACHE" uses-template="TTL_CACHE_TMPL">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="SHARED_ORG_CACHE" uses-template="SHARED_CACHE_TMPL">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+    </cache>
+
+    <cache alias="SHARED_USER_CACHE" uses-template="SHARED_CACHE_TMPL">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+    </cache>
+
+    <cache-template name="TTL_CACHE_TMPL">
+        <key-type>java.lang.Object</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">10000</heap>
+    </cache-template>
+
+    <cache-template name="SHARED_CACHE_TMPL">
+        <key-type>java.lang.Object</key-type>
+        <value-type>java.lang.Object</value-type>
+        <heap unit="entries">1000</heap>
+    </cache-template>
+</config>
+

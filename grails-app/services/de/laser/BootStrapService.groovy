@@ -8,7 +8,6 @@ import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.finance.CostInformationDefinition
-import de.laser.gdc.ERMS6460
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
@@ -119,6 +118,9 @@ class BootStrapService {
 
             log.debug("genericDataCleansing ..")
             genericDataCleansing()
+
+            log.debug("initCaches ..")
+            initCaches()
         }
 
         log.debug("JSON.registerObjectMarshaller(Date) ..")
@@ -141,8 +143,9 @@ class BootStrapService {
      */
     void destroy() {}
 
-//    void clearCaches() {
-//    }
+    void initCaches() {
+        cacheService.initCaches()
+    }
 
     /**
      * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are
