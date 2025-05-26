@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6617    26.05.2025  rc-3.5  3.5         Andreas Bug         Abfragesyntaxfehler behoben
+
 6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe
 
 6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
