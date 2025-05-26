@@ -112,7 +112,7 @@
                                 check2 = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                             }
                             else {
-                                check2 = ! us.isLastInstAdminOf(orgInstance);
+                                check2 = (! us.isLastInstAdminOf(orgInstance)) || orgInstance.isArchived()
                             }
                         %>
                         <g:if test="${check2}">
