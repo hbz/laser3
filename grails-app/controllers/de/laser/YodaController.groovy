@@ -212,9 +212,7 @@ class YodaController {
 
         result.grailsApp = grailsApplication
         result.appContext = getApplicationContext()
-
         result.hibernateSession = sessionFactory
-        result.ehcacheManager = cacheService.getEhcache3Manager()
 
         if (params.cmd && params.type) {
 

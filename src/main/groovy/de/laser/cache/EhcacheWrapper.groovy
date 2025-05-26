@@ -43,11 +43,7 @@ class EhcacheWrapper {
      * @return a list of keys matching with the cache key prefix and a separator character, i.e. which have been set up by the app
      */
     List getKeys() {
-        List keys = []
-        for (Cache.Entry entry : cache) {
-            keys.add(entry.key)
-        }
-        keys.findAll{ it.toString().startsWith(keyPrefix + SEPARATOR) }
+        cacheService.getKeys(cache).findAll{ it.toString().startsWith(keyPrefix + SEPARATOR) }
     }
 
     /**
@@ -82,6 +78,6 @@ class EhcacheWrapper {
      * @param cache the cache which should be cleared
      */
     def clear() {
-        cacheService.clear(cache)
+        cacheService.clear(cache) // TODO: only keyPrefix?
     }
 }

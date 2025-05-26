@@ -33,7 +33,7 @@
 
 <hr />
 
-<h2 class="ui header">Ehcache3 <span class="ui label">${ehcacheManager.class}</span></h2>
+<h2 class="ui header">Ehcache3 <span class="ui label">${cacheService.cacheManager.class}</span></h2>
 
 <%
     List ehCaches = [
@@ -48,33 +48,20 @@
 <g:each in="${ehCaches}" var="ehCache">
 
     <g:each in="${ehCache.toSorted()}" var="cacheName">
-        <g:set var="cache" value="${ehcacheManager.getCache(cacheName, Object.class, Object.class)}" />
+        <g:set var="cache" value="${cacheService.getCache(cacheName)}" />
         <g:set var="cacheConfig" value="${cache.getRuntimeConfiguration()}" />
-        <g:set var="cacheStats" value="${null /*cache.getStatistics() */}" />
+        <g:set var="cacheStats" value="${[:]}" />
 
         <h3 class="ui icon header">
             ${cacheName}
-
             <span class="ui label">
-                ${cache.class} (
-                    status: ${cache.getStatus()},
-                    ttl: ${cacheConfig.getExpiry()}
-%{--                    config: ${cacheConfig.getProperties()}--}%
-%{--                ttl: ${cache.getCacheConfiguration().getAt('timeToLiveSeconds') / 60} minutes,--}%
-%{--                hitCount: ${Math.max(cacheStats.cacheHitCount(), cacheStats.localHeapHitCount())},--}%
-%{--                <g:if test="${cacheService.getDiskStorePath(cache.getCacheManager())}">--}%
-%{--                    disk: ${cacheStats.getLocalDiskSize()} kb--}%
-%{--                </g:if>--}%
-%{--                <g:else>--}%
-%{--                    heap: ${cacheStats.getLocalHeapSize()} kb--}%
-%{--                </g:else>--}%
-                )
+                ${cache.getStatus()}
             </span>
         </h3>
 
         <div class="ui segments">
             <div class="ui segment">
-                <g:set var="cacheKeys" value="${cache.iterator().collect{ it.key }.toSorted()}" />
+                <g:set var="cacheKeys" value="${cacheService.getKeys(cache).toSorted()}" />
 
                 <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
 
@@ -89,23 +76,15 @@
                             <g:set var="element" value="${cache.get(key)}" />
                             <g:if test="${element}">
                                 <dt style="margin-top: 0.5em;">
-%{--                                    <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />--}%
                                     <a href="#" class="cacheContent-toggle" data-cc="${++cacheContentIdx}"><i class="icon list alternate outline"></i>${key}</a> -
 %{--                                    creation: ${DateUtils.getSDF_onlyTime().format(element.getCreationTime())},--}%
 %{--                                    lastAccess: ${DateUtils.getSDF_onlyTime().format(element.getLastAccessTime())},--}%
 %{--                                    version: ${element.version},--}%
 %{--                                    hitCount: ${element.hitCount}--}%
-                                    ${element.class}
+                                    ${element.getMetaClass().getTheClass().simpleName}
                                 </dt>
                                 <dd style="display:none" data-cc="${cacheContentIdx}">
                                     ${element}
-%{--                                    <g:set var="objectValue" value="${element.getObjectValue()}" />--}%
-%{--                                    <g:if test="${objectValue.getClass().getSimpleName() != 'Item'}">--}%
-%{--                                        ${objectValue}--}%
-%{--                                    </g:if>--}%
-%{--                                    <g:else>--}%
-%{--                                        ${new JsonBuilder(objectValue.getValue()).toString()}--}%
-%{--                                    </g:else>--}%
                                 </dd>
                             </g:if>
                         </g:each>
@@ -116,6 +95,12 @@
             </div>
 
             <div class="ui secondary segment cacheConfig hidden">
+                <pre style="margin:0">${cache.class}
+${cacheConfig.readableString()}</pre>
+                %{--                    config: ${cacheConfig.getProperties()}--}%
+                %{--                ttl: ${cache.getCacheConfiguration().getAt('timeToLiveSeconds') / 60} minutes,--}%
+                %{--                hitCount: ${Math.max(cacheStats.cacheHitCount(), cacheStats.localHeapHitCount())},--}%
+                %{--                    heap: ${cacheStats.getLocalHeapSize()} kb--}%
                 <%
 //                    Map<String, Object> cacheConfig = cache.getCacheConfiguration().getProperties().findAll {
 //                        it.value instanceof Number || it.value instanceof Boolean || it.value instanceof String

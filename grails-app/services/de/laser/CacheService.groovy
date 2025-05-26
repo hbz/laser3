@@ -51,14 +51,6 @@ class CacheService implements ApplicationContextAware {
         }
     }
 
-    /**
-     * Initialises the cache manager
-     * @return a new cache manager instance
-     */
-    CacheManager getEhcache3Manager() {
-        cacheManager
-    }
-
 //    List getCaches() {
 //        cacheManager.getRuntimeConfiguration().caches
 //    }
@@ -77,16 +69,6 @@ class CacheService implements ApplicationContextAware {
      */
     Cache getCache(String cacheName) {
         cacheManager.getCache(cacheName, Object.class, Object.class) // TODO
-    }
-
-    def getCacheStatistics(String cacheName) {
-//        MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer()
-//        ObjectName name = new ObjectName("*:type=CacheStatistics,*,Cache=" + cacheName)
-//
-//        Set<ObjectName> beans = mbeanServer.queryNames(name, null)
-//        ObjectName[] objArray = beans.toArray(new ObjectName[beans.size()])
-//        CacheStatisticsMXBean stats = JMX.newMBeanProxy(mbeanServer, objArray[0], CacheStatisticsMXBean.class)
-//        stats
     }
 
     /* --- */
@@ -144,6 +126,14 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
+    List getKeys(Cache cache) {
+        List keys = []
+        for (Cache.Entry entry : cache) {
+            keys.add(entry.key)
+        }
+        keys
+    }
+
     /**
      * Stores the given value under the given key on the given cache
      * @param cache the cache map to store the value
@@ -181,26 +171,5 @@ class CacheService implements ApplicationContextAware {
         for (Cache.Entry entry : cache) {
             cache.remove(entry.key)
         }
-    }
-
-    /* --- */
-
-    /**
-     * Gets the dist storage path for the app caches
-     * @param cm the cache manager whose disk storage path should be retrieved
-     * @return the storage path for the given cache manager
-     */
-    String getDiskStorePath(CacheManager cm) {
-//        Configuration cfg = cm.getConfiguration()
-//        cfg.getDiskStoreConfiguration()?.getPath()
-        'TODO'
-    }
-
-    /**
-     * Gets a generic store path for cache manager instances
-     * @return a generic patch (substitutes call of {@link #getDiskStorePath(net.sf.ehcache.CacheManager)} with a new instance as argument)
-     */
-    String getDiskStorePath() {
-        getDiskStorePath( getEhcache3Manager() )
     }
 }

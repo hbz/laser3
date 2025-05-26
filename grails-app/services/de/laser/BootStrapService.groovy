@@ -62,11 +62,6 @@ class BootStrapService {
         log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}")
         log.info("Documents:     ${ConfigMapper.getDocumentStorageLocation()}")
 
-        String dsp = cacheService.getDiskStorePath()
-        if (dsp) {
-            log.info("Cache: ${dsp}")
-        }
-
         log.info('--------------------------------------------------------------------------------')
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
