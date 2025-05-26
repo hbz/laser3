@@ -6717,27 +6717,27 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro)), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro), null) as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp)), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp), null) as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd)), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd), null) as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else if (fieldKey.contains('localPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro)), null) as localPriceEUR"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro), null) as localPriceEUR"
                 queryArgs.leuro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('localPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp)), null) as localPriceGBP"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp), null) as localPriceGBP"
                 queryArgs.lgbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('localPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd)), null) as localPriceUSD"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd), null) as localPriceUSD"
                 queryArgs.lusd = RDStore.CURRENCY_USD.id
             }
             else {
