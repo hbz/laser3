@@ -2725,9 +2725,15 @@ class SurveyService {
                 if(params.setEInvoiceValuesFromOrg) {
                     result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
                     result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
-                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
+                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriteriums() ? participant.getLeitkriteriums()[0].value : ''
                     result.surveyOrg.save()
                     params.remove('setEInvoiceValuesFromOrg')
+                }
+
+                if(params.setEInvoiceLeitkriteriumFromOrg) {
+                    result.surveyOrg.eInvoiceLeitkriterium = params.setEInvoiceLeitkriteriumFromOrg
+                    result.surveyOrg.save()
+                    params.remove('setEInvoiceLeitkriteriumFromOrg')
                 }
 
             }
