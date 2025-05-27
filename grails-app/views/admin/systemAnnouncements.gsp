@@ -70,24 +70,22 @@ ${currentAnnouncement?.getCleanContent()}
         <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
     </g:else>
 
-    <div>
-        <g:each in="${announcements}" var="sa">
-            <div class="ui segment">
-                <h3 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h3>
-                <g:if test="${sa.isPublished}">
-                    <div class="ui green ribbon label"><i class="icon check circle"></i>${message(code:'announcement.published')}</div>
-                </g:if>
 
-                <div class="ui divider"></div>
-                <div class="content">
-                    <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+    <g:each in="${announcements}" var="sa">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="ui header">
+                    <% print sa.title; /* avoid auto encodeAsHTML() */ %>
                 </div>
-                <div class="ui divider"></div>
-
-                <style>
-                    table.xyz td { padding: 0 2em 0 0 }
-                </style>
-                <table class="ui xyz">
+                <g:if test="${sa.isPublished}">
+                    <div class="ui green label"><i class="icon check circle"></i>${message(code:'announcement.published')}</div>
+                </g:if>
+            </div>
+            <div class="content">
+                <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+            </div>
+            <div class="content">
+                <table class="ui very compact collapsing small table">
                     <g:if test="${sa.lastPublishingDate}">
 
                         <%
@@ -138,7 +136,6 @@ ${currentAnnouncement?.getCleanContent()}
                         <td><g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:sa.user}</g:link></td>
                         <td></td>
                     </tr>
-
                 </table><!-- .grid -->
 
                 <div>
@@ -165,7 +162,8 @@ ${currentAnnouncement?.getCleanContent()}
                      </g:else>
                 </div>
             </div>
-        </g:each>
-    </div>
+        </div>
+    </g:each>
+
 
 <laser:htmlEnd />
