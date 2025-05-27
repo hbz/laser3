@@ -61,7 +61,7 @@
 
                         <g:if test="${surveyConfig.invoicingInformation}">
                             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                  data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                                  data-content="${message(code: "surveyconfig.invoicingInformation.short")}">
                                 <i class="dollar icon la-list-icon"></i>
                             </span>
                         </g:if>

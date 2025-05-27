@@ -60,7 +60,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'packageSurvey']}">
 
-                    ${message(code: 'surveyconfig.packageSurvey.label')}
+                    ${message(code: 'surveyconfig.packageSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
@@ -72,7 +72,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'vendorSurvey']}">
 
-                    ${message(code: 'surveyconfig.vendorSurvey.label')}
+                    ${message(code: 'surveyconfig.vendorSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
