@@ -47601,6 +47601,11 @@ dd {
 }
 
 .ui.segment.la-search {
+  background: #fcf4d9;
+  border: none;
+}
+
+.ui.segment.la-gasco {
   background: #f1ebe5;
   border: none;
 }
