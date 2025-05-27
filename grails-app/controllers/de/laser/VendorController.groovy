@@ -96,9 +96,13 @@ class VendorController {
             queryArgs << "v.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
         }
+        else if(params.containsKey('filterSet')) {
+            queryArgs << "v.status != :status"
+            queryParams.status = RDStore.VENDOR_STATUS_REMOVED
+        }
         else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
             queryArgs << "v.status = :status"
-            queryParams.status = "Current"
+            queryParams.status = RDStore.VENDOR_STATUS_CURRENT
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
 
