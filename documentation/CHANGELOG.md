@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6624    27.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung des Textes für Referenzwert "Title" beim Publikationstyp
+
+6610    27.05.2025  rc-3.5  3.5         Andreas Bug         entfernte Anbieter und Library Supplier wurden nicht herausgefiltert
+
 6617    26.05.2025  rc-3.5  3.5         Andreas Bug         Abfragesyntaxfehler behoben
 
 6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe

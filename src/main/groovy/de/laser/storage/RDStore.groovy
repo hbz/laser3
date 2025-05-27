@@ -169,6 +169,7 @@ class RDStore {
 
     public final static RefdataValue PROVIDER_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.PROVIDER_STATUS)
     public final static RefdataValue PROVIDER_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PROVIDER_STATUS)
+    public final static RefdataValue PROVIDER_STATUS_EXPECTED    = getRefdataValue('Expected',RDConstants.PROVIDER_STATUS)
     public final static RefdataValue PROVIDER_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PROVIDER_STATUS)
     public final static RefdataValue PROVIDER_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.PROVIDER_STATUS)
 
@@ -294,6 +295,7 @@ class RDStore {
 
     public final static RefdataValue VENDOR_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.VENDOR_STATUS)
+    public final static RefdataValue VENDOR_STATUS_EXPECTED    = getRefdataValue('Expected', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.VENDOR_STATUS)
     public final static RefdataValue VENDOR_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.VENDOR_STATUS)
 
