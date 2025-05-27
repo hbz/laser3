@@ -964,7 +964,7 @@ class SubscriptionControllerService {
                 if(configMap.revision && configMap.statsUrl && ci.value) {
                     boolean addTitleReport = true
                     if(surveySetting) {
-                        addTitleReport = configMap.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT || IssueEntitlement.countBySubscriptionAndStatus(configMap.subscription, RDStore.TIPP_STATUS_CURRENT)
+                        addTitleReport = configMap.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT || IssueEntitlement.countBySubscriptionAndStatus(configMap.subscription, RDStore.TIPP_STATUS_CURRENT) || IssueEntitlement.countBySubscriptionAndStatus(configMap.subscription.instanceOf, RDStore.TIPP_STATUS_CURRENT)
                     }
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         allAvailableReports = new TreeSet<String>()
