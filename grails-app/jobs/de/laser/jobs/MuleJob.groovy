@@ -35,13 +35,12 @@ class MuleJob extends AbstractJob {
 
     def execute() {
         SystemEvent sysEvent = start('MULE_START')
+        LocalTime now = LocalTime.now()
 
         if (! sysEvent) {
             return false
         }
         try {
-            LocalTime now = LocalTime.now()
-
             systemService.maintainUnlockedUserAccounts()
             // every (full) hour
 //            if (_checkTime(now, -1, 0)) {
@@ -61,7 +60,7 @@ class MuleJob extends AbstractJob {
         catch (Exception e) {
             log.error e.getMessage()
         }
-        stopAndComplete(sysEvent)
+        stopAndComplete(sysEvent, [now: now.toString()])
     }
 
     private boolean _checkTime(LocalTime now, int hour, int minute) {
