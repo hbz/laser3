@@ -6165,6 +6165,7 @@ class ExportClickMeService {
     private void _setVendorRow(Vendor result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org context = contextService.getOrg()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
@@ -6217,12 +6218,24 @@ class ExportClickMeService {
                             row.add(createTableCell(format, nameOfLicenses.join('\n')))
                             break
                         case 'vendor.packages':
-                            row.add(createTableCell(format, result.packages.pkg.name.join('\n')))
+                            Set<Package> distinctPackages = []
+                            distinctPackages.addAll(result.packages.pkg)
+                            String pkgString
+                            Object[] count = [distinctPackages.size()-20]
+                            if(distinctPackages.size() >= 20)
+                                pkgString = "${distinctPackages.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPackages', count, locale)}"
+                            else pkgString = distinctPackages.name.join('\n')
+                            row.add(createTableCell(format, pkgString))
                             break
                         case 'vendor.platforms':
                             SortedSet<Platform> distinctPlatforms = new TreeSet<Platform>()
                             distinctPlatforms.addAll(result.packages.pkg.nominalPlatform)
-                            row.add(createTableCell(format, distinctPlatforms.name.join('\n')))
+                            String platString
+                            Object[] count = [distinctPlatforms.size()-20]
+                            if(distinctPlatforms.size() >= 20)
+                                platString = "${distinctPlatform.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPlatforms', count, locale)}"
+                            else platString = distinctPlatforms.name.join('\n')
+                            row.add(createTableCell(format, platString))
                             break
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
@@ -6717,27 +6730,27 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro)), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro), null) as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp)), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp), null) as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd)), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd), null) as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else if (fieldKey.contains('localPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro)), null) as localPriceEUR"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro), null) as localPriceEUR"
                 queryArgs.leuro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('localPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp)), null) as localPriceGBP"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp), null) as localPriceGBP"
                 queryArgs.lgbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('localPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd)), null) as localPriceUSD"
+                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd), null) as localPriceUSD"
                 queryArgs.lusd = RDStore.CURRENCY_USD.id
             }
             else {

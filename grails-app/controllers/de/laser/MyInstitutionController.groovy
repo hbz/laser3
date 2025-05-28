@@ -971,9 +971,13 @@ class MyInstitutionController  {
             queryArgs << "p.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'provStatus')
         }
+        else if(params.containsKey('filterSet')) {
+            queryArgs << "p.status.value != :status"
+            queryParams.status = RDStore.PROVIDER_STATUS_REMOVED
+        }
         else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
             queryArgs << "p.status.value = :status"
-            queryParams.status = "Current"
+            queryParams.status = RDStore.PROVIDER_STATUS_CURRENT
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 

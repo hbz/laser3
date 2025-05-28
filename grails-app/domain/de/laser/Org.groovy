@@ -812,12 +812,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets the Leitkriterium for this institution; the Leitkriterium is necessary for the North-Rhine Westphalia billing system.
+     * Gets List all Leitkriteriums for this institution; the Leitkriterium is necessary for the North-Rhine Westphalia billing system.
      * See <a href="https://www.land.nrw/de/e-rechnung-nrw">the pages of the NRW billing system (page in German)</a>
-     * @return the {@link Identifier} of the {@link IdentifierNamespace#LEIT_KR}
+     * @return a {@link List} of {@link Identifier}s of the {@link IdentifierNamespace#LEIT_KR}
      */
-    Identifier getLeitkriterium() {
-        return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
+    List<Identifier> getLeitkriteriums() {
+        return Identifier.findAllByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
     }
 
     boolean isInfoAccessible() {

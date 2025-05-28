@@ -14,7 +14,11 @@
 
     <ui:messages data="${flash}" />
 
-    <h2 class="ui header">FTControl</h2>
+<div class="ui fluid card">
+    <div class="content">
+        <div class="ui header">FTControl</div>
+    </div>
+    <div class="content">
 
       <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
@@ -60,7 +64,14 @@
         </tbody>
       </table>
 
-    <h2 class="ui header">Indizes</h2>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+        <div class="ui header">Indizes</div>
+    </div>
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
@@ -106,4 +117,6 @@
         </tbody>
     </table>
 
+    </div>
+</div>
 <laser:htmlEnd />

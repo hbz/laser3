@@ -253,24 +253,29 @@ class AjaxController {
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
                                 if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    if(!subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
-                                        executorService.execute({
-                                            Set<Package> subPackages = SubscriptionPackage.findAllBySubscription(sub)
-                                            String threadName = 'PackageTransfer_' + sub.id
-                                            Thread.currentThread().setName(threadName)
-                                            if(subChildIDs) {
+                                    if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id) && !subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
+                                        if(subChildIDs) {
+                                            executorService.execute({
+                                                Set<SubscriptionPackage> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                                String threadName = 'PackageUnlink_' + sub.id
+                                                Thread.currentThread().setName(threadName)
                                                 subPackages.each { SubscriptionPackage sp ->
                                                     if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
                                                         log.error('error on clearing issue entitlements when changing package holding selection')
                                                     }
                                                 }
-                                            }
+                                            })
+                                        }
+                                        executorService.execute({
+                                            Set<SubscriptionPackage> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                            String threadName = 'PackageTransfer_' + sub.id
+                                            Thread.currentThread().setName(threadName)
                                             subPackages.each { SubscriptionPackage sp ->
+                                                subscriptionService.cachePackageName("PackageTransfer_" + sub.id, sp.pkg.name)
                                                 Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
                                                 if(missingTipps.size() > 0) {
-                                                    subscriptionService.cachePackageName("PackageTransfer_" + sub.id, sp.pkg.name)
                                                     log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
-                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
+                                                    subscriptionService.bulkAddEntitlements(sp.subscription, missingTipps, sub.hasPerpetualAccess)
                                                 }
                                             }
                                         })
