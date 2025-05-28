@@ -107,6 +107,7 @@
 
 @laSideCards        : lighten(@orange, 47);
 
+@laSearchBackground : #fcf4d9; /* light yellow  to distinguish 'Search' from 'Filter' */
 @laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
 @laDecorationColor   : #d3dae3; /*blue gray for decoration instead of semantic grey */
