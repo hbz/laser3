@@ -60,7 +60,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'packageSurvey']}">
 
-                    ${message(code: 'surveyconfig.packageSurvey.label')}
+                    ${message(code: 'surveyconfig.packageSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
@@ -72,7 +72,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'vendorSurvey']}">
 
-                    ${message(code: 'surveyconfig.vendorSurvey.label')}
+                    ${message(code: 'surveyconfig.vendorSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
@@ -259,6 +259,36 @@
                                                 <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitkriterium"/>
                                             </dd>
                                         </dl>
+
+                                        <table class="ui table la-js-responsive-table la-table">
+                                            <thead>
+                                            <tr>
+                                                <th>${message(code: 'sidewide.number')}</th>
+                                                <th>${message(code: 'identifier')}</th>
+                                                <th>${message(code: 'default.notes.label')}</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <g:each in="${surveyOrg.org.getLeitkriteriums()}" var="leitkriterium" status="i">
+                                                <tr>
+                                                    <td>${i+1}</td>
+                                                    <td>${leitkriterium.value}</td>
+                                                    <td>${leitkriterium.note}</td>
+                                                    <td>
+                                                        <g:if test="${editable}">
+                                                            <g:link controller="${controllerName}" action="${actionName}"
+                                                                    id="${surveyInfo.id}"
+                                                                    params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceLeitkriteriumFromOrg: leitkriterium.value]}"
+                                                                    class="${Btn.SIMPLE} right floated">
+                                                                <g:message code="surveyOrg.setEInvoiceLeitkriteriumFromOrg"/>
+                                                            </g:link>
+                                                        </g:if>
+                                                    </td>
+                                                </tr>
+                                            </g:each>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div><!-- .card -->
                             </div>

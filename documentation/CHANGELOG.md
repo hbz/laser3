@@ -11,6 +11,20 @@
 
 4202    28.05.2025  dev     3.6         David   Feature     Ehcache upgraden
 
+6598    27.05.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen in der Lizenzverwaltung
+
+6626    27.05.2025  rc-3.5  3.5         Andreas Bug         Statistik nicht aus Umfragekontext erreichbar
+
+6624    27.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung des Textes für Referenzwert "Title" beim Publikationstyp
+
+6610    27.05.2025  rc-3.5  3.5         Andreas Bug         entfernte Anbieter und Library Supplier wurden nicht herausgefiltert
+
+6617    26.05.2025  rc-3.5  3.5         Andreas Bug         Abfragesyntaxfehler behoben
+
+6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe
+
+6573    26.05.2025  rc-3.5  3.5         Andreas Bug         Ausgabe der Paket- und Plattformnamen eingeschränkt
+
 6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
 
 6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers

@@ -11,6 +11,9 @@
 
     <ui:messages data="${flash}" />
 
+<div class="ui fluid card">
+    <div class="content">
+
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
@@ -63,5 +66,8 @@
           </g:each>
         </tbody>
       </table>
+
+    </div>
+</div>
 
 <laser:htmlEnd />

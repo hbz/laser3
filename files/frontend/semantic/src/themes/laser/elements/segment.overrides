@@ -25,6 +25,10 @@
   border-right: 10px solid @green;
 }
 .ui.segment.la-search {
+  background: @laSearchBackground;
+  border: none;
+}
+.ui.segment.la-gasco {
   background: #f1ebe5;
   border: none;
 }

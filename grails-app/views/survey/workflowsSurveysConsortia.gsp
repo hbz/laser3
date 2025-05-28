@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.survey.SurveyConfigPackage; de.laser.survey.SurveyConfigSubscription; de.laser.survey.SurveyConfigVendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:htmlStart message="currentSurveys.label"/>
 
 <ui:breadcrumbs>
@@ -143,7 +143,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.short')}</label>
                             <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
                                    <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
                                    tabindex="0">
@@ -152,7 +152,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.short')}</label>
                             <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
                                    <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
                                    tabindex="0">
@@ -161,7 +161,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.short')}</label>
                             <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
                                    <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
                                    tabindex="0">
@@ -170,7 +170,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkSubscriptionSurvey">${message(code: 'surveyconfig.subscriptionSurvey.label')}</label>
+                            <label for="checkSubscriptionSurvey">${message(code: 'surveyconfig.subscriptionSurvey.short')}</label>
                             <input id="checkSubscriptionSurvey" name="checkSubscriptionSurvey" type="checkbox"
                                    <g:if test="${params.checkSubscriptionSurvey}">checked=""</g:if>
                                    tabindex="0">
@@ -254,6 +254,24 @@
     </th>
 
     <th scope="col" rowspan="2">
+        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'package.plural')}" data-position="top center">
+            <i class="${Icon.PACKAGE} large"></i>
+        </a>
+    </th>
+
+    <th scope="col" rowspan="2">
+        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'vendor.plural')}" data-position="top center">
+            <i class="${Icon.VENDOR} large"></i>
+        </a>
+    </th>
+
+    <th scope="col" rowspan="2">
+        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.plural')}" data-position="top center">
+            <i class="${Icon.SUBSCRIPTION} large"></i>
+        </a>
+    </th>
+
+    <th scope="col" rowspan="2">
         <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
             <i class="${Icon.FNC.COST} large"></i>
         </a>
@@ -294,7 +312,7 @@
         <td class="la-th-column">
                 <g:if test="${surveyConfig.invoicingInformation}">
                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                          data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                          data-content="${message(code: "surveyconfig.invoicingInformation.short")}">
                         <i class="dollar icon la-list-icon"></i>
                     </span>
                 </g:if>
@@ -368,6 +386,39 @@
                     ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
                 </div>
             </g:link>
+        </td>
+
+        <td class="center aligned">
+            <g:if test="${surveyConfig.packageSurvey}">
+                <g:link controller="survey" action="surveyPackages" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id]">
+                    <div class="ui circular label">
+                        ${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}
+                    </div>
+                </g:link>
+            </g:if>
+        </td>
+
+        <td class="center aligned">
+            <g:if test="${surveyConfig.vendorSurvey}">
+                <g:link controller="survey" action="surveyVendors" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id]">
+                    <div class="ui circular label">
+                        ${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}
+                    </div>
+                </g:link>
+            </g:if>
+        </td>
+
+        <td class="center aligned">
+            <g:if test="${surveyConfig.subscriptionSurvey}">
+                <g:link controller="survey" action="surveySubscriptions" id="${surveyInfo.id}"
+                        params="[surveyConfigID: surveyConfig.id]">
+                    <div class="ui circular label">
+                        ${SurveyConfigSubscription.countBySurveyConfig(surveyConfig)}
+                    </div>
+                </g:link>
+            </g:if>
         </td>
 
 

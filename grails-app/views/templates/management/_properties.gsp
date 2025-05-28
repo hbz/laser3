@@ -369,6 +369,15 @@
                 </g:else>
             </div>
 
+            <g:if test="${showConsortiaFunctions}">
+                <div class="field">
+                    <label for="audit">${message(code: 'property.manageProperties.markForAudit')}</label>
+                    <div class="ui checkbox">
+                        <g:checkBox id="audit" name="audit" />
+                    </div>
+                </div>
+            </g:if>
+
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
@@ -384,7 +393,6 @@
                                 name="processOption"
                                 value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
                     </div>
-
                 </div>
             </div>
 
