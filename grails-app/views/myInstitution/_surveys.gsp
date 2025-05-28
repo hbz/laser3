@@ -64,16 +64,18 @@
             </div>
 
             <div class="extra content">
-                <span class="la-float-right">
-                    <span class="la-long-tooltip la-popup-tooltip" data-position="top center"
-                          data-content="${message(code: "surveyResult.label")} anzeigen">
-                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]"
-                                class="${Btn.MODERN.SIMPLE}">
-                            <i class="${Icon.SURVEY}"></i>
-                        </g:link>
-                    </span>
-                </span>
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                        <span class="la-float-right">
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="top center"
+                                  data-content="${message(code: "surveyResult.label")} anzeigen">
+                                <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                                        params="[surveyConfigID: surveyConfig.id]"
+                                        class="${Btn.MODERN.SIMPLE}">
+                                    <i class="${Icon.SURVEY}"></i>
+                                </g:link>
+                            </span>
+                        </span>
+                </g:if>
                 <g:if test="${surveyInfo.startDate}">
                     <p>
                         <strong><g:message code="surveyInfo.startDate.label"/>:</strong>
