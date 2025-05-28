@@ -392,24 +392,34 @@ class YodaService {
             Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
             Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
-                log.debug("now migrating library supplier role to provider role ${j+1} out of ${rolesToMigrate.size()}")
-                ProviderRole targetPVR = new ProviderRole(provider: targetProv, isShared: sourceVR.isShared)
-                targetPVR.save()
-                if(sourceVR.subscription) {
-                    Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
-                    targetPVR.subscription = s
-                    setProcessingProperty(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
-                    if(targetPVR.isShared) {
-                        s.updateShare(targetPVR)
+                ProviderRole targetPVR = null
+                if(sourceVR.subscription)
+                    targetPVR = ProviderRole.findByProviderAndSubscription(targetProv, sourceVR.subscription)
+                else if(sourceVR.license)
+                    targetPVR = ProviderRole.findByProviderAndLicense(targetProv, sourceVR.license)
+                if(!targetPVR) {
+                    log.debug("now migrating library supplier role to provider role ${j+1} out of ${rolesToMigrate.size()}")
+                    targetPVR = new ProviderRole(provider: targetProv, isShared: sourceVR.isShared)
+                    targetPVR.save()
+                    if(sourceVR.subscription) {
+                        Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
+                        targetPVR.subscription = s
+                        setProcessingProperty(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                        if(targetPVR.isShared) {
+                            s.updateShare(targetPVR)
+                        }
+                    }
+                    else if(sourceVR.license) {
+                        License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
+                        targetPVR.license = l
+                        setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                        if(targetPVR.isShared) {
+                            l.updateShare(targetPVR)
+                        }
                     }
                 }
-                else if(sourceVR.license) {
-                    License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
-                    targetPVR.license = l
-                    setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
-                    if(targetPVR.isShared) {
-                        l.updateShare(targetPVR)
-                    }
+                else {
+                    log.debug("library supplier role ${j+1} out of ${rolesToMigrate.size()} already existing as provider role")
                 }
                 sourceVR.delete()
             }
