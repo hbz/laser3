@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6331    28.05.2025  dev     3.6         David   Feature     Mail-Plugin upgraden
+
+4202    28.05.2025  dev     3.6         David   Feature     Ehcache upgraden
+
 6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
 
 6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers
