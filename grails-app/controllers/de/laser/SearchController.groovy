@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
+import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -87,7 +88,8 @@ class SearchController  {
         result.user = contextService.getUser()
         result.flagContentElasticsearch = true // ESSearchService.search
 
-        params.max = 50
+        params.max = 20
+        params.status_en = "\"${RDStore.SUBSCRIPTION_CURRENT.value_en}\""
 
         if (!query) {
             return result
@@ -108,9 +110,9 @@ class SearchController  {
                         filtered = "Package"
                         break
                     case "\$p":
-                        params.type = "package"
+                        params.type = "provider"
                         query = query.replace("\$p ", "")
-                        filtered = "Package"
+                        filtered = "Provider"
                         break
                     case "\$pl":
                         params.type = "platform"
@@ -126,6 +128,11 @@ class SearchController  {
                         params.type = "organisation"
                         query = query.replace("\$o ", "")
                         filtered = "Organisation"
+                        break
+                    case "\$v":
+                        params.type = "vendor"
+                        query = query.replace("\$v ", "")
+                        filtered = "Vendor"
                         break
                     case "\$l":
                         params.type = "license"

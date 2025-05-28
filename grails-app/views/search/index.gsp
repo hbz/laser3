@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" />
 
@@ -54,7 +54,7 @@
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
-        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status']}" var="facet">
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status_en']}" var="facet">
             <g:each in="${params.list(facet)}" var="selected_facet_value">
                 <input type="hidden" name="${facet}" value="${selected_facet_value}"/>
             </g:each>
@@ -190,7 +190,7 @@
                                                 <g:if test="${facet.key == 'rectype'}">
                                                     ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
-                                                <g:elseif test="${facet.key == 'status'}">
+                                                <g:elseif test="${facet.key == 'status_en'}">
                                                     ${v.display}
                                                     ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
@@ -204,7 +204,7 @@
                                                     <g:if test="${facet.key == 'rectype'}">
                                                         ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
                                                     </g:if>
-                                                    <g:elseif test="${facet.key == 'status'}">
+                                                    <g:elseif test="${facet.key == 'status_en'}">
                                                         ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display}
                                                     </g:elseif>
                                                     <g:else>
@@ -223,7 +223,7 @@
             <div class="twelve wide column">
                 <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
-                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status_en']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
 
                             <span class="ui label la-advanced-label"><g:message code="facet.so.${facet}"/>:
@@ -231,7 +231,7 @@
                                 <g:if test="${facet == 'rectype'}">
                                     ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
                                 </g:if>
-                                <g:elseif test="${facet == 'status'}">
+                                <g:elseif test="${facet == 'status_en'}">
                                     ${RefdataValue.getByValue(fv) ? RefdataValue.getByValue(fv).getI10n('value') : fv}
                                 </g:elseif>
                                 <g:else>

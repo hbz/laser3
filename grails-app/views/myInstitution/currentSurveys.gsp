@@ -150,7 +150,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.short')}</label>
                             <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
                                    <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
                                    tabindex="0">
@@ -159,7 +159,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.short')}</label>
                             <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
                                    <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
                                    tabindex="0">
@@ -168,7 +168,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.short')}</label>
                             <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
                                    <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
                                    tabindex="0">
@@ -278,7 +278,7 @@
 
                         <g:if test="${surveyConfig.invoicingInformation}">
                             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                  data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                                  data-content="${message(code: "surveyconfig.invoicingInformation.short")}">
                                 <i class="dollar icon la-list-icon"></i>
                             </span>
                         </g:if>

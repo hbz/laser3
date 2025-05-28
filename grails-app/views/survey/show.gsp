@@ -163,7 +163,7 @@
 
                         <g:if test="${surveyInfo.type != RDStore.SURVEY_TYPE_TITLE_SELECTION}">
                             <dl>
-                                <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.label')}</dt>
+                                <dt class="control-label">${message(code: 'surveyconfig.packageSurvey.short')}</dt>
                                 <dd>
                                     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
                                         <ui:xEditableBoolean owner="${surveyConfig}" field="packageSurvey"/>
@@ -175,7 +175,7 @@
                             </dl>
 
                             <dl>
-                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.label')}</dt>
+                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.short')}</dt>
                                 <dd>
                                     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
                                         <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey"/>
@@ -187,7 +187,7 @@
                             </dl>
 
                             <dl>
-                                <dt class="control-label">${message(code: 'surveyconfig.invoicingInformation.label')}</dt>
+                                <dt class="control-label">${message(code: 'surveyconfig.invoicingInformation.short')}</dt>
                                 <dd>
                                     <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
                                         <ui:xEditableBoolean owner="${surveyConfig}" field="invoicingInformation"/>

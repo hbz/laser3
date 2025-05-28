@@ -139,6 +139,14 @@
 %>
 {
     "results": [
+        <g:if test="${resultsTotal > 20}">
+                {
+                    "title": "${message(code: 'spotlight.searchResult', args: [params.q, resultsTotal])}",
+                    "url":   "${g.createLink(controller:"search", action:"index")}",
+                    "category": "Info",
+                    "description" : "${resultsTotal}"
+                },
+        </g:if>
         <g:each in="${result}" var="obj" status="counter">
             <g:if test="${counter > 0}">, </g:if>
             <%

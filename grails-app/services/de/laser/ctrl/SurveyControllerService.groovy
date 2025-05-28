@@ -5330,7 +5330,7 @@ class SurveyControllerService {
 
             //MultiYearTerm Subs
             result.parentSubChilds.each { sub ->
-                if (surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(result.surveyConfig, sub.getSubscriber())) {
+                if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
                         Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)

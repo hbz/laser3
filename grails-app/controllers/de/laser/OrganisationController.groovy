@@ -469,8 +469,6 @@ class OrganisationController  {
         nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
         if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
             nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
-        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
-            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
 
         Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
 
