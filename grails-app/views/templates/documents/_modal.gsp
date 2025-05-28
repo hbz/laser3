@@ -38,14 +38,16 @@
         <g:set var="labelId" value="${doc?.id ?: '000'}" />
 
         <div class="inline-lists">
-            <dl>
-                <dt>
-                    <label for="upload_title-${labelId}">${message(code: 'template.addDocument.name')}:</label>
-                </dt>
-                <dd>
-                    <input type="text" id="upload_title-${labelId}" name="upload_title" value="${doc?.title}"/>
-                </dd>
-            </dl>
+            <g:if test="${!showNoName}">
+                <dl>
+                    <dt>
+                        <label for="upload_title-${labelId}">${message(code: 'template.addDocument.name')}:</label>
+                    </dt>
+                    <dd>
+                        <input type="text" id="upload_title-${labelId}" name="upload_title" value="${doc?.title}"/>
+                    </dd>
+                </dl>
+            </g:if>
             <g:if test="${!docctx && !doc}">
                 <dl>
                     <dt>
