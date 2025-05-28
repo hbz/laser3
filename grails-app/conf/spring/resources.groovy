@@ -49,8 +49,8 @@ beans = {
 
     // [ wkhtmltopdf ..
     wkhtmltoxService( CustomWkhtmltoxService ) {
-        grailsApplication           = ref('grailsApplication')
-        mailMessageContentRenderer  = ref('mailMessageContentRenderer')
+//        grailsApplication           = ref('grailsApplication')
+//        mailMessageContentRenderer  = ref('mailMessageContentRenderer')  --> circular dependency --> org.grails.plugins:mail
     }
     // .. ]
 

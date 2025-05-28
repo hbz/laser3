@@ -12,7 +12,7 @@ Upgrade to 5.x -> Switch back to usual asset include for swagger-ui
 
 ### Grails Mail Plugin
 
-Upgrade to 4.0.0 -> TODO: circular references
+Configuration *grails.mail.port* in *laser3-config.groovy* no longer works in version 4.x -> For local tests, the configuration must be set in *application.yml*
 
 ### ExecutorGrailsPlugin
 

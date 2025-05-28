@@ -1,7 +1,7 @@
 package de.laser.custom
 
 import de.laser.config.ConfigMapper
-import grails.core.GrailsApplication
+import grails.util.Holders
 import groovy.util.logging.Slf4j
 import org.grails.plugins.wkhtmltopdf.PartialView
 import org.grails.plugins.wkhtmltopdf.WkhtmltoxException
@@ -15,8 +15,7 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
 
     static transactional = false
 
-    def mailMessageContentRenderer
-    GrailsApplication grailsApplication
+    // def mailMessageContentRenderer // --> circular dependency
 
     /**
      * Prepares header, body and footer of the PDF document with the given configuration settings
@@ -109,7 +108,15 @@ class CustomWkhtmltoxService /* extends WkhtmltoxService */ {
      * @return the rendered page
      */
     protected String renderMailView(PartialView partialView) {
-        return mailMessageContentRenderer.render(new StringWriter(), partialView.viewName, partialView.model, null, partialView.pluginName).out.toString()
+        def mailMessageContentRenderer = Holders.grailsApplication.mainContext.getBean('mailMessageContentRenderer')
+        if (mailMessageContentRenderer) {
+            mailMessageContentRenderer.render(new StringWriter(), partialView.viewName, partialView.model, null, partialView.pluginName).out.toString()
+        }
+        else {
+            log.error('FAILED to resolve mailMessageContentRenderer @ customWkhtmltoxService')
+
+            'FAILED to resolve mailMessageContentRenderer @ customWkhtmltoxService'
+        }
     }
 
     /**

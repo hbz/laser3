@@ -167,6 +167,7 @@ asynchronous:
 grails:
     mail:
         poolSize: 20
+        port: 25 # set for local tests
     plugin:
         auditLog:
             auditDomainClassName: 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
