@@ -244,8 +244,8 @@ class DataloadService {
                     result.altnames << altname.name
                 }
 
-                result.status = vendor.status?.getMapForES()
-                result.status_en = vendor.status?.value_en
+                result.status = vendor.status.getMapForES()
+                result.status_en = vendor.status.value_en
                 result.rectype = vendor.getClass().getSimpleName()
 
                 result.sortname = vendor.sortname
@@ -288,8 +288,8 @@ class DataloadService {
                     result.altnames << altname.name
                 }
 
-                result.status = provider.status?.getMapForES()
-                result.status_en = provider.status?.value_en
+                result.status = provider.status.getMapForES()
+                result.status_en = provider.status.value_en
                 result.rectype = provider.getClass().getSimpleName()
 
                 result.sortname = provider.sortname
@@ -339,8 +339,8 @@ class DataloadService {
                     tipp.altnames.each { AlternativeName altname ->
                         result.altnames << altname.name
                     }
-                    result.status = tipp.status?.getMapForES()
-                    result.status_en = tipp.status?.value_en
+                    result.status = tipp.status.getMapForES()
+                    result.status_en = tipp.status.value_en
                     result.visible = 'Public'
                     result.rectype = tipp.getClass().getSimpleName()
 
@@ -654,8 +654,8 @@ class DataloadService {
                 result.priority = 60
                 result.dbId = surveyConfig.id
                 result.name = surveyConfig.getSurveyName()
-                result.status = surveyConfig.surveyInfo.status?.getMapForES()
-                result.status_en = surveyConfig.surveyInfo.status?.value_en
+                result.status = surveyConfig.surveyInfo.status.getMapForES()
+                result.status_en = surveyConfig.surveyInfo.status.value_en
                 result.visible = 'Private'
                 result.rectype = surveyConfig.getClass().getSimpleName()
 
@@ -698,8 +698,8 @@ class DataloadService {
                 result.priority = 60
                 result.dbId = surOrg.surveyConfig.id
                 result.name = surOrg.surveyConfig.getSurveyName()
-                result.status = surOrg.surveyConfig.surveyInfo.status?.getMapForES()
-                result.status_en = surOrg.surveyConfig.surveyInfo.status?.value_en
+                result.status = surOrg.surveyConfig.surveyInfo.status.getMapForES()
+                result.status_en = surOrg.surveyConfig.surveyInfo.status.value_en
                 result.visible = 'Private'
                 result.rectype = surOrg.getClass().getSimpleName()
 
@@ -875,8 +875,8 @@ class DataloadService {
                 result.priority = 45
                 result.dbId = ie.id
                 result.name = ie.tipp?.name
-                result.status = ie.status?.getMapForES()
-                result.status_en = ie.status?.value_en
+                result.status = ie.status.getMapForES()
+                result.status_en = ie.status.value_en
                 result.visible = 'Private'
                 result.rectype = ie.getClass().getSimpleName()
 
