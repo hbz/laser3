@@ -26,9 +26,9 @@
             </g:form>
         </g:if>
         <g:elseif test="${surveyInfo}">
-            <ui:msg class="info" hideClose="true" showIcon="true" message="${actionName == 'surveyCostItemsPackages' ? 'financials.enrichment.manual.surveyPackages' : 'financials.enrichment.manual.survey'}" />
+            <ui:msg class="info" hideClose="true" showIcon="true" message="${actionName == 'surveyCostItemsPackages' ? 'financials.enrichment.manual.surveyPackages' : (actionName == 'surveyCostItemsSubscriptions' ? 'financials.enrichment.manual.surveySubscriptions' : 'financials.enrichment.manual.survey')}" />
             <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="$actionName" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                <div class="${actionName == 'surveyCostItemsPackages' ? 'three' : 'two'} fields">
+                <div class="${(actionName == 'surveyCostItemsPackages' || actionName == 'surveyCostItemsSubscriptions') ? 'three' : 'two'} fields">
                     <div class="field">
                         <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown clearable "
                                    from="${assignedCostItemElements}"
@@ -41,6 +41,15 @@
                             from="${assignedPackages}"
                             optionKey="id"
                             optionValue="name" />
+                        </div>
+                    </g:if>
+
+                    <g:if test="${actionName == 'surveyCostItemsSubscriptions'}">
+                        <div class="field">
+                            <g:select name="selectedSurveyConfigSubscriptionID" id="selectedSurveyConfigSubscriptionID" class="ui dropdown clearable "
+                                      from="${assignedSubscriptions}"
+                                      optionKey="id"
+                                      optionValue="${{it.getLabel()}}" />
                         </div>
                     </g:if>
                     <div class="field">

@@ -115,7 +115,7 @@
                                     <th>${message(code: 'default.name.label')}</th>
                                     <th>${message(code: 'default.status.label')}</th>
                                 </tr></thead><tbody>
-                            <g:each in="${surveyConfig.surveySubscriptions.sort { it.subscription.name }}" var="surveySub" status="i">
+                            <g:each in="${surveyConfig.surveySubscriptions.sort { it.subscription.getLabel() }}" var="surveySub" status="i">
                                 <tr>
                                     <td class="center aligned">${i + 1}</td>
                                     <td>${surveySub.name}</td>
