@@ -93,6 +93,9 @@ class VendorService {
         if(params.containsKey('venStatus')) {
             queryParams.status = Params.getRefdataList(params, 'venStatus').value
         }
+        else if(params.containsKey('filterSet')) {
+            queryParams.status = [RDStore.VENDOR_STATUS_CURRENT.value, RDStore.VENDOR_STATUS_DELETED.value, RDStore.VENDOR_STATUS_EXPECTED.value, RDStore.VENDOR_STATUS_RETIRED.value]
+        }
         else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
             queryParams.status = "Current"
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
@@ -445,7 +448,12 @@ class VendorService {
         if (params.containsKey('venStatus')) {
             queryArgs << "v.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
-        } else if (!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
+        }
+        else if(params.contaisKey('filterSet')) {
+            queryArgs << "v.status != :removed"
+            queryParams.status = RDStore.VENDOR_STATUS_REMOVED
+        }
+        else if (!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
             queryArgs << "v.status = :status"
             queryParams.status = "Current"
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id

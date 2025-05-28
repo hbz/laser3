@@ -625,7 +625,7 @@ class ManagementService {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
                                 if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
-                                    List<SubscriptionProperty> existingProps = []
+                                    List<SubscriptionProperty> existingProps = [], allProps = []
                                     String propDefFlag
                                     if (propertiesFilterPropDef.tenant == result.institution) {
                                         //private Property
@@ -642,6 +642,7 @@ class ManagementService {
                                     }
                                     if (existingProps.size() == 0 || propertiesFilterPropDef.multipleOccurrence) {
                                         AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(propDefFlag, subscription, propertiesFilterPropDef, result.institution)
+                                        allProps << newProp
                                         if (newProp.hasErrors()) {
                                             log.error(newProp.errors.toString())
                                         } else {
@@ -654,6 +655,43 @@ class ManagementService {
                                         SubscriptionProperty privateProp = SubscriptionProperty.get(existingProps[0].id)
                                         changeProperties++
                                         subscriptionService.updateProperty(controller, privateProp, params.filterPropValue)
+                                    }
+                                    allProps.addAll(existingProps)
+                                    if(params.audit == 'on') {
+                                        allProps.each { SubscriptionProperty property ->
+                                            Subscription.findAllByInstanceOf(subscription).each { Subscription member ->
+                                                SubscriptionProperty existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, property)
+                                                if (!existingProp) {
+
+                                                    // multi occurrence props; add one additional with backref
+                                                    if (property.type.multipleOccurrence) {
+                                                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
+                                                        additionalProp = property.copyInto(additionalProp)
+                                                        additionalProp.instanceOf = property
+                                                        additionalProp.isPublic = true
+                                                        additionalProp.save()
+                                                    } else {
+                                                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = SubscriptionProperty.findAllByOwnerAndTypeAndTenant(member, property.type, contextService.getOrg())
+                                                        // unbound prop found with matching type, set backref
+                                                        if (matchingProps) {
+                                                            matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
+                                                                memberProp.instanceOf = property
+                                                                memberProp.isPublic = true
+                                                                memberProp.save()
+                                                            }
+                                                        } else {
+                                                            // no match found, creating new prop with backref
+                                                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
+                                                            newProp = property.copyInto(newProp)
+                                                            newProp.instanceOf = property
+                                                            newProp.isPublic = true
+                                                            newProp.save()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
+                                        }
                                     }
                                 }
                             }

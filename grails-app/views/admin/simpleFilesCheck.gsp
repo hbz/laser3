@@ -45,7 +45,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Matchende Doc.UUID-Referenzen: ${validDocs.size()}</div>
+        <div class="header"><i class="check double icon"></i> Matchende Doc.UUID-Referenzen: ${validDocs.size()}</div>
     </div>
     <div class="content">
         <g:each in="${validDocs}" var="doc" status="i">
@@ -57,7 +57,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien mit gültiger Doc.UUID-Referenz: ${validFiles.size()}</div>
+        <div class="header"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültiger Doc.UUID-Referenz: ${validFiles.size()}</div>
     </div>
     <div class="content">
         ${validFiles.join(', ')}
@@ -66,7 +66,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien mit gültiger Doc.UUID-Referenz, aber unverschlüsselt: ${validFilesRaw.size()}</div>
+        <div class="header"><i class="${Icon.SYM.YES} yellow"></i> Dateien mit gültiger Doc.UUID-Referenz, aber unverschlüsselt: ${validFilesRaw.size()}</div>
     </div>
     <div class="content">
         ${validFilesRaw.join(', ')}
@@ -84,7 +84,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien ohne gültige Doc.UUID-Referenz: ${invalidFiles.size()}</div>
+        <div class="header"><i class="${Icon.SYM.NO} red"></i> Dateien ohne gültige Doc.UUID-Referenz: ${invalidFiles.size()}</div>
     </div>
     <div class="content">
         ${invalidFiles.join(', ')}

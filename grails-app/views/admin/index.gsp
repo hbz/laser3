@@ -48,6 +48,9 @@
 
 <br />
 
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr>
@@ -86,8 +89,11 @@
         </tbody>
     </table>
 
-<br />
-<br />
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
 <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
     <thead>
@@ -108,10 +114,13 @@
     </tbody>
 </table>
 
-<br />
-<br />
+    </div>
+</div>
 
 <g:if test="${events}">
+    <div class="ui fluid card">
+        <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
         <tr>
@@ -150,6 +159,9 @@
         </g:each>
         </tbody>
     </table>
+
+        </div>
+    </div>
 </g:if>
 
 <laser:htmlEnd />

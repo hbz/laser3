@@ -54,23 +54,23 @@
         </div>
 
         <div class="field">
-            <label>${message(code: 'surveyconfig.packageSurvey.label')}</label>
+            <label>${message(code: 'surveyconfig.invoicingInformation.short')} <i data-content="${message(code:'surveyconfig.invoicingInformation.info')}" data-position="top center" class="question icon circular la-popup-tooltip"></i></label>
             <div class="ui checkbox">
-                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
+                <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>
             </div>
         </div>
 
         <div class="field">
-            <label>${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+            <label>${message(code: 'surveyconfig.vendorSurvey.short')} <i data-content="${message(code:'surveyconfig.vendorSurvey.info')}" data-position="top center" class="question icon circular la-popup-tooltip"></i></label>
             <div class="ui checkbox">
                 <input type="checkbox" id="vendorSurvey" name="vendorSurvey" ${params.vendorSurvey? 'checked':''}>
             </div>
         </div>
 
         <div class="field">
-            <label>${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+            <label>${message(code: 'surveyconfig.packageSurvey.short')} <i data-content="${message(code:'surveyconfig.packageSurvey.info')}" data-position="top center" class="question icon circular la-popup-tooltip"></i></label>
             <div class="ui checkbox">
-                <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>
+                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
             </div>
         </div>
 

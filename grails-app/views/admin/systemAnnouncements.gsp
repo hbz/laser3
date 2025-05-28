@@ -15,6 +15,13 @@
 
     <ui:messages data="${flash}" />
 
+    <g:if test="${mailDisabled}">
+        <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
+    </g:if>
+    <g:else>
+        <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
+    </g:else>
+
         <ui:form controller="admin" action="createSystemAnnouncement">
             <input type="hidden" name="saId" value="${currentAnnouncement?.id}">
             <div class="field">
@@ -62,110 +69,116 @@ ${currentAnnouncement?.getCleanContent()}
     <br />
     <h2 class="ui header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
+    <table class="ui celled la-js-responsive-table la-table table">
+        <thead>
+            <tr>
+                <th class="ten wide">Ankündigung</th>
+                <th class="four wide center aligned">Info</th>
+                <th class="two wide center aligned"><i class="${Icon.SYM.OPTIONS}"></i></th>
+            </tr>
+        </thead>
+        <tbody>
 
-    <g:if test="${mailDisabled}">
-        <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
-    </g:if>
-    <g:else>
-        <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
-    </g:else>
-
-    <div>
         <g:each in="${announcements}" var="sa">
-            <div class="ui segment">
-                <h3 class="ui header"><% print sa.title; /* avoid auto encodeAsHTML() */ %></h3>
-                <g:if test="${sa.isPublished}">
-                    <div class="ui green ribbon label"><i class="icon check circle"></i>${message(code:'announcement.published')}</div>
-                </g:if>
+            <tr>
+                <td style="vertical-align: top">
 
-                <div class="ui divider"></div>
-                <div class="content">
-                    <% print sa.content; /* avoid auto encodeAsHTML() */ %>
-                </div>
-                <div class="ui divider"></div>
+                    <g:if test="${sa.isPublished}">
+                        <div class="ui green label"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'announcement.published')}</div>
+                    </g:if>
 
-                <style>
-                    table.xyz td { padding: 0 2em 0 0 }
-                </style>
-                <table class="ui xyz">
+                    <div class="ui header">
+                        <% print sa.title; /* avoid auto encodeAsHTML() */ %>
+                    </div>
+                    <div class="content">
+                        <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+                    </div>
+
                     <g:if test="${sa.lastPublishingDate}">
+                        <div class="content">
+                            <%
+                                def status = [ validUserIds : [], failedUserIds: [] ]
+                                if (sa.status) { status = grails.converters.JSON.parse(sa.status) }
+                            %>
 
-                        <%
-                            def status = [
-                                    validUserIds : [],
-                                    failedUserIds: []
-                            ]
+                            <span class="la-popup-tooltip" data-position="top left" data-content="Zuletzt veröffentlicht">
+                                <i class="${Icon.ANNOUNCEMENT} la-list-icon"></i>
+                                <g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
+                            </span>
 
-                            if (sa.status) {
-                                status = grails.converters.JSON.parse(sa.status)
-                            }
-                        %>
-
-                        <tr>
-                            <td>Zuletzt veröffentlicht</td>
-                            <td><g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/></td>
-                            <td>
-                                <g:if test="${status['failedUserIds']}">
-                                    <span class="ui label">${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
-                                    <span class="ui red label">${status['failedUserIds'].size()} ${message(code:'announcement.sendError.label')}</span>
+                            <g:if test="${status['failedUserIds']}">
+                                <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
+                                <span class="ui red text"><icon:arrow/>${status['failedUserIds'].size()} ${message(code:'announcement.sendError.label')}</span>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${status['validUserIds']}">
+                                    <span class="ui green text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
                                 </g:if>
                                 <g:else>
-                                    <g:if test="${status['validUserIds']}">
-                                        <span class="ui green label">${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
-                                    </g:if>
-                                    <g:else>
-                                        <span class="ui label">${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
-                                    </g:else>
+                                    <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
                                 </g:else>
-                            </td>
-                        </tr>
+                            </g:else>
+                        </div>
                     </g:if>
+                </td>
+                <td>
+                    <span class="la-popup-tooltip" data-position="top left" data-content="${message(code:'default.lastUpdated.label')}">
+                        <i class="icon pencil alternate la-list-icon"></i>
+                        <g:formatDate date="${sa.lastUpdated}" format="${message(code:'default.date.format.notime')}"/>
+                    </span>
 
-                    <tr>
-                        <td>${message(code:'default.lastUpdated.label')}</td>
-                        <td><g:formatDate date="${sa.lastUpdated}" format="${message(code:'default.date.format.noZ')}"/></td>
-                        <td></td>
-                    </tr>
+                    <br />
 
-                    <tr>
-                        <td>${message(code:'default.dateCreated.label')}</td>
-                        <td><g:formatDate date="${sa.dateCreated}" format="${message(code:'default.date.format.noZ')}"/></td>
-                        <td></td>
-                    </tr>
-
-                    <tr>
-                        <td>${message(code:'default.from')}</td>
-                        <td><g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:sa.user}</g:link></td>
-                        <td></td>
-                    </tr>
-
-                </table><!-- .grid -->
-
-                <div>
-                    <g:if test="${sa.isPublished}">
+                    <span class="la-popup-tooltip" data-position="top left" data-content="Erstellungsdatum">
+                        <i class="icon plus circle la-list-icon"></i>
+                        <g:formatDate date="${sa.dateCreated}" format="${message(code:'default.date.format.notime')}"/>
                         <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']" role="button"
-                                class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.undo.confirm')}')">${message(code:'default.publish_undo.label')}</g:link>
+                        ${message(code:'default.from')} <g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:sa.user}</g:link>
+                    </span>
+                </td>
+                <td>
+                    <g:if test="${sa.isPublished}">
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']"
+                                role="button" class="${Btn.SIMPLE}"
+                                onclick="return confirm('${message(code:'announcement.undo.confirm')}')">
+                            ${message(code:'default.publish_undo.label')}
+                        </g:link>
                     </g:if>
                     <g:else>
-                        <br />
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']" role="button" class="${Btn.MODERN.NEGATIVE}"
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']"
+                                role="button" class="${Btn.MODERN.NEGATIVE}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i></g:link>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']" role="button" class="${Btn.MODERN.SIMPLE}"><i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
+                            <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
+                        </g:link>
+
+                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']"
+                                role="button" class="${Btn.MODERN.SIMPLE}">
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                        </g:link>
+
+                        <br />
+                        <br />
 
                         <g:if test="${mailDisabled}">
                             <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>
                         </g:if>
                         <g:else>
-                            <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']" role="button"
-                                    class="${Btn.SIMPLE}" onclick="return confirm('${message(code:'announcement.publish.confirm')}')">${message(code:'default.publish.label')}</g:link>
-
+                            <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']"
+                                    role="button" class="${Btn.SIMPLE}"
+                                    onclick="return confirm('${message(code:'announcement.publish.confirm')}')">
+                                ${message(code:'default.publish.label')}
+                            </g:link>
                         </g:else>
-                     </g:else>
-                </div>
-            </div>
+                    </g:else>
+                </td>
+            <tr>
         </g:each>
-    </div>
 
+        </tbody>
+    </table>
+
+    <style>
+        span.la-popup-tooltip:hover { cursor:help }
+        table .content { margin-top: 2em }
+    </style>
 <laser:htmlEnd />

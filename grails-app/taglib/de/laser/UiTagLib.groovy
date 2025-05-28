@@ -509,7 +509,7 @@ class UiTagLib {
                 out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
             }
 
-            out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
+            out << '<div class="ui ' + (attrs.class ?  attrs.class : ' la-filter') + ' segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
             out << body()
             out << '</div>'
 

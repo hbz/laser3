@@ -64,7 +64,7 @@
                         }
                     })
                     if (ov) {
-                        content = content + '<br/><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#dedede;"></span> <span> kumulierte Restsumme</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + ov + '</span>'
+                        content = content + '<br/><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#dedede;"></span> <span> weitere Aufrufe</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + ov + '</span>'
                     }
 
                     return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
