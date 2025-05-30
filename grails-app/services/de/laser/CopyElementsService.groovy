@@ -307,14 +307,26 @@ class CopyElementsService {
                 excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                 Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,targetObject.id,excludes)
 
+               Date newStartDate = null
+               Date newEndDate = null
+
+               use(TimeCategory) {
+                   if(subMember.isMultiYear && subMember.endDate){
+                       def duration = subMember.endDate - subMember.startDate
+                       newStartDate = subMember.endDate + 1.day
+                       newEndDate = newStartDate + duration.days.day
+                   }
+
+               }
+
                 Subscription newSubscription = new Subscription(
                         isMultiYear: subMember.isMultiYear,
                         type: subMember.type,
                         kind: subMember.kind,
                         status: targetObject.status,
                         name: targetObject.name,
-                        startDate: subMember.isMultiYear ? subMember.startDate : targetObject.startDate,
-                        endDate: subMember.isMultiYear ? subMember.endDate : targetObject.endDate,
+                        startDate: subMember.isMultiYear ? newStartDate : targetObject.startDate,
+                        endDate: subMember.isMultiYear ? newEndDate : targetObject.endDate,
                         manualRenewalDate: subMember.manualRenewalDate,
                         /* manualCancellationDate: result.subscription.manualCancellationDate, */
                         identifier: RandomUtils.getUUID(),
