@@ -116,7 +116,7 @@ class CostConfigurationController {
         ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def setAllCostItems() {
-        def cie = genericOIDService.resolveOID(params.cie)
+        RefdataValue cie = RefdataValue.get(params.long('cie'))
         Org org = contextService.getOrg()
         def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfigurationAndCostItemStatusNotEqual(org,cie,null, RDStore.COST_ITEM_DELETED).collect {it.id}
         CostItemElementConfiguration ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
