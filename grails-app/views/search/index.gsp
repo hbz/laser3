@@ -636,7 +636,7 @@
                                     <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
-                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(object.endDate)}"/>
+                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sdf.parse(object.endDate)}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
@@ -753,6 +753,36 @@
                                     <g:link controller="${object.objectClassName}" action="show" id="${object.objectId}">${object.objectName}</g:link>
                                     <br />
 
+                                </td>
+                            </g:if>
+                            <g:if test="${object.rectype == 'TitleInstancePackagePlatform'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip"
+                                          data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
+                                        <i class="circular la-book icon"></i>
+                                    </span>
+
+                                    <g:link controller="tipp" action="show" id="${object.dbId}">${object.name}</g:link>
+
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                    <g:set var="tipp" value="${de.laser.wekb.TitleInstancePackagePlatform.get(object.dbId)}"/>
+                                    <g:if test="${tipp}">
+                                            <div class="item">
+                                                <g:link controller="package" action="show" id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
+                                            </div>
+                                    </g:if>
+                                    </div>
                                 </td>
                             </g:if>
                             <g:if test="${object.rectype == 'SubscriptionProperty'}">
