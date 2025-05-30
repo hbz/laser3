@@ -18,9 +18,9 @@
                 <ui:link addItemAttributes="true" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemConfiguration">${message(code:'menu.yoda.systemConfiguration')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemQuartz">${message(code:'menu.yoda.systemQuartz')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="systemCache">${message(code:'menu.yoda.systemCache')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</ui:link>
 
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</ui:link>
@@ -140,10 +140,6 @@
                 <icon:database /> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
-                <ui:link addItemAttributes="true" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
-                <div class="divider"></div>
-
                 <ui:link addItemAttributes="true" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="databaseIndices">${message(code: "menu.admin.databaseIndices")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
@@ -151,6 +147,10 @@
 
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
+                <div class="divider"></div>
+
+                <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
+                <ui:link addItemAttributes="true" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
             </div>
         </div>

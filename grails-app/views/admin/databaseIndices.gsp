@@ -28,7 +28,7 @@
               optionKey="${{it.value}}"
               noSelection="${['': 'DB-Einträge (Domainklasse)']}" />
 
-    <button class="${Btn.ICON.SIMPLE} small" id="threshold_filter"><i class="icon filter"></i><i class="icon sort"></i></button>
+    <button class="${Btn.ICON.SIMPLE} small" id="threshold_filter"><i class="icon filter"></i><icon:sort/></button>
     <button class="${Btn.ICON.SIMPLE} small" id="filter_mapping"><i class="arrow down icon"></i> Mapping</button>
     <div class="ui buttons">
         <button class="${Btn.ICON.SIMPLE} small" id="filter_index"><i class="${Icon.SYM.YES}"></i> Index</button>

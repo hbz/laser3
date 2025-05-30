@@ -22,6 +22,10 @@ class SymbolTagLib {
     def pointingHand = { attrs, body ->
         out << '<i class="hand point right icon"></i>'
     }
+    @UIDoc(usage = 'Generic symbol for: Sort')
+    def sort = { attrs, body ->
+        out << '<i class="sort icon"></i>'
+    }
 
     @UIDoc(usage = 'Generic symbol for: File (Path)')
     def pathFile = { attrs, body ->

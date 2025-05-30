@@ -7,10 +7,10 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.deletedObjects" type="admin"/>
 
-<div class="ui grid">
-    <div class="twelve wide column">
+<div class="ui fluid card">
+    <div class="content">
 
-        <table class="ui celled la-js-responsive-table la-table compact la-ignore-fixed table">
+        <table class="ui la-table compact table">
             <thead>
                 <tr>
                     <th>Objekt</th>
