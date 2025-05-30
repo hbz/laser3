@@ -11,10 +11,10 @@ buildscript {
         maven { url = 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:'                + grailsGradlePluginVersion // 2024
-        classpath 'org.grails.plugins:hibernate5:'                  + gormVersion               // 2024
-        classpath 'org.grails.plugins:database-migration:'          + databaseMigrationVersion  // 2024
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:'  + assetPipelineVersion      // 2024
+        classpath 'org.grails:grails-gradle-plugin:'                            + grailsGradlePluginVersion   // 2024
+        classpath 'org.grails.plugins:hibernate5:'                              + gormVersion                 // 2024
+        classpath 'org.grails.plugins:database-migration:'                      + databaseMigrationVersion    // 2024
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:'              + assetPipelineVersion        // 2024
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:'  + gradleGitPropertiesVersion  // 2025
         classpath 'com.github.ben-manes:gradle-versions-plugin:'                + gradleVersionsPluginVersion // 2025
 
@@ -92,21 +92,21 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:'                               + elasticsearchVersion // 2025
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:' + elasticsearchVersion // 2025
 
-    implementation 'org.grails:grails-shell:'               + grailsShellVersion            // 2024 : + org.grails.plugins:database-migration
+    implementation 'org.grails:grails-shell:'                   + grailsShellVersion            // 2024 : + org.grails.plugins:database-migration
 
-    implementation 'org.grails.plugins:audit-logging:'      + auditLoggingVersion           // 2021
-    implementation 'org.grails.plugins:database-migration:' + databaseMigrationVersion, {   // 2024
+    implementation 'org.grails.plugins:audit-logging:'          + auditLoggingVersion           // 2021
+    implementation 'org.grails.plugins:database-migration:'     + databaseMigrationVersion, {   // 2024
         exclude module: 'spring-boot-cli'
     }
     implementation 'org.grails.plugins:grails-executor:'        + grailsExecutorVersion     // 2016 : [deprecated]
-    implementation 'org.grails.plugins:mail:'                   + mailVersion               // 2021
+    implementation 'org.grails.plugins:mail:'                   + mailVersion               // 2025
     implementation 'org.grails.plugins:quartz:'                 + quartzVersion             // 2024
     implementation 'org.grails.plugins:spring-security-core:'   + springSecurityCoreVersion // 2024
     implementation 'org.grails.plugins:wkhtmltopdf:'            + wkhtmltopdfVersion        // 2018
 
-    implementation 'org.hibernate:hibernate-core:'      + hibernateVersion  // 2023
-    implementation 'org.hibernate:hibernate-ehcache:'   + hibernateVersion  // 2023 : + org.hibernate:hibernate-core:5.6.15.Final
-    implementation 'org.ehcache:ehcache:'               + ehcacheVersion    // 2022
+    implementation 'org.hibernate:hibernate-core:'              + hibernateVersion  // 2023
+    implementation 'org.hibernate:hibernate-ehcache:'           + hibernateVersion  // 2023 : + org.hibernate:hibernate-core:5.6.15.Final
+    implementation 'org.ehcache:ehcache:'                       + ehcacheVersion    // 2022
 //    implementation 'org.hibernate:hibernate-jcache:' + hibernateVersion   //        replacement for hibernate-ehcache:5.6.14.Final
 
     implementation 'commons-io:commons-io:'                     + commonsIoVersion            // 2025
