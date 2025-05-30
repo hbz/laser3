@@ -20,6 +20,8 @@ import org.elasticsearch.search.sort.SortOrder
 class ESSearchService{
 
   ESWrapperService ESWrapperService
+  CustomerTypeService customerTypeService
+  ContextService contextService
 
 
 // Map the parameter names we use in the webapp with the ES fields
@@ -236,13 +238,32 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ")
-          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) " +
-                  "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
-                  "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
-                  "AND ( NOT rectype:\"IssueEntitlement\" ) " +
-                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseProperty\" ) " +
-                  ") ")
+          if(customerTypeService.isConsortium( contextService.getOrg().getCustomerType() )){
+            sw.write(" ( (( NOT rectype:\"Subscription\" ) " +
+                    "AND ( NOT rectype:\"License\" ) " +
+                    "AND ( NOT rectype:\"SurveyOrg\" ) " +
+                    "AND ( NOT rectype:\"SurveyConfig\" ) " +
+                    "AND ( NOT rectype:\"Task\" ) " +
+                    "AND ( NOT rectype:\"Note\" ) " +
+                    "AND ( NOT rectype:\"Document\" ) " +
+                    "AND ( NOT rectype:\"IssueEntitlement\" ) " +
+                    "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                    "AND ( NOT rectype:\"LicenseProperty\" ) " +
+                    ") ")
+          }else {
+            sw.write(" ( (( NOT rectype:\"Subscription\" ) " +
+                    "AND ( NOT rectype:\"License\" ) " +
+                    "AND ( NOT rectype:\"SurveyOrg\" ) " +
+                    "AND ( NOT rectype:\"SurveyConfig\" ) " +
+                    "AND ( NOT rectype:\"Task\" ) " +
+                    "AND ( NOT rectype:\"Note\" ) " +
+                    "AND ( NOT rectype:\"Document\" ) " +
+                    "AND ( NOT rectype:\"IssueEntitlement\" ) " +
+                    "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                    "AND ( NOT rectype:\"LicenseProperty\" ) " +
+                    "AND ( NOT rectype:\"Org\" ) " +
+                    ") ")
+          }
 
           params[mapping.key].each { p ->
             if(p == params[mapping.key].first())

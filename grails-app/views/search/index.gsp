@@ -277,11 +277,12 @@
                                 <td>
                                     <strong><g:message code="org.orgType.label"/></strong>:
                                     <div class="ui bulleted list">
-                                        <g:each in="${object.type?.sort { it.getAt('value_'+languageSuffix) }}" var="type">
+                                    ${object.type?.getAt('value_'+languageSuffix)}
+                                       %{-- <g:each in="${object.type?.sort { it.getAt('value_'+languageSuffix) }}" var="type">
                                             <div class="item">
                                             ${type.getAt('value_'+languageSuffix)}
                                             </div>
-                                        </g:each>
+                                        </g:each>--}%
                                     </div>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
                                     <div class="ui bulleted list">
