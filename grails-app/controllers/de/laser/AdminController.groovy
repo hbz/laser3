@@ -229,7 +229,7 @@ class AdminController  {
                 //['GlobalRecordInfo', 'globalRecordInfoStatus'],
                 'IssueEntitlement',
                 'License',
-                'Org',
+//                'Org',
                 ['Package', 'packageStatus'],
                 'Platform',
                 'Subscription',

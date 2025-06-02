@@ -277,18 +277,18 @@
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="provider"
                                       title="${message(code: 'provider.label')}"/>
 
-                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="vendor"
-                                      title="${message(code: 'vendor.label')}"/>
+%{--                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="vendor"
+                                      title="${message(code: 'vendor.label')}"/>--}%
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>
 
                     <g:sortableColumn scope="col" rowspan="2" class="la-smaller-table-head" params="${params}"
                                       property="startDate"
-                                      title="${message(code: 'default.startDate.label.shy')}"/>
+                                      title="${message(code: 'subscription.start.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
-                                      title="${message(code: 'subscription.manualCancellationDate.label.shy')}"/>
+                                      title="${message(code: 'subscription.manualCancellation.label')}"/>
 
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
@@ -344,8 +344,10 @@
                                       property="offerRequested"
                                       title="${message(code: 'subscription.offerRequested.table.th')}"/>
 
-                    <th scope="col" rowspan="2" class="center aligned two wide">
-                        ${message(code: 'subscriptionsManagement.documents')}
+                    <th scope="col" rowspan="2" class="center aligned four wide">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center">
+                            <i class="${Icon.DOCUMENT} large"></i>
+                        </a>
                     </th>
 
                     <g:sortableColumn scope="col" rowspan="2" params="${params}" property="offerAccepted"
@@ -358,17 +360,20 @@
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSent"
                                       title="${message(code: 'subscription.renewalSent.table.th')}"/>
-                    <th scope="col" rowspan="2" class="center aligned two wide">
-                        ${message(code: 'subscriptionsManagement.documents')}
+                    <th scope="col" rowspan="2" class="center aligned four wide">
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center">
+                            <i class="${Icon.DOCUMENT} large"></i>
+                        </a>
                     </th>%{-- Documents--}%
+
                     <th scope="col" rowspan="2" class="center aligned two wide">
-                      <g:message code="default.change.label"/>
+                        <i class="la-popup-tooltip exchange alternate icon" data-content="<g:message code="default.change.label"/>"></i>
                     </th>
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
                                       property="endDate"
-                                      title="${message(code: 'default.endDate.label.shy')}"/>
+                                      title="${message(code: 'subscription.end.label')}"/>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
@@ -400,7 +405,7 @@
                                 </g:link><br/>
                             </g:each>
                         </td>
-                        <td>
+%{--                        <td>
                             <g:each in="${s.vendors}" var="vendor">
                                 <g:link controller="vendor" action="show" id="${vendor.id}">
                                     ${fieldValue(bean: vendor, field: "name")}
@@ -410,7 +415,7 @@
                                     </g:if> (${message(code: 'vendor.label')})
                                 </g:link><br/>
                             </g:each>
-                        </td>
+                        </td>--}%
                         <td>
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
@@ -455,10 +460,14 @@
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
-                                            <div class="eleven wide column la-column-right-lessPadding">
-                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                 showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <i class="large icons">
+                                                    <i class="${Icon.DOCUMENT} grey"></i>
+                                                    <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                     showTooltip="true"/>
+                                                </i>
+
+%{--                                                <g:set var="supportedMimeType"
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
@@ -466,14 +475,14 @@
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                </g:else>
+                                                </g:else>--}%
                                                %{-- <g:if test="${docctx.getDocType()}">
                                                     (${docctx.getDocType().getI10n("value")})
                                                 </g:if>--}%
 
                                             </div>
 
-                                            <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+                                            <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
@@ -668,10 +677,13 @@
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
-                                            <div class="eleven wide column la-column-right-lessPadding">
-                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                 showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <i class="large icons">
+                                                    <i class="${Icon.DOCUMENT} grey"></i>
+                                                    <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                     showTooltip="true"/>
+                                                </i>
+%{--                                                <g:set var="supportedMimeType"
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
@@ -679,13 +691,13 @@
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                </g:else>
+                                                </g:else>--}%
                                                %{-- <g:if test="${docctx.getDocType()}">
                                                     (${docctx.getDocType().getI10n("value")})
                                                 </g:if>--}%
                                             </div>
 
-                                            <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+                                            <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
@@ -735,7 +747,7 @@
 
                         <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToContactInformationAfterRenewalDoc(s) : 0}"/>
 
-                        <td class="${surveyConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <td class="${surveyConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''} center aligned">
                             <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                                 <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                         params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id, modalText: message(code: 'renewalEvaluation.exportRenewal')]">
@@ -777,7 +789,7 @@
 
 <g:if test="${editable}">
     <laser:render template="/templates/documents/modal"
-                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription', showNoName: true]}"/>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
