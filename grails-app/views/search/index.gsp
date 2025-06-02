@@ -191,7 +191,6 @@
                                                     ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
                                                 <g:elseif test="${facet.key == 'status_en'}">
-                                                    ${v.display}
                                                     ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
                                                 <g:else>
@@ -363,7 +362,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.provider')}">
-                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                        <i class="circular icon red broadcast tower"></i>
                                     </span>
 
                                     <g:link controller="provider" action="show" id="${object.dbId}">${object.name}</g:link>
@@ -647,7 +646,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.vendor')}">
-                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                        <i class="circular icon green handshake"></i>
                                     </span>
 
                                     <g:link controller="vendor" action="show" id="${object.dbId}">${object.name}</g:link>
@@ -789,7 +788,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        Subscription<i class="circular la-subscription icon"></i>
+                                        <i class="circular la-subscription icon"></i>
                                     </span>
 
                                     <g:link controller="${object.objectClassName}" action="show" id="${object.objectId}">${object.name}</g:link>

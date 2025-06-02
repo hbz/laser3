@@ -336,7 +336,7 @@ class ESSearchService{
     if(params.status_en){
       if(sw.toString()) sw.write(" AND ")
 
-      sw.write(" status.value_en:\"${params.status}\" ")
+      sw.write(" status_en:\"${params.status_en}\" ")
     }
 
     if(!params.showDeleted)
