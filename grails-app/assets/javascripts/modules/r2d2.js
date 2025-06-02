@@ -985,6 +985,26 @@ r2d2 = {
             var gostObject = $(this).next('.js-gost');
             _buildConfirmationModal(gostObject[0]);
         });
+
+
+        // new X components - do NOT modify
+
+        $('.x-toggle > .toggle').checkbox({
+            onChecked : function() {
+                jQuery.ajax({
+                    type:   'POST',
+                    url:    '/ajax/genericSetData',
+                    data:   { name: $(this).data('name'), value: 'de.laser.RefdataValue:1', pk: $(this).data('pk') }
+                })
+            },
+            onUnchecked : function() {
+                jQuery.ajax({
+                    type:   'POST',
+                    url:    '/ajax/genericSetData',
+                    data:   { name: $(this).data('name'), value: 'de.laser.RefdataValue:2', pk: $(this).data('pk') }
+                })
+            }
+        })
     },
 
 
