@@ -284,7 +284,7 @@
                         </div>
 
                         <div class="four fields">
-                            <g:if test="${parentSuccessorSubscription && auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
+                            <g:if test="${parentSuccessorSubscription && !auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
                                 <div class="field">
                                     <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection"
                                                from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id"
