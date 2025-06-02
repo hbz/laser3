@@ -3094,7 +3094,7 @@ class SurveyService {
         }
     }
 
-    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null) {
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null, SurveyConfigSubscription surveyConfigSubscription = null) {
         Map<String, Object> result = [:]
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
@@ -3139,7 +3139,10 @@ class SurveyService {
                                         CostItem ci
                                         if(pkg){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, pickedElement, pkg)
-                                        }else {
+                                        }else if(subscription){
+                                            ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, pickedElement, surveyConfigSubscription)
+                                        }
+                                        else {
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, pickedElement)
                                         }
 

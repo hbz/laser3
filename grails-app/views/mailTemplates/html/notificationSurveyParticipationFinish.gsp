@@ -36,7 +36,7 @@
 <g:set var="language"
        value="${user && user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)) ? user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString() : 'de'}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
-<g:set var="surveyUrl" value="${"myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
+<g:set var="surveyUrl" value="${"/myInstitution/surveyInfos/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
 
 <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(survey.surveyConfigs[0], org)}"/>
 

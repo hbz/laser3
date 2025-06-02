@@ -39,7 +39,7 @@
                 <g:set var="sumCostItems" value="${sumCostItems + ctByCostItemElement.value.size()}"/>
                 <tr>
                     <td>${i + 1}</td>
-                    <td>${costItemsBySubscription.subscription.name}</td>
+                    <td>${costItemsBySubscription.subscription.getLabel()}</td>
                     <td>${costItemElement.getI10n('value')}</td>
                     <td>${ctByCostItemElement.value.size()}</td>
                     <td><g:formatNumber number="${sumCostInBillingCurrencyByElement}" minFractionDigits="2"

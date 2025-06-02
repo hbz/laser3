@@ -40,7 +40,6 @@ googleSiteVerificationToken = 'token'
 grails.mail.disabled        = true
 grails.mail.default.from    = 'laser@localhost'
 grails.mail.overrideAddress = 'laser@localhost'
-grails.mail.port            = 30 // ONLY local
 
 grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
 grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run' // pdf generation; ONLY server

@@ -7,10 +7,6 @@
         <ui:crumb text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" class="active"/>
     </ui:breadcrumbs>
 
-  <ui:controlButtons>
-      <laser:render template="actions"/>
-  </ui:controlButtons>
-
     <ui:h1HeaderWithIcon text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" total="${packageInstanceTotal}" floated="true" />
 
     <ui:messages data="${flash}" />
@@ -63,7 +59,9 @@
                             <g:link action="show" id="${packageInstance.id}">${packageInstance.name}</g:link>
                         </td>
                         <td>
-                            <g:link controller="provider" action="show" id="${packageInstance.provider.id}">${packageInstance.provider.name}</g:link> <br />
+                            <g:if test="${packageInstance.provider}">
+                                <g:link controller="provider" action="show" id="${packageInstance.provider.id}">${packageInstance.provider.name}</g:link>
+                            </g:if>
                         </td>
                         <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ')}"/></td>
                         <td><g:formatDate date="${packageInstance.lastUpdated}" format="${message(code:'default.date.format.noZ')}"/></td>

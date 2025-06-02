@@ -429,18 +429,6 @@
 
                                 </div>
 
-                                <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
-
-                                    <div class="ui card">
-                                        <laser:render template="/survey/linksProviderOrLicense"
-                                                      model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig: surveyConfig]"/>
-                                    </div>
-
-                                    <div class="ui card">
-                                        <laser:render template="/survey/linksProviderOrLicense"
-                                                      model="[linkType: 'Provider', surveyInfo: surveyInfo, editable: editable, surveyConfig: surveyConfig]"/>
-                                    </div>
-                                </g:if>
 
                               %{--  <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
                                     <laser:render template="/templates/survey/costsGeneralSurvey"/>
@@ -453,6 +441,19 @@
 
                             <aside class="five wide column la-sidekick">
                                 <div class="ui one cards">
+
+                                    <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
+
+                                        <div class="ui card">
+                                            <laser:render template="/survey/linksProviderOrLicense"
+                                                          model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig: surveyConfig]"/>
+                                        </div>
+
+                                        <div class="ui card">
+                                            <laser:render template="/survey/linksProviderOrLicense"
+                                                          model="[linkType: 'Provider', surveyInfo: surveyInfo, editable: editable, surveyConfig: surveyConfig]"/>
+                                        </div>
+                                    </g:if>
 
                                     <div id="container-links">
                                         <laser:render template="/survey/surveyLinkCard"/>

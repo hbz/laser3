@@ -3,7 +3,7 @@ package de.laser.cache
 import de.laser.CacheService
 import de.laser.storage.BeanStore
 import groovy.transform.CompileStatic
-import net.sf.ehcache.Cache
+import org.ehcache.Cache
 
 /**
  * Helper class to wrap the cache access methods
@@ -16,7 +16,7 @@ class EhcacheWrapper {
 
     CacheService cacheService = BeanStore.getCacheService()
 
-    private Cache cache // net.sf.ehcache.Cache
+    private Cache cache // org.ehcache.Cache
     private String keyPrefix
 
     /**
@@ -43,7 +43,7 @@ class EhcacheWrapper {
      * @return a list of keys matching with the cache key prefix and a separator character, i.e. which have been set up by the app
      */
     List getKeys() {
-        cache.getKeys().findAll{ it.toString().startsWith(keyPrefix + SEPARATOR) }
+        cacheService.getKeys(cache).findAll{ it.toString().startsWith(keyPrefix + SEPARATOR) }
     }
 
     /**
@@ -78,6 +78,6 @@ class EhcacheWrapper {
      * @param cache the cache which should be cleared
      */
     def clear() {
-        cacheService.clear(cache)
+        cacheService.clear(cache) // TODO: only keyPrefix?
     }
 }

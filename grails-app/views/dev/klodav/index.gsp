@@ -178,72 +178,58 @@
     <div class="content">
         <div class="ui list">
             <div class="item">
-                <icon:placeholder/>
-                <div class="content"> &lt;icon:placeholder/> </div>
+                <icon:placeholder/> <span class="content"> &lt;icon:placeholder/> </span>
             </div>
             <div class="item">
-                <icon:arrow/>
-                <div class="content"> &lt;icon:arrow/> </div>
+                <icon:arrow/> <span class="content"> &lt;icon:arrow/> </span>
             </div>
             <div class="item">
-                <icon:pointingHand/>
-                <div class="content"> &lt;icon:pointingHand/> </div>
+                <icon:pointingHand/> <span class="content"> &lt;icon:pointingHand/> </span>
             </div>
             <div class="item">
-                <icon:bug/>
-                <div class="content"> &lt;icon:bug/> </div>
+                <icon:sort/> <span class="content"> &lt;icon:sort/> </span>
             </div>
             <div class="item">
-                <icon:database/>
-                <div class="content"> &lt;icon:database/> </div>
+                <icon:bug/> <span class="content"> &lt;icon:bug/> </span>
             </div>
             <div class="item">
-                <icon:pathFolder/>
-                <div class="content"> &lt;icon:pathFolder/> </div>
+                <icon:database/> <span class="content"> &lt;icon:database/> </span>
             </div>
             <div class="item">
-                <icon:pathFile/>
-                <div class="content"> &lt;icon:pathFile/> </div>
+                <icon:pathFolder/> <span class="content"> &lt;icon:pathFolder/> </span>
             </div>
             <div class="item">
-                <icon:codePackage/>
-                <div class="content"> &lt;icon:codePackage/> </div>
+                <icon:pathFile/> <span class="content"> &lt;icon:pathFile/> </span>
             </div>
             <div class="item">
-                <icon:codeClass/>
-                <div class="content"> &lt;icon:codeClass/> </div>
+                <icon:codePackage/> <span class="content"> &lt;icon:codePackage/> </span>
             </div>
             <div class="item">
-                <icon:universalAccess/>
-                <div class="content"> &lt;icon:universalAccess/> </div>
+                <icon:codeClass/> <span class="content"> &lt;icon:codeClass/> </span>
             </div>
             <div class="item">
-                <icon:pdf/>
-                <div class="content"> &lt;icon:pdf/> </div>
+                <icon:universalAccess/> <span class="content"> &lt;icon:universalAccess/> </span>
             </div>
             <div class="item">
-                <icon:video/>
-                <div class="content"> &lt;icon:video/> </div>
+                <icon:pdf/> <span class="content"> &lt;icon:pdf/> </span>
             </div>
             <div class="item">
-                <icon:flag_de/>
-                <div class="content"> &lt;icon:flag_de/> </div>
+                <icon:video/> <span class="content"> &lt;icon:video/> </span>
             </div>
             <div class="item">
-                <icon:flag_en/>
-                <div class="content"> &lt;icon:flag_en/> </div>
+                <icon:flag_de/> <span class="content"> &lt;icon:flag_de/> </span>
             </div>
             <div class="item">
-                <icon:help_chrome/>
-                <div class="content"> &lt;icon:help_chrome/> </div>
+                <icon:flag_en/> <span class="content"> &lt;icon:flag_en/> </span>
             </div>
             <div class="item">
-                <icon:help_firefox/>
-                <div class="content"> &lt;icon:help_firefox/> </div>
+                <icon:help_chrome/> <span class="content"> &lt;icon:help_chrome/> </span>
             </div>
             <div class="item">
-                <icon:help_ie/>
-                <div class="content"> &lt;icon:help_ie/> </div>
+                <icon:help_firefox/> <span class="content"> &lt;icon:help_firefox/> </span>
+            </div>
+            <div class="item">
+                <icon:help_ie/> <span class="content"> &lt;icon:help_ie/> </span>
             </div>
         </div>
     </div>
