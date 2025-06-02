@@ -1,12 +1,12 @@
 <%@ page import="de.laser.UserSetting; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground: New Buttons" />
+<laser:htmlStart text="Playground: New xTagLib" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.devDocs" controller="dev" action="index"/>
-    <ui:crumb text="Core Components" class="active"/>
+    <ui:crumb text="Playground" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="Components" type="dev"/>
+<ui:h1HeaderWithIcon text="Playground" type="dev"/>
 
 <g:render template="klodav/nav" />
 
