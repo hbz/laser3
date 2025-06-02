@@ -39,7 +39,7 @@
     <g:render template="/survey/subscriptionTableForOwner" model="[tmplShowCheckbox: editable]"/>
 
 
-    <g:if test="${editable}">
+    <g:if test="${editable && num_sub_rows}">
         <br>
 
         <div class="field">

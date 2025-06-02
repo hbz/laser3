@@ -82,9 +82,9 @@
                         </g:if>
                         <g:else>
                             <ui:actionsDropdownItemDisabled message="surveyCostItems.createInitialCostItem"
-                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
+                                                            tooltip="${message(code: 'surveySubscriptions.addCosts.disable')}"/>
                             <ui:actionsDropdownItemDisabled message="menu.institutions.financeImport"
-                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
+                                                            tooltip="${message(code: 'surveySubscriptions.addCosts.disable')}"/>
                         </g:else>
                         <g:if test="${assignedCostItemElements && assignedSubscriptions}">
                             <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment"
