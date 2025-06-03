@@ -758,6 +758,92 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_surveys() RETURNS VOID AS $$
+DECLARE
+    count_survey_config INT;
+    count_survey_info INT;
+    count_survey_org INT;
+    count_survey_package_result INT;
+    count_survey_result INT;
+    count_survey_subscription_result INT;
+    count_survey_url INT;
+    count_survey_vendor_result INT;
+BEGIN
+    UPDATE survey_config SET
+        surconf_comment                         = pg_temp.anon_lorem(surconf_comment),
+        surconf_internal_comment                = pg_temp.anon_lorem(surconf_internal_comment),
+        surconf_comment_for_new_participants    = pg_temp.anon_lorem(surconf_comment_for_new_participants, 2)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_config = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_config (surconf_comment, surconf_internal_comment, surconf_comment_for_new_participants)', count_survey_config);
+
+    UPDATE survey_info SET
+        surin_comment = pg_temp.anon_lorem(surin_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_info = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_info (surin_comment)', count_survey_info);
+
+    UPDATE survey_org SET
+        surorg_owner_comment    = pg_temp.anon_lorem(surorg_owner_comment),
+        surorg_pricecomment     = pg_temp.anon_lorem(surorg_pricecomment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_org = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_org (surorg_owner_comment, surorg_pricecomment)', count_survey_org);
+
+    UPDATE survey_package_result SET
+        surpkgre_comment                = pg_temp.anon_lorem(surpkgre_comment),
+        surpkgre_owner_comment          = pg_temp.anon_lorem(surpkgre_owner_comment),
+        surpkgre_participant_comment    = pg_temp.anon_lorem(surpkgre_participant_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_package_result = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_package_result (surpkgre_comment, surpkgre_owner_comment, surpkgre_participant_comment)', count_survey_package_result);
+
+    UPDATE survey_result SET
+        surre_note                  = pg_temp.anon_lorem(surre_note),
+        surre_string_value          = pg_temp.anon_phrase(surre_string_value, concat(surre_id, ', ', to_char(surre_date_created, 'DD.MM.YYYY'), ', ', surre_is_public)),
+        surre_url_value             = pg_temp.anon_url(surre_url_value),
+        surre_long_value            = pg_temp.anon_bigint(surre_long_value),
+        surre_dec_value             = pg_temp.anon_numeric(surre_dec_value),
+        surre_comment               = pg_temp.anon_lorem(surre_comment),
+        surre_participant_comment   = pg_temp.anon_lorem(surre_participant_comment),
+        surre_owner_comment         = pg_temp.anon_lorem(surre_owner_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_result = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_result (surre_note, surre_string_value, surre_url_value, surre_long_value, surre_dec_value, surre_comment, surre_participant_comment, surre_owner_comment)', count_survey_result);
+
+    UPDATE survey_subscription_result SET
+        sursubre_comment                = pg_temp.anon_lorem(sursubre_comment),
+        sursubre_owner_comment          = pg_temp.anon_lorem(sursubre_owner_comment),
+        sursubre_participant_comment    = pg_temp.anon_lorem(sursubre_participant_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_subscription_result = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_subscription_result (sursubre_comment, sursubre_owner_comment, sursubre_participant_comment)', count_survey_subscription_result);
+
+    UPDATE survey_url SET
+       surur_url_comment = pg_temp.anon_lorem(surur_url_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_url = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_url (surur_url_comment)', count_survey_url);
+
+    UPDATE survey_vendor_result SET
+        survenre_comment                = pg_temp.anon_lorem(survenre_comment),
+        survenre_owner_comment          = pg_temp.anon_lorem(survenre_owner_comment),
+        survenre_participant_comment    = pg_temp.anon_lorem(survenre_participant_comment)
+    WHERE false;
+
+    GET DIAGNOSTICS count_survey_vendor_result = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_vendor_result (survenre_comment, survenre_owner_comment, survenre_participant_comment)', count_survey_vendor_result);
+
+END;
+$$ LANGUAGE PLPGSQL;
+
 -- la functions: deletion
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_delete_mails() RETURNS VOID AS $$
