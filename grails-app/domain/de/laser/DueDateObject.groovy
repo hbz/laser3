@@ -74,10 +74,20 @@ class DueDateObject {
 //                this.propertyOID = "${object.class.name}:${object.id}"
 //            }
 //            else {
-//                log.warn 'DueDateObject.create( ' + object + ' ) FAILED'
+//                log.warn 'DueDateObject.create( ' + object + ' ) > new matching strategy failed'
 //            }
 //        }
     }
+
+//    static belongsTo = [
+//            license: License,
+//            org: Org,
+//            provider: Provider,
+//            subscription: Subscription,
+//            surveyInfo: SurveyInfo,
+//            task: Task,
+//            vendor: Vendor
+//    ]
 
     static mapping = {
         id                      column: 'ddo_id'
