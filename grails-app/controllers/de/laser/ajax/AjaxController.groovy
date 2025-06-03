@@ -252,7 +252,7 @@ class AjaxController {
                                 Map<String, Object> configMap = [sub: sub, value: value]
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
-                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && SubscriptionPackage.countBySubscription(sub) > 0) {
                                     if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id) && !subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
                                         if(subChildIDs) {
                                             executorService.execute({

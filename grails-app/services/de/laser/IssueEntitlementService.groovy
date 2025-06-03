@@ -73,6 +73,11 @@ class IssueEntitlementService {
         [currentIECounts: currentIECounts, plannedIECounts: plannedIECounts, expiredIECounts: expiredIECounts, deletedIECounts: deletedIECounts, allIECounts: allIECounts]
     }
 
+    int getCurrentIssueEntitlementCountOfPackage(SubscriptionPackage sp){
+        Subscription targetSubscription = getTargetSubscription(sp.subscription)
+        IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status = :current', [sub: targetSubscription, pkg: sp.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0]
+    }
+
     Map<String, Object> getKeys(Map configMap) {
         Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
