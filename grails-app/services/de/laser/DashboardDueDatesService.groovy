@@ -31,7 +31,7 @@ import org.springframework.context.MessageSource
 //@Transactional
 class DashboardDueDatesService {
 
-    QueryService queryService
+    DueObjectsService dueObjectsService
     MailService mailService
     LinkGenerator grailsLinkGenerator
     GenericOIDService genericOIDService
@@ -140,7 +140,7 @@ class DashboardDueDatesService {
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             if (user.formalOrg) {
-                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user)
+                List dueObjects = dueObjectsService.getDueObjectsByUserSettings(user)
                 dueObjects.each { obj ->
                     String attributeName = DashboardDueDate.getAttributeName(obj, user)
                     String oid = genericOIDService.getOID(obj)
