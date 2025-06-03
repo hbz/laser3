@@ -89,7 +89,7 @@ class SearchController  {
         result.flagContentElasticsearch = true // ESSearchService.search
 
         params.max = 20
-        params.status_en = "\"${RDStore.SUBSCRIPTION_CURRENT.value_en}\""
+        params.status_en = "${RDStore.SUBSCRIPTION_CURRENT.value_en}"
 
         if (!query) {
             return result
