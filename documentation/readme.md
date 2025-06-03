@@ -10,7 +10,7 @@
 - Ehcache 3.10.8
 - Elasticsearch 7.17.28
 - Logback 1.2.12
-- Gradle 8.13
+- Gradle 8.14.1
 - Groovy 3.0.23
 - Java 17
 - PostgreSQL 16+
