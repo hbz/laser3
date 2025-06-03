@@ -128,12 +128,12 @@ class BootStrapService {
             //return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
-        log.debug(".__                                .________ ")
-        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_" + AppUtils.getMeta('info.app.grailsVersion'))
-        log.debug("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
-        log.debug("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
-        log.debug("|_____ (____  /____  >\\___  >__|    /______  / ")
-        log.debug("      \\/    \\/     \\/     \\/               \\/ ")
+        log.info(".__                                .________ ")
+        log.info("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_" + AppUtils.getMeta('info.app.grailsVersion'))
+        log.info("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
+        log.info("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
+        log.info("|_____ (____  /____  >\\___  >__|    /______  / ")
+        log.info("      \\/    \\/     \\/     \\/               \\/ ")
     }
 
     /**
