@@ -23,7 +23,7 @@
                                     <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                                     <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                                     <br>
-                                    ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
+                                    ${issueEntitlementService.getCurrentIssueEntitlementCountOfPackage(sp)} <g:message code="subscription.packages.currentTitles"/>
                                 </div>
 
                                 <div class="seven wide right aligned column">
@@ -66,7 +66,7 @@
                                             String unlinkDisabled = '', unlinkDisabledTooltip = null, unlinkTitlesDisabled = '', unlinkTitlesDisabledTooltip = null
                                             Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: contextService.getOrg()])
                                             if(showConsortiaFunctions) {
-                                                if(auditService.getAuditConfig(subscription, 'holdingSelection')) {
+                                                if(subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                                                     unlinkTitlesDisabled = 'disabled'
                                                     unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
                                                 }
@@ -81,7 +81,10 @@
                                                 //cover also local subscriptions!
                                                 if(subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || (subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection'))) {
                                                     unlinkTitlesDisabled = 'disabled'
-                                                    unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
+                                                    if(subscription.instanceOf)
+                                                        unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingConsortium")
+                                                    else
+                                                        unlinkTitlesDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")
                                                 }
                                                 if(blockingCostItems) {
                                                     unlinkDisabled = 'disabled'
@@ -123,7 +126,7 @@
                                                     <div class="ui simple dropdown clearable negative icon button la-modern-button la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.unlinkInfo.onlyIE')}">
                                                         <i aria-hidden="true" class="${Icon.CMD.ERASE}"></i>
                                                         <div class="menu">
-                                                            <g:if test="${!auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
+                                                            <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
                                                                 <g:link controller="subscription" action="unlinkPackage" class="${btnTitleClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                                         data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
                                                                     <g:message code="subscriptionsManagement.unlinkInfo.titlesParentOnly"/>
@@ -156,7 +159,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
-                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingConsortium")}">
                                                             <g:link controller="subscription"
                                                                     action="unlinkPackage"
                                                                     params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}"
@@ -201,7 +204,7 @@
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE || auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
-                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingEntire")}">
+                                                        <span class="la-popup-tooltip" data-content="${message(code: "subscriptionsManagement.unlinkInfo.blockingHoldingConsortium")}">
                                                             <g:link controller="subscription"
                                                                     action="unlinkPackage"
                                                                     params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}"

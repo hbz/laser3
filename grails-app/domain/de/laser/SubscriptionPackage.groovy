@@ -123,15 +123,6 @@ class SubscriptionPackage implements Comparable {
   }
 
   /**
-   * Counts the issue entitlements with status current of this subscription in the given package which have not been marked as deleted
-   * @return the count of {@link IssueEntitlement}s of the holding which is not marked as deleted
-   */
-  @Deprecated
-  int getCurrentIssueEntitlementCountOfPackage(){
-    IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status = :current', [sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0]
-  }
-
-  /**
    * Retrieves the current titles of the global level of the given package - this method is NOT delivering the current holding of the subscription!
    * @return a {@link Set} of {@link de.laser.wekb.TitleInstancePackagePlatform}s in the subscribed package (on global level!)
    */
