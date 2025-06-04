@@ -363,7 +363,7 @@ class MailSendService {
     void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.error 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
+            log.warn 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String replyToMail
@@ -460,7 +460,7 @@ class MailSendService {
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.error 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
+            log.warn 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -553,7 +553,7 @@ class MailSendService {
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.error 'emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
+            log.warn 'emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -668,7 +668,7 @@ class MailSendService {
     void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.error 'sendSystemAnnouncementMail failed due grails.mail.disabled = true'
+            log.warn 'sendSystemAnnouncementMail failed due grails.mail.disabled = true'
             return
         }
 
@@ -724,7 +724,7 @@ class MailSendService {
     void sendMailToUser(User user, String subj, String view, Map model) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.error 'sendMailToUser failed due grails.mail.disabled = true'
+            log.warn 'sendMailToUser failed due grails.mail.disabled = true'
             return
         }
         if(user.enabled && !user.accountExpired) {
