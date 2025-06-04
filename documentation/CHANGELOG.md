@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6326    04.06.2025  rc-3.5  3.5         David   Feature     NatHosting löschen
+
+6636    04.06.2025  rc-3.5  3.5         Andreas Bug         Anmerkungen zu Nutzerzahlen wurden nicht gespeichert
+
+6633    04.06.2025  rc-3.5  3.5         Andreas Bug         Abfrage zur Ausgabe von Kosteninformationen überbrückt
+
+6628    04.06.2025  rc-3.5  3.5         Andreas Feature     Anpassung der Texte in EZB-Identifikator-Namensräumen
+
 6635    30.05.2025  rc-3.5  3.5         David   Bug         Insight-Mails werden nicht mehr verschickt
 
 6331    28.05.2025  dev     3.6         David   Feature     Mail-Plugin upgraden

@@ -17,7 +17,7 @@ class LogoutController {
 	 * Index action. Redirects to the Spring security logout uri.
 	 */
 	def index = {
-		log.debug( '+ Logout ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
+		log.info( '+ Logout ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
 
 		// any pre-logout code here
 		SystemActivityProfiler.removeActiveUser(contextService.getUser())

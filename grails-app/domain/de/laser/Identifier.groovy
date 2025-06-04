@@ -492,4 +492,41 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         return [leitID1: leitID1, leitID2: leitID2, leitID3: leitID3]
     }
+
+    /**
+     * Gets the Peppol-Receiver-ID parts (an identifier mandatory for peppol system) for an org. A Peppol-Receiver-ID is composed by prefix 0204 and Leitweg-ID:
+     * <ol>
+     *     <li>coarse addressing (numeric, 2-12 digits)</li>
+     *     <li>fine addressing (alphanumeric, up to 30 digits)</li>
+     *     <li>check digit (numeric, 2 digits)</li>
+     * </ol>
+     * @return the {@link Map} reflecting the three parts of the Leitweg-ID
+     */
+    Map getPeppolReceiverID(){
+        String prefix
+        String leitID1
+        String leitID2
+        String leitID3
+        if(this.value){
+            List peppolID = this.value.split(':')
+            if(peppolID.size() > 1) {
+                prefix = peppolID[0]
+                List leitID = peppolID[1].split('-')
+
+                if (leitID.size() == 2) {
+                    leitID1 = leitID[0]
+                    leitID3 = leitID[1]
+                }
+
+                if (leitID.size() == 3) {
+                    leitID1 = leitID[0]
+                    leitID2 = leitID[1]
+                    leitID3 = leitID[2]
+                }
+            }
+
+        }
+
+        return [prefix: prefix, leitID1: leitID1, leitID2: leitID2, leitID3: leitID3]
+    }
 }
