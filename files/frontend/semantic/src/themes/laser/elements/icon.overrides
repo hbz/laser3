@@ -102,7 +102,7 @@ i.icon.la-open {
 i.icon.la-thumbtack-regular {
   font-family: 'icomoon';
 }
-i.icon.la-consortia {
+i.icon.la-member {
   font-family: 'icomoon';
 }
 i.icon.la-star.slash {
@@ -186,7 +186,7 @@ i.icon.la-greater-than-equal:before { content: "\e914"; }
 /**/
 i.icon.la-open:before { content: "\e915"; }
 i.icon.la-thumbtack-regular:before { content: "\e916"; }
-i.icon.la-consortia:before { content: "\e917"; }
+i.icon.la-member:before { content: "\e917"; }
 /**/
 i.icon.la-star.slash:before { content: "\e918"; }
 i.icon.la-redo.slash:before { content: "\e919"; }

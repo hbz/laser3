@@ -209,11 +209,11 @@
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                     <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
-                        <th>${surveyProperty.getI10n('name')}
+                        <th class="center aligned">
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    <i class="${Icon.SYM.MEMBER}"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -846,11 +846,11 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                         <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
-                            <th>${surveyProperty.getI10n('name')}
+                            <th class="center aligned">
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
-                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                        <i class="${Icon.SYM.MEMBER}"></i>
                                     </span>
                                 </g:if>
                             </th>
