@@ -393,6 +393,7 @@ class YodaService {
             Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
                 ProviderRole targetPVR = null
+                def owner = null
                 if(sourceVR.subscription)
                     targetPVR = ProviderRole.findByProviderAndSubscription(targetProv, sourceVR.subscription)
                 else if(sourceVR.license)
@@ -400,26 +401,29 @@ class YodaService {
                 if(!targetPVR) {
                     log.debug("now migrating library supplier role to provider role ${j+1} out of ${rolesToMigrate.size()}")
                     targetPVR = new ProviderRole(provider: targetProv, isShared: sourceVR.isShared)
-                    targetPVR.save()
                     if(sourceVR.subscription) {
-                        Subscription s = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
-                        targetPVR.subscription = s
-                        setProcessingProperty(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
-                        if(targetPVR.isShared) {
-                            s.updateShare(targetPVR)
-                        }
+                        owner = GrailsHibernateUtil.unwrapIfProxy(sourceVR.subscription)
+                        targetPVR.subscription = owner
                     }
                     else if(sourceVR.license) {
-                        License l = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
-                        targetPVR.license = l
-                        setProcessingProperty(l, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                        owner = GrailsHibernateUtil.unwrapIfProxy(sourceVR.license)
+                        targetPVR.license = owner
+                    }
+                    if(owner) {
+                        targetPVR.save()
                         if(targetPVR.isShared) {
-                            l.updateShare(targetPVR)
+                            owner.updateShare(targetPVR)
                         }
                     }
                 }
                 else {
                     log.debug("library supplier role ${j+1} out of ${rolesToMigrate.size()} already existing as provider role")
+                }
+                if(targetPVR.subscription) {
+                    setProcessingProperty(targetPVR.subscription, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                }
+                else if(targetPVR.license) {
+                    setProcessingProperty(targetPVR.license, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
                 }
                 sourceVR.delete()
             }
