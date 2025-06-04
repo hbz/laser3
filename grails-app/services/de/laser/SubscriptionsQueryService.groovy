@@ -164,13 +164,14 @@ class SubscriptionsQueryService {
         }
 
         if (params.provider) {
-            if(params.provider instanceof String) {
-                base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.sortname, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.sortname, :provider) = true) ) )")
-                qry_params.put('provider', params.provider)
-            }
-            else {
+            try {
                 base_qry += (" and exists ( select pr from ProviderRole as pr where pr.subscription = s and pr.provider.id in (:provider) )")
                 qry_params.put('provider', Params.getLongList(params, 'provider'))
+            }
+            catch (NumberFormatException ignored) {
+                //deprecated part for backwards-compatibility
+                base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.sortname, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.sortname, :provider) = true) ) )")
+                qry_params.put('provider', params.provider)
             }
             filterSet = true
         }
