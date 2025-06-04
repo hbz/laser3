@@ -209,4 +209,54 @@
             <g:message code="readerNumber.noNumbersEntered"/>
         </g:else>
 
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $(".referenceGroup").dropdown({
+            clearable: true
+        });
+
+        $('.create_number').form({
+            on: 'blur',
+            inline: true,
+            fields: {
+                value: {
+                    identifier  : 'value',
+                    rules: [
+                        {
+                            type   : 'regExp',
+                            value  : /^[\d.,]+$/,
+                            prompt : '{name} <g:message code="validation.onlyDecimal" />'
+                            }
+                        ]
+                    },
+                year: {
+                    identifier : 'year',
+                    rules: [
+                        {
+                            type : 'empty',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
+                        }
+                    ]
+                },
+                semester: {
+                    identifier: 'semester',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }
+                    ]
+                },
+                referenceGroup: {
+                    identifier: 'referenceGroup',
+                    rules: [
+                        {
+                            type   : 'empty',
+                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }
+                    ]
+                }
+            }
+        });
+    </laser:script>
 <laser:htmlEnd />
