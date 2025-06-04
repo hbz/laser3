@@ -1351,6 +1351,9 @@ class SubscriptionService {
                 }
             }
         }
+        else {
+            AuditConfig.removeConfig(sub, prop)
+        }
         /*
         switch(value) {
             case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
