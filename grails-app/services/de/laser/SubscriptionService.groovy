@@ -955,8 +955,6 @@ class SubscriptionService {
         return PermanentTitle.executeQuery("select count(*) from PermanentTitle as pi where pi.subscription = :sub and pi.issueEntitlement.status != :ieStatus",[sub: subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
     }
 
-
-
     /**
      * Gets the IDs of current issue entitlements for the given subscription
      * @param subscription the subscription whose titles should be returned
@@ -1352,6 +1350,9 @@ class SubscriptionService {
                     m.save()
                 }
             }
+        }
+        else {
+            AuditConfig.removeConfig(sub, prop)
         }
         /*
         switch(value) {
