@@ -21,7 +21,7 @@ class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Transactional
     void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
-        log.debug( '+ Login failed ..... [' + SwissKnife.getRemoteHash(request) + ']' )
+        log.info( '+ Login failed ..... [' + SwissKnife.getRemoteHash(request) + ']' )
 
         if (exception instanceof BadCredentialsException) {
             try {

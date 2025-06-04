@@ -252,7 +252,7 @@ class AjaxController {
                                 Map<String, Object> configMap = [sub: sub, value: value]
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
-                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && SubscriptionPackage.countBySubscription(sub) > 0) {
                                     if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id) && !subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
                                         if(subChildIDs) {
                                             executorService.execute({
@@ -1950,8 +1950,8 @@ class AjaxController {
                     case 'readerNumber':
                         if(target_object.semester)
                             ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.semester = :semester',[org: target_object.org, semester: target_object.semester, note: params.value])
-                        else if(target_object.dueDate)
-                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
+                        else if(target_object.year)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.year = :year',[org: target_object.org, year: target_object.year, note: params.value])
                         result = params.value
                         break
                     case 'year':

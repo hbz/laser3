@@ -86,7 +86,7 @@ class ReaderNumber {
             readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndSemester(rnData.org, rnData.referenceGroup, rnData.semester)
         if(!readerNumber)
             readerNumber = new ReaderNumber(rnData)
-        readerNumber.value = new BigDecimal(configMap.value)
+        readerNumber.value = configMap.value
         if(readerNumber.save())
             readerNumber
         else {

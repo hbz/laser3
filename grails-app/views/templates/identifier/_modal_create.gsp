@@ -26,7 +26,7 @@
             </g:else>
        </div>
 
-        <div class="field ${identifier && identifier.ns.ns == IdentifierNamespace.LEIT_ID ? 'required' : ''}">
+        <div class="field ${identifier && identifier.ns.ns in [IdentifierNamespace.LEIT_ID, IdentifierNamespace.PEPPOL_RECEIVER_ID] ? 'required' : ''}">
             <label for="value">${message(code: 'default.identifier.label')}:
                 <i id="idExpl">
                     <g:if test="${identifier && identifier.ns.id in namespacesWithValidations.keySet()}">
@@ -46,6 +46,18 @@
                     <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
                 </div>
             </g:if>
+            <g:elseif test="${identifier && identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID}">
+
+                <g:set var="leitID" value="${identifier.getPeppolReceiverID()}"/>
+                <div class="ui right labeled input">
+                    <input type="text" name="praefix" value="0204:" minlength="4" maxlength="4" required disabled>
+                    <input type="text" name="leitID1" value="${leitID.leitID1}" placeholder="${message(code: 'identifier.leitID.leitID1.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="12" pattern="[0-9]{2,12}" required>
+                    <div class="ui basic label">-</div>
+                    <input type="text" name="leitID2" value="${leitID.leitID2}" placeholder="${message(code: 'identifier.leitID.leitID2.info')}" minlength="0" maxlength="30" pattern="[a-zA-Z0-9]{0,30}">
+                    <div class="ui basic label">-</div>
+                    <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
+                </div>
+            </g:elseif>
             <g:elseif test="${identifier && identifier.ns.id in namespacesWithValidations.keySet()}">
                 <input type="text" id="value" name="value" data-prompt="${message(code: "validation.${identifier.ns.ns}Match")}" value="${identifier.value == IdentifierNamespace.UNKNOWN ? '' : identifier.value}" placeholder="${message(code: "identifier.${identifier.ns.ns.replaceAll(' ', '_')}.info")}" pattern="${identifier.ns.validationRegex}" required/>
             </g:elseif>

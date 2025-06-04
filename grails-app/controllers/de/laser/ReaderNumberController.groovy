@@ -14,6 +14,8 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ReaderNumberController  {
 
+	EscapeService escapeService
+
 	/**
 	 * Creates a new reader number for the given institution
 	 * @return redirect to the updated reader number table
@@ -24,7 +26,9 @@ class ReaderNumberController  {
 	})
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
-			ReaderNumber numbersInstance = ReaderNumber.construct(params)
+			Map<String, Object> configMap = params.clone()
+			configMap.value = escapeService.parseFinancialValue(params.value)
+			ReaderNumber numbersInstance = ReaderNumber.construct(configMap)
 			if (! numbersInstance) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')]) as String
 			}

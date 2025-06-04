@@ -125,7 +125,11 @@ class ConfigMapper {
     }
 
     static def setConfig(String token, def value) {
-        log.warn 'Changing grailsApplication.config -> ' + token + ' = ' + value
+        if (token == QUARTZ_HEARTBEAT[0]) {
+            log.debug 'Changing grailsApplication.config -> ' + token + ' = ' + value
+        } else {
+            log.warn 'Changing grailsApplication.config -> ' + token + ' = ' + value
+        }
 
         Holders.grailsApplication.config.put(token, value)
     }
