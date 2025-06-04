@@ -213,7 +213,7 @@
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icon.SYM.MEMBER}"></i>
+                                    <i class="${Icon.SYM.MEMBER} large"></i>
                                 </span>
                             </g:if>
                         </th>
@@ -221,7 +221,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                     <th class="center aligned">
-                        <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE}" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
+                        <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE} large" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
@@ -254,7 +254,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                     <th class="center aligned">
-                        <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD}" data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
+                        <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD} large" data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -289,7 +289,9 @@
                 </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two center aligned">
-                <ui:optionsIcon />
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS} large"></i>
+                </span>
             </th>
         </tr>
         </thead>
@@ -850,7 +852,7 @@
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
-                                        <i class="${Icon.SYM.MEMBER}"></i>
+                                        <i class="${Icon.SYM.MEMBER} large"></i>
                                     </span>
                                 </g:if>
                             </th>
@@ -858,7 +860,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <th class="center aligned">
-                            <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE}" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
+                            <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE} large" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
@@ -891,7 +893,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                         <th class="center aligned">
-                            <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD} data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
+                            <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD} large" data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
                     </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -927,7 +929,9 @@
 
                 </g:each>
                 <th scope="col" rowspan="2" class="two center aligned">
-                    <ui:optionsIcon />
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS} large"></i>
+                    </span>
                 </th>
             </tr>
             </thead>
