@@ -88,8 +88,8 @@
                         List documentTypes
                         if(actionName == 'currentSubscriptionsTransfer'){
                             documentTypes = [RDStore.DOC_TYPE_RENEWAL, RDStore.DOC_TYPE_OFFER]
-                        }else if(actionName == 'survey') {
-                            documentTypes = [RDStore.DOC_TYPE_RENEWAL, RDStore.DOC_TYPE_OFFER]
+                        }else if(actionName == 'surveyEvaluation') {
+                            documentTypes = [RDStore.DOC_TYPE_TITLELIST]
                         }else {
                             List notAvailable = [RDStore.DOC_TYPE_NOTE,RDStore.DOC_TYPE_ANNOUNCEMENT,RDStore.DOC_TYPE_ONIXPL]
                             documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
