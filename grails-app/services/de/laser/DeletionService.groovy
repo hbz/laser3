@@ -3,6 +3,7 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
+import de.laser.dates.DashboardDueDate
 import de.laser.finance.*
 import de.laser.stats.Fact
 import de.laser.storage.RDStore

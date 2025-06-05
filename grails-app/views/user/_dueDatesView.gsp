@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.utils.SqlDateUtils; de.laser.utils.DateUtils; java.text.SimpleDateFormat; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.SqlDateUtils; de.laser.utils.DateUtils; java.text.SimpleDateFormat; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.dates.DashboardDueDate" %>
 <laser:serviceInjection />
     <g:if test="${ ! dueDates}">
         <ui:msg class="info" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>

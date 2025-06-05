@@ -1,6 +1,9 @@
-package de.laser
+package de.laser.dates
 
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.License
+import de.laser.Org
+import de.laser.Subscription
+import de.laser.Task
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyInfo
 import de.laser.wekb.Provider
@@ -24,7 +27,7 @@ class DueDateObject {
     String attribute_value_en
     Date date
     /**
-     * {@link Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link de.laser.survey.SurveyInfo}
+     * {@link de.laser.Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link de.laser.Task} or {@link de.laser.survey.SurveyInfo}
      */
     @Deprecated
     String oid
