@@ -308,22 +308,20 @@ a i.circular.la-wekb:hover {
     margin-bottom: 1em;
 }
 
-a#showSystemInfo {
-    bottom: 45px;
-    right: 10px;
-}
-
 a#showDebugInfo {
-    bottom: 45px;
-    right: 55px;
+    bottom: 10px;
+    left: 15px;
 }
 
 div#system-profiler {
     bottom: 10px;
-    right: 10px;
+    right: 15px;
+    margin: 0 !important;
 }
+
 button.la-scrollTopButton {
-  position: fixed;;
-  bottom: 88px;
-  right: 0;
+  position: fixed;
+  bottom: 45px;
+  right: 15px;
+  margin: 0 !important;
 }
