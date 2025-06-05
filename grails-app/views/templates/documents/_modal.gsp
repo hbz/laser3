@@ -38,16 +38,15 @@
         <g:set var="labelId" value="${doc?.id ?: '000'}" />
 
         <div class="inline-lists">
-            <g:if test="${!showNoName}">
-                <dl>
-                    <dt>
-                        <label for="upload_title-${labelId}">${message(code: 'template.addDocument.name')}:</label>
-                    </dt>
-                    <dd>
-                        <input type="text" id="upload_title-${labelId}" name="upload_title" value="${doc?.title}"/>
-                    </dd>
-                </dl>
-            </g:if>
+
+            <dl>
+                <dt>
+                    <label for="upload_title-${labelId}">${message(code: 'template.addDocument.name')}:</label>
+                </dt>
+                <dd>
+                    <input type="text" id="upload_title-${labelId}" name="upload_title" value="${doc?.title}"/>
+                </dd>
+            </dl>
             <g:if test="${!docctx && !doc}">
                 <dl>
                     <dt>
@@ -89,6 +88,8 @@
                         List documentTypes
                         if(actionName == 'currentSubscriptionsTransfer'){
                             documentTypes = [RDStore.DOC_TYPE_RENEWAL, RDStore.DOC_TYPE_OFFER]
+                        }else if(actionName == 'surveyEvaluation') {
+                            documentTypes = [RDStore.DOC_TYPE_TITLELIST]
                         }else {
                             List notAvailable = [RDStore.DOC_TYPE_NOTE,RDStore.DOC_TYPE_ANNOUNCEMENT,RDStore.DOC_TYPE_ONIXPL]
                             documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable

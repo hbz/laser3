@@ -89,7 +89,7 @@ class VendorController {
         ]
         List<String> queryArgs = []
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.name = params.nameContains
         }
         if(params.containsKey('venStatus')) {
@@ -321,7 +321,7 @@ class VendorController {
         Map<String, Object> result = [:]
         if ( params.proposedVendor ) {
 
-            result.vendorMatches= Vendor.executeQuery("from Vendor as v where (genfunc_filter_matcher(v.name, :searchName) = true or genfunc_filter_matcher(v.sortname, :searchName) = true) ",
+            result.vendorMatches= Vendor.executeQuery("from Vendor as v where (genfunc_filter_matcher(v.name, :searchName) = true or genfunc_filter_matcher(v.sortname, :searchName) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :searchName) = true)) ",
                     [searchName: params.proposedVendor])
         }
         result
