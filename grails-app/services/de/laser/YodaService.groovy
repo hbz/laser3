@@ -544,34 +544,38 @@ class YodaService {
                 }
                 property = new SubscriptionProperty(type: propType, owner: s, isPublic: isPublic, tenant: tenant, refValue: value, note: "")
             }
-            property.save()
-            if(isShared) {
-                if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
-                    Subscription.findAllByInstanceOf(s).each { Subscription member ->
-                        member = GrailsHibernateUtil.unwrapIfProxy(member)
-                        SubscriptionProperty existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, property)
-                        if (! existingProp) {
-                            List<SubscriptionProperty> matchingProps = SubscriptionProperty.findAllByOwnerAndTypeAndTenant(member, propType, s.getConsortium())
-                            // unbound prop found with matching type, set backref
-                            if (matchingProps) {
-                                matchingProps.each { SubscriptionProperty memberProp ->
-                                    memberProp.instanceOf = property
-                                    memberProp.isPublic = true
-                                    memberProp.save()
+            if(property.save()) {
+                if(isShared) {
+                    if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
+                        Subscription.findAllByInstanceOf(s).each { Subscription member ->
+                            member = GrailsHibernateUtil.unwrapIfProxy(member)
+                            SubscriptionProperty existingProp = SubscriptionProperty.findByOwnerAndInstanceOf(member, property)
+                            if (! existingProp) {
+                                List<SubscriptionProperty> matchingProps = SubscriptionProperty.findAllByOwnerAndTypeAndTenant(member, propType, s.getConsortium())
+                                // unbound prop found with matching type, set backref
+                                if (matchingProps) {
+                                    matchingProps.each { SubscriptionProperty memberProp ->
+                                        memberProp.instanceOf = property
+                                        memberProp.isPublic = true
+                                        memberProp.save()
+                                    }
+                                }
+                                else {
+                                    // no match found, creating new prop with backref
+                                    SubscriptionProperty newProp = new SubscriptionProperty(type: propType, owner: member, tenant: member.getConsortium(), note: "")
+                                    newProp = property.copyInto(newProp)
+                                    newProp.instanceOf = property
+                                    newProp.isPublic = true
+                                    newProp.save()
                                 }
                             }
-                            else {
-                                // no match found, creating new prop with backref
-                                SubscriptionProperty newProp = new SubscriptionProperty(type: propType, owner: member, tenant: member.getConsortium(), note: "")
-                                newProp = property.copyInto(newProp)
-                                newProp.instanceOf = property
-                                newProp.isPublic = true
-                                newProp.save()
-                            }
                         }
+                        AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
                     }
-                    AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
                 }
+            }
+            else {
+                log.error(property.getErrors().getAllErrors().toListString())
             }
         }
         else if(ownObj instanceof License) {
@@ -587,34 +591,38 @@ class YodaService {
                 }
                 property = new LicenseProperty(type: propType, owner: l, isPublic: isPublic, tenant: tenant, refValue: value, note: "")
             }
-            property.save()
-            if(isShared) {
-                if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
-                    License.findAllByInstanceOf(l).each { License member ->
-                        member = GrailsHibernateUtil.unwrapIfProxy(member)
-                        LicenseProperty existingProp = LicenseProperty.findByOwnerAndInstanceOf(member, property)
-                        if (! existingProp) {
-                            List<LicenseProperty> matchingProps = LicenseProperty.findAllByOwnerAndTypeAndTenant(member, propType, member.getLicensingConsortium())
-                            // unbound prop found with matching type, set backref
-                            if (matchingProps) {
-                                matchingProps.each { LicenseProperty memberProp ->
-                                    memberProp.instanceOf = property
-                                    memberProp.isPublic = true
-                                    memberProp.save()
+            if(property.save()) {
+                if(isShared) {
+                    if (!AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
+                        License.findAllByInstanceOf(l).each { License member ->
+                            member = GrailsHibernateUtil.unwrapIfProxy(member)
+                            LicenseProperty existingProp = LicenseProperty.findByOwnerAndInstanceOf(member, property)
+                            if (! existingProp) {
+                                List<LicenseProperty> matchingProps = LicenseProperty.findAllByOwnerAndTypeAndTenant(member, propType, member.getLicensingConsortium())
+                                // unbound prop found with matching type, set backref
+                                if (matchingProps) {
+                                    matchingProps.each { LicenseProperty memberProp ->
+                                        memberProp.instanceOf = property
+                                        memberProp.isPublic = true
+                                        memberProp.save()
+                                    }
+                                }
+                                else {
+                                    // no match found, creating new prop with backref
+                                    LicenseProperty newProp = new LicenseProperty(type: propType, owner: member, tenant: member.getLicensingConsortium(), note: "")
+                                    newProp = property.copyInto(newProp)
+                                    newProp.instanceOf = property
+                                    newProp.isPublic = true
+                                    newProp.save()
                                 }
                             }
-                            else {
-                                // no match found, creating new prop with backref
-                                LicenseProperty newProp = new LicenseProperty(type: propType, owner: member, tenant: member.getLicensingConsortium(), note: "")
-                                newProp = property.copyInto(newProp)
-                                newProp.instanceOf = property
-                                newProp.isPublic = true
-                                newProp.save()
-                            }
                         }
+                        AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
                     }
-                    AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
                 }
+            }
+            else {
+                log.error(property.getErrors().getAllErrors().toListString())
             }
         }
     }

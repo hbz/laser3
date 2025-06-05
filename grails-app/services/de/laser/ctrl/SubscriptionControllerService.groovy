@@ -602,17 +602,17 @@ class SubscriptionControllerService {
      * @param config whose cost item elements should be used for the calculation – that of the consortium or that of the institution?
      * @return a {@link Map} containing the sum for each metric and cost considered for the calculation
      */
-    Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config) {
+    Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config, RefdataValue currency) {
         Map<String, Map<String, BigDecimal>> costPerMetric = [:]
         Set<CostItem> allCostItems = []
         if(config == "own") {
             //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
-            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub in (:subs) order by ci.startDate', [ctx: statsData.contextOrg, subs: statsData.subscriptions])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :ctx and ci.sub in (:subs) and ci.billingCurrency = :currency order by ci.startDate', [ctx: statsData.contextOrg, subs: statsData.subscriptions, currency: currency])
         }
         else if(config == "consortial") {
             Org consortium = statsData.subscription.getConsortium()
             //Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
-            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub in (:subs) and ci.isVisibleForSubscriber = true order by ci.startDate', [consortium: consortium, subs: statsData.subscriptions])
+            allCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :consortium and ci.sub in (:subs) and ci.isVisibleForSubscriber = true and ci.billingCurrency = :currency order by ci.startDate', [consortium: consortium, subs: statsData.subscriptions, currency: currency])
         }
         /*
          * acceptable cases:
