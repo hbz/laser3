@@ -9,6 +9,8 @@
 
 6640    05.06.2025  rc-3.5  3.5         Andreas Feature     Alternativnamen bei der Suche mit berücksichtigt
 
+6566    05.06.2025  rc-3.5  3.5         Andreas Feature     Zahlungswährung bei Cost per Use wird jetzt berücksichtigt
+
 6636    04.06.2025  rc-3.5  3.5         Andreas Bug         Anmerkungen zu Nutzerzahlen wurden nicht gespeichert
 
 6633    04.06.2025  rc-3.5  3.5         Andreas Bug         Abfrage zur Ausgabe von Kosteninformationen überbrückt
