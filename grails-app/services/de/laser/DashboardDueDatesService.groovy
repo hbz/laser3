@@ -3,6 +3,8 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.dates.DashboardDueDate
+import de.laser.dates.DueDateObject
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
@@ -110,7 +112,7 @@ class DashboardDueDatesService {
         DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
 
             if (!genericOIDService.existsOID(it[1])) {
-                List<Long> ddd = DashboardDueDate.executeQuery('select ddd.id from DashboardDueDate ddd where ddd.dueDateObject.id = :id', [ id: it[0]])
+                List<Long> ddd = DashboardDueDate.executeQuery('select ddd.id from DashboardDueDate ddd where ddd.dueDateObject.id = :id', [id: it[0]])
                 log.debug 'remove outdated DueDateObject/DashboardDueDate: ' + it + ' <- ' + ddd
 
                 ddd.each { did ->

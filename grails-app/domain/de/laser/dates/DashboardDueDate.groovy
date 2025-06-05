@@ -1,5 +1,10 @@
-package de.laser
+package de.laser.dates
 
+import de.laser.License
+import de.laser.Org
+import de.laser.Subscription
+import de.laser.Task
+import de.laser.UserSetting
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
@@ -12,8 +17,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 
 /**
- * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link DueDateObject}
- * @see DueDateObject
+ * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link de.laser.dates.DueDateObject}
+ * @see de.laser.dates.DueDateObject
  * @see DashboardDueDatesService
  * @see de.laser.jobs.DashboardDueDatesJob
  */
@@ -28,7 +33,7 @@ class DashboardDueDate {
 
     /**
      * Refreshes the due date object
-     * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder is set up
+     * @param obj the object (of type {@link de.laser.Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link de.laser.Task} or {@link SurveyInfo} for which the reminder is set up
      */
     void update(def obj){
         withTransaction {
@@ -58,7 +63,7 @@ class DashboardDueDate {
      * @param obj the object whose due date should be retrieved
      * @param user the {@link User} for which the date should be required; needed to compare whether the reminder time is already reached
      * @return the due date of the object which may be {@link de.laser.properties.SubscriptionProperty#dateValue} (counts as well for {@link de.laser.properties.LicenseProperty#dateValue}, {@link de.laser.properties.OrgProperty#dateValue},
-     * {@link de.laser.properties.PlatformProperty#dateValue}, {@link de.laser.properties.PersonProperty#dateValue}), {@link Task#endDate}, {@link SurveyInfo#endDate}, {@link Subscription#manualCancellationDate} or {@link Subscription#endDate}
+     * {@link de.laser.properties.PlatformProperty#dateValue}, {@link de.laser.properties.PersonProperty#dateValue}), {@link de.laser.Task#endDate}, {@link SurveyInfo#endDate}, {@link de.laser.Subscription#manualCancellationDate} or {@link de.laser.Subscription#endDate}
      */
     static Date getDate(def obj, User user){
         if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.dateValue

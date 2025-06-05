@@ -12,6 +12,8 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.dates.DashboardDueDate
+import de.laser.dates.DueDateObject
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.MarkerSupport

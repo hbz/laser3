@@ -19,7 +19,7 @@ class ModalTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" role="button" aria-label="Debug Info" class="' + Btn.ICON.SECONDARY + ' la-debugInfos" data-ui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="button" aria-label="Debug-Information" class="' + Btn.ICON.SIMPLE + ' grey la-debugInfos" data-ui="modal">'
             out << '<i aria-hidden="true" class="bug icon"></i>'
             out << '</a>'
 

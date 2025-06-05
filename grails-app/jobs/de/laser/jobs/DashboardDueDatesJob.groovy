@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
 
 /**
  * This job takes care about the update and mail reminder sending of currently due dates. It is scheduled at 06:00 AM every day
- * @see de.laser.DashboardDueDate
+ * @see de.laser.dates.DashboardDueDate
  */
 @Slf4j
 class DashboardDueDatesJob extends AbstractJob {
