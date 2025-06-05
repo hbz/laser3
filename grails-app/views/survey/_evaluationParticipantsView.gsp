@@ -209,19 +209,22 @@
 
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                     <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
-                        <th class="center aligned">
+                        <th>${surveyProperty.getI10n('name')}
                             <g:if test="${surveyProperty.getI10n('expl')}">
                                 <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${surveyProperty.getI10n('expl')}">
-                                    <i class="${Icon.SYM.MEMBER} large"></i>
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
                                 </span>
                             </g:if>
                         </th>
                     </g:each>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
-                    <th class="center aligned">
-                        <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE} large" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
+                    <th>${message(code: 'surveyResult.commentOnlyForOwnerBreak')}
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
+                        </span>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
@@ -848,19 +851,22 @@
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyProperties')}">
                         <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
-                            <th class="center aligned">
+                            <th>${surveyProperty.getI10n('name')}
                                 <g:if test="${surveyProperty.getI10n('expl')}">
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${surveyProperty.getI10n('expl')}">
-                                        <i class="${Icon.SYM.MEMBER} large"></i>
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
                                     </span>
                                 </g:if>
                             </th>
                         </g:each>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
-                        <th class="center aligned">
-                            <i class="la-long-tooltip la-popup  ${Icon.SYM.NOTE} large" data-content="${message(code: 'surveyResult.commentOnlyForOwner')}-${message(code: 'surveyResult.commentOnlyForOwner.info')}"></i>
+                        <th>${message(code: 'surveyResult.commentOnlyForOwnerBreak')}
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                  data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
+                            </span>
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
