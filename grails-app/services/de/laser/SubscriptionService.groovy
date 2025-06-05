@@ -4414,25 +4414,27 @@ class SubscriptionService {
         Integer processRow = 0
         List orgList = []
         ArrayList<String> rows = stream.getText().split('\n')
-        Map<String, Integer> colMap = [customerIdCol: -1, requestorIdCol: -1]
+        Map<String, Integer> colMap = [globalUIDCol: -1, customerIdCol: -1, requestorIdCol: -1]
         //read off first line of KBART file
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
+                case "las:er-uuid": colMap.globalUIDCol = c
+                    break
                 case "customer id": colMap.customerIdCol = c
                     break
                 case ["requestor id", "api-key"]: colMap.requestorIdCol = c
                     break
             }
         }
-        rows.eachWithIndex { row, int i ->
+        rows.eachWithIndex { String row, int i ->
             processRow++
             log.debug("now processing row ${i}")
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 CustomerIdentifier match = null
-                if (colMap.customerIdCol >= 0 && cols[colMap.customerIdCol] != null && !cols[colMap.customerIdCol].trim().isEmpty()) {
-                    List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci where ci.value = :value and ci.platform = :platform', [value: cols[colMap.customerIdCol].trim(), platform: platform])
+                if (colMap.globalUIDCol >= 0 && cols[colMap.globalUIDCol] != null && !cols[colMap.globalUIDCol].trim().isEmpty()) {
+                    List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.customer o where o.globalUID = :globalUID and ci.platform = :platform', [globalUID: cols[colMap.globalUIDCol].trim(), platform: platform])
                     if (matchList.size() == 1)
                         match = matchList[0] as CustomerIdentifier
                 }
@@ -4440,13 +4442,16 @@ class SubscriptionService {
                 if (match) {
                     processCount++
                     Map orgMap = [orgId: match.customer.id]
+                    if (colMap.customerIdCol > -1 && cols[colMap.customerIdCol] && cols[colMap.customerIdCol].trim()) {
+                        match.value = cols[colMap.customerIdCol].trim()
+                    }
                     if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
                         match.requestorKey = cols[colMap.requestorIdCol].trim()
-                        match.save()
                     }
+                    match.save()
                     orgList << orgMap
-
-                } else {
+                }
+                else {
                     wrongOrgs << i+2
                 }
             }else{
