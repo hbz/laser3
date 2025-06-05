@@ -15,6 +15,8 @@
 
 6628    04.06.2025  rc-3.5  3.5         Andreas Feature     Anpassung der Texte in EZB-Identifikator-Namensräumen
 
+6326    04.06.2025  rc-3.5  3.5         David   Feature     NatHosting löschen
+
 6635    30.05.2025  rc-3.5  3.5         David   Bug         Insight-Mails werden nicht mehr verschickt
 
 6598    27.05.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen in der Lizenzverwaltung

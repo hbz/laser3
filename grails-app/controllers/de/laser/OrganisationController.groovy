@@ -469,6 +469,8 @@ class OrganisationController  {
         nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
         if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
             nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.PEPPOL_RECEIVER_ID) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.PEPPOL_RECEIVER_ID)
 
         Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
 
@@ -627,6 +629,38 @@ class OrganisationController  {
             }
 
             params.value = leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
+        }
+
+        if(identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID && params.leitID1 && params.leitID3){
+            String leitID1
+            String leitID2
+            String leitID3
+
+            if(params.leitID1 ==~ /[0-9]{2,12}/) {
+                leitID1 = params.leitID1
+            }else{
+                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID1.info')]) as String
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            if(params.leitID2 ==~ /[a-zA-Z0-9]{0,30}/) {
+                leitID2 = params.leitID2
+            }else{
+                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID2.info')]) as String
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            if(params.leitID3 ==~ /[0-9]{2,2}/) {
+                leitID3 = params.leitID3
+            }else{
+                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID3.info')]) as String
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            params.value = '0204:'+leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
         }
 
         if ( ! params.value){
