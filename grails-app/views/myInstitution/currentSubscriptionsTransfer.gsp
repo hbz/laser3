@@ -789,7 +789,7 @@
 
 <g:if test="${editable}">
     <laser:render template="/templates/documents/modal"
-                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription', showNoName: true]}"/>
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
