@@ -964,7 +964,7 @@ class MyInstitutionController  {
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true or exists(select a from p.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.name = params.nameContains
         }
         if(params.containsKey('provStatus')) {
@@ -1180,7 +1180,7 @@ class MyInstitutionController  {
         else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
         Set<String> queryArgs = []
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.put('name', params.nameContains)
         }
         if(params.containsKey('qp_supportedLibrarySystems')) {
