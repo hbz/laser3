@@ -10,8 +10,9 @@
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
 </g:if>
 
-<ui:filter class="la-search" simple="true">
-    <g:form controller="${controllerName}" action="${action}" id="${params.id}" method="get" class="ui form">
+<ui:filter class="la-${(dataAccess == 'search') ? 'search' :'filter' }" simple="${simple}">
+    <g:form controller="${controllerName}" action="${action}"
+            id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>
         <g:hiddenField name="order" value="${params.order}"/>
 
@@ -362,8 +363,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
-                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.searchreset.label')}</g:link>
-                <input name="filterSet" type="submit" class="${Btn.PRIMARY}" value="${message(code: 'search.button')}"/>
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                    <input name="filterSet" type="submit" class="${Btn.PRIMARY}" value="<g:message code="default.button.${(dataAccess == 'search') ? 'search' :'filter' }.label"/>" />
             </div>
     </g:form>
 </ui:filter>
