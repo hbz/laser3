@@ -188,22 +188,6 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
-        <thead>
-            <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
-        </thead>
-        <tbody>
-            <tr>
-                <g:if test="${globalSourceSync.running}">
-                    <td class="positive">Currently running</td><td class="positive">${globalSourceSync.running}</td>
-                </g:if>
-                <g:else>
-                    <td>Currently running</td><td>${globalSourceSync.running}</td>
-                </g:else>
-            </tr>
-        </tbody>
-    </table>
-
     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
         <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
             <thead>
