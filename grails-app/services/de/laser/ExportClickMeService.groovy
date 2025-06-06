@@ -7808,7 +7808,7 @@ class ExportClickMeService {
                         label += ' (Meine Merkmale)'
                     else if(fields.privateProperty == false)
                         label += ' (Allgemeine Merkmale)'
-                    if(label)
+                    if(label && (fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner'))
                         titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
                         if('surveyPropertyParticipantComment' in selectedExportFields) {
@@ -7817,7 +7817,7 @@ class ExportClickMeService {
                         if('surveyPropertyCommentOnlyForOwner' in selectedExportFields) {
                              titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
                         }
-                    }else if (fieldKey.contains('Property')) {
+                    }else if (fieldKey.contains('Property') && (fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner')) {
                         titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                     }
                     if(fieldKey.contains('licProperty')) {
