@@ -94,26 +94,14 @@
 
 <div class="ui fluid card">
     <div class="content">
-
-<table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
-    <thead>
-        <tr>
-            <th>ServiceCheck</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <g:each in="${systemService.serviceCheck()}" var="systemCheck">
-            <tr>
-                <td>${systemCheck.key}</td>
-                <td>
-                    <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('active') ? 'green' : 'red'}"></i> ${systemCheck.value}
-                </td>
-            </tr>
-        </g:each>
-    </tbody>
-</table>
-
+        <div class="ui labels">
+            <g:each in="${systemService.serviceCheck()}" var="systemCheck">
+                <div class="ui label" style="margin:0.3em 0.2em">
+                    <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('yes') ? 'green' : 'red'}"></i>
+                    ${systemCheck.key}
+                </div>
+            </g:each>
+        </div>
     </div>
 </div>
 

@@ -7,13 +7,15 @@
 
     <ui:h1HeaderWithIcon message="menu.yoda.systemOddments" type="yoda" />
 
-<br />
-<br />
-
-<h2 class="ui header">Filter Chain</h2>
-
-<g:each in="${filters}" var="filter" status="f">
-    ${f+1}. ${filter.getClass()} <br/>
-</g:each>
+    <div class="ui fluid card">
+        <div class="content">
+            <div class="header">Filter Chain</div>
+        </div>
+        <div class="content">
+            <g:each in="${filters}" var="filter" status="f">
+                ${f+1}. ${filter.getClass()} <br/>
+            </g:each>
+        </div>
+    </div>
 
 <laser:htmlEnd />
