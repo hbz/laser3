@@ -43224,7 +43224,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-server-label {
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: 0;
   top: 0;
   margin: 0 !important;
   border-radius: 0 !important;
@@ -55942,19 +55942,19 @@ Floated Menu / Item
 }
 
 #contextBar.la-local {
-  box-shadow: 0px 6px 0px 0px #FBBD08;
+  box-shadow: 0px 12px 0px 0px #FBBD08;
 }
 
 #contextBar.la-dev {
-  box-shadow: 0px 6px 0px 0px #98B500;
+  box-shadow: 0px 12px 0px 0px #98B500;
 }
 
 #contextBar.la-qa {
-  box-shadow: 0px 6px 0px 0px #BB1600;
+  box-shadow: 0px 12px 0px 0px #BB1600;
 }
 
 #contextBar.la-test {
-  box-shadow: 0px 6px 0px 0px #004678;
+  box-shadow: 0px 12px 0px 0px #004678;
 }
 
 #contextBar .item {
