@@ -53,9 +53,7 @@
 
 <body class="${controllerName}_${actionName}">
 
-    %{-- system server indicator --}%
 
-    <laser:render template="/templates/system/serverIndicator" />
 
     %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
 
@@ -153,6 +151,9 @@
         %{-- global content container --}%
 
         <div class="pusher">
+            %{-- system server indicator --}%
+
+            <laser:render template="/templates/system/serverIndicator" />
             <main id="mainContent" class="ui main container hidden">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
                     <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
