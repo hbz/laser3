@@ -986,10 +986,15 @@ r2d2 = {
             _buildConfirmationModal(gostObject[0]);
         });
 
+        r2d2.initCoreComponents(ctxSel);
+    },
 
-        // new X components - do NOT modify
+    initCoreComponents : function (ctxSel) {
 
-        $('.x-toggle > .toggle').checkbox({
+        // new ui core components - do NOT modify
+        // new ui core components - do NOT modify
+
+        $(ctxSel + ' .cc-toggle > .toggle').checkbox({
             onChecked : function() {
                 jQuery.ajax({
                     type:   'POST',
@@ -1006,7 +1011,6 @@ r2d2 = {
             }
         })
     },
-
 
     countSettedFilters : function () {
         // DROPDOWN AND INPUT FIELDS
