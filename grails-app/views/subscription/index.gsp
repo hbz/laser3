@@ -222,13 +222,13 @@
 <div class="ui bottom attached tab active segment">
 
     <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
-
+    <br>
 
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
                 <h3 class="ui icon header la-clear-before la-noMargin-top">
-                    <ui:bubble count="${num_ies_rows}" grey="true"/> <g:message code="title.filter.result"/>
+                    <ui:bubble count="${num_ies_rows}" grey="true"/> <g:message code="title.found.result"/>
                 </h3>
             </div>
 
