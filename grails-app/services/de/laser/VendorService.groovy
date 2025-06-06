@@ -449,14 +449,13 @@ class VendorService {
             queryArgs << "v.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
         }
-        else if(params.contaisKey('filterSet')) {
+        else if(params.containsKey('filterSet')) {
             queryArgs << "v.status != :removed"
-            queryParams.status = RDStore.VENDOR_STATUS_REMOVED
+            queryParams.removed = RDStore.VENDOR_STATUS_REMOVED
         }
         else if (!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
-            queryArgs << "v.status = :status"
-            queryParams.status = "Current"
-            params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
+            queryArgs << "v.status = :venStatus"
+            queryParams.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
 
         if (params.containsKey('qp_supportedLibrarySystems')) {
