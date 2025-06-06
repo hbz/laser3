@@ -26,7 +26,40 @@ class UiCoreTagLib {
             String oid      = attrs.owner.class.name + ':' + attrs.owner.id
             String rndId    = RandomUtils.getHtmlID()
 
-            out << '<span class="cc-toggle cc-element" id="cc-element-' + rndId + '">'
+            out << '<span class="cc-element cc-toggle" id="cc-element-' + rndId + '">'
+            out <<   '<span class="ui toggle checkbox">'
+
+            if (_isEditable(request.getAttribute('editable'), attrs.overwriteEditable)) {
+                out << '<input type="checkbox" name="cc-element-value-' + rndId + '"'
+                out <<   ' ' + (checked ? 'checked="checked"' : '') + ' data-pk="' + oid + '" data-name="' + attrs.field + '" />'
+            }
+            else {
+                out << '<input type="checkbox" disabled="disabled" ' + (checked ? 'checked="checked" />' : '/>')
+            }
+
+            if (attrs.label) { out << '<label>' + attrs.label + '</label>' }
+            out <<   '</span>'
+            out << '</span>'
+        }
+    }
+
+    /**
+     *  @param owner MUST
+     *  @param field MUST
+     *  @param overwriteEditable OPT
+     *  @param label OPT
+     */
+    def boogle = { attrs, body ->
+
+        if (!_checkOwner(attrs)) {
+            out << '<span class="ui red label"> &lt;cc:boogle/> </span>'
+        }
+        else {
+            boolean checked = true == attrs.owner[attrs.field]
+            String oid      = attrs.owner.class.name + ':' + attrs.owner.id
+            String rndId    = RandomUtils.getHtmlID()
+
+            out << '<span class="cc-element cc-boogle" id="cc-element-' + rndId + '">'
             out <<   '<span class="ui toggle checkbox">'
 
             if (_isEditable(request.getAttribute('editable'), attrs.overwriteEditable)) {

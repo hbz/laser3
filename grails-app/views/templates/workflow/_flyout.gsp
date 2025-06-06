@@ -75,12 +75,6 @@
                                 </dd>
                             </dl>
                             <dl>
-                                <dt>${message(code: 'workflow.template')}</dt>
-                                <dd>
-                                    <ui:xEditableBoolean overwriteEditable="${checkedEditable}" owner="${clist}" field="template" />
-                                </dd>
-                            </dl>
-                            <dl>
                                 <dt>${message(code: 'default.relation.label')}</dt>
                                 <dd>
                                     <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
@@ -89,7 +83,12 @@
                                     </g:link>
                                 </dd>
                             </dl>
-
+                            <dl>
+                                <dt>${message(code: 'workflow.template')}</dt>
+                                <dd style="vertical-align:middle">
+                                    <cc:boogle overwriteEditable="${checkedEditable}" owner="${clist}" field="template" />
+                                </dd>
+                            </dl>
                             <dl>
                                 <dt>${message(code:'default.lastUpdated.label')}</dt>
                                 <dd>
@@ -98,7 +97,6 @@
                                     </span>
                                 </dd>
                             </dl>
-
                             <dl>
                                 <dt>${message(code:'default.dateCreated.label')}</dt>
                                 <dd>
@@ -149,18 +147,17 @@
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt>${message(code: 'workflow.checkpoint.done')}</dt>
-                                    <dd>
-                                        <ui:xEditableBoolean overwriteEditable="${checkedEditable}" owner="${cpoint}" field="done" />
-                                    </dd>
-                                </dl>
-                                <dl>
                                     <dt>${message(code: 'workflow.checkpoint.date')}</dt>
                                     <dd>
                                         <ui:xEditable overwriteEditable="${checkedEditable}" owner="${cpoint}" field="date" type="date" />
                                     </dd>
                                 </dl>
-
+                                <dl>
+                                    <dt>${message(code: 'workflow.checkpoint.done')}</dt>
+                                    <dd style="vertical-align:middle">
+                                        <cc:boogle overwriteEditable="${checkedEditable}" owner="${cpoint}" field="done" />
+                                    </dd>
+                                </dl>
                                 <dl>
                                     <dt>${message(code:'default.lastUpdated.label')}</dt>
                                     <dd>

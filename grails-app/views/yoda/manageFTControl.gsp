@@ -57,7 +57,7 @@
                 <g:formatDate date="${new Date(ftControl.lastTimestamp)}" format="${message(code:'default.date.format.noZ')}"/>
               </td>
               <td>
-                <ui:xEditableBoolean owner="${ftControl}" field="active"/>
+                <cc:boogle owner="${ftControl}" field="active"/>
               </td>
             </tr>
           </g:each>
