@@ -1330,19 +1330,19 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-local {
-  box-shadow: 0px 6px 0px 0px #FBBD08;
+  box-shadow: 0px 12px 0px 0px #FBBD08;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-dev {
-  box-shadow: 0px 6px 0px 0px #98B500;
+  box-shadow: 0px 12px 0px 0px #98B500;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-qa {
-  box-shadow: 0px 6px 0px 0px #BB1600;
+  box-shadow: 0px 12px 0px 0px #BB1600;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-test {
-  box-shadow: 0px 6px 0px 0px #004678;
+  box-shadow: 0px 12px 0px 0px #004678;
 }
 
 .landingpage .logo {
