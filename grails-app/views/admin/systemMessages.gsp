@@ -82,7 +82,7 @@
                 </g:elseif>
             </td>
             <td>
-                <ui:xEditableBoolean owner="${msg}" field="isActive"/>
+                <cc:boogle owner="${msg}" field="isActive"/>
             </td>
             <td>
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>

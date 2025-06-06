@@ -395,8 +395,8 @@
                         <ui:cardLabelAdminOnly />
                         <dl>
                             <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
-                            <dd>
-                                <ui:xEditableBoolean owner="${orgInstance}" field="isBetaTester" overwriteEditable="true"/>
+                            <dd style="vertical-align:middle">
+                                <cc:boogle owner="${orgInstance}" field="isBetaTester" overwriteEditable="true"/>
                             </dd>
                         </dl>
                     </div>

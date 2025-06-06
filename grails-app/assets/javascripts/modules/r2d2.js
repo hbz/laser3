@@ -986,27 +986,44 @@ r2d2 = {
             _buildConfirmationModal(gostObject[0]);
         });
 
+        r2d2.initCoreComponents(ctxSel);
+    },
 
-        // new X components - do NOT modify
+    initCoreComponents : function (ctxSel) {
 
-        $('.x-toggle > .toggle').checkbox({
+        // new ui core components - do NOT modify
+        // new ui core components - do NOT modify
+
+        $(ctxSel + ' .cc-toggle > .toggle').checkbox({
             onChecked : function() {
                 jQuery.ajax({
-                    type:   'POST',
-                    url:    '/ajax/genericSetData',
-                    data:   { name: $(this).data('name'), value: 'de.laser.RefdataValue:1', pk: $(this).data('pk') }
+                    type: 'POST', url: '/ajax/genericSetData',
+                    data: { name: $(this).data('name'), value: 'de.laser.RefdataValue:1', pk: $(this).data('pk') } // TODO
                 })
             },
             onUnchecked : function() {
                 jQuery.ajax({
-                    type:   'POST',
-                    url:    '/ajax/genericSetData',
-                    data:   { name: $(this).data('name'), value: 'de.laser.RefdataValue:2', pk: $(this).data('pk') }
+                    type: 'POST', url: '/ajax/genericSetData',
+                    data: { name: $(this).data('name'), value: 'de.laser.RefdataValue:2', pk: $(this).data('pk') } // TODO
+                })
+            }
+        })
+
+        $(ctxSel + ' .cc-boogle > .toggle').checkbox({
+            onChecked : function() {
+                jQuery.ajax({
+                    type: 'POST', url: '/ajax/editableSetValue',
+                    data: { name: $(this).data('name'), value: 1, pk: $(this).data('pk') } // TODO
+                })
+            },
+            onUnchecked : function() {
+                jQuery.ajax({
+                    type: 'POST', url: '/ajax/editableSetValue',
+                    data: { name: $(this).data('name'), value: 0, pk: $(this).data('pk') } // TODO
                 })
             }
         })
     },
-
 
     countSettedFilters : function () {
         // DROPDOWN AND INPUT FIELDS

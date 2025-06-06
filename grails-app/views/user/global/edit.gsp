@@ -52,7 +52,7 @@
                             <g:if test="${editable}">
                                 <div class="ui field">
                                     <label>${message(code:'user.enabled.label')}</label>
-                                    <ui:xEditableBoolean owner="${user}" field="enabled" />
+                                    <cc:boogle owner="${user}" field="enabled" />
                                 </div>
                             </g:if>
 
@@ -110,7 +110,7 @@
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
-                                    <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="true"/>
+                                    <cc:boogle owner="${user}" field="accountExpired" overwriteEditable="true"/>
                                 </div>
                                 <div class="ui field">
                                     <label>
@@ -119,7 +119,7 @@
                                             <i class="${Icon.TOOLTIP.HELP}"></i>
                                         </span>
                                     </label>
-                                    <ui:xEditableBoolean owner="${user}" field="accountLocked" overwriteEditable="true"/>
+                                    <cc:boogle owner="${user}" field="accountLocked" overwriteEditable="true"/>
                                 </div>
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%
