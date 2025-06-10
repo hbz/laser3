@@ -663,9 +663,9 @@
                                     </div>
                                     <strong><g:message code="package.plural"/></strong>:
                                     <div class="ui bulleted list">
-                                        <g:each in="${object.packages?.sort { it.pkg.name }}" var="pv">
+                                        <g:each in="${object.packages?.sort { it.name }}" var="pv">
                                             <div class="item">
-                                                <g:link controller="package" action="show" id="${pv.pkg.dbId}">${pv.pkg.name}</g:link>
+                                                <g:link controller="package" action="show" id="${pv.dbId}">${pv.name}</g:link>
                                             </div>
                                         </g:each>
                                     </div>
