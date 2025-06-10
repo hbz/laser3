@@ -37,7 +37,7 @@
 
 <div class="ui bottom attached tab active segment">
 
-<% params.remove('tab') %>
+<%-- params.remove('tab') --%>
 
 <laser:render template="/templates/filter/tipp_ieFilter" model="[dataAccess='filter']"/>
 

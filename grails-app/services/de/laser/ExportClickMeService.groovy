@@ -1225,6 +1225,17 @@ class ExportClickMeService {
                         subTabs: [],
                         fields: [:]
                 ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                'participant.exportMailDomains': [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                        ]
+                ],
                 participantAddresses : [
                         label: 'Addresses',
                         message: 'org.addresses.label',
@@ -4465,6 +4476,7 @@ class ExportClickMeService {
         Map sheetData = [:]
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
+        Set<Org> orgSet = []
 
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
@@ -4483,10 +4495,13 @@ class ExportClickMeService {
             if (cit.getValue().count > 0) {
                 cit.getValue().costItems.eachWithIndex { ci, int i ->
                     _setCostItemRow(ci, selectedExportFields, exportData, format, contactSources)
+                    orgSet << ci.sub?.getSubscriberRespConsortia()
                 }
             }
             sheetData[sheettitle] = [titleRow: titles, columnData: exportData]
         }
+
+        sheetData =  _exportAccessPoints(orgSet.toList(), sheetData, selectedExportFields, locale, "", format)
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
