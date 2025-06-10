@@ -9,6 +9,8 @@
 
 6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten
 
+6554    10.06.2025  rc-3.5  3.5         Andreas Feature     Erweiterung des Kostenexports um Exportkonfigurationen
+
 6640    05.06.2025  rc-3.5  3.5         Andreas Feature     Alternativnamen bei der Suche mit berücksichtigt
 
 6603    05.06.2025  rc-3.5  3.5         Andreas Feature     Hochladen von Kundennummern/Requestor-IDs via TSV angepasst
