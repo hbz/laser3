@@ -2111,17 +2111,8 @@ class SubscriptionControllerService {
                 //overwrites from holding selection
                 String pkgUUID = params.addUUID
                 result.source = Wekb.getURL()
-                RefdataValue holdingSelection
-                if(params.holdingSelection) {
-                    holdingSelection = RefdataValue.get(params.holdingSelection)
-                    result.subscription.holdingSelection = holdingSelection
-                    result.subscription.save()
-                }
-                else {
-                    holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
-                }
+                RefdataValue holdingSelection = result.subscription.holdingSelection
                 result.holdingSelection = holdingSelection
-                subscriptionService.switchPackageHoldingInheritance([sub: result.subscription, value: holdingSelection])
                 if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     createEntitlements = true
                     //if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
