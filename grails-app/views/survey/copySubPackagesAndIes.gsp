@@ -141,6 +141,10 @@
                         <g:message code="messageRequiredField"/>
                     </label>
 
+                    <g:if test="${auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection') ? 'all' : ''}">
+                        <g:hiddenField name="selectedPackages" value="all"/>
+                        ${message(code: 'subscriptionsManagement.all.package')}
+                    </g:if>
                     <g:if test="${validPackages}">
                         <g:select class="ui multiple search dropdown"
                                   optionKey="${{ it.pkg.id }}"
