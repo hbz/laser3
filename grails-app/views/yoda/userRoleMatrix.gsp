@@ -8,6 +8,9 @@
 
 <ui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" type="yoda" />
 
+<div class="ui fluid card">
+    <div class="content">
+
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">
         <g:if test="${role.value.size() > 0}">
@@ -54,6 +57,9 @@
             </div>
         </g:if>
     </g:each>
+</div>
+
+    </div>
 </div>
 
 <laser:htmlEnd />

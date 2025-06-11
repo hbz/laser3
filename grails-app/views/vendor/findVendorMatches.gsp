@@ -36,13 +36,15 @@
 								<th>${message(code:'default.name.label')}</th>
 								<th>${message(code:'identifier.plural')}</th>
 								<th>${message(code:'org.sortname.label')}</th>
+								<th>${message(code:'altname.plural')}</th>
 							</tr>
 							</thead>
 							<tbody>
 							<g:each in="${vendorMatches}" var="vendorInstance">
 								<tr>
 									<td>${vendorInstance.name} <g:link controller="vendor" action="show" id="${vendorInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
-									<td><ul>
+									<td>
+										<ul>
 											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${vendorInstance}" field="globalUID"/></li>
 											<g:if test="${vendorInstance.gokbId}">
 												<li><g:message code="org.wekbId.label" />: <g:fieldValue bean="${vendorInstance}" field="gokbId"/></li>
@@ -50,8 +52,16 @@
 											<g:if test="${vendorInstance.id}">
 												<g:each in="${vendorInstance.ids}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 											</g:if>
-									</ul></td>
+										</ul>
+									</td>
 									<td>${vendorInstance.sortname}</td>
+									<td>
+										<ul>
+											<g:each in="${vendorInstance.altnames}" var="altname">
+												<li>${altname.name}</li>
+											</g:each>
+										</ul>
+									</td>
 								</tr>
 							</g:each>
 							</tbody>

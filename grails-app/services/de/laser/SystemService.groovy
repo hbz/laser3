@@ -37,28 +37,14 @@ class SystemService {
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
 
-            if (GlobalRecordSource.findAll().size() in [0, GlobalRecordSource.findAllByActive(false).size()]) {
-                checks.globalSync = "NOT active"
-            }
-
-            if (! ConfigMapper.getNotificationsJobActive()) {
-                checks.notificationsJobActive = "NOT active"
-            }
-            if (! ConfigMapper.getGlobalDataSyncJobActive()) {
-                checks.globalDataSyncJob = "NOT active"
-            }
-            if (! ConfigMapper.getIsUpdateDashboardTableInDatabase()) {
-                checks.UpdateDashboardTableInDatabase = "NOT active"
-            }
-            if (! ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers()) {
-                checks.SendEmailsForDueDatesOfAllUsers = "NOT active"
-            }
-            if (! ConfigMapper.getReporting()) {
-                checks.Reporting = "ElasticSearch Config for Reporting not found"
-            }
-            if (ConfigMapper.getConfig('grails.mail.disabled', Boolean)) {
-                checks.MailService = "NOT active"
-            }
+        checks.mailsEnabled             = ConfigMapper.getConfig('grails.mail.disabled', Boolean) ? 'NO' : 'YES'
+        checks.muleJobActive            = ConfigMapper.getMuleJobActive() ? 'YES' : 'NO'
+        checks.globalDataSyncJobActive  = ConfigMapper.getGlobalDataSyncJobActive() ? 'YES' : 'NO'
+        checks.indexUpdateJobActive     = ConfigMapper.getIndexUpdateJobActive() ? 'YES' : 'NO'
+        checks.statsSyncJobActive       = ConfigMapper.getStatsSyncJobActive() ? 'YES' : 'NO'
+        checks.notificationsJobActive   = ConfigMapper.getNotificationsJobActive() ? 'YES' : 'NO'
+        checks.sendEmailsForDueDatesOfAllUsers  = ConfigMapper.getIsSendEmailsForDueDatesOfAllUsers() ? 'YES' : 'NO'
+        checks.updateDashboardTableInDatabase   = ConfigMapper.getIsUpdateDashboardTableInDatabase() ? 'YES' : 'NO'
 
         return checks
     }

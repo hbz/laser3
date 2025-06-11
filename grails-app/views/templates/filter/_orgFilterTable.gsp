@@ -1265,7 +1265,7 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#selectedCostItemElementID').on('change', function() {
             var selectedCostItemElementID = $(this).val()
-            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
+            var url = "<g:createLink controller="survey" action="$actionName" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
     </laser:script>

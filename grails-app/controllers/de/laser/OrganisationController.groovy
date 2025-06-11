@@ -831,7 +831,7 @@ class OrganisationController  {
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
             result.organisationMatches.addAll(Org.executeQuery(
-                    "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
+                    "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName or exists(select a from o.altnames a where genfunc_filter_matcher(a.name, :searchName) = true)) ",
                     [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles(), searchName: "%${params.proposedOrganisation.toLowerCase()}%"])
             )
         }

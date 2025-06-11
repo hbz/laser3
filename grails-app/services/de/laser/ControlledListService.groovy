@@ -1509,7 +1509,7 @@ class ControlledListService {
             consortiumFilter = "and sub.instanceOf is null"
         */
         if (params.query) {
-            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :name) = true)) "
+            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {

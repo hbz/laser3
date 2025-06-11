@@ -750,15 +750,19 @@ class SubscriptionController {
         List<Org> consortiaMembers = result.subscription.getDerivedNonHiddenSubscribers()
         Platform platform = Platform.get(params.platform)
 
-        ArrayList titles = ['Customer ID', 'Requestor ID']
+        ArrayList titles = ['LAS:eR-UUID', message(code: 'default.sortname.label'), 'Customer ID', 'Requestor ID']
 
-        ArrayList rowData = []
-        ArrayList row
+        ArrayList rowData = [], row
         consortiaMembers.each { Org org ->
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
-            if(ci?.value) {
-                rowData.add([ci.value])
-            }
+            row = [org.globalUID, org.sortname]
+            if(ci?.value)
+                row << ci.value
+            else row << ''
+            if(ci?.requestorKey)
+                row << ci.requestorKey
+            else row << ''
+            rowData.add(row)
         }
 
         response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
