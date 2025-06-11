@@ -736,7 +736,7 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Release")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(5)
+				cell.setCellValue(requestResponse.subRevision)
 				headerRow = sheet.createRow(3)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Institution_Name")
@@ -843,24 +843,57 @@ class ExportService {
 						if(reportItems.size() > 0) {
 							pointsPerIteration = 20/reportItems.size()
 							for(def reportItem: reportItems) {
-								for(Map performance: reportItem.Performance) {
-									Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-									for(Map instance: performance.Instance) {
-										int periodTotal, reportCount = instance.Count as int
-										Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
-										Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
-										Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
-										if(!dataTypeRow) {
-											dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
-											periodTotal = 0
+								//counter 5.0 structure
+								if(reportItem.containsKey('Performance')) {
+									for(Map performance: reportItem.Performance) {
+										Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+										for(Map instance: performance.Instance) {
+											int periodTotal, reportCount = instance.Count as int
+											Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
+											Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+											Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
+											if(!dataTypeRow) {
+												dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+												periodTotal = 0
+											}
+											else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+											dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+											periodTotal += reportCount
+											dataTypeRow.put('Reporting_Period_Total', periodTotal)
+											platformRow.put(reportItem.Data_Type, dataTypeRow)
+											metricRow.put(reportItem.Platform, platformRow)
+											data.put(instance.Metric_Type, metricRow)
 										}
-										else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
-										dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-										periodTotal += reportCount
-										dataTypeRow.put('Reporting_Period_Total', periodTotal)
-										platformRow.put(reportItem.Data_Type, dataTypeRow)
-										metricRow.put(reportItem.Platform, platformRow)
-										data.put(instance.Metric_Type, metricRow)
+									}
+								}
+								//counter 5.1 structure
+								else if(reportItem.containsKey('Attribute_Performance')) {
+									for(Map struct: reportItem.Attribute_Performance) {
+										String dataType = struct.Data_Type
+										//continue with implementing structure
+										for(Map.Entry performance: struct.Performance) {
+											for(Map.Entry instance: performance) {
+												String metricType = instance.getKey()
+												for(Map.Entry reportRow: instance.getValue()) {
+													Date reportMonth = DateUtils.getSDF_yyyyMM().parse(reportRow.getKey())
+													int periodTotal, reportCount = reportRow.getValue() as int
+													Map<String, Object> metricRow = data.containsKey(metricType) ? data.get(metricType) : [:]
+													Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+													Map<String, Object> dataTypeRow = platformRow.get(dataType)
+													if(!dataTypeRow) {
+														dataTypeRow = ['Data_Type': dataType, 'Platform': reportItem.Platform, 'Metric_Type': metricType]
+														periodTotal = 0
+													}
+													else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+													dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportMonth), reportCount)
+													periodTotal += reportCount
+													dataTypeRow.put('Reporting_Period_Total', periodTotal)
+													platformRow.put(dataType, dataTypeRow)
+													metricRow.put(reportItem.Platform, platformRow)
+													data.put(performance.getKey(), metricRow)
+												}
+											}
+										}
 									}
 								}
 								int i = 0
@@ -1832,6 +1865,9 @@ class ExportService {
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
 					url += "&begin_date=${monthFormatter.format(configMap.startDate)}&end_date=${monthFormatter.format(configMap.endDate)}"
+					if(statsSource.statsUrl.contains('r51'))
+						result.subRevision = '5.1'
+					else result.subRevision = '5'
 					result.putAll(statsSyncService.fetchJSONData(url, customerId))
 				}
 			}
