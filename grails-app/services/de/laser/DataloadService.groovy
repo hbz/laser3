@@ -513,7 +513,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { Org org ->
-                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
+                            result.members.add([dbId: org.id])
                         }
                         break
                     case CalculatedType.TYPE_LOCAL:
@@ -589,7 +589,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { org ->
-                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
+                            result.members.add([dbId: org.id])
                         }
                         break
                     case CalculatedType.TYPE_LOCAL:
