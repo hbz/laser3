@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6471    11.06.2025  rc-3.5  3.5         Andreas Feature     Nachbesserungen für COUNTER 5.1
+
 6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten
 
 6554    10.06.2025  rc-3.5  3.5         Andreas Feature     Erweiterung des Kostenexports um Exportkonfigurationen
