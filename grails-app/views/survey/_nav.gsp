@@ -127,9 +127,11 @@
         </g:if>
 
 
-        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
-                       params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
-                       message="surveyCostItems.label"/>
+        <g:if test="${!surveyConfig.subscriptionSurvey}">
+            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyCostItems"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyCostItemsCount}"
+                           message="surveyCostItems.label"/>
+        </g:if>
 
 
         <g:if test="${surveyConfig.packageSurvey}">

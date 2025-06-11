@@ -69,7 +69,7 @@
             <g:render template="costItemsByCostItemElementAndPkgTable"/>
 
             <ui:filter>
-                <g:form action="surveyCostItems" method="post" class="ui form"
+                <g:form action="surveyCostItemsPackages" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[

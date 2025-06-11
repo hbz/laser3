@@ -43,6 +43,7 @@
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural')}</th>
 										<th>${message(code:'org.sortname.label')}</th>
+										<th>${message(code:'altname.plural')}</th>
 										<th>${message(code:'org.country.label')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
@@ -82,6 +83,13 @@
 
 									</td>
 									<td>${organisationInstance.sortname}</td>
+									<td>
+										<ul>
+											<g:each in="${organisationInstance.altnames}" var="altname">
+												<li>${altname.name}</li>
+											</g:each>
+										</ul>
+									</td>
 									<td>${organisationInstance.country}</td>
 									<td>
 									<%-- here: switch if in consortia or not --%>

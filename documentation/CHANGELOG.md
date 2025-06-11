@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten
+
+6554    10.06.2025  rc-3.5  3.5         Andreas Feature     Erweiterung des Kostenexports um Exportkonfigurationen
+
 6640    05.06.2025  rc-3.5  3.5         Andreas Feature     Alternativnamen bei der Suche mit berücksichtigt
+
+6603    05.06.2025  rc-3.5  3.5         Andreas Feature     Hochladen von Kundennummern/Requestor-IDs via TSV angepasst
+
+6566    05.06.2025  rc-3.5  3.5         Andreas Feature     Zahlungswährung bei Cost per Use wird jetzt berücksichtigt
 
 6636    04.06.2025  rc-3.5  3.5         Andreas Bug         Anmerkungen zu Nutzerzahlen wurden nicht gespeichert
 

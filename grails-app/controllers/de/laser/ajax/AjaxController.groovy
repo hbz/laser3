@@ -2157,23 +2157,25 @@ class AjaxController {
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            RefdataValue currency = RefdataValue.get(params.currency)
+            ctrlResult.result.currency = currency
             if(ctrlResult.result.containsKey('alternatePeriodStart') && ctrlResult.result.containsKey('alternatePeriodEnd')) {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.alternatePeriodStart), sdf.format(ctrlResult.result.alternatePeriodEnd)] as Object[])
             }
             ctrlResult.result.costPerUse = [:]
             if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial", currency)
                 ctrlResult.result.costPerUse.consortialData = costPerUseConsortial.costPerMetric
                 ctrlResult.result.consortialCosts = costPerUseConsortial.costsAllYears
                 if (ctrlResult.result.contextOrg.isCustomerType_Inst_Pro()) {
-                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own", currency)
                     ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
                     ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
                 }
             }
             else {
-                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own", currency)
                 ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
                 ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
             }

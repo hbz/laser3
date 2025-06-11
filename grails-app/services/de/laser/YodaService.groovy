@@ -226,7 +226,8 @@ class YodaService {
         //step 0: preparatory actions and mergers
         Map<String, String> mergers = ['vendor:f9a91c40-a02e-423f-bd97-e68d3b398b4b': 'vendor:52be47fc-44de-400d-b718-6d449c714cfc', //HGV
                                        'vendor:a1f7c0ee-90fe-42c2-b677-be74d29410fb': 'vendor:e8f3f4ed-4fbf-4fbf-9fdc-eeea0da4672f', //EBSCO
-                                       'vendor:4eaecda9-9a2e-4f34-966a-7f46650e12d5': 'vendor:bd01da62-126a-4fc1-8431-ca6f07a35608'] //Goethe + Schweitzer
+                                       'vendor:4eaecda9-9a2e-4f34-966a-7f46650e12d5': 'vendor:bd01da62-126a-4fc1-8431-ca6f07a35608', //Goethe + Schweitzer
+                                       'vendor:bf1feac7-b269-4448-8b91-7bdf0dcb4cf8': 'vendor:7633ac5a-e775-432e-af10-56c7a6c9827e'] //Massmann
         mergers.each { String from, String to ->
             Vendor source = Vendor.findByGlobalUID(from), target = Vendor.findByGlobalUID(to)
             if(source && target) {
@@ -341,8 +342,8 @@ class YodaService {
         treatedGUIDs.addAll(lsToKeep)
         treatedGUIDs.addAll(lsToProviderGUIDs)
         treatedGUIDs.addAll(lsConsortium.keySet())
-        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID in (:guids)', [guids: lsToProviderGUIDs])
-        lsToProviders.addAll(Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs]))
+        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID in (:guids)', [guids: lsToProviderGUIDs]),
+        other = Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs])
         lsToProviders.eachWithIndex{ Vendor sourceVen, int i ->
             log.debug("checking existence of target ...")
             String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
@@ -424,6 +425,42 @@ class YodaService {
                 }
                 else if(targetPVR.license) {
                     setProcessingProperty(targetPVR.license, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, targetPVR.isShared)
+                }
+                sourceVR.delete()
+            }
+            int info = Address.executeUpdate('update Address a set a.provider = :target, a.vendor = null where a.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: addresses updated: ${info}")
+            info = DocContext.executeUpdate('update DocContext dc set dc.provider = :target, dc.vendor = null where dc.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: doc contexts updated: ${info}")
+            info = Task.executeUpdate('update Task t set t.provider = :target, t.vendor = null where t.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: tasks updated: ${info}")
+            info = WfChecklist.executeUpdate('update WfChecklist wc set wc.provider = :target, wc.vendor = null where wc.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: workflow checklists updated: ${info}")
+            info = AlternativeName.executeUpdate('update AlternativeName altname set altname.provider = :target, altname.vendor = null where altname.vendor = :source', genericUpdateParams)
+            log.debug("${sourceVen.name}:${sourceVen.id}: alternative names updated: ${info}")
+            info = InvoicingVendor.executeUpdate('delete from InvoicingVendor iv where iv.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: invoicing vendor deleted: ${info}")
+            info = SurveyVendorResult.executeUpdate('delete from SurveyVendorResult svr where svr.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: survey vendor results deleted: ${info}")
+            info = SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
+            log.debug("${sourceVen.name}:${sourceVen.id}: survey config vendors deleted: ${info}")
+            //if(sourceVen.globalUID in lsToProviderGUIDs) {
+                sourceVen.delete()
+            //}
+            globalService.cleanUpGorm()
+        }
+        other.eachWithIndex { Vendor sourceVen, int i ->
+            log.debug("now repointing library supplier to provider ${i+1} out of ${other.size()}, *without* creating a second provider link!")
+            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
+            Provider targetProv = Provider.findByGlobalUID(targetGUID)
+            Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
+            Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
+            rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
+                if(sourceVR.subscription) {
+                    setProcessingProperty(sourceVR.subscription, PropertyStore.SUB_PROP_INVOICE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, sourceVR.isShared)
+                }
+                else if(sourceVR.license) {
+                    setProcessingProperty(sourceVR.license, PropertyStore.LIC_LICENSE_PROCESSING, RDStore.INVOICE_PROCESSING_PROVIDER, sourceVR.isShared)
                 }
                 sourceVR.delete()
             }
