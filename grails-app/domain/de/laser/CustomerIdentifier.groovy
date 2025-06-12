@@ -43,6 +43,7 @@ class CustomerIdentifier {
         value           (nullable: true)
         requestorKey    (nullable: true)
         note     (nullable:true, blank:true)
+        platform(unique: ['customer'])
     }
 
     /**
