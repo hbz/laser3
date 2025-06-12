@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.Org; de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" />
 
@@ -445,7 +445,7 @@
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
-                                            <g:link controller="subscription" action="members" id="${object.dbId}">${member.name}</g:link>
+                                            <g:link controller="subscription" action="members" id="${object.dbId}">${Org.get(object.dbId).name}</g:link>
                                         </g:each>
                                         </article>
                                     </g:if>
@@ -515,7 +515,7 @@
                                         <g:link controller="subscription" action="members" id="${object.dbId}"> ${object.members.size()}</g:link>
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
-                                            ${member.name},
+                                            ${Org.get(member.dbId).name},
                                         </g:each>
                                         </article>
                                     </g:if>

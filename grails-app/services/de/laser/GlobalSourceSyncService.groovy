@@ -1329,6 +1329,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                         switch(contact.type) {
+                            case "Invoicing Contact":
+                                contact.rdType = RDStore.PRS_FUNC_INVOICING_CONTACT
+                                break
                             case "Metadata Contact":
                                 contact.rdType = RDStore.PRS_FUNC_METADATA
                                 break
@@ -1387,37 +1390,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                List<String> electronicBillingsB = providerRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
-                             invoiceDispatchsB = providerRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
-                             invoicingVendorsB = providerRecord.invoicingVendors.collect { ivB -> ivB.vendorUuid }
-                provider.electronicBillings.each { ElectronicBilling ebA ->
-                    if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
-                        ebA.delete()
+                ElectronicBilling.executeUpdate('delete from ElectronicBilling eb where eb.provider = :provider', [provider: provider])
+                providerRecord.electronicBillings.each { ebB ->
+                    new ElectronicBilling(provider: provider, invoicingFormat: RefdataValue.getByValueAndCategory(ebB.electronicBilling, RDConstants.VENDOR_INVOICING_FORMAT)).save()
                 }
-                electronicBillingsB.each { String ebB ->
-                    if(!provider.hasElectronicBilling(ebB)) {
-                        new ElectronicBilling(provider: provider, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
-                    }
+                InvoiceDispatch.executeUpdate('delete from InvoiceDispatch idi where idi.provider = :provider', [provider: provider])
+                providerRecord.invoiceDispatchs.each { idiB ->
+                    new InvoiceDispatch(provider: provider, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB.invoiceDispatch, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
                 }
-                provider.invoiceDispatchs.each { InvoiceDispatch idiA ->
-                    if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
-                        idiA.delete()
-                }
-                invoiceDispatchsB.each { String idiB ->
-                    if(!provider.hasInvoiceDispatch(idiB)) {
-                        new InvoiceDispatch(provider: provider, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
-                    }
-                }
-                if(provider.invoicingVendors) {
-                    provider.invoicingVendors.each { InvoicingVendor ivA ->
-                        if(!(ivA.vendor.gokbId in invoicingVendorsB))
-                            ivA.delete()
-                    }
-                }
+                InvoicingVendor.executeUpdate('delete from InvoicingVendor iv where iv.provider = :provider', [provider: provider])
                 providerRecord.invoicingVendors.each { Map vendorData ->
                     Vendor v = Vendor.findByGokbId(vendorData.vendorUuid)
                     if(!v) {
-                        createOrUpdateVendor(vendorData.vendorUuid)
+                        v = createOrUpdateVendor(vendorData.vendorUuid)
                     }
                     if(v) {
                         setupInvoicingVendor(provider, v)
@@ -2198,6 +2183,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
         contactTypes.put(RDStore.PRS_FUNC_INVOICING_CONTACT.value,RDStore.PRS_FUNC_INVOICING_CONTACT)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
+        contactTypes.put(RDStore.PRS_FUNC_STATS_SUPPORT.value,RDStore.PRS_FUNC_STATS_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException

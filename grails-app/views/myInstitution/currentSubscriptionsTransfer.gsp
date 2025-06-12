@@ -367,7 +367,7 @@
                     </th>%{-- Documents--}%
 
                     <th scope="col" rowspan="2" class="center aligned two wide">
-                        <i class="la-popup-tooltip exchange alternate icon" data-content="<g:message code="default.change.label"/>"></i>
+                        <i class="la-popup-tooltip exchange alternate icon large" data-content="<g:message code="default.change.label"/>"></i>
                     </th>
                 </tr>
                 <tr>

@@ -148,7 +148,6 @@ class ExportService {
 		bold.setFont(font)
 		XSSFCellStyle lb = wb.createCellStyle()
 		lb.setWrapText(true)
-		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
 		sheets.entrySet().eachWithIndex { sheetData, index ->
@@ -193,9 +192,12 @@ class ExportService {
 				sheet.createFreezePane(0,1)
 				Row row
 				Cell cell
-				CellStyle numberStyle = wb.createCellStyle();
-				XSSFDataFormat df = wb.createDataFormat();
-				numberStyle.setDataFormat(df.getFormat("#,##0.00"));
+				CellStyle numberStyle = wb.createCellStyle()
+				XSSFDataFormat numberFormat = wb.createDataFormat()
+				//messageSource.getMessage('default.financial.export.format', null, locale)
+				//df.getFormat('0,00')
+				//8
+				numberStyle.setDataFormat(numberFormat.getFormat("#,##0.00"))
 				columnData.each { rowData ->
 					int cellnum = 0
 					row = sheet.createRow(rownum)
@@ -204,9 +206,16 @@ class ExportService {
 							cellData = JSON.parse(cellData)
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
-							cell.setCellValue((String) cellData.field)
-							if(cellData.field.contains('\n'))
-								cell.setCellStyle(lb)
+							try {
+								BigDecimal financial = new BigDecimal(cellData.field)
+								cell.setCellValue(financial.toDouble())
+								cell.setCellStyle(numberStyle)
+							}
+							catch (NumberFormatException ignored) {
+								cell.setCellValue((String) cellData.field)
+								if(cellData.field.contains('\n'))
+									cell.setCellStyle(lb)
+							}
 						} else if (cellData.field instanceof Integer) {
 							cell.setCellValue((Integer) cellData.field)
 						} else if (cellData.field instanceof Double || cellData.field instanceof BigDecimal) {
@@ -736,7 +745,7 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Release")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(5)
+				cell.setCellValue(requestResponse.subRevision)
 				headerRow = sheet.createRow(3)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Institution_Name")
@@ -843,24 +852,57 @@ class ExportService {
 						if(reportItems.size() > 0) {
 							pointsPerIteration = 20/reportItems.size()
 							for(def reportItem: reportItems) {
-								for(Map performance: reportItem.Performance) {
-									Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-									for(Map instance: performance.Instance) {
-										int periodTotal, reportCount = instance.Count as int
-										Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
-										Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
-										Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
-										if(!dataTypeRow) {
-											dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
-											periodTotal = 0
+								//counter 5.0 structure
+								if(reportItem.containsKey('Performance')) {
+									for(Map performance: reportItem.Performance) {
+										Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+										for(Map instance: performance.Instance) {
+											int periodTotal, reportCount = instance.Count as int
+											Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
+											Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+											Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
+											if(!dataTypeRow) {
+												dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+												periodTotal = 0
+											}
+											else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+											dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+											periodTotal += reportCount
+											dataTypeRow.put('Reporting_Period_Total', periodTotal)
+											platformRow.put(reportItem.Data_Type, dataTypeRow)
+											metricRow.put(reportItem.Platform, platformRow)
+											data.put(instance.Metric_Type, metricRow)
 										}
-										else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
-										dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-										periodTotal += reportCount
-										dataTypeRow.put('Reporting_Period_Total', periodTotal)
-										platformRow.put(reportItem.Data_Type, dataTypeRow)
-										metricRow.put(reportItem.Platform, platformRow)
-										data.put(instance.Metric_Type, metricRow)
+									}
+								}
+								//counter 5.1 structure
+								else if(reportItem.containsKey('Attribute_Performance')) {
+									for(Map struct: reportItem.Attribute_Performance) {
+										String dataType = struct.Data_Type
+										//continue with implementing structure
+										for(Map.Entry performance: struct.Performance) {
+											for(Map.Entry instance: performance) {
+												String metricType = instance.getKey()
+												for(Map.Entry reportRow: instance.getValue()) {
+													Date reportMonth = DateUtils.getSDF_yyyyMM().parse(reportRow.getKey())
+													int periodTotal, reportCount = reportRow.getValue() as int
+													Map<String, Object> metricRow = data.containsKey(metricType) ? data.get(metricType) : [:]
+													Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+													Map<String, Object> dataTypeRow = platformRow.get(dataType)
+													if(!dataTypeRow) {
+														dataTypeRow = ['Data_Type': dataType, 'Platform': reportItem.Platform, 'Metric_Type': metricType]
+														periodTotal = 0
+													}
+													else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+													dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportMonth), reportCount)
+													periodTotal += reportCount
+													dataTypeRow.put('Reporting_Period_Total', periodTotal)
+													platformRow.put(dataType, dataTypeRow)
+													metricRow.put(reportItem.Platform, platformRow)
+													data.put(performance.getKey(), metricRow)
+												}
+											}
+										}
 									}
 								}
 								int i = 0
@@ -1832,6 +1874,9 @@ class ExportService {
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""
 					url += "&begin_date=${monthFormatter.format(configMap.startDate)}&end_date=${monthFormatter.format(configMap.endDate)}"
+					if(statsSource.statsUrl.contains('r51'))
+						result.subRevision = '5.1'
+					else result.subRevision = '5'
 					result.putAll(statsSyncService.fetchJSONData(url, customerId))
 				}
 			}
@@ -2282,9 +2327,9 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as listprice_usd"
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as listprice_usd"
 		config
 	}
 
@@ -2335,12 +2380,12 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_list_price')}),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as listprice_usd," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_local_price')}),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as localprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_local_price')}),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as localprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(${escapeService.getFinancialOutputQuery('pi_local_price')}),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as localprice_usd"
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as listprice_usd," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as localprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as localprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as localprice_usd"
 		config
 	}
 
