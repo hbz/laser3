@@ -6,7 +6,7 @@
 <div class="ui yellow segment " id="subscriptionTransfer-content" style="width: inherit;">
     <div class="ui content grid">
         <div class="sixteen wide column">
-            <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table" style="overflow-x: scroll;">
+            <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
                     <th class="one wide" cope="col" rowspan="3">${message(code: 'subscription.referenceYear.short.label')}</th>
