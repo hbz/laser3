@@ -78,12 +78,15 @@ class EscapeService {
     }
 
     String getFinancialOutputQuery(String sqlCol) {
+        return "to_char(${sqlCol}, '999999999.99')"
+        /*
         switch (LocaleUtils.getCurrentLocale()) {
             case [Locale.GERMANY, Locale.GERMAN]:
                 return "replace(to_char(${sqlCol}, '999999999.99'), '.', ',')"
             default:
                 return "to_char(${sqlCol}, '999999999.99')"
         }
+        */
     }
 
     /**
