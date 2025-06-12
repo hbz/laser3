@@ -158,14 +158,31 @@
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
-                                            <div class="eight wide column la-column-right-lessPadding">
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
-                                                    <i class="${Icon.DOCUMENT} grey"></i>
+                                                    <g:if test="${supportedMimeType}">
+                                                        <a href="#documentPreview"
+                                                           class="la-popup-tooltip"
+                                                           data-content="
+                                                           <g:if test="${docctx.getDocType()}">
+                                                               ${docctx.getDocType().getI10n("value")}
+                                                           </g:if>
+                                                           <g:else>
+                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
+                                                           </g:else>"
+                                                           data-dctx="${docctx.id}">
+                                                            <i class="${Icon.DOCUMENT} blue"></i>
+                                                        </a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                    </g:else>
                                                     <ui:documentIcon doc="${docctx.owner}" showText="false"
                                                                      showTooltip="true"/>
                                                 </i>
-%{--                                                <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
-                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                %{--                                                <g:set var="supportedMimeType"
+                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
                                                        data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
@@ -173,9 +190,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>--}%
-                                            %{-- <g:if test="${docctx.getDocType()}">
-                                                 (${docctx.getDocType().getI10n("value")})
-                                             </g:if>--}%
+                                                %{-- <g:if test="${docctx.getDocType()}">
+                                                     (${docctx.getDocType().getI10n("value")})
+                                                 </g:if>--}%
                                             </div>
 
                                             <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
@@ -294,14 +311,30 @@
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
-                                            <div class="eight wide column la-column-right-lessPadding">
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
-                                                    <i class="${Icon.DOCUMENT} grey"></i>
+                                                    <g:if test="${supportedMimeType}">
+                                                        <a href="#documentPreview"
+                                                           class="la-popup-tooltip"
+                                                           data-content="
+                                                           <g:if test="${docctx.getDocType()}">
+                                                               ${docctx.getDocType().getI10n("value")}
+                                                           </g:if>
+                                                           <g:else>
+                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
+                                                           </g:else>"
+                                                           data-dctx="${docctx.id}">
+                                                            <i class="${Icon.DOCUMENT} blue"></i>
+                                                        </a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                    </g:else>
                                                     <ui:documentIcon doc="${docctx.owner}" showText="false"
                                                                      showTooltip="true"/>
                                                 </i>
-%{--                                                <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
+                                                %{--                                                <g:set var="supportedMimeType"
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
@@ -310,9 +343,9 @@
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
                                                 </g:else>--}%
-                                            %{-- <g:if test="${docctx.getDocType()}">
-                                                 (${docctx.getDocType().getI10n("value")})
-                                             </g:if>--}%
+                                                %{-- <g:if test="${docctx.getDocType()}">
+                                                     (${docctx.getDocType().getI10n("value")})
+                                                 </g:if>--}%
                                             </div>
 
                                             <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
