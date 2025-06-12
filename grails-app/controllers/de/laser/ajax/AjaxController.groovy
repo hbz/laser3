@@ -2017,11 +2017,13 @@ class AjaxController {
                                     break
                             }
                             if(!subscriptionService.checkThreadRunning('permanentTitlesProcess_'+target_object.id) && !packageProcess) {
-                                if (params.value == true && target_object.hasPerpetualAccess != params.value) {
-                                    subscriptionService.setPermanentTitlesBySubscription(target_object)
-                                }
-                                if (params.value == false && target_object.hasPerpetualAccess != params.value) {
-                                    subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                if(target_object.packages) {
+                                    if (params.value == true && target_object.hasPerpetualAccess != params.value) {
+                                        subscriptionService.setPermanentTitlesBySubscription(target_object)
+                                    }
+                                    if (params.value == false && target_object.hasPerpetualAccess != params.value) {
+                                        subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                    }
                                 }
                                 bindData(target_object, binding_properties)
 
