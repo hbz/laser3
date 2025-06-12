@@ -1842,48 +1842,53 @@ class CopyElementsService {
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, List<SubscriptionPackage> packagesToTakeForChildren, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Sql sql = GlobalService.obtainSqlConnection()
-        packagesToTake.each { SubscriptionPackage subscriptionPackage ->
-            if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
-                List<OrgAccessPointLink> pkgOapls = []
-                if(subscriptionPackage.oapls)
-                    pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                subscriptionPackage.oapls = null
-                subscriptionPackage.pendingChangeConfig = null //copied in next step
-                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                newSubscriptionPackage.pkg = subscriptionPackage.pkg
-                newSubscriptionPackage.subscription = targetObject
-                //newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
-                if (_save(newSubscriptionPackage, flash)) {
-                    pkgOapls.each { OrgAccessPointLink oapl ->
+        try {
+            packagesToTake.each { SubscriptionPackage subscriptionPackage ->
+                if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
+                    List<OrgAccessPointLink> pkgOapls = []
+                    if(subscriptionPackage.oapls)
+                        pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
+                    subscriptionPackage.oapls = null
+                    subscriptionPackage.pendingChangeConfig = null //copied in next step
+                    SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                    newSubscriptionPackage.pkg = subscriptionPackage.pkg
+                    newSubscriptionPackage.subscription = targetObject
+                    //newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
+                    if (_save(newSubscriptionPackage, flash)) {
+                        pkgOapls.each { OrgAccessPointLink oapl ->
 
-                        def oaplProperties = oapl.properties
-                        oaplProperties.globalUID = null
-                        OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
-                        InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
-                        newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                        newOrgAccessPointLink.save()
-                    }
-                    batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
-                    if(subscriptionPackage in packagesToTakeForChildren) {
-                        List<Subscription> targetMembers = Subscription.findAllByInstanceOf(targetObject)
-                        subscriptionService.addToMemberSubscription(targetObject, targetMembers, subscriptionPackage.pkg, false)
-                        if(targetObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !AuditConfig.getConfig(targetObject, 'holdingSelection')) {
-                            targetMembers.each { Subscription child ->
-                                Long sourceChildId = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where s.instanceOf = :sourceObject and oo.org = :subscriber', [subscriber: child.getSubscriber(), sourceObject: subscriptionPackage.subscription])
-                                batchQueryService.bulkAddHolding(sql, child.id, subscriptionPackage.pkg.id, child.hasPerpetualAccess, null, sourceChildId)
-                            }
+                            def oaplProperties = oapl.properties
+                            oaplProperties.globalUID = null
+                            OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
+                            InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                            newOrgAccessPointLink.subPkg = newSubscriptionPackage
+                            newOrgAccessPointLink.save()
                         }
-                        /*.each { Subscription child ->
-                            if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
-                                SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                if(AuditConfig.getConfig(targetObject)) {
-                                    batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                        batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
+                        if(subscriptionPackage in packagesToTakeForChildren) {
+                            List<Subscription> targetMembers = Subscription.findAllByInstanceOf(targetObject)
+                            subscriptionService.addToMemberSubscription(targetObject, targetMembers, subscriptionPackage.pkg, false)
+                            if(targetObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !AuditConfig.getConfig(targetObject, 'holdingSelection')) {
+                                targetMembers.each { Subscription child ->
+                                    Long sourceChildId = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where s.instanceOf = :sourceObject and oo.org = :subscriber', [subscriber: child.getSubscriber(), sourceObject: subscriptionPackage.subscription])
+                                    batchQueryService.bulkAddHolding(sql, child.id, subscriptionPackage.pkg.id, child.hasPerpetualAccess, null, sourceChildId)
                                 }
                             }
-                        }*/
+                            /*.each { Subscription child ->
+                                if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
+                                    SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
+                                    if(AuditConfig.getConfig(targetObject)) {
+                                        batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                                    }
+                                }
+                            }*/
+                        }
                     }
                 }
             }
+        }
+        finally {
+            sql.close()
         }
     }
 

@@ -61,7 +61,7 @@
                   --%>
                   <g:link uri="${source.getUri() + '/searchApi?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}&sort=lastUpdated" target="_blank">Link</g:link>
               </td>
-              <td>${source.active}</td>
+              <td><ui:xEditableBoolean owner="${source}" field="active"/></td>
             </tr>
           </g:each>
         </tbody>
