@@ -4437,25 +4437,24 @@ class SubscriptionService {
                     List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.customer o where o.globalUID = :globalUID and ci.platform = :platform', [globalUID: cols[colMap.globalUIDCol].trim(), platform: platform])
                     if (matchList.size() == 1)
                         match = matchList[0] as CustomerIdentifier
-                }
-
-                if (match) {
-                    processCount++
-                    Map orgMap = [orgId: match.customer.id]
-                    if (colMap.customerIdCol > -1 && cols[colMap.customerIdCol] && cols[colMap.customerIdCol].trim()) {
-                        match.value = cols[colMap.customerIdCol].trim()
+                    if (match) {
+                        processCount++
+                        Map orgMap = [orgId: match.customer.id]
+                        if (colMap.customerIdCol > -1 && cols[colMap.customerIdCol] && cols[colMap.customerIdCol].trim()) {
+                            match.value = cols[colMap.customerIdCol].trim()
+                        }
+                        if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
+                            match.requestorKey = cols[colMap.requestorIdCol].trim()
+                        }
+                        match.save()
+                        orgList << orgMap
                     }
-                    if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
-                        match.requestorKey = cols[colMap.requestorIdCol].trim()
+                    else {
+                        wrongOrgs << i+1
                     }
-                    match.save()
-                    orgList << orgMap
-                }
-                else {
-                    wrongOrgs << i+2
                 }
             }else{
-                truncatedRows << i+2
+                truncatedRows << i+1
             }
         }
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
