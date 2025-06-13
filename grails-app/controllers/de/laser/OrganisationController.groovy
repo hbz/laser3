@@ -1575,15 +1575,17 @@ class OrganisationController  {
         numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
             years.value.each { Map.Entry<String,ReaderNumber> row ->
                 yearCols << row.key
-                ReaderNumber rn = row.value
-                BigDecimal yearSum = yearSums.get(years.key)
-                if(rn.value) {
-                    if(yearSum == null) {
-                        yearSum = rn.value
+                if(row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) {
+                    ReaderNumber rn = row.value
+                    BigDecimal yearSum = yearSums.get(years.key)
+                    if(rn.value) {
+                        if(yearSum == null) {
+                            yearSum = rn.value
+                        }
+                        else yearSum += rn.value
                     }
-                    else yearSum += rn.value
+                    yearSums.put(years.key,yearSum)
                 }
-                yearSums.put(years.key,yearSum)
             }
         }
 

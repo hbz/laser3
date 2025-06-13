@@ -7388,7 +7388,7 @@ class ExportClickMeService {
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                if((readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
+                if(!readerNumberPeople && !readerNumberUser && (readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
                     row.add(createTableCell(format, ' '))
                 else
                     row.add(createTableCell(format, sum))

@@ -288,7 +288,8 @@ class YodaService {
                                          "vendor:a1a002b2-b410-412e-ad06-0c0f721a48d5",
                                          "vendor:2dbf4b63-ea15-4ee2-bb7a-df06a7a79bc9",
                                          "vendor:bc6b0944-5c6d-469b-a94b-921e4eb1a48f",
-                                         "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7"]
+                                         "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7",
+                                         "vendor:9acf4ffd-4798-4ecb-898f-8239078ddfe5"]
         Map<String, RefdataValue> lsConsortium = [
                 "vendor:c94a234b-0ba0-4cf8-93f2-26a433362558": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
                 "vendor:6cfbc5da-1321-48b4-961f-aefe49fca9f8": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
