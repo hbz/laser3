@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6666    13.06.2025  rc-3.5  3.5         Andreas Bug         falsche Summierung der Nutzerzahlen behoben
+
+6665    13.06.2025  rc-3.5  3.5         Andreas Bug         fehlende Verknüpfungen nachgereicht, Haken ausgeblendet
+
+6661    13.06.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen für den Preisupload
+
 6471    11.06.2025  rc-3.5  3.5         Andreas Feature     Nachbesserungen für COUNTER 5.1
 
 6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten

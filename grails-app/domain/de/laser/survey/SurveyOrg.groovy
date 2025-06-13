@@ -32,7 +32,9 @@ class SurveyOrg {
 
     boolean orgInsertedItself = false
 
+    @Deprecated
     Person person
+
     Address address
 
     @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)

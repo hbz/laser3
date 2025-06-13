@@ -227,6 +227,7 @@ class YodaService {
         Map<String, String> mergers = ['vendor:f9a91c40-a02e-423f-bd97-e68d3b398b4b': 'vendor:52be47fc-44de-400d-b718-6d449c714cfc', //HGV
                                        'vendor:a1f7c0ee-90fe-42c2-b677-be74d29410fb': 'vendor:e8f3f4ed-4fbf-4fbf-9fdc-eeea0da4672f', //EBSCO
                                        'vendor:4eaecda9-9a2e-4f34-966a-7f46650e12d5': 'vendor:bd01da62-126a-4fc1-8431-ca6f07a35608', //Goethe + Schweitzer
+                                       'vendor:52b444d0-00ce-43a7-a6f4-5afea259ddf2': 'vendor:2ce1502c-8d8e-412d-a3ba-e0615dd87ef8', //ims
                                        'vendor:bf1feac7-b269-4448-8b91-7bdf0dcb4cf8': 'vendor:7633ac5a-e775-432e-af10-56c7a6c9827e'] //Massmann
         mergers.each { String from, String to ->
             Vendor source = Vendor.findByGlobalUID(from), target = Vendor.findByGlobalUID(to)
@@ -287,7 +288,8 @@ class YodaService {
                                          "vendor:a1a002b2-b410-412e-ad06-0c0f721a48d5",
                                          "vendor:2dbf4b63-ea15-4ee2-bb7a-df06a7a79bc9",
                                          "vendor:bc6b0944-5c6d-469b-a94b-921e4eb1a48f",
-                                         "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7"]
+                                         "vendor:04e2ea97-f431-451e-9355-19428eb2f1d7",
+                                         "vendor:9acf4ffd-4798-4ecb-898f-8239078ddfe5"]
         Map<String, RefdataValue> lsConsortium = [
                 "vendor:c94a234b-0ba0-4cf8-93f2-26a433362558": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),
                 "vendor:6cfbc5da-1321-48b4-961f-aefe49fca9f8": RefdataValue.getByValueAndCategory('Bayern-Konsortium', RDConstants.CONSORTIUM_FOR_LOCAL_SUBS),

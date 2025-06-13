@@ -156,7 +156,7 @@ class IssueEntitlementService {
             EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
             userCache.put('label', 'Verarbeite Titel ...')
             userCache.put('progress', configMap.floor)
-            boolean pickWithNoPick = false
+            boolean pickWithNoPick = false, wrongSeparator = false
             int countRows = 0, total = 0, toAddCount = 0, start, percentage = 0
             Set<String> titleRow = []
             Map<TitleInstancePackagePlatform, Map<String, Object>> matchedTitles = [:] //use keySet() to use only the retrieved we:kb keys
@@ -180,80 +180,84 @@ class IssueEntitlementService {
                 ICSVParser csvp = new CSVParserBuilder().withSeparator(separator).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
                 CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
                 List<String[]> lines = csvr.readAll()
-                total = lines.size()
-                if(!configMap.containsKey('withPick'))
-                    toAddCount = total
-                if(configMap.containsKey('withIDOnly')) {
-                    start = 0
+                if(lines[0].size() == 1) {
+                    wrongSeparator = true
                 }
                 else {
-                    start = 1
-                    titleRow.addAll(lines[0])
-                    if(titleRow[0]) {
-                        titleRow.eachWithIndex{ String headerCol, int c ->
-                            switch (headerCol.toLowerCase().trim()) {
-                                case ["title_url", "zugriffs-url", "access url"]: colMap.titleUrlCol = c
-                                    break
-                                case "title_id": colMap.titleIdCol = c
-                                    break
-                                case ["doi", "doi_identifier"]: colMap.doiCol= c
-                                    break
-                                case "zdb_id": colMap.zdbCol = c
-                                    break
-                                case ["print_identifier","print identifier"]: colMap.printIdentifierCol = c
-                                    break
-                                case ["online_identifier","online identifier"]: colMap.onlineIdentifierCol = c
-                                    break
-                                case ["title", "publication_title"]: colMap.publicationTitleCol = c
-                                    break
-                                case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
-                                    break
-                                case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
-                                    break
-                                case "date_first_issue_online": colMap.startDateCol = c
-                                    break
-                                case "num_first_vol_online": colMap.startVolumeCol = c
-                                    break
-                                case "num_first_issue_online": colMap.startIssueCol = c
-                                    break
-                                case "date_last_issue_online": colMap.endDateCol = c
-                                    break
-                                case "num_last_vol_online": colMap.endVolumeCol = c
-                                    break
-                                case "num_last_issue_online": colMap.endIssueCol = c
-                                    break
-                                case "access_start_date": colMap.accessStartDateCol = c
-                                    break
-                                case "access_end_date": colMap.accessEndDateCol = c
-                                    break
-                                case "embargo_info": colMap.embargoCol = c
-                                    break
-                                case "coverage_depth": colMap.coverageDepthCol = c
-                                    break
-                                case "notes": colMap.coverageNotesCol = c
-                                    break
-                                case "listprice_eur": colMap.listPriceEurCol = c
-                                    break
-                                case "listprice_usd": colMap.listPriceUsdCol = c
-                                    break
-                                case "listprice_gbp": colMap.listPriceGbpCol = c
-                                    break
-                                case "localprice_eur": colMap.localPriceEurCol = c
-                                    break
-                                case "localprice_usd": colMap.localPriceUsdCol = c
-                                    break
-                                case "localprice_gbp": colMap.localPriceGbpCol = c
-                                    break
-                                case ["pick", "auswahl"]: colMap.pick = c
-                                    break
+                    total = lines.size()
+                    if(!configMap.containsKey('withPick'))
+                        toAddCount = total
+                    if(configMap.containsKey('withIDOnly')) {
+                        start = 0
+                    }
+                    else {
+                        start = 1
+                        titleRow.addAll(lines[0])
+                        if(titleRow[0]) {
+                            titleRow.eachWithIndex{ String headerCol, int c ->
+                                switch (headerCol.toLowerCase().trim()) {
+                                    case ["title_url", "zugriffs-url", "access url"]: colMap.titleUrlCol = c
+                                        break
+                                    case "title_id": colMap.titleIdCol = c
+                                        break
+                                    case ["doi", "doi_identifier"]: colMap.doiCol= c
+                                        break
+                                    case "zdb_id": colMap.zdbCol = c
+                                        break
+                                    case ["print_identifier","print identifier"]: colMap.printIdentifierCol = c
+                                        break
+                                    case ["online_identifier","online identifier"]: colMap.onlineIdentifierCol = c
+                                        break
+                                    case ["title", "publication_title"]: colMap.publicationTitleCol = c
+                                        break
+                                    case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
+                                        break
+                                    case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
+                                        break
+                                    case "date_first_issue_online": colMap.startDateCol = c
+                                        break
+                                    case "num_first_vol_online": colMap.startVolumeCol = c
+                                        break
+                                    case "num_first_issue_online": colMap.startIssueCol = c
+                                        break
+                                    case "date_last_issue_online": colMap.endDateCol = c
+                                        break
+                                    case "num_last_vol_online": colMap.endVolumeCol = c
+                                        break
+                                    case "num_last_issue_online": colMap.endIssueCol = c
+                                        break
+                                    case "access_start_date": colMap.accessStartDateCol = c
+                                        break
+                                    case "access_end_date": colMap.accessEndDateCol = c
+                                        break
+                                    case "embargo_info": colMap.embargoCol = c
+                                        break
+                                    case "coverage_depth": colMap.coverageDepthCol = c
+                                        break
+                                    case "notes": colMap.coverageNotesCol = c
+                                        break
+                                    case "listprice_eur": colMap.listPriceEurCol = c
+                                        break
+                                    case "listprice_usd": colMap.listPriceUsdCol = c
+                                        break
+                                    case "listprice_gbp": colMap.listPriceGbpCol = c
+                                        break
+                                    case "localprice_eur": colMap.localPriceEurCol = c
+                                        break
+                                    case "localprice_usd": colMap.localPriceUsdCol = c
+                                        break
+                                    case "localprice_gbp": colMap.localPriceGbpCol = c
+                                        break
+                                    case ["pick", "auswahl"]: colMap.pick = c
+                                        break
+                                }
                             }
                         }
                     }
-                }
-                if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
-                    for(int i = start; i < total; i++) {
-                        String[] line = lines[i]
-                        //if(line[0]) {
+                    if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
+                        for(int i = start; i < total; i++) {
+                            String[] line = lines[i]
+                            //if(line[0]) {
                             /*
                                 here the switch between the matching methods:
                                 Select from total list (KBART) -> used now in tippSelectForSurvey()
@@ -338,13 +342,14 @@ class IssueEntitlementService {
                             //start from floor, end at ceil
                             percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
                             userCache.put('progress', percentage)
-                        //}
+                            //}
+                        }
                     }
+                    else pickWithNoPick = true
                 }
-                else pickWithNoPick = true
             }
             userCache.put('progress', configMap.ceil)
-            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
+            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, wrongSeparator: wrongSeparator, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
         }
     }
 

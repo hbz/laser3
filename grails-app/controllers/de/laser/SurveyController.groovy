@@ -928,6 +928,10 @@ class SurveyController {
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                             ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig))
                         }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
+                        }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
                             String dir = GlobalService.obtainTmpFileLocation()
@@ -988,6 +992,10 @@ class SurveyController {
                         Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
                             ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
                         }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
@@ -1141,6 +1149,10 @@ class SurveyController {
                         SurveyConfigSubscription surveyConfigSubscription = params.selectedSurveyConfigSubscriptionID ? SurveyConfigSubscription.get(params.long('selectedSurveyConfigSubscriptionID')) : null
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
                             ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, null, surveyConfigSubscription))
+                        }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
                         }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
