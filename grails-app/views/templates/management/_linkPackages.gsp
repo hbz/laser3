@@ -154,7 +154,7 @@
             <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
-                    <g:if test="${editable}">
+                    <g:if test="${editable && !auditService.getAuditConfig(subscription, 'holdingSelection')}">
                         <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
@@ -187,7 +187,7 @@
                     <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
                     <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriberRespConsortia() : zeile.orgs}"/>
                     <tr>
-                        <g:if test="${editable}">
+                        <g:if test="${editable && !auditService.getAuditConfig(subscription, 'holdingSelection')}">
                             <td>
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">

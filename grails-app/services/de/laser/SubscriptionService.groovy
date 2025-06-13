@@ -3522,60 +3522,62 @@ class SubscriptionService {
 
     Map tippSelectForSurvey(MultipartFile inputFile, Map<String, Object> configMap) {
         Map<String, Object> result = issueEntitlementService.matchTippsFromFile(inputFile, configMap)
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale())
-        EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
-        int pointsPerIteration = 25/result.matchedTitles.size(), perpetuallyPurchasedCount = 0
-        Subscription subscriberSub = configMap.subscription
-        SurveyConfig surveyConfig = SurveyConfig.get(configMap.surveyConfigID)
-        SurveyInfo surveyInfo = surveyConfig.surveyInfo
-        Org subscriber = subscriberSub.getSubscriberRespConsortia(), contextOrg = contextService.getOrg()
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
-        Set<String> toBeAdded = []
-        userCache.put('progress', 50)
-        result.matchedTitles.eachWithIndex{ TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
-            IssueEntitlement ieInNewSub = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, subscriberSub, RDStore.TIPP_STATUS_REMOVED)
-            boolean allowedToSelect
-            PermanentTitle participantPerpetualAccessToTitle = PermanentTitle.findByTippAndOwner(match, subscriber)
-            if (surveyConfig.pickAndChoosePerpetualAccess) {
-                allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id)))
+        if(!result.wrongSeparator) {
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale())
+            EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
+            int pointsPerIteration = 25/result.matchedTitles.size(), perpetuallyPurchasedCount = 0
+            Subscription subscriberSub = configMap.subscription
+            SurveyConfig surveyConfig = SurveyConfig.get(configMap.surveyConfigID)
+            SurveyInfo surveyInfo = surveyConfig.surveyInfo
+            Org subscriber = subscriberSub.getSubscriberRespConsortia(), contextOrg = contextService.getOrg()
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+            Set<String> toBeAdded = []
+            userCache.put('progress', 50)
+            result.matchedTitles.eachWithIndex{ TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
+                IssueEntitlement ieInNewSub = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, subscriberSub, RDStore.TIPP_STATUS_REMOVED)
+                boolean allowedToSelect
+                PermanentTitle participantPerpetualAccessToTitle = PermanentTitle.findByTippAndOwner(match, subscriber)
+                if (surveyConfig.pickAndChoosePerpetualAccess) {
+                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id)))
+                }
+                else {
+                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id))
+                }
+                if (!ieInNewSub && allowedToSelect) {
+                    toBeAdded << match.gokbId
+                }
+                else if (!allowedToSelect) {
+                    externalTitleData.put('found_in_package', RDStore.YN_YES.value)
+                    String subHeaderString = participantPerpetualAccessToTitle.subscription.name
+                    if(participantPerpetualAccessToTitle.subscription.startDate)
+                        subHeaderString += " (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-"
+                    if(participantPerpetualAccessToTitle.subscription.endDate)
+                        subHeaderString += "${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})"
+                    externalTitleData.put('already_purchased_at', subHeaderString)
+                    result.notAddedTitles << externalTitleData
+                    perpetuallyPurchasedCount++
+                }
+                userCache.put('progress', 50+i*pointsPerIteration)
             }
-            else {
-                allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id))
+            userCache.put('progress', 75)
+            if (toBeAdded) {
+                if (!issueEntitlementGroup) {
+                    String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, surveyConfig.issueEntitlementGroupName) + 1) : surveyConfig.issueEntitlementGroupName
+                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: subscriberSub, name: groupName)
+                    if (!issueEntitlementGroup.save())
+                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                }
+                if(issueEntitlementGroup) {
+                    bulkAddEntitlements(subscriberSub, toBeAdded, surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
+                }
+                userCache.put('progress', 100)
+                result.success = true
             }
-            if (!ieInNewSub && allowedToSelect) {
-                toBeAdded << match.gokbId
-            }
-            else if (!allowedToSelect) {
-                externalTitleData.put('found_in_package', RDStore.YN_YES.value)
-                String subHeaderString = participantPerpetualAccessToTitle.subscription.name
-                if(participantPerpetualAccessToTitle.subscription.startDate)
-                    subHeaderString += " (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-"
-                if(participantPerpetualAccessToTitle.subscription.endDate)
-                    subHeaderString += "${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})"
-                externalTitleData.put('already_purchased_at', subHeaderString)
-                result.notAddedTitles << externalTitleData
-                perpetuallyPurchasedCount++
-            }
-            userCache.put('progress', 50+i*pointsPerIteration)
-        }
-        userCache.put('progress', 75)
-        if (toBeAdded) {
-            if (!issueEntitlementGroup) {
-                String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, surveyConfig.issueEntitlementGroupName) + 1) : surveyConfig.issueEntitlementGroupName
-                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: subscriberSub, name: groupName)
-                if (!issueEntitlementGroup.save())
-                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-            }
-            if(issueEntitlementGroup) {
-                bulkAddEntitlements(subscriberSub, toBeAdded, surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
-            }
-            userCache.put('progress', 100)
-            result.success = true
+            result.addedCount = toBeAdded.size()
+            result.notAddedCount = result.toAddCount-result.addedCount
+            result.perpetuallyPurchasedCount = perpetuallyPurchasedCount
         }
 
-        result.addedCount = toBeAdded.size()
-        result.notAddedCount = result.toAddCount-result.addedCount
-        result.perpetuallyPurchasedCount = perpetuallyPurchasedCount
         result
         /*
         InputStream stream = kbartFile.getInputStream()
@@ -4437,25 +4439,24 @@ class SubscriptionService {
                     List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.customer o where o.globalUID = :globalUID and ci.platform = :platform', [globalUID: cols[colMap.globalUIDCol].trim(), platform: platform])
                     if (matchList.size() == 1)
                         match = matchList[0] as CustomerIdentifier
-                }
-
-                if (match) {
-                    processCount++
-                    Map orgMap = [orgId: match.customer.id]
-                    if (colMap.customerIdCol > -1 && cols[colMap.customerIdCol] && cols[colMap.customerIdCol].trim()) {
-                        match.value = cols[colMap.customerIdCol].trim()
+                    if (match) {
+                        processCount++
+                        Map orgMap = [orgId: match.customer.id]
+                        if (colMap.customerIdCol > -1 && cols[colMap.customerIdCol] && cols[colMap.customerIdCol].trim()) {
+                            match.value = cols[colMap.customerIdCol].trim()
+                        }
+                        if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
+                            match.requestorKey = cols[colMap.requestorIdCol].trim()
+                        }
+                        match.save()
+                        orgList << orgMap
                     }
-                    if(colMap.requestorIdCol > -1 && cols[colMap.requestorIdCol] && cols[colMap.requestorIdCol].trim()) {
-                        match.requestorKey = cols[colMap.requestorIdCol].trim()
+                    else {
+                        wrongOrgs << i+1
                     }
-                    match.save()
-                    orgList << orgMap
-                }
-                else {
-                    wrongOrgs << i+2
                 }
             }else{
-                truncatedRows << i+2
+                truncatedRows << i+1
             }
         }
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]

@@ -37,9 +37,12 @@
 <g:if test="${surveyConfig}">
 
     <g:if test="${afterEnrichment}">
-        <g:if test="${wrongSeparator}">
-            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        <g:if test="${unknownCharsetError}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.unknownCharsetError"/>
         </g:if>
+        <g:elseif test="${wrongSeparator}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        </g:elseif>
         <g:else>
             <g:if test="${matchCounter > 0}">
                 <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>

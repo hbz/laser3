@@ -370,7 +370,7 @@
                     $(this).addClass('icon');
                 })
                 $('main > nav.la-js-ctrls').each ( function() {
-                    let $new = $('<div class="la-action-ext-modalWrapper"></div>');
+                    let $new = $('<div class="la-action-ext-modalWrapper" style="width: inherit;"></div>');
                     $(this).contents().each ( function() {
                         $new.append($(this));
                     })

@@ -6746,27 +6746,27 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), 'financial') as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), 'financial') as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), 'financial') as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else if (fieldKey.contains('localPriceEUR')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro order by pi_date_created desc limit 1), null) as localPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro order by pi_date_created desc limit 1), 'financial') as localPriceEUR"
                 queryArgs.leuro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('localPriceGBP')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp order by pi_date_created desc limit 1), null) as localPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp order by pi_date_created desc limit 1), 'financial') as localPriceGBP"
                 queryArgs.lgbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('localPriceUSD')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd order by pi_date_created desc limit 1), null) as localPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd order by pi_date_created desc limit 1), 'financial') as localPriceUSD"
                 queryArgs.lusd = RDStore.CURRENCY_USD.id
             }
             else {
@@ -6852,15 +6852,15 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), 'financial') as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), 'financial') as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), 'financial') as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else {

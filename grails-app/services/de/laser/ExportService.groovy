@@ -207,9 +207,16 @@ class ExportService {
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
 							try {
-								BigDecimal financial = new BigDecimal(cellData.field)
-								cell.setCellValue(financial.toDouble())
-								cell.setCellStyle(numberStyle)
+								if(cellData.style == 'financial') {
+									BigDecimal financial = new BigDecimal(cellData.field)
+									cell.setCellValue(financial.toDouble())
+									cell.setCellStyle(numberStyle)
+								}
+								else {
+									cell.setCellValue((String) cellData.field)
+									if(cellData.field.contains('\n'))
+										cell.setCellStyle(lb)
+								}
 							}
 							catch (NumberFormatException ignored) {
 								cell.setCellValue((String) cellData.field)
@@ -2327,9 +2334,9 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as listprice_usd"
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), 'financial') as listprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), 'financial') as listprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), 'financial') as listprice_usd"
 		config
 	}
 
@@ -2380,12 +2387,12 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as listprice_usd," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), ${style}) as localprice_eur," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), ${style}) as localprice_gbp," +
-				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), ${style}) as localprice_usd"
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), 'financial') as listprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), 'financial') as listprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), 'financial') as listprice_usd," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_date_created desc limit 1), 'financial') as localprice_eur," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_date_created desc limit 1), 'financial') as localprice_gbp," +
+				"create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_date_created desc limit 1), 'financial') as localprice_usd"
 		config
 	}
 

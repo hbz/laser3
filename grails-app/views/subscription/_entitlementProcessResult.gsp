@@ -3,6 +3,9 @@
 <g:if test="${success}">
     <ui:msg class="success" showIcon="true" message="subscription.details.addEntitlements.matchingSuccessful" args="[toAddCount, addedCount]"/>
 </g:if>
+<g:if test="${wrongSeparator}">
+    <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.wrongSeparator" />
+</g:if>
 <g:if test="${error}">
     <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />
     <input id="errorMailcc" type="hidden" value="${contextService.getUser().email}" />
