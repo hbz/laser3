@@ -3,7 +3,7 @@
 
 <laser:serviceInjection />
 
-<div class="ui yellow segment " id="subscriptionTransfer-content">
+<div class="ui yellow segment " id="subscriptionTransfer-content" style="width: inherit;">
     <div class="ui content grid">
         <div class="sixteen wide column">
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
@@ -164,13 +164,7 @@
                                                     <g:if test="${supportedMimeType}">
                                                         <a href="#documentPreview"
                                                            class="la-popup-tooltip"
-                                                           data-content="
-                                                           <g:if test="${docctx.getDocType()}">
-                                                               ${docctx.getDocType().getI10n("value")}
-                                                           </g:if>
-                                                           <g:else>
-                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                           </g:else>"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
                                                            data-dctx="${docctx.id}">
                                                             <i class="${Icon.DOCUMENT} blue"></i>
                                                         </a>
@@ -317,13 +311,7 @@
                                                     <g:if test="${supportedMimeType}">
                                                         <a href="#documentPreview"
                                                            class="la-popup-tooltip"
-                                                           data-content="
-                                                           <g:if test="${docctx.getDocType()}">
-                                                               ${docctx.getDocType().getI10n("value")}
-                                                           </g:if>
-                                                           <g:else>
-                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                           </g:else>"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
                                                            data-dctx="${docctx.id}">
                                                             <i class="${Icon.DOCUMENT} blue"></i>
                                                         </a>

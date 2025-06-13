@@ -466,13 +466,7 @@
                                                     <g:if test="${supportedMimeType}">
                                                         <a href="#documentPreview"
                                                            class="la-popup-tooltip"
-                                                           data-content="
-                                                           <g:if test="${docctx.getDocType()}">
-                                                               ${docctx.getDocType().getI10n("value")}
-                                                           </g:if>
-                                                           <g:else>
-                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                           </g:else>"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
                                                            data-dctx="${docctx.id}">
                                                             <i class="${Icon.DOCUMENT} blue"></i>
                                                         </a>
@@ -698,13 +692,7 @@
                                                     <g:if test="${supportedMimeType}">
                                                         <a href="#documentPreview"
                                                            class="la-popup-tooltip"
-                                                           data-content="
-                                                           <g:if test="${docctx.getDocType()}">
-                                                               ${docctx.getDocType().getI10n("value")}
-                                                           </g:if>
-                                                           <g:else>
-                                                               ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                           </g:else>"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
                                                            data-dctx="${docctx.id}">
                                                             <i class="${Icon.DOCUMENT} blue"></i>
                                                         </a>
@@ -831,7 +819,10 @@
         $('#modalCreateDocument input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
         $('#modalCreateDocument select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
     }
-</laser:script>
+
+        docs.init('.subscription-results');
+
+    </laser:script>
 
 </g:if>
 
