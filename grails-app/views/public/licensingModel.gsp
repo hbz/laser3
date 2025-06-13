@@ -97,8 +97,8 @@
             <thead>
             <tr>
                 <th class="two wide" rowspan="2">Leistungsmerkmale</th>
-                <th class="center aligned"><h2 class="ui heading">Basic</h2>Mitgliedschaft</th>
-                <th class="center aligned"><h2 class="ui heading">Pro</h2>Mitgliedschaft</th>
+                <th class="center aligned"><h2 class="ui heading">Basic</h2></th>
+                <th class="center aligned"><h2 class="ui heading">Pro</h2></th>
                 <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
             </tr>
 
