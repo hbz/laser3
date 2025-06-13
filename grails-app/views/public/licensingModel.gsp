@@ -65,7 +65,7 @@
             font-family: icomoon;
         }
         .mk-api:before {
-            content: "\f120";
+            content: "\f064";
         }
 
         .mk-support:before {
