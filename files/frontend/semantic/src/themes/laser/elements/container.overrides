@@ -16,4 +16,18 @@
     margin-top: 80px;
   }
 }
+#mainContent {
+  &.la-local {
+    box-shadow: 0 0 0 12px @yellow;
+  }
+  &.la-dev {
+    box-shadow: 0 0 0 12px @green;
+  }
+  &.la-qa {
+    box-shadow: 0 0 0 12px @red;
 
+  }
+  &.la-test{
+    box-shadow: 0 0 0 12px@blue;
+  }
+}

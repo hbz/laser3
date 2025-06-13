@@ -157,7 +157,7 @@
                             <g:each in="${documentSet}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
-                                        <div class="ui grid summary">
+                                        <div class="ui middle aligned grid summary">
                                             <div class="eight wide column la-column-right-lessPadding center aligned">
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
@@ -304,7 +304,7 @@
                             <g:each in="${documentSet2}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
-                                        <div class="ui grid summary">
+                                        <div class="ui middle aligned grid summary">
                                             <div class="eight wide column la-column-right-lessPadding center aligned">
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">

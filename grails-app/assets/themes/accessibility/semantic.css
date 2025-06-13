@@ -7439,6 +7439,22 @@ button.la-scrollTopButton {
     margin-top: 80px;
   }
 }
+
+#mainContent.la-local {
+  box-shadow: 0 0 0 12px #FBBD08;
+}
+
+#mainContent.la-dev {
+  box-shadow: 0 0 0 12px #98B500;
+}
+
+#mainContent.la-qa {
+  box-shadow: 0 0 0 12px #BB1600;
+}
+
+#mainContent.la-test {
+  box-shadow: 0 0 0 12px #004678;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Divider
  * https://github.com/fomantic/Fomantic-UI/
