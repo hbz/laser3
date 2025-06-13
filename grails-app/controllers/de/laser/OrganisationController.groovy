@@ -1573,19 +1573,22 @@ class OrganisationController  {
             }
         }
         numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
+
             years.value.each { Map.Entry<String,ReaderNumber> row ->
                 yearCols << row.key
-                if(row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) {
-                    ReaderNumber rn = row.value
-                    BigDecimal yearSum = yearSums.get(years.key)
-                    if(rn.value) {
-                        if(yearSum == null) {
-                            yearSum = rn.value
-                        }
-                        else yearSum += rn.value
+                ReaderNumber rn = row.value
+                BigDecimal yearSum = yearSums.get(years.key)
+                if(rn.value) {
+                    if(yearSum == null) {
+                        yearSum = rn.value
                     }
-                    yearSums.put(years.key,yearSum)
+                    else {
+                        if((years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')) && row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) ||
+                        !years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')))
+                            yearSum += rn.value
+                    }
                 }
+                yearSums.put(years.key,yearSum)
             }
         }
 
