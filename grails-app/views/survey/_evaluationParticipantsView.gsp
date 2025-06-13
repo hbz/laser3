@@ -240,9 +240,9 @@
                     <th>Diff.</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                    <th>
-                        Upload <br>
-                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                    <th class="center aligned one wide">
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}<br>
+                        <i class="${Icon.DOCUMENT} large la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center"></i>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
@@ -517,7 +517,7 @@
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                        <td>
+                        <td class="js-la-upload-list">
                             <g:if test="${editable}">
                                 <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                         data-ownerid="${subParticipant.id}"
@@ -537,16 +537,23 @@
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
                                         <div class="ui grid summary">
-                                            <div class="eight wide column la-column-right-lessPadding">
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
-                                                    <i class="${Icon.DOCUMENT} grey"></i>
+                                                    <g:if test="${supportedMimeType}">
+                                                        <a href="#documentPreview"
+                                                           class="la-popup-tooltip"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
+                                                           data-dctx="${docctx.id}">
+                                                            <i class="${Icon.DOCUMENT} blue"></i>
+                                                        </a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                    </g:else>
                                                     <ui:documentIcon doc="${docctx.owner}" showText="false"
                                                                      showTooltip="true"/>
                                                 </i>
-
-                                                <g:set var="supportedMimeType"
-                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
-
                                             </div>
 
                                             <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
@@ -882,9 +889,9 @@
                         <th>Diff.</th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                        <th>
-                            Upload <br>
-                            ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                        <th class="center aligned one wide">
+                            ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}<br>
+                            <i class="${Icon.DOCUMENT} large la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center"></i>
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
@@ -1160,7 +1167,7 @@
                             </td>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                            <td>
+                            <td class="js-la-upload-list">
                                 <g:if test="${editable}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                             data-ownerid="${subParticipant.id}"
@@ -1181,16 +1188,22 @@
                                         <div class="ui small feed content">
                                             <div class="ui grid summary">
                                                 <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                    <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                     <i class="large icons">
-                                                        <i class="${Icon.DOCUMENT} grey"></i>
+                                                        <g:if test="${supportedMimeType}">
+                                                            <a href="#documentPreview"
+                                                               class="la-popup-tooltip"
+                                                               data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
+                                                               data-dctx="${docctx.id}">
+                                                                <i class="${Icon.DOCUMENT} blue"></i>
+                                                            </a>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                        </g:else>
                                                         <ui:documentIcon doc="${docctx.owner}" showText="false"
                                                                          showTooltip="true"/>
                                                     </i>
-
-
-                                                    <g:set var="supportedMimeType"
-                                                           value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
-
                                                 </div>
 
                                                 <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
@@ -1586,6 +1599,7 @@ $('.normalExport').click(function(e) {
             $('#modalUploadTitleListDoc input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
             $('#modalUploadTitleListDoc select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
         }
+        docs.init('.js-la-upload-list');
     </laser:script>
 
 </g:if>
