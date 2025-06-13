@@ -104,6 +104,10 @@ class FinanceController  {
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                             result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
                         }
+                        else if(!encoding) {
+                            result.afterEnrichment = true
+                            result.unknownCharsetError = true
+                        }
                         if(result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
                             String dir = GlobalService.obtainTmpFileLocation()
