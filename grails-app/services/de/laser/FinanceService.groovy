@@ -1859,9 +1859,9 @@ class FinanceService {
                         totalRows++
                         //rows.each { String row ->
                         //List<String> cols = row.split('\t')
-                        String idStr = line[idCol], valueStr = line[valueCol]
+                        String idStr = line[idCol].trim(), valueStr = line[valueCol].trim()
                         //try to match the subscription
-                        if (valueStr?.trim()) {
+                        if (valueStr) {
                             //first: get the org
                             Org match = null
                             Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
@@ -1923,10 +1923,12 @@ class FinanceService {
                                             wrongIdentifiers << idStr
                                         }
                                     }
-                                }
-                                else {
-                                    wrongIdentifierCounter++
-                                    wrongIdentifiers << idStr
+                                    /*
+                                    else {
+                                        wrongIdentifierCounter++
+                                        wrongIdentifiers << idStr
+                                    }
+                                    */
                                 }
                             }
                             else {
