@@ -51,7 +51,7 @@
     </div>
 
     <div class="field">
-        <label>${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+        <label>${message(code: 'surveyconfig.vendorSurvey.short')}</label>
 
         <div class="ui checkbox">
             <input type="checkbox" id="vendorSurvey" name="vendorSurvey" ${params.vendorSurvey ? 'checked' : ''}>

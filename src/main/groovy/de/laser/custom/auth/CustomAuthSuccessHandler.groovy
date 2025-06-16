@@ -42,7 +42,7 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
     void onAuthenticationSuccess(final HttpServletRequest request, final HttpServletResponse response,
                                         final Authentication authentication) throws ServletException, IOException {
 
-        log.debug( '+ Login ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
+        log.info( '+ Login ..... [' + SwissKnife.getRemoteHash(request) + '] -> ' + request.session.id )
 
         User user = springSecurityService.getCurrentUser() as User
         user.lastLogin = new Date()

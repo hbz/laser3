@@ -179,7 +179,7 @@
                     <g:if test="${surveyConfig.surveySubscriptions}">
                         <g:select name="newSurveyConfigSubscription" id="newSurveyConfigSubscription_${idSuffix}" class="ui dropdown clearable search"
                                   from="${surveyConfig.surveySubscriptions}"
-                                  optionValue="${{ it.subscription.name }}"
+                                  optionValue="${{ it.subscription.getLabel() }}"
                                   optionKey="${{ it.id }}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"
                                   value="${selectedSurveyConfigSubscriptionID}"/>

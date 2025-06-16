@@ -78,22 +78,22 @@
                         <g:if test="${SurveyConfigSubscription.countBySurveyConfig(surveyConfig)}">
                             <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
                                                     message="surveyCostItems.createInitialCostItem"/>
-                           %{-- <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>--}%
+                            <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
                         </g:if>
                         <g:else>
                             <ui:actionsDropdownItemDisabled message="surveyCostItems.createInitialCostItem"
-                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
-                            %{--<ui:actionsDropdownItemDisabled message="menu.institutions.financeImport"
-                                                            tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>--}%
+                                                            tooltip="${message(code: 'surveySubscriptions.addCosts.disable')}"/>
+                            <ui:actionsDropdownItemDisabled message="menu.institutions.financeImport"
+                                                            tooltip="${message(code: 'surveySubscriptions.addCosts.disable')}"/>
                         </g:else>
-                       %{-- <g:if test="${assignedCostItemElements && assignedSubscriptions}">
+                        <g:if test="${assignedCostItemElements && assignedSubscriptions}">
                             <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment"
                                                     message="financials.enrichment.menu"/>
                         </g:if>
                         <g:else>
                             <ui:actionsDropdownItemDisabled message="financials.enrichment.menu"
                                                             tooltip="${message(code: 'financials.enrichment.menu.disabled')}"/>
-                        </g:else>--}%
+                        </g:else>
                     </g:if>
                 </g:if>
                 <g:else>
@@ -325,12 +325,15 @@
                 <g:if test="${actionName == 'surveyCostItemsPackages'}">
                     <g:hiddenField name="costItemsForSurveyPackage" value="true"/>
                 </g:if>
+                <g:if test="${actionName == 'surveyCostItemsSubscriptions'}">
+                    <g:hiddenField name="costItemsForSurveySubscriptions" value="true"/>
+                </g:if>
                 <br>
                 <g:link class="item" controller="public" action="manual" id="fileImport"
                         target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                 <br>
 
-                <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, costItemsForSurveySubscriptions: actionName == 'surveyCostItemsSubscriptions' ? 'true' : 'false', costItemsForSurveyPackage: actionName == 'surveyCostItemsPackages' ? 'true' : 'false']">
                     <p>${message(code: 'myinst.financeImport.template')}</p>
                 </g:link>
 

@@ -20,6 +20,8 @@ import org.elasticsearch.search.sort.SortOrder
 class ESSearchService{
 
   ESWrapperService ESWrapperService
+  CustomerTypeService customerTypeService
+  ContextService contextService
 
 
 // Map the parameter names we use in the webapp with the ES fields
@@ -30,7 +32,6 @@ class ESSearchService{
                     'providerName':'providerName',
                     'availableToOrgs':'availableToOrgs',
                     'isPublic':'isPublic',
-                    'status':'status',
                     'publisher':'publisher',
                     'publishers':'publishers.name',
                     'name':'name',
@@ -106,13 +107,11 @@ class ESSearchService{
 
             if (params.actionName == 'index') {
 
-              NestedAggregationBuilder nestedAggregationBuilder = new NestedAggregationBuilder('status', 'status')
-
               searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('rectype').size(25).field('rectype.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('providerName').size(50).field('providerName.keyword'))
-              searchSourceBuilder.aggregation(AggregationBuilders.terms('altnames').size(50).field('altnames'))
-              searchSourceBuilder.aggregation(nestedAggregationBuilder.subAggregation(AggregationBuilders.terms('status').size(50).field('status.value')))
+              searchSourceBuilder.aggregation(AggregationBuilders.terms('altnames').size(50).field('altnames.keyword'))
+              searchSourceBuilder.aggregation(AggregationBuilders.terms('status_en').size(50).field('status_en.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('startYear').size(50).field('startYear.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('endYear').size(50).field('endYear.keyword'))
               searchSourceBuilder.aggregation(AggregationBuilders.terms('consortiaName').size(50).field('consortiaName.keyword'))
@@ -239,13 +238,32 @@ class ESSearchService{
       if ( params[mapping.key] != null ) {
         if ( params[mapping.key].class == java.util.ArrayList) {
           if(sw.toString()) sw.write(" AND ")
-          sw.write(" ( (( NOT rectype:\"Subscription\" ) AND ( NOT rectype:\"License\" ) " +
-                  "AND ( NOT rectype:\"SurveyOrg\" ) AND ( NOT rectype:\"SurveyConfig\" ) " +
-                  "AND ( NOT rectype:\"Task\" ) AND ( NOT rectype:\"Note\" ) AND ( NOT rectype:\"Document\" ) " +
-                  "AND ( NOT rectype:\"IssueEntitlement\" ) " +
-                  "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
-                  "AND ( NOT rectype:\"LicenseProperty\" ) " +
-                  ") ")
+          if(customerTypeService.isConsortium( contextService.getOrg().getCustomerType() )){
+            sw.write(" ( (( NOT rectype:\"Subscription\" ) " +
+                    "AND ( NOT rectype:\"License\" ) " +
+                    "AND ( NOT rectype:\"SurveyOrg\" ) " +
+                    "AND ( NOT rectype:\"SurveyConfig\" ) " +
+                    "AND ( NOT rectype:\"Task\" ) " +
+                    "AND ( NOT rectype:\"Note\" ) " +
+                    "AND ( NOT rectype:\"Document\" ) " +
+                    "AND ( NOT rectype:\"IssueEntitlement\" ) " +
+                    "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                    "AND ( NOT rectype:\"LicenseProperty\" ) " +
+                    ") ")
+          }else {
+            sw.write(" ( (( NOT rectype:\"Subscription\" ) " +
+                    "AND ( NOT rectype:\"License\" ) " +
+                    "AND ( NOT rectype:\"SurveyOrg\" ) " +
+                    "AND ( NOT rectype:\"SurveyConfig\" ) " +
+                    "AND ( NOT rectype:\"Task\" ) " +
+                    "AND ( NOT rectype:\"Note\" ) " +
+                    "AND ( NOT rectype:\"Document\" ) " +
+                    "AND ( NOT rectype:\"IssueEntitlement\" ) " +
+                    "AND ( NOT rectype:\"SubscriptionProperty\" ) " +
+                    "AND ( NOT rectype:\"LicenseProperty\" ) " +
+                    "AND ( NOT rectype:\"Org\" ) " +
+                    ") ")
+          }
 
           params[mapping.key].each { p ->
             if(p == params[mapping.key].first())
@@ -313,6 +331,12 @@ class ESSearchService{
       if(sw.toString()) sw.write(" AND ")
 
         sw.write(" visible:'Private' ")
+    }
+
+    if(params.status_en){
+      if(sw.toString()) sw.write(" AND ")
+
+      sw.write(" status_en:\"${params.status_en}\" ")
     }
 
     if(!params.showDeleted)

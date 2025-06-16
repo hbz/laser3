@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.Org; de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" />
 
@@ -54,7 +54,7 @@
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
-        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status']}" var="facet">
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status_en']}" var="facet">
             <g:each in="${params.list(facet)}" var="selected_facet_value">
                 <input type="hidden" name="${facet}" value="${selected_facet_value}"/>
             </g:each>
@@ -190,8 +190,7 @@
                                                 <g:if test="${facet.key == 'rectype'}">
                                                     ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")} (${v.count})
                                                 </g:if>
-                                                <g:elseif test="${facet.key == 'status'}">
-                                                    ${v.display}
+                                                <g:elseif test="${facet.key == 'status_en'}">
                                                     ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display} (${v.count})
                                                 </g:elseif>
                                                 <g:else>
@@ -204,7 +203,7 @@
                                                     <g:if test="${facet.key == 'rectype'}">
                                                         ${message(code: "facet.so.${facet.key}.${v.display.toLowerCase()}")}
                                                     </g:if>
-                                                    <g:elseif test="${facet.key == 'status'}">
+                                                    <g:elseif test="${facet.key == 'status_en'}">
                                                         ${RefdataValue.getByValue(v.display) ? RefdataValue.getByValue(v.display).getI10n('value') : v.display}
                                                     </g:elseif>
                                                     <g:else>
@@ -223,7 +222,7 @@
             <div class="twelve wide column">
                 <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
-                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status_en']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
 
                             <span class="ui label la-advanced-label"><g:message code="facet.so.${facet}"/>:
@@ -231,7 +230,7 @@
                                 <g:if test="${facet == 'rectype'}">
                                     ${message(code: "facet.so.${facet}.${fv.toLowerCase()}")}
                                 </g:if>
-                                <g:elseif test="${facet == 'status'}">
+                                <g:elseif test="${facet == 'status_en'}">
                                     ${RefdataValue.getByValue(fv) ? RefdataValue.getByValue(fv).getI10n('value') : fv}
                                 </g:elseif>
                                 <g:else>
@@ -277,11 +276,12 @@
                                 <td>
                                     <strong><g:message code="org.orgType.label"/></strong>:
                                     <div class="ui bulleted list">
-                                        <g:each in="${object.type?.sort { it.getAt('value_'+languageSuffix) }}" var="type">
+                                    ${object.type?.getAt('value_'+languageSuffix)}
+                                       %{-- <g:each in="${object.type?.sort { it.getAt('value_'+languageSuffix) }}" var="type">
                                             <div class="item">
                                             ${type.getAt('value_'+languageSuffix)}
                                             </div>
-                                        </g:each>
+                                        </g:each>--}%
                                     </div>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
                                     <div class="ui bulleted list">
@@ -362,7 +362,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.provider')}">
-                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                        <i class="circular icon red broadcast tower"></i>
                                     </span>
 
                                     <g:link controller="provider" action="show" id="${object.dbId}">${object.name}</g:link>
@@ -445,7 +445,7 @@
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
-                                            <g:link controller="subscription" action="members" id="${object.dbId}">${member.name}</g:link>
+                                            <g:link controller="subscription" action="members" id="${object.dbId}">${Org.get(object.dbId).name}</g:link>
                                         </g:each>
                                         </article>
                                     </g:if>
@@ -515,7 +515,7 @@
                                         <g:link controller="subscription" action="members" id="${object.dbId}"> ${object.members.size()}</g:link>
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
-                                            ${member.name},
+                                            ${Org.get(member.dbId).name},
                                         </g:each>
                                         </article>
                                     </g:if>
@@ -635,7 +635,7 @@
                                     <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
-                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(object.endDate)}"/>
+                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sdf.parse(object.endDate)}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
@@ -646,7 +646,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: 'spotlight.vendor')}">
-                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                        <i class="circular icon green handshake"></i>
                                     </span>
 
                                     <g:link controller="vendor" action="show" id="${object.dbId}">${object.name}</g:link>
@@ -663,9 +663,9 @@
                                     </div>
                                     <strong><g:message code="package.plural"/></strong>:
                                     <div class="ui bulleted list">
-                                        <g:each in="${object.packages?.sort { it.pkg.name }}" var="pv">
+                                        <g:each in="${object.packages?.sort { it.name }}" var="pv">
                                             <div class="item">
-                                                <g:link controller="package" action="show" id="${pv.pkg.dbId}">${pv.pkg.name}</g:link>
+                                                <g:link controller="package" action="show" id="${pv.dbId}">${pv.name}</g:link>
                                             </div>
                                         </g:each>
                                     </div>
@@ -754,11 +754,41 @@
 
                                 </td>
                             </g:if>
+                            <g:if test="${object.rectype == 'TitleInstancePackagePlatform'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip"
+                                          data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
+                                        <i class="circular la-book icon"></i>
+                                    </span>
+
+                                    <g:link controller="tipp" action="show" id="${object.dbId}">${object.name}</g:link>
+
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                    <g:set var="tipp" value="${de.laser.wekb.TitleInstancePackagePlatform.get(object.dbId)}"/>
+                                    <g:if test="${tipp}">
+                                            <div class="item">
+                                                <g:link controller="package" action="show" id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
+                                            </div>
+                                    </g:if>
+                                    </div>
+                                </td>
+                            </g:if>
                             <g:if test="${object.rectype == 'SubscriptionProperty'}">
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        Subscription<i class="circular la-subscription icon"></i>
+                                        <i class="circular la-subscription icon"></i>
                                     </span>
 
                                     <g:link controller="${object.objectClassName}" action="show" id="${object.objectId}">${object.name}</g:link>

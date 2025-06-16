@@ -1753,6 +1753,18 @@ class FilterService {
             qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
+        if(params.openAccess) {
+            String openAccessString = " and (tipp.openAccess in (:openAccess) "
+            Set<RefdataValue> openAccess = listReaderWrapper(params, 'openAccess').collect { String key -> RefdataValue.get(key) }
+            if(RDStore.GENERIC_NULL_VALUE.id in openAccess.id) {
+                openAccess.remove(RDStore.GENERIC_NULL_VALUE)
+                openAccessString += 'or tipp.openAccess = null'
+            }
+            openAccessString += ')'
+            base_qry += openAccessString
+            qry_params.openAccess = openAccess
+        }
+
         if (params.identifier) {
             base_qry += " and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "%${params.identifier}%"

@@ -57,8 +57,8 @@
                 Zugrunde liegen:
                 <g:each in="${consortialCosts}" var="yearMap">
                     <div class="item">für ${yearMap.getKey()}:
-                    <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="EUR"/> als Gesamtkosten
-                    davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="EUR"/> pro Monat
+                    <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="${currency.value}"/> als Gesamtkosten
+                    davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="${currency.value}"/> pro Monat
                     </div>
                 </g:each>
                 </div>
@@ -67,8 +67,8 @@
                 Zugrunde liegen:
                 <g:each in="${ownCosts}" var="yearMap">
                     <div class="item">für ${yearMap.getKey()}:
-                    <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="EUR"/> als Gesamtkosten
-                    davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="EUR"/> pro Monat
+                    <g:formatNumber type="currency" number="${yearMap.getValue().total}" currencySymbol="${currency.value}"/> als Gesamtkosten
+                    davon anteilig <g:formatNumber number="${yearMap.getValue().partial}" type="currency" currencySymbol="${currency.value}"/> pro Monat
                     </div>
                 </g:each>
             </g:elseif>
@@ -114,12 +114,12 @@
                             ${costString} (${metricType})
                         </td>
                         <td>
-                            <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(currYear+'-total'), type: "currency", currencySymbol:"EUR"), sums.get(metricType).get(currYear+'-total')]}"/>
+                            <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(currYear+'-total'), type: "currency", currencySymbol:"${currency.value}"), sums.get(metricType).get(currYear+'-total')]}"/>
                         </td>
                         <g:each in="${datePoints.get(currYear)}" var="datePoint">
                             <td>
                                 <g:if test="${costs.containsKey(datePoint)}">
-                                    <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"EUR"), sums.(metricType).get(datePoint)]}"/>
+                                    <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"${currency.value}"), sums.(metricType).get(datePoint)]}"/>
                                 </g:if>
                                 <g:else>
                                     <span class="la-long-tooltip la-popup-tooltip" data-tooltip="${message(code: 'default.usage.missingUsageInfo')}"><i class="${Icon.TOOLTIP.IMPORTANT} la-popup small"></i></span>
@@ -136,7 +136,7 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         function format(data) {
             data = parseFloat(data);
-            return data.toLocaleString('de-DE', {style: 'currency', currency: 'EUR'});
+            return data.toLocaleString('de-DE', {style: 'currency', currency: '${currency.value}'});
         }
 
         let chartDom = $('#chartWrapper')[0];
@@ -177,7 +177,7 @@
             },
             yAxis: [
                 {
-                    name: 'Kosten pro Nutzung in EUR',
+                    name: 'Kosten pro Nutzung in ${currency.value}',
                     type: 'value'
                 },
                 {
@@ -254,13 +254,13 @@
                 </g:each>
                 /*
                 {
-                    name: 'Kosten pro Nutzung in EUR (Preis pro Download/Total_Item_Requests)',
+                    name: 'Kosten pro Nutzung in ${currency.value} (Preis pro Download/Total_Item_Requests)',
                     type: 'bar',
                     stack: 'Kosten',
                     data: [150.25, 186.52, 78.39, 100.17, 1803.03, 360.61, 1081.82, 150.25, 284.69, 75.13, 360.61, 150.25]
                 },
                 {
-                    name: 'Kosten pro Nutzung in EUR (Preis pro Download/Unique_Title_Requests)',
+                    name: 'Kosten pro Nutzung in ${currency.value} (Preis pro Download/Unique_Title_Requests)',
                     type: 'bar',
                     stack: 'Kosten',
                     data: [270.45, 318.18, 300.51, 338.07, 1803.03, 901.52, 1352.27, 540.91, 450.76, 216.36, 772.73, 450.76]

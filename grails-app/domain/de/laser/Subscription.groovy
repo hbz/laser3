@@ -409,7 +409,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         subscription == sub && provider == sharedObject.provider
                     }
                     if (existingProviderRoles) {
-                        log.debug('found existing vendorRoles, deleting: ' + existingProviderRoles)
+                        log.debug('found existing providerRoles, deleting: ' + existingProviderRoles)
                         existingProviderRoles.each{ ProviderRole tmp -> tmp.delete() }
                     }
                     sharedObject.addShareForTarget_trait(sub)

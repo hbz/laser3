@@ -77,6 +77,18 @@ class EscapeService {
         nf.format(input)
     }
 
+    String getFinancialOutputQuery(String sqlCol) {
+        return "to_char(${sqlCol}, '999999999.99')"
+        /*
+        switch (LocaleUtils.getCurrentLocale()) {
+            case [Locale.GERMANY, Locale.GERMAN]:
+                return "replace(to_char(${sqlCol}, '999999999.99'), '.', ',')"
+            default:
+                return "to_char(${sqlCol}, '999999999.99')"
+        }
+        */
+    }
+
     /**
      * Copy from IssueEntitlement and should replace the methods in the domain classes (see below)
      * Generates a normalised sort name from the given input

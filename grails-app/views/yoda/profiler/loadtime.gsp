@@ -10,7 +10,7 @@
 
     <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
-    <nav class="ui secondary menu">
+    <nav class="ui secondary stackable menu">
         <g:render template="profiler/menu" model="${[hideWrapper: true]}"/>
 
         <div style="position:absolute; right:0">
@@ -32,8 +32,8 @@
         <a data-tab="third" class="item">URL/Kontext</a>
     </div>
 
-    <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
-
+<div data-tab="first" class="ui bottom attached tab fluid card active">
+    <div class="content">
         <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
             <thead>
             <tr>
@@ -109,11 +109,11 @@
             </g:each>
             </tbody>
         </table>
-
     </div>
+</div>
 
-    <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
-
+<div data-tab="second" class="ui bottom attached tab fluid card">
+    <div class="content">
         <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="globalTable">
             <thead>
                 <tr>
@@ -175,11 +175,11 @@
                 </g:each>
             </tbody>
         </table>
-
     </div>
+</div>
 
-    <div data-tab="third" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
-
+<div data-tab="third" class="ui bottom attached tab fluid card">
+    <div class="content">
         <div class="ui form">
             <div class="three fields">
                 <div class="field">
@@ -233,6 +233,7 @@
             </tbody>
         </table>
     </div>
+</div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

@@ -469,8 +469,8 @@ class OrganisationController  {
         nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
         if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
             nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
-        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
-            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR)
+        if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.PEPPOL_RECEIVER_ID) })
+            nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.PEPPOL_RECEIVER_ID)
 
         Map<String, Object> namespacesWithValidations = organisationService.getNamespacesWithValidations()
 
@@ -629,6 +629,20 @@ class OrganisationController  {
             }
 
             params.value = leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
+        }
+
+        if(identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID && params.leitID1 && params.leitID3){
+            String leitID
+
+            if(params.leitID) {
+                leitID = params.leitID
+            }else{
+                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID1.info')]) as String
+                redirect(url: request.getHeader('referer'))
+                return
+            }
+
+            params.value = '0204:'+leitID
         }
 
         if ( ! params.value){
@@ -799,7 +813,7 @@ class OrganisationController  {
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
             result.organisationMatches.addAll(Org.executeQuery(
-                    "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
+                    "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName or exists(select a from o.altnames a where genfunc_filter_matcher(a.name, :searchName) = true)) ",
                     [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles(), searchName: "%${params.proposedOrganisation.toLowerCase()}%"])
             )
         }
@@ -1541,15 +1555,23 @@ class OrganisationController  {
             }
         }
         numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
-            years.value.each { Map.Entry<String,ReaderNumber> row ->
+
+            years.value.eachWithIndex { Map.Entry<String,ReaderNumber> row, int i ->
                 yearCols << row.key
                 ReaderNumber rn = row.value
+                log.debug("at index ${i}: ${rn.referenceGroup.getI10n('value')}")
                 BigDecimal yearSum = yearSums.get(years.key)
                 if(rn.value) {
-                    if(yearSum == null) {
-                        yearSum = rn.value
+                    if((years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')) && row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) ||
+                            !years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value'))) {
+                        if(yearSum == null) {
+                            yearSum = rn.value
+                        }
+                        else {
+                            yearSum += rn.value
+                            log.debug("${yearSum}")
+                        }
                     }
-                    else yearSum += rn.value
                 }
                 yearSums.put(years.key,yearSum)
             }

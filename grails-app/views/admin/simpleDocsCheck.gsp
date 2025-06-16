@@ -28,7 +28,7 @@
                 <div class="content"><i class="arrow circle right icon"></i> Doc-Einträge: <strong>${Doc.executeQuery('select count(*) from Doc where contentType = 3')[0]}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.NO} red"></i> Doc ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.NO} red"></i> Doc-Einträge ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Doc ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
+        <div class="header"><i class="${Icon.SYM.NO} red"></i> Doc-Einträge ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
     </div>
     <div class="content">
         <table class="ui table very compact">

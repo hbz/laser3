@@ -8,10 +8,10 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.identifierValidation" type="admin"/>
 
-<div class="ui grid">
-    <div class="sixteen wide column">
+<div class="ui fluid card">
+    <div class="content">
 
-        <table class="ui sortable celled la-table compact table">
+        <table class="ui la-table compact table">
             <thead>
             <tr>
                 <th><g:message code="identifierNamespace.ns.label"/></th>

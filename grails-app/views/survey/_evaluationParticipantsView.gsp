@@ -220,7 +220,7 @@
                     </g:each>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
-                    <th>${message(code: 'surveyResult.commentOnlyForOwner')}
+                    <th>${message(code: 'surveyResult.commentOnlyForOwnerBreak')}
                         <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                             <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -240,14 +240,14 @@
                     <th>Diff.</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                    <th>
-                        Upload <br>
-                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                    <th class="center aligned one wide">
+                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}<br>
+                        <i class="${Icon.DOCUMENT} large la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center"></i>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                     <th>
-                        ${message(code: 'surveyInfo.finishedDate')}
+                        ${message(code: 'surveyInfo.finishedDateBreak')}
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
@@ -256,9 +256,8 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
-                    <th>
-                        Download <br>
-                        ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                    <th class="center aligned">
+                        <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD} large" data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
@@ -293,7 +292,9 @@
                 </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two center aligned">
-                <ui:optionsIcon />
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS} large"></i>
+                </span>
             </th>
         </tr>
         </thead>
@@ -448,21 +449,18 @@
                         </td>
                         <td>
                             <g:if test="${sumListPriceSelectedIEsEUR > 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
                                 <g:set var="sumListPriceEUR" value="${sumListPriceEUR + sumListPriceSelectedIEsEUR}"/>
 
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsUSD > 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
                                 <g:set var="sumListPriceUSD" value="${sumListPriceUSD + sumListPriceSelectedIEsUSD}"/>
 
                             </g:if>
                             <g:if test="${sumListPriceSelectedIEsGBP > 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
                                 <g:set var="sumListPriceGBP" value="${sumListPriceGBP + sumListPriceSelectedIEsGBP}"/>
@@ -500,21 +498,18 @@
                         </td>
                         <td>
                             <g:if test="${diffEUR != 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${diffEUR}" type="currency" currencyCode="EUR"/>
                                 <g:set var="sumDiffEUR" value="${sumDiffEUR + diffEUR}"/>
 
                             </g:if>
                             <g:if test="${diffUSD != 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${diffUSD}" type="currency" currencyCode="USD"/>
                                 <g:set var="sumDiffUSD" value="${sumDiffUSD + diffUSD}"/>
 
                             </g:if>
                             <g:if test="${diffGBP != 0}">
-                                <br>
                                 <g:formatNumber
                                         number="${diffGBP}" type="currency" currencyCode="GBP"/>
                                 <g:set var="sumDiffGBP" value="${sumDiffGBP + diffGBP}"/>
@@ -522,7 +517,7 @@
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                        <td>
+                        <td class="js-la-upload-list">
                             <g:if test="${editable}">
                                 <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                         data-ownerid="${subParticipant.id}"
@@ -541,22 +536,27 @@
                             <g:each in="${documentSet}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
-                                        <div class="ui grid summary">
-                                            <div class="eleven wide column la-column-right-lessPadding">
-                                                <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                 showTooltip="true"/>
-                                                <g:set var="supportedMimeType"
-                                                       value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
-                                                <g:if test="${supportedMimeType}">
-                                                    <a href="#documentPreview"
-                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
-                                                </g:if>
-                                                <g:else>
-                                                    ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                </g:else>
+                                        <div class="ui middle aligned grid summary">
+                                            <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                <i class="large icons">
+                                                    <g:if test="${supportedMimeType}">
+                                                        <a href="#documentPreview"
+                                                           class="la-popup-tooltip"
+                                                           data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
+                                                           data-dctx="${docctx.id}">
+                                                            <i class="${Icon.DOCUMENT} blue"></i>
+                                                        </a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                    </g:else>
+                                                    <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                     showTooltip="true"/>
+                                                </i>
                                             </div>
 
-                                            <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+                                            <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
@@ -869,7 +869,7 @@
                         </g:each>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
-                        <th>${message(code: 'surveyResult.commentOnlyForOwner')}
+                        <th>${message(code: 'surveyResult.commentOnlyForOwnerBreak')}
                             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
                                 <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -889,14 +889,14 @@
                         <th>Diff.</th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                        <th>
-                            Upload <br>
-                            ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
+                        <th class="center aligned one wide">
+                            ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}<br>
+                            <i class="${Icon.DOCUMENT} large la-popup-tooltip" data-content="${message(code: 'subscriptionsManagement.documents')}" data-position="top center"></i>
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <th>
-                            ${message(code: 'surveyInfo.finishedDate')}
+                            ${message(code: 'surveyInfo.finishedDateBreak')}
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
@@ -905,10 +905,9 @@
                         </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
-                        <th>
-                            Download <br>
-                            ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}
-                        </th>
+                        <th class="center aligned">
+                            <i class="la-popup-tooltip ${Icon.CMD.DOWNLOAD} large" data-content="Download ${RDStore.DOC_TYPE_TITLELIST.getI10n('value')}"></i>
+                    </th>
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyPackages')}">
                         <th>
@@ -943,7 +942,9 @@
 
                 </g:each>
                 <th scope="col" rowspan="2" class="two center aligned">
-                    <ui:optionsIcon />
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS} large"></i>
+                    </span>
                 </th>
             </tr>
             </thead>
@@ -1166,7 +1167,7 @@
                             </td>
                         </g:if>
                         <g:if test="${tmplConfigItem.equalsIgnoreCase('uploadTitleListDoc')}">
-                            <td>
+                            <td class="js-la-upload-list">
                                 <g:if test="${editable}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
                                             data-ownerid="${subParticipant.id}"
@@ -1185,22 +1186,27 @@
                                 <g:each in="${documentSet2}" var="docctx">
                                     <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                         <div class="ui small feed content">
-                                            <div class="ui grid summary">
-                                                <div class="eleven wide column la-column-right-lessPadding">
-                                                    <ui:documentIcon doc="${docctx.owner}" showText="false"
-                                                                     showTooltip="true"/>
-                                                    <g:set var="supportedMimeType"
-                                                           value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
-                                                    <g:if test="${supportedMimeType}">
-                                                        <a href="#documentPreview"
-                                                           data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
-                                                    </g:else>
+                                            <div class="ui middle aligned grid summary">
+                                                <div class="eight wide column la-column-right-lessPadding center aligned">
+                                                    <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                                                    <i class="large icons">
+                                                        <g:if test="${supportedMimeType}">
+                                                            <a href="#documentPreview"
+                                                               class="la-popup-tooltip"
+                                                               data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"
+                                                               data-dctx="${docctx.id}">
+                                                                <i class="${Icon.DOCUMENT} blue"></i>
+                                                            </a>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <i class="${Icon.DOCUMENT} grey la-popup-tooltip" data-content="${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}"></i>
+                                                        </g:else>
+                                                        <ui:documentIcon doc="${docctx.owner}" showText="false"
+                                                                         showTooltip="true"/>
+                                                    </i>
                                                 </div>
 
-                                                <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
+                                                <div class="right aligned eight wide column la-column-left-lessPadding la-border-left">
 
                                                     <g:if test="${!(editable)}">
                                                     <%-- 1 --%>
@@ -1333,14 +1339,12 @@
                         <g:if test="${surveyConfig.subscription}">
                             <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                             <g:if test="${participantSub}">
-                                <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
                                         class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                         </g:if>
 
-                        <br/>
-                        <a href="#" class="ui icon infoFlyout-trigger" data-template="org" data-org="${participant.id}"
+                        <a href="#" class="ui icon la-modern-button infoFlyout-trigger" data-template="org" data-org="${participant.id}"
                            data-sub="${surveyConfig.subscription?.id}" data-surveyConfig="${surveyConfig.id}">
                             <i class="icon info blue inverted"></i>
                         </a>
@@ -1595,6 +1599,7 @@ $('.normalExport').click(function(e) {
             $('#modalUploadTitleListDoc input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
             $('#modalUploadTitleListDoc select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
         }
+        docs.init('.js-la-upload-list');
     </laser:script>
 
 </g:if>

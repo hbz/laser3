@@ -15,15 +15,17 @@
 </ui:msg>
 
 <g:each in="${quartz}" var="groupKey, group">
+    <div class="ui fluid card">
+        <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
-                <th>#</th>
-                <th>Job</th>
-                <th>Services</th>
-                <th>Config</th>
-                <th>s  m  h  DoM  M  DoW  Y</th>
-                <th>Nächste Ausführung</th>
+                <th class="three wide">Job</th>
+                <th class="three wide">Services</th>
+                <th class="four wide">Config</th>
+                <th class="three wide">s  m  h  DoM  M  DoW  Y</th>
+                <th class="three wide">Nächste Ausführung</th>
             </tr>
         </thead>
         <tbody>
@@ -56,9 +58,6 @@
                 %>
                 <tr>
                     <td class="${tdClass}">
-                        <i class="${tdIcon} icon"></i>
-                    </td>
-                    <td class="${tdClass}">
                         ${job.name}
                     </td>
                     <td class="${tdClass}">
@@ -83,16 +82,17 @@
                         <code>${job.cronEx}</code>
                     </td>
                     <td class="${tdClass}">
+                        <i class="${tdIcon} icon"></i>
                         ${job.nextFireTime}
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
-</g:each>
 
-<br />
-<br />
+        </div>
+    </div>
+</g:each>
 
     <%-- TODO: implement ajax calls --%>
     <laser:script file="${this.getGroovyPageFileName()}">

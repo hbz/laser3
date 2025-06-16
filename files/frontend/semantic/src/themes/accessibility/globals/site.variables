@@ -287,6 +287,7 @@
 
 @laSideCards        : lighten(@orange, 47);
 
+@laSearchBackground : #f1ebe5; /* light brown  to distinguish 'Search' from 'Filter' */
 @laFilterBackground : @blue;
 @laFilterChosen     : @showWhatsChosen;
 @laDecorationColor   : @blue; /*blue gray for buttons */

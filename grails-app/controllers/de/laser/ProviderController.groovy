@@ -94,16 +94,20 @@ class ProviderController {
         List<String> queryArgs = []
         result.wekbRecords = providerService.getWekbProviderRecords(params, result)
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true or exists(select a from p.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.name = params.nameContains
         }
         if(params.containsKey('provStatus')) {
             queryArgs << "p.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'provStatus')
         }
+        else if(params.containsKey('filterSet')) {
+            queryArgs << "p.status != :status"
+            queryParams.status = RDStore.PROVIDER_STATUS_REMOVED
+        }
         else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
             queryArgs << "p.status = :status"
-            queryParams.status = "Current"
+            queryParams.status = RDStore.PROVIDER_STATUS_CURRENT
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 
@@ -328,7 +332,7 @@ class ProviderController {
         Map<String, Object> result = [:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Provider.executeQuery("from Provider as p where (genfunc_filter_matcher(p.name, :searchName) = true or genfunc_filter_matcher(p.sortname, :searchName) = true) ",
+            result.providerMatches= Provider.executeQuery("from Provider as p where (genfunc_filter_matcher(p.name, :searchName) = true or genfunc_filter_matcher(p.sortname, :searchName) = true or exists(select a from p.altnames a where genfunc_filter_matcher(a.name, :searchName) = true)) ",
                     [searchName: params.proposedProvider])
         }
         result

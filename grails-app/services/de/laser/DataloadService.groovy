@@ -187,6 +187,8 @@ class DataloadService {
 
                 result.visible = 'Public'
                 result.archiveDate = org.archiveDate
+                result.status = [id: RDStore.PROVIDER_STATUS_CURRENT.id, value_en: RDStore.PROVIDER_STATUS_CURRENT.value_en]
+                result.status_en = RDStore.PROVIDER_STATUS_CURRENT.value_en
                 result.rectype = org.getClass().getSimpleName()
 
                 result.sortname = org.sortname
@@ -243,6 +245,7 @@ class DataloadService {
                 }
 
                 result.status = vendor.status.getMapForES()
+                result.status_en = vendor.status.value_en
                 result.rectype = vendor.getClass().getSimpleName()
 
                 result.sortname = vendor.sortname
@@ -286,6 +289,7 @@ class DataloadService {
                 }
 
                 result.status = provider.status.getMapForES()
+                result.status_en = provider.status.value_en
                 result.rectype = provider.getClass().getSimpleName()
 
                 result.sortname = provider.sortname
@@ -335,7 +339,8 @@ class DataloadService {
                     tipp.altnames.each { AlternativeName altname ->
                         result.altnames << altname.name
                     }
-                    result.status = tipp.status?.getMapForES()
+                    result.status = tipp.status.getMapForES()
+                    result.status_en = tipp.status.value_en
                     result.visible = 'Public'
                     result.rectype = tipp.getClass().getSimpleName()
 
@@ -396,6 +401,7 @@ class DataloadService {
                     result.altnames << altname.name
                 }
                 result.status = pkg.packageStatus?.getMapForES()
+                result.status_en = pkg.packageStatus?.value_en
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
@@ -412,7 +418,7 @@ class DataloadService {
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
                         'select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :status',
                         [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
-                )
+                )[0]
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
@@ -450,6 +456,7 @@ class DataloadService {
                     result.altnames << altname.name
                 }
                 result.status = plat.status?.getMapForES()
+                result.status_en = plat.status?.value_en
                 result.visible = 'Public'
                 result.rectype = plat.getClass().getSimpleName()
 
@@ -461,7 +468,7 @@ class DataloadService {
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
                         'select count(*) from TitleInstancePackagePlatform tipp where tipp.platform = :plat and tipp.status = :status',
                         [plat: plat, status: RDStore.TIPP_STATUS_CURRENT]
-                )
+                )[0]
 
                 result.dateCreated = plat.dateCreated
                 result.lastUpdated = plat.lastUpdated
@@ -489,12 +496,14 @@ class DataloadService {
                     result.altnames << altname.name
                 }
                 result.visible = 'Private'
+                result.status = lic.status?.getMapForES()
+                result.status_en = lic.status?.value_en
                 result.rectype = lic.getClass().getSimpleName()
 
                 switch (lic._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = lic.orgRelations.findAll { OrgRole oo ->oo.roleType.value in [RDStore.OR_LICENSING_CONSORTIUM.value] }?.org?.id
-                        result.membersCount = License.findAllByInstanceOf(lic).size()?:0
+                        result.membersCount = License.countByInstanceOf(lic)
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = lic.orgRelations.findAll { OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value] }?.org
@@ -504,7 +513,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { Org org ->
-                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
+                            result.members.add([dbId: org.id])
                         }
                         break
                     case CalculatedType.TYPE_LOCAL:
@@ -563,13 +572,14 @@ class DataloadService {
                     result.altnames << altname.name
                 }
                 result.status = sub.status?.getMapForES()
+                result.status_en = sub.status?.value_en
                 result.visible = 'Private'
                 result.rectype = sub.getClass().getSimpleName()
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
                         result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
-                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?: 0
+                        result.membersCount = Subscription.countByInstanceOf(sub)
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org
@@ -579,7 +589,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { org ->
-                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
+                            result.members.add([dbId: org.id])
                         }
                         break
                     case CalculatedType.TYPE_LOCAL:
@@ -644,7 +654,8 @@ class DataloadService {
                 result.priority = 60
                 result.dbId = surveyConfig.id
                 result.name = surveyConfig.getSurveyName()
-                result.status = surveyConfig.surveyInfo.status?.getMapForES()
+                result.status = surveyConfig.surveyInfo.status.getMapForES()
+                result.status_en = surveyConfig.surveyInfo.status.value_en
                 result.visible = 'Private'
                 result.rectype = surveyConfig.getClass().getSimpleName()
 
@@ -687,7 +698,8 @@ class DataloadService {
                 result.priority = 60
                 result.dbId = surOrg.surveyConfig.id
                 result.name = surOrg.surveyConfig.getSurveyName()
-                result.status = surOrg.surveyConfig.surveyInfo.status?.getMapForES()
+                result.status = surOrg.surveyConfig.surveyInfo.status.getMapForES()
+                result.status_en = surOrg.surveyConfig.surveyInfo.status.value_en
                 result.visible = 'Private'
                 result.rectype = surOrg.getClass().getSimpleName()
 
@@ -729,6 +741,7 @@ class DataloadService {
                 result.dbId = task.id
                 result.name = task.title
                 result.status = task.status?.getMapForES()
+                result.status_en = task.status?.value_en
                 result.visible = 'Private'
                 result.rectype = task.getClass().getSimpleName()
 
@@ -797,6 +810,7 @@ class DataloadService {
                 result.dbId = docCon.id
                 result.name = docCon.owner?.title ?: ''
                 result.status = docCon.status?.getMapForES()
+                result.status_en = docCon.status?.value_en
                 result.visible = 'Private'
                 result.rectype = (docCon.isDocANote()) ? 'Note' : 'Document'
 
@@ -861,7 +875,8 @@ class DataloadService {
                 result.priority = 45
                 result.dbId = ie.id
                 result.name = ie.tipp?.name
-                result.status = ie.status?.getMapForES()
+                result.status = ie.status.getMapForES()
+                result.status_en = ie.status.value_en
                 result.visible = 'Private'
                 result.rectype = ie.getClass().getSimpleName()
 
@@ -921,6 +936,8 @@ class DataloadService {
                 result.name = subProp.type?.name
 
                 result.visible = 'Private'
+                result.status = subProp.owner.status?.getMapForES()
+                result.status_en = subProp.owner.status?.value_en
                 result.rectype = subProp.getClass().getSimpleName()
 
                 if (subProp.type.isLongType()) {
@@ -984,6 +1001,8 @@ class DataloadService {
                 result.name = licProp.type?.name
 
                 result.visible = 'Private'
+                result.status = licProp.owner.status?.getMapForES()
+                result.status_en = licProp.owner.status?.value_en
                 result.rectype = licProp.getClass().getSimpleName()
 
                 if (licProp.type.isLongType()) {

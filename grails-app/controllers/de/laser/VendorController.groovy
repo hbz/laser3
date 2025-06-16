@@ -89,16 +89,20 @@ class VendorController {
         ]
         List<String> queryArgs = []
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.name = params.nameContains
         }
         if(params.containsKey('venStatus')) {
             queryArgs << "v.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'venStatus')
         }
+        else if(params.containsKey('filterSet')) {
+            queryArgs << "v.status != :status"
+            queryParams.status = RDStore.VENDOR_STATUS_REMOVED
+        }
         else if(!params.containsKey('venStatus') && !params.containsKey('filterSet')) {
             queryArgs << "v.status = :status"
-            queryParams.status = "Current"
+            queryParams.status = RDStore.VENDOR_STATUS_CURRENT
             params.venStatus = RDStore.VENDOR_STATUS_CURRENT.id
         }
 
@@ -233,10 +237,13 @@ class VendorController {
             result.subEditable = contextService.isInstEditor()
             result.isMyVendor = vendorService.isMyVendor(vendor)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
+            /*
+            currently deactivated as of ERMS-6504
             if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
+            */
             Set<Package> allPackages = vendor.packages?.pkg.sort { Package pkg -> pkg.name }
             Set<Package> allMyPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp, OrgRole oo join oo.sub s where sp.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             Set<Package> myPackages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr where pkg in (:myPkgs) and vr.subscription in (select s from OrgRole oo join oo.sub s where s.status = :current and oo.org = :context '+subscriptionConsortiumFilter+') order by pkg.name', [myPkgs: allMyPackages, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
@@ -314,7 +321,7 @@ class VendorController {
         Map<String, Object> result = [:]
         if ( params.proposedVendor ) {
 
-            result.vendorMatches= Vendor.executeQuery("from Vendor as v where (genfunc_filter_matcher(v.name, :searchName) = true or genfunc_filter_matcher(v.sortname, :searchName) = true) ",
+            result.vendorMatches= Vendor.executeQuery("from Vendor as v where (genfunc_filter_matcher(v.name, :searchName) = true or genfunc_filter_matcher(v.sortname, :searchName) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :searchName) = true)) ",
                     [searchName: params.proposedVendor])
         }
         result

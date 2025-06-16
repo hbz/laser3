@@ -36,9 +36,12 @@
 <g:if test="${surveyConfig}">
 
     <g:if test="${afterEnrichment}">
-        <g:if test="${wrongSeparator}">
-            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        <g:if test="${unknownCharsetError}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.unknownCharsetError"/>
         </g:if>
+        <g:elseif test="${wrongSeparator}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        </g:elseif>
         <g:else>
             <g:if test="${matchCounter > 0}">
                 <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
@@ -69,7 +72,7 @@
             <g:render template="costItemsByCostItemElementAndSubscriptionTable"/>
 
             <ui:filter>
-                <g:form action="surveyCostItems" method="post" class="ui form"
+                <g:form action="surveyCostItemsSubscriptions" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedSurveyConfigSubscriptionID: selectedSurveyConfigSubscriptionID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
@@ -100,7 +103,13 @@
 
                 <div id="bulkCostItems" class="hidden">
                     <g:if test="${countCostItems == 0}">
-                        <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
+                        <div class="ui info message icon la-clear-before" style="display:flex">
+                            <i class="info icon" aria-hidden="true"></i>
+
+                            <div class="content">
+                                <p><g:message code="surveyCostItems.bulkOption.info"/></p>
+                            </div>
+                        </div>
                     </g:if>
                     <g:else>
                         <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip"

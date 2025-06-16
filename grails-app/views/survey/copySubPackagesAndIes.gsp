@@ -141,14 +141,18 @@
                         <g:message code="messageRequiredField"/>
                     </label>
 
-                    <g:if test="${validPackages}">
+                    <g:if test="${auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection') ? 'all' : ''}">
+                        <g:hiddenField name="selectedPackages" value="all"/>
+                        ${message(code: 'subscriptionsManagement.all.package')}
+                    </g:if>
+                    <g:elseif test="${validPackages}">
                         <g:select class="ui multiple search dropdown"
                                   optionKey="${{ it.pkg.id }}"
                                   optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
                                   from="${validPackages}" name="selectedPackages" value=""
                                   required=""
                                   noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
-                    </g:if>
+                    </g:elseif>
                     <g:else>
                         <g:message code="subscriptionsManagement.noValidPackages"/>
                     </g:else>

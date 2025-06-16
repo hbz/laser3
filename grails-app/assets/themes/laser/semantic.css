@@ -1330,19 +1330,19 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-local {
-  box-shadow: 0px 6px 0px 0px #FBBD08;
+  box-shadow: 0px 12px 0px 0px #FBBD08;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-dev {
-  box-shadow: 0px 6px 0px 0px #98B500;
+  box-shadow: 0px 12px 0px 0px #98B500;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-qa {
-  box-shadow: 0px 6px 0px 0px #BB1600;
+  box-shadow: 0px 12px 0px 0px #BB1600;
 }
 
 .landingpage .ui.inverted.menu.la-top-menu.la-test {
-  box-shadow: 0px 6px 0px 0px #004678;
+  box-shadow: 0px 12px 0px 0px #004678;
 }
 
 .landingpage .logo {
@@ -7287,6 +7287,22 @@ button.la-scrollTopButton {
   #login .ui.card {
     margin-top: 80px;
   }
+}
+
+#mainContent.la-local {
+  box-shadow: 0 0 0 12px #FBBD08;
+}
+
+#mainContent.la-dev {
+  box-shadow: 0 0 0 12px #98B500;
+}
+
+#mainContent.la-qa {
+  box-shadow: 0 0 0 12px #BB1600;
+}
+
+#mainContent.la-test {
+  box-shadow: 0 0 0 12px #004678;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Divider
@@ -37882,7 +37898,7 @@ i.icon.la-thumbtack-regular {
   font-family: 'icomoon';
 }
 
-i.icon.la-consortia {
+i.icon.la-member {
   font-family: 'icomoon';
 }
 
@@ -38050,7 +38066,7 @@ i.icon.la-thumbtack-regular:before {
   content: "\e916";
 }
 
-i.icon.la-consortia:before {
+i.icon.la-member:before {
   content: "\e917";
 }
 
@@ -43224,7 +43240,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-server-label {
   position: fixed;
   bottom: 0;
-  right: 0;
+  left: 0;
   top: 0;
   margin: 0 !important;
   border-radius: 0 !important;
@@ -47453,6 +47469,11 @@ dd {
 }
 
 .ui.segment.la-search {
+  background: #f1ebe5;
+  border: none;
+}
+
+.ui.segment.la-gasco {
   background: #f1ebe5;
   border: none;
 }
@@ -55937,19 +55958,19 @@ Floated Menu / Item
 }
 
 #contextBar.la-local {
-  box-shadow: 0px 6px 0px 0px #FBBD08;
+  box-shadow: 0px 12px 0px 0px #FBBD08;
 }
 
 #contextBar.la-dev {
-  box-shadow: 0px 6px 0px 0px #98B500;
+  box-shadow: 0px 12px 0px 0px #98B500;
 }
 
 #contextBar.la-qa {
-  box-shadow: 0px 6px 0px 0px #BB1600;
+  box-shadow: 0px 12px 0px 0px #BB1600;
 }
 
 #contextBar.la-test {
-  box-shadow: 0px 6px 0px 0px #004678;
+  box-shadow: 0px 12px 0px 0px #004678;
 }
 
 #contextBar .item {

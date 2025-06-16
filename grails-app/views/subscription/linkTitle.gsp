@@ -18,10 +18,10 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: true]"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: true, dataAccess:'search', simple:'true']"/>
 
-<h3 class="ui icon header la-clear-before la-noMargin-top">
-    <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
+<h3 class="ui icon header la-clear-before">
+    <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.found.result"/>
 </h3>
 
 <g:if test="${params.containsKey('filterSet')}">
@@ -42,7 +42,7 @@
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 <g:else>
-    <ui:msg class="info" showIcon="true" message="title.filter.notice"/>
+    <ui:msg class="info" showIcon="true" message="title.search.notice"/>
 </g:else>
 
 <laser:htmlEnd />

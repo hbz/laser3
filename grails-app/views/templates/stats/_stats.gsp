@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.properties.SubscriptionProperty; de.laser.storage.PropertyStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.properties.SubscriptionProperty; de.laser.storage.PropertyStore" %>
 <laser:serviceInjection/>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
@@ -14,8 +14,10 @@
             <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
             <g:if test="${statsInfo}">
                 <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
-                    ${statsInfo[0]}<br>
-                    <g:message code="default.stats.noCounterSupport"/>
+                    ${statsInfo[0].value} (${statsInfo[0].note})<br>
+                    <g:if test="${!platform.statisticsFormat.contains('COUNTER')}">
+                        <g:message code="default.stats.noCounterSupport"/>
+                    </g:if>
                 </ui:msg>
             </g:if>
             <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">
@@ -115,10 +117,20 @@
                             <laser:render template="/templates/filter/statsFilter"/>
                         </g:if>
                         <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                        <g:set var="currency" value="${RefdataValue.executeQuery('select ci.billingCurrency from CostItem ci where ci.owner = :ctx and ci.sub = :subscription', [ctx: contextService.getOrg(), subscription: subscription])}"/>
+                        <g:if test="${currency.size() > 1}">
+                            <div class="field">
+                                <label for="currency"><g:message code="default.stats.currency.select"/></label>
+                                <ui:select class="ui dropdown" name="currency" from="${currency}" optionKey="id" optionValue="value"/>
+                            </div>
+                        </g:if>
+                        <g:elseif test="${currency.size() == 1}">
+                            <g:hiddenField name="currency" value="${currency[0].id}"/>
+                        </g:elseif>
                     </div>
 
                     <div class="field">
-                        <label for="selDate">Zeitraum für Reports wählen (von .. bis)</label>
+                        <label for="selDate"><g:message code="default.stats.slider.label"/></label>
                         <div style="margin:2em 2.5em 4em">
                             <div id="selDate" class="ui green labeled ticked range slider"></div>
                         </div>
@@ -127,7 +139,7 @@
                     <div class="field la-field-right-aligned">
                         <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                                value="${message(code: 'default.stats.generateReport')}"/>
-                        <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
+                        <g:if test="${currency}">
                             <input id="generateCostPerUse" type="button" class="${Btn.PRIMARY}" disabled="disabled"
                                    value="${message(code: 'default.stats.generateCostPerUse')}"/>
                         </g:if>
@@ -190,8 +202,10 @@
             <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
             <g:if test="${statsInfo}">
                 <ui:msg icon="ui info icon" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
-                    ${statsInfo[0]}<br>
-                    <g:message code="default.stats.noCounterSupport"/><br>
+                    ${statsInfo[0].value} (${statsInfo[0].note})<br>
+                    <g:if test="${!platform.statisticsFormat.contains('COUNTER')}">
+                        <g:message code="default.stats.noCounterSupport"/><br>
+                    </g:if>
                 </ui:msg>
             </g:if>
         </div>

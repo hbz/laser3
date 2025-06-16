@@ -2725,9 +2725,16 @@ class SurveyService {
                 if(params.setEInvoiceValuesFromOrg) {
                     result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
                     result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
-                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriterium()?.value
+                    result.surveyOrg.peppolReceiverId = participant.getPeppolReceiverID()?.value
+                    result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriteriums() ? participant.getLeitkriteriums()[0].value : ''
                     result.surveyOrg.save()
                     params.remove('setEInvoiceValuesFromOrg')
+                }
+
+                if(params.setEInvoiceLeitkriteriumFromOrg) {
+                    result.surveyOrg.eInvoiceLeitkriterium = params.setEInvoiceLeitkriteriumFromOrg
+                    result.surveyOrg.save()
+                    params.remove('setEInvoiceLeitkriteriumFromOrg')
                 }
 
             }
@@ -3088,7 +3095,7 @@ class SurveyService {
         }
     }
 
-    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null) {
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null, SurveyConfigSubscription surveyConfigSubscription = null) {
         Map<String, Object> result = [:]
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
@@ -3111,9 +3118,9 @@ class SurveyService {
                         totalRows++
                         //rows.each { String row ->
                         //List<String> cols = row.split('\t')
-                        String idStr = line[idCol], valueStr = line[valueCol]
+                        String idStr = line[idCol].trim(), valueStr = line[valueCol].trim()
                         //try to match the survey
-                        if (valueStr?.trim()) {
+                        if (valueStr) {
                             //first: get the org
                             Org match = null
                             Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
@@ -3133,7 +3140,10 @@ class SurveyService {
                                         CostItem ci
                                         if(pkg){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, pickedElement, pkg)
-                                        }else {
+                                        }else if(subscription){
+                                            ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, pickedElement, surveyConfigSubscription)
+                                        }
+                                        else {
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, pickedElement)
                                         }
 

@@ -304,24 +304,24 @@ class IconTagLib {
 
             if (doc && doc.confidentiality) {
                 String markup = ''
+                String tooltip = ''
                 String conf = doc.confidentiality.getI10n('value')
                 boolean showTooltip = 'true'.equalsIgnoreCase(attrs.showTooltip as String)
                 boolean showText = 'true'.equalsIgnoreCase(attrs.showText as String)
 
                 if (showTooltip) {
-                    markup = '<span class="la-popup-tooltip" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
-                    markup = markup + '>'
+                    tooltip = 'data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
                 }
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' olive" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="'  + (attrs.showTooltip ? 'corner la-popup-tooltip ' : '') + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' olive" style="margin-right: 0px"' + tooltip +'></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' yellow" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + (attrs.showTooltip ? 'corner la-popup-tooltip ' : '') + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' yellow" style="margin-right: 0px"' + tooltip +'></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
-                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' orange" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + (attrs.showTooltip ? 'corner la-popup-tooltip ' : '') + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' orange" style="margin-right: 0px"' + tooltip + '></i> '
                         break;
                     default:
                         markup = markup + ''

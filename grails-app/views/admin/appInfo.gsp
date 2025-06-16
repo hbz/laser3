@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -8,6 +8,9 @@
     </ui:breadcrumbs>
 
     <ui:h1HeaderWithIcon message="menu.admin.appInfo" type="admin"/>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
@@ -21,6 +24,7 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
+            <tr><td>Timezone</td><td> ${Clock.systemDefaultZone()}</td></tr>
         </tbody>
     </table>
 
@@ -34,6 +38,12 @@
             <tr><td>Build java version</td><td> ${AppUtils.getMeta('info.app.build.javaVersion')}</td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
@@ -90,6 +100,12 @@
         <tbody>
     </table>
 
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
@@ -100,6 +116,12 @@
             <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
 
@@ -163,22 +185,6 @@
                     </td>
                 </tr>
             </g:each>
-        </tbody>
-    </table>
-
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
-        <thead>
-            <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
-        </thead>
-        <tbody>
-            <tr>
-                <g:if test="${globalSourceSync.running}">
-                    <td class="positive">Currently running</td><td class="positive">${globalSourceSync.running}</td>
-                </g:if>
-                <g:else>
-                    <td>Currently running</td><td>${globalSourceSync.running}</td>
-                </g:else>
-            </tr>
         </tbody>
     </table>
 
@@ -255,5 +261,8 @@
             </td></tr>
         </tbody>
     </table>
+
+    </div>
+</div>
 
 <laser:htmlEnd />

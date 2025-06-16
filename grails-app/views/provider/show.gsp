@@ -463,7 +463,7 @@
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
-                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
+                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[provider: provider.id, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
                                             &nbsp;<ui:bubble count="${currentSubscriptionsCount}" />
@@ -471,7 +471,7 @@
                                     </g:link>
                                 </div>
                                 <div class="ui item">
-                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
+                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[provider: provider.id, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
                                             &nbsp;<ui:bubble count="${subLinks}" />
@@ -622,7 +622,7 @@
                                                                     </div>
                                                                     <div class="fourteen wide column">
                                                                         <div class="ui label">${prs.roleLinks.collect { PersonRole pr -> pr.roleType.getI10n('value')}.join (' / ')}</div>
-                                                                        <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_STATS_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
+                                                                        <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_STATS_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
                                                                         <g:if test="${prs.contacts}">
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">

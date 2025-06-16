@@ -32,13 +32,16 @@ class SurveyOrg {
 
     boolean orgInsertedItself = false
 
+    @Deprecated
     Person person
+
     Address address
 
     @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)
     RefdataValue eInvoicePortal
     String eInvoiceLeitwegId
     String eInvoiceLeitkriterium
+    String peppolReceiverId
 
     static constraints = {
         ownerComment(nullable: true, blank: false)
@@ -50,6 +53,7 @@ class SurveyOrg {
         eInvoicePortal(nullable:true)
         eInvoiceLeitwegId(nullable:true)
         eInvoiceLeitkriterium(nullable:true)
+        peppolReceiverId (nullable: true)
     }
 
     static mapping = {
@@ -72,6 +76,7 @@ class SurveyOrg {
         eInvoicePortal      column:'surorg_e_invoice_portal_fk', index: 'surorg_e_invoice_portal_idx'
         eInvoiceLeitwegId column: 'surorg_e_invoice_leitweg_id'
         eInvoiceLeitkriterium column: 'surorg_e_invoice_leitkriterium'
+        peppolReceiverId column: 'surorg_peppol_receiver_id'
     }
 
     def afterDelete() {

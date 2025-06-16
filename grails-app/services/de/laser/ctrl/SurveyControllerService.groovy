@@ -198,7 +198,7 @@ class SurveyControllerService {
                 if(!result.surveyConfig.subscription){
                     result.commentTab = 'commentForNewParticipants'
                 }else {
-                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs ? 'comment' : 'commentForNewParticipants'
+                    result.commentTab = ((result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs && result.surveyConfig.comment) || result.surveyConfig.subSurveyUseForTransfer)  ? 'comment' : 'commentForNewParticipants'
                 }
             }
 
@@ -605,6 +605,7 @@ class SurveyControllerService {
             }else if(params.removeUUID) {
                 Package pkg = Package.findByGokbId(params.removeUUID)
                 if(pkg) {
+                    SurveyPackageResult.executeQuery("delete from SurveyPackageResult scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
                     SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
                     result.surveyConfig = result.surveyConfig.refresh()
                     result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
@@ -633,6 +634,7 @@ class SurveyControllerService {
 
                         if(params.processOption == 'unlinkPackages'){
                             if(pkg) {
+                                SurveyPackageResult.executeQuery("delete from SurveyPackageResult scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
                                 SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
                             }
                         }
@@ -663,6 +665,8 @@ class SurveyControllerService {
 
             List<Subscription> subscriptions = SurveyConfigSubscription.executeQuery("select scs.subscription from SurveyConfigSubscription scs where scs.surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])
 
+            params.status = params.status ?: 'FETCH_ALL'
+
             result.putAll(surveyService.getMySubscriptions(params, result.user, contextService.getOrg(), subscriptions))
 
             result.subscriptions = result.subscriptions.drop((int) result.offset).take((int) result.max)
@@ -683,6 +687,9 @@ class SurveyControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
+
+            String[] defaultStatus = [RDStore.SUBSCRIPTION_INTENDED.id]
+            params.status = params.status ?: defaultStatus
 
             result.putAll(surveyService.getMySubscriptions(params, result.user, contextService.getOrg()))
 
@@ -710,6 +717,7 @@ class SurveyControllerService {
             } else if (params.removeSub) {
                 Subscription subscription = Subscription.get(params.removeSub)
                 if (subscription) {
+                    SurveySubscriptionResult.executeQuery("delete from SurveySubscriptionResult scp where scp.surveyConfig = :surveyConfig and scp.subscription = :subscription", [surveyConfig: result.surveyConfig, subscription: subscription])
                     SurveyConfigSubscription.executeUpdate("delete from SurveyConfigSubscription scp where scp.surveyConfig = :surveyConfig and scp.subscription = :subscription", [surveyConfig: result.surveyConfig, subscription: subscription])
                 }
                 params.remove("removeSub")
@@ -736,6 +744,7 @@ class SurveyControllerService {
 
                         if (params.processOption == 'unlinkSubscriptions') {
                             if (subscription) {
+                                SurveySubscriptionResult.executeQuery("delete from SurveySubscriptionResult scp where scp.surveyConfig = :surveyConfig and scp.subscription = :subscription", [surveyConfig: result.surveyConfig, subscription: subscription])
                                 SurveyConfigSubscription.executeUpdate("delete from SurveyConfigSubscription scp where scp.surveyConfig = :surveyConfig and scp.subscription = :subscription", [surveyConfig: result.surveyConfig, subscription: subscription])
                             }
                         }
@@ -986,6 +995,7 @@ class SurveyControllerService {
             }else if (params.removeVendor) {
                 Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
+                    SurveyVendorResult.executeQuery("delete from SurveyVendorResult scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                 }
                 params.remove("removeVendor")
@@ -1033,6 +1043,7 @@ class SurveyControllerService {
                         Vendor vendor = Vendor.findById(it)
                         if(params.processOption == 'unlinkVendors'){
                             if(vendor) {
+                                SurveyVendorResult.executeQuery("delete from SurveyVendorResult scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                                 SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                             }
                         }
@@ -3151,8 +3162,6 @@ class SurveyControllerService {
                 return
             }
 
-            result.editable = (result.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
-
             if (result.editable) {
 
                 try {
@@ -3175,9 +3184,17 @@ class SurveyControllerService {
 
                     SurveyVendorResult.executeUpdate("delete from SurveyVendorResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
+                    SurveySubscriptionResult.executeUpdate("delete from SurveySubscriptionResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyPersonResult.executeUpdate("delete from SurveyPersonResult sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
                     SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyConfigSubscription.executeUpdate("delete from SurveyConfigSubscription sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
+
+                    SurveyTransfer.executeUpdate("delete from SurveyTransfer sc where sc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyUrl.executeUpdate("delete from SurveyUrl surU where surU.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
@@ -5324,7 +5341,7 @@ class SurveyControllerService {
 
             //MultiYearTerm Subs
             result.parentSubChilds.each { sub ->
-                if (surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(result.surveyConfig, sub.getSubscriber())) {
+                if (sub.isCurrentMultiYearSubscriptionToParentSub()) {
                     Org org = sub.getSubscriberRespConsortia()
                     if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
                         Subscription subscription = _processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)

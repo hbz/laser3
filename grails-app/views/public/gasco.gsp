@@ -8,7 +8,7 @@
 
     <div class="ui grid">
         <div class="eleven wide column">
-            <div class="ui la-search segment">
+            <div class="ui la-gasco segment">
                 <g:form action="gasco" controller="public" method="get" class="ui small form">
 
                     <div class="field">

@@ -964,16 +964,20 @@ class MyInstitutionController  {
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(p.name, :name) = true or genfunc_filter_matcher(p.sortname, :name) = true or exists(select a from p.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.name = params.nameContains
         }
         if(params.containsKey('provStatus')) {
             queryArgs << "p.status in (:status)"
             queryParams.status = Params.getRefdataList(params, 'provStatus')
         }
+        else if(params.containsKey('filterSet')) {
+            queryArgs << "p.status.value != :status"
+            queryParams.status = RDStore.PROVIDER_STATUS_REMOVED
+        }
         else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
             queryArgs << "p.status.value = :status"
-            queryParams.status = "Current"
+            queryParams.status = RDStore.PROVIDER_STATUS_CURRENT
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id
         }
 
@@ -1176,7 +1180,7 @@ class MyInstitutionController  {
         else if(params.containsKey('subStatus') || !params.containsKey('filterSet')) query += ')' //opened in line 1100 or 1105
         Set<String> queryArgs = []
         if(params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :name) = true))"
             queryParams.put('name', params.nameContains)
         }
         if(params.containsKey('qp_supportedLibrarySystems')) {
@@ -2599,9 +2603,6 @@ class MyInstitutionController  {
                 if((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
-                }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
-                    allResultHaveValue = false
-                    flash.error = g.message(code: 'surveyResult.finish.surveyContact')
                 }
                 else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {

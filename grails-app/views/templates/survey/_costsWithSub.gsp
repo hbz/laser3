@@ -306,7 +306,7 @@
                                              data-position="right center"
                                              data-variation="tiny"
                                              data-content="${costItemSurvey.costDescription}">
-                                            <i class="${Icon.HELP_TOOLTIP}"></i>
+                                            <i class="${de.laser.ui.Icon.UI.HELP}"></i>
                                         </div>
                                     </g:if>
                                 </td>

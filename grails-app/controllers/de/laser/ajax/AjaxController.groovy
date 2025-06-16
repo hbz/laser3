@@ -252,25 +252,30 @@ class AjaxController {
                                 Map<String, Object> configMap = [sub: sub, value: value]
                                 subscriptionService.switchPackageHoldingInheritance(configMap)
                                 List<Long> subChildIDs = sub.getDerivedSubscriptions().id
-                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                                    if(!subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
-                                        executorService.execute({
-                                            Set<Package> subPackages = SubscriptionPackage.findAllBySubscription(sub)
-                                            String threadName = 'PackageTransfer_' + sub.id
-                                            Thread.currentThread().setName(threadName)
-                                            if(subChildIDs) {
+                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && SubscriptionPackage.countBySubscription(sub) > 0) {
+                                    if(!subscriptionService.checkThreadRunning('PackageUnlink_'+sub.id) && !subscriptionService.checkThreadRunning('PackageTransfer_'+sub.id)) {
+                                        if(subChildIDs) {
+                                            executorService.execute({
+                                                Set<SubscriptionPackage> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                                String threadName = 'PackageUnlink_' + sub.id
+                                                Thread.currentThread().setName(threadName)
                                                 subPackages.each { SubscriptionPackage sp ->
                                                     if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
                                                         log.error('error on clearing issue entitlements when changing package holding selection')
                                                     }
                                                 }
-                                            }
+                                            })
+                                        }
+                                        executorService.execute({
+                                            Set<SubscriptionPackage> subPackages = SubscriptionPackage.findAllBySubscription(sub)
+                                            String threadName = 'PackageTransfer_' + sub.id
+                                            Thread.currentThread().setName(threadName)
                                             subPackages.each { SubscriptionPackage sp ->
+                                                subscriptionService.cachePackageName("PackageTransfer_" + sub.id, sp.pkg.name)
                                                 Set<String> missingTipps = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed and tipp.id not in (select ie.tipp.id from IssueEntitlement ie where ie.tipp.pkg = :pkg and ie.status != :removed and ie.subscription = :subscription)', [pkg: sp.pkg, subscription: sub, removed: RDStore.TIPP_STATUS_REMOVED])
                                                 if(missingTipps.size() > 0) {
-                                                    subscriptionService.cachePackageName("PackageTransfer_" + sub.id, sp.pkg.name)
                                                     log.debug("out-of-sync-state; synchronising ${sp.getPackageName()} in ${sub.name}")
-                                                    subscriptionService.bulkAddEntitlements(sub, missingTipps, sub.hasPerpetualAccess)
+                                                    subscriptionService.bulkAddEntitlements(sp.subscription, missingTipps, sub.hasPerpetualAccess)
                                                 }
                                             }
                                         })
@@ -1945,8 +1950,8 @@ class AjaxController {
                     case 'readerNumber':
                         if(target_object.semester)
                             ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.semester = :semester',[org: target_object.org, semester: target_object.semester, note: params.value])
-                        else if(target_object.dueDate)
-                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
+                        else if(target_object.year)
+                            ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.year = :year',[org: target_object.org, year: target_object.year, note: params.value])
                         result = params.value
                         break
                     case 'year':
@@ -2012,11 +2017,13 @@ class AjaxController {
                                     break
                             }
                             if(!subscriptionService.checkThreadRunning('permanentTitlesProcess_'+target_object.id) && !packageProcess) {
-                                if (params.value == true && target_object.hasPerpetualAccess != params.value) {
-                                    subscriptionService.setPermanentTitlesBySubscription(target_object)
-                                }
-                                if (params.value == false && target_object.hasPerpetualAccess != params.value) {
-                                    subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                if(target_object.packages) {
+                                    if (params.value == true && target_object.hasPerpetualAccess != params.value) {
+                                        subscriptionService.setPermanentTitlesBySubscription(target_object)
+                                    }
+                                    if (params.value == false && target_object.hasPerpetualAccess != params.value) {
+                                        subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                    }
                                 }
                                 bindData(target_object, binding_properties)
 
@@ -2150,23 +2157,25 @@ class AjaxController {
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            RefdataValue currency = RefdataValue.get(params.currency)
+            ctrlResult.result.currency = currency
             if(ctrlResult.result.containsKey('alternatePeriodStart') && ctrlResult.result.containsKey('alternatePeriodEnd')) {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.alternatePeriodStart), sdf.format(ctrlResult.result.alternatePeriodEnd)] as Object[])
             }
             ctrlResult.result.costPerUse = [:]
             if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial", currency)
                 ctrlResult.result.costPerUse.consortialData = costPerUseConsortial.costPerMetric
                 ctrlResult.result.consortialCosts = costPerUseConsortial.costsAllYears
                 if (ctrlResult.result.contextOrg.isCustomerType_Inst_Pro()) {
-                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own", currency)
                     ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
                     ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
                 }
             }
             else {
-                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own", currency)
                 ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
                 ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
             }

@@ -583,7 +583,7 @@
 
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <div class="ui item">
-                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
+                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[vendor: vendor.id, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.current" />
                                         &nbsp;<ui:bubble count="${currentSubscriptionsCount}" />
@@ -591,7 +591,7 @@
                                     </g:link>
                                 </div>
                                 <div class="ui item">
-                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: vendor.globalUID, status: 'FETCH_ALL']">
+                                    <g:link controller="myInstitution" action="currentSubscriptions" params="[vendor: vendor.id, status: 'FETCH_ALL']">
                                         <div class="content la-space-right">
                                             <i class="${Icon.LNK.FILTERED}"></i> <g:message code="subscription.plural.total" />
                                         &nbsp;<ui:bubble count="${subLinks}" />

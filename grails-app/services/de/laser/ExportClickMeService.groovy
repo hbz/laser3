@@ -63,6 +63,7 @@ class ExportClickMeService {
     BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
+    EscapeService escapeService
     ExportService exportService
     FilterService filterService
     FinanceService financeService
@@ -1224,6 +1225,17 @@ class ExportClickMeService {
                         subTabs: [],
                         fields: [:]
                 ],
+                participantAccessPoints       : [
+                        label  : 'Participants Access Points',
+                        message: 'exportClickMe.participantAccessPoints',
+                        fields : [
+                                'participant.exportIPs'        : [field: null, label: 'Export IPs', message: 'subscriptionDetails.members.exportIPs', separateSheet: 'true'],
+                                'participant.exportProxys'     : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
+                                'participant.exportEZProxys'   : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
+                                'participant.exportShibboleths': [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                'participant.exportMailDomains': [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
+                        ]
+                ],
                 participantAddresses : [
                         label: 'Addresses',
                         message: 'org.addresses.label',
@@ -2051,6 +2063,7 @@ class ExportClickMeService {
             exportFields.put('survey.address', [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'])
             exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
+            exportFields.put('survey.peppolReceiverId', [field: null, label: ' Leit ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
         }
 
@@ -2162,6 +2175,7 @@ class ExportClickMeService {
             fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.peppolReceiverId': [field: null, label: 'Peppol Receiver ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('survey.person')) {
                 fields.survey.fields.remove('survey.person')
@@ -2174,6 +2188,9 @@ class ExportClickMeService {
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.peppolReceiverId')) {
+                fields.survey.fields.remove('survey.peppolReceiverId')
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
@@ -3607,6 +3624,7 @@ class ExportClickMeService {
             exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
+            exportFields.put('survey.peppolReceiverId', [field: null, label: ' Peppoel ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true'])
         }
 
         exportFields
@@ -3705,6 +3723,7 @@ class ExportClickMeService {
             fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.peppolReceiverId': [field: null, label: ' Peppol Receiver ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('survey.person')) {
                 fields.survey.fields.remove('survey.person')
@@ -3717,6 +3736,9 @@ class ExportClickMeService {
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.peppolReceiverId')) {
+                fields.survey.fields.remove('survey.peppolReceiverId')
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
@@ -4464,6 +4486,7 @@ class ExportClickMeService {
         Map sheetData = [:]
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
+        Set<Org> orgSet = []
 
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
@@ -4482,10 +4505,13 @@ class ExportClickMeService {
             if (cit.getValue().count > 0) {
                 cit.getValue().costItems.eachWithIndex { ci, int i ->
                     _setCostItemRow(ci, selectedExportFields, exportData, format, contactSources)
+                    orgSet << ci.sub?.getSubscriberRespConsortia()
                 }
             }
             sheetData[sheettitle] = [titleRow: titles, columnData: exportData]
         }
+
+        sheetData =  _exportAccessPoints(orgSet.toList(), sheetData, selectedExportFields, locale, "", format)
 
         return exportService.generateXLSXWorkbook(sheetData)
     }
@@ -5391,6 +5417,13 @@ class ExportClickMeService {
                     }
                     row.add(createTableCell(format, eInvoiceLeitwegId))
                 }
+                else if (fieldKey == 'survey.peppolReceiverId') {
+                    String peppolReceiverId = ""
+                    if (surveyOrg && surveyOrg.peppolReceiverId) {
+                        peppolReceiverId = surveyOrg.peppolReceiverId
+                    }
+                    row.add(createTableCell(format, peppolReceiverId))
+                }
                 else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
                     String eInvoiceLeitkriterium = ""
                     if (surveyOrg && surveyOrg.eInvoiceLeitkriterium) {
@@ -6165,6 +6198,7 @@ class ExportClickMeService {
     private void _setVendorRow(Vendor result, Map<String, Object> selectedFields, List exportData, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org context = contextService.getOrg()
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
@@ -6217,12 +6251,24 @@ class ExportClickMeService {
                             row.add(createTableCell(format, nameOfLicenses.join('\n')))
                             break
                         case 'vendor.packages':
-                            row.add(createTableCell(format, result.packages.pkg.name.join('\n')))
+                            Set<Package> distinctPackages = []
+                            distinctPackages.addAll(result.packages.pkg)
+                            String pkgString
+                            Object[] count = [distinctPackages.size()-20]
+                            if(distinctPackages.size() >= 20)
+                                pkgString = "${distinctPackages.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPackages', count, locale)}"
+                            else pkgString = distinctPackages.name.join('\n')
+                            row.add(createTableCell(format, pkgString))
                             break
                         case 'vendor.platforms':
                             SortedSet<Platform> distinctPlatforms = new TreeSet<Platform>()
                             distinctPlatforms.addAll(result.packages.pkg.nominalPlatform)
-                            row.add(createTableCell(format, distinctPlatforms.name.join('\n')))
+                            String platString
+                            Object[] count = [distinctPlatforms.size()-20]
+                            if(distinctPlatforms.size() >= 20)
+                                platString = "${distinctPlatform.take(20).name.join('\n')}\n${messageSource.getMessage('default.export.furtherPlatforms', count, locale)}"
+                            else platString = distinctPlatforms.name.join('\n')
+                            row.add(createTableCell(format, platString))
                             break
                         case 'vendor.subscriptions':
                             String consortiaFilter = ''
@@ -6567,6 +6613,13 @@ class ExportClickMeService {
                     }
                     row.add(createTableCell(format, eInvoiceLeitwegId))
                 }
+                else if (fieldKey == 'survey.peppolReceiverId') {
+                    String peppolReceiverId = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.peppolReceiverId) {
+                        peppolReceiverId = participantResult.surveyOrg.peppolReceiverId
+                    }
+                    row.add(createTableCell(format, peppolReceiverId))
+                }
                 else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
                     String eInvoiceLeitkriterium = ""
                     if (participantResult.surveyOrg && participantResult.surveyOrg.eInvoiceLeitkriterium) {
@@ -6717,27 +6770,27 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro)), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), 'financial') as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp)), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), 'financial') as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99'),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd)), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), 'financial') as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else if (fieldKey.contains('localPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro)), null) as localPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro order by pi_date_created desc limit 1), 'financial') as localPriceEUR"
                 queryArgs.leuro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('localPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp)), null) as localPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp order by pi_date_created desc limit 1), 'financial') as localPriceGBP"
                 queryArgs.lgbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('localPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99'),';') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd)), null) as localPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_local_price')}) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd order by pi_date_created desc limit 1), 'financial') as localPriceUSD"
                 queryArgs.lusd = RDStore.CURRENCY_USD.id
             }
             else {
@@ -6823,15 +6876,15 @@ class ExportClickMeService {
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro), null) as listPriceEUR"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro order by pi_date_created desc limit 1), 'financial') as listPriceEUR"
                 queryArgs.euro = RDStore.CURRENCY_EUR.id
             }
             else if (fieldKey.contains('listPriceGBP')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp), null) as listPriceGBP"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp order by pi_date_created desc limit 1), 'financial') as listPriceGBP"
                 queryArgs.gbp = RDStore.CURRENCY_GBP.id
             }
             else if (fieldKey.contains('listPriceUSD')) {
-                queryCols << "create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),';') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd), null) as listPriceUSD"
+                queryCols << "create_cell('${format}', (select trim(${escapeService.getFinancialOutputQuery('pi_list_price')}) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd order by pi_date_created desc limit 1), 'financial') as listPriceUSD"
                 queryArgs.usd = RDStore.CURRENCY_USD.id
             }
             else {
@@ -7359,7 +7412,7 @@ class ExportClickMeService {
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                if((readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
+                if(!readerNumberPeople && !readerNumberUser && (readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
                     row.add(createTableCell(format, ' '))
                 else
                     row.add(createTableCell(format, sum))
@@ -7794,7 +7847,7 @@ class ExportClickMeService {
                         label += ' (Meine Merkmale)'
                     else if(fields.privateProperty == false)
                         label += ' (Allgemeine Merkmale)'
-                    if(label)
+                    if(label && (fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner'))
                         titles.add(createTableCell(format,  label))
                     if (fieldKey.startsWith('surveyProperty.')) {
                         if('surveyPropertyParticipantComment' in selectedExportFields) {
@@ -7803,7 +7856,7 @@ class ExportClickMeService {
                         if('surveyPropertyCommentOnlyForOwner' in selectedExportFields) {
                              titles.add(createTableCell(format, (messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))))
                         }
-                    }else if (fieldKey.contains('Property')) {
+                    }else if (fieldKey.contains('Property') && (fieldKey != 'surveyPropertyParticipantComment' && fieldKey != 'surveyPropertyCommentOnlyForOwner')) {
                         titles.add(createTableCell(format,  "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
                     }
                     if(fieldKey.contains('licProperty')) {

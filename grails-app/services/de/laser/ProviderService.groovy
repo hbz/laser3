@@ -85,6 +85,9 @@ class ProviderService {
         if(params.containsKey('provStatus')) {
             queryParams.status = Params.getRefdataList(params, 'provStatus').value
         }
+        else if(params.containsKey('filterSet')) {
+            queryParams.status = [RDStore.PROVIDER_STATUS_CURRENT.value, RDStore.PROVIDER_STATUS_DELETED.value, RDStore.PROVIDER_STATUS_EXPECTED.value, RDStore.PROVIDER_STATUS_RETIRED.value]
+        }
         else if(!params.containsKey('provStatus') && !params.containsKey('filterSet')) {
             queryParams.status = "Current"
             params.provStatus = RDStore.PROVIDER_STATUS_CURRENT.id

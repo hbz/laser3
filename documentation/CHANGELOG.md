@@ -7,6 +7,58 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6666    13.06.2025  rc-3.5  3.5         Andreas Bug         falsche Summierung der Nutzerzahlen behoben
+
+6665    13.06.2025  rc-3.5  3.5         Andreas Bug         fehlende Verknüpfungen nachgereicht, Haken ausgeblendet
+
+6661    13.06.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen für den Preisupload
+
+6471    11.06.2025  rc-3.5  3.5         Andreas Feature     Nachbesserungen für COUNTER 5.1
+
+6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten
+
+6554    10.06.2025  rc-3.5  3.5         Andreas Feature     Erweiterung des Kostenexports um Exportkonfigurationen
+
+6640    05.06.2025  rc-3.5  3.5         Andreas Feature     Alternativnamen bei der Suche mit berücksichtigt
+
+6603    05.06.2025  rc-3.5  3.5         Andreas Feature     Hochladen von Kundennummern/Requestor-IDs via TSV angepasst
+
+6566    05.06.2025  rc-3.5  3.5         Andreas Feature     Zahlungswährung bei Cost per Use wird jetzt berücksichtigt
+
+6636    04.06.2025  rc-3.5  3.5         Andreas Bug         Anmerkungen zu Nutzerzahlen wurden nicht gespeichert
+
+6633    04.06.2025  rc-3.5  3.5         Andreas Bug         Abfrage zur Ausgabe von Kosteninformationen überbrückt
+
+6628    04.06.2025  rc-3.5  3.5         Andreas Feature     Anpassung der Texte in EZB-Identifikator-Namensräumen
+
+6326    04.06.2025  rc-3.5  3.5         David   Feature     NatHosting löschen
+
+6635    30.05.2025  rc-3.5  3.5         David   Bug         Insight-Mails werden nicht mehr verschickt
+
+6598    27.05.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen in der Lizenzverwaltung
+
+6626    27.05.2025  rc-3.5  3.5         Andreas Bug         Statistik nicht aus Umfragekontext erreichbar
+
+6624    27.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung des Textes für Referenzwert "Title" beim Publikationstyp
+
+6610    27.05.2025  rc-3.5  3.5         Andreas Bug         entfernte Anbieter und Library Supplier wurden nicht herausgefiltert
+
+6617    26.05.2025  rc-3.5  3.5         Andreas Bug         Abfragesyntaxfehler behoben
+
+6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe
+
+6573    26.05.2025  rc-3.5  3.5         Andreas Bug         Ausgabe der Paket- und Plattformnamen eingeschränkt
+
+6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
+
+6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers
+
+6604    22.05.2025  rc-3.5  3.5         David   Bug         500er beim Aufrufen von neuen Anbietern über die we:kb.news
+
+6508    20.05.2025  rc-3.5  3.5         David   Feature     DBM Changesets aufräumen
+
+### Release 3.5
+
 6590    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         fehlende Verdrahtung der Filterfelder für Dauerhafte Titel implementiert
 
 6588    19.05.2025  rc-3.5  3.5-RC      Andreas Bug         500er bei dauerhaften Käufen

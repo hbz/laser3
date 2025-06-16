@@ -36,7 +36,7 @@
 <g:set var="language"
        value="${user && user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)) ? user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString() : 'de'}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
-<g:set var="surveyUrl" value="${"survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
+<g:set var="surveyUrl" value="${"/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 
 <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(survey.surveyConfigs[0], org)}"/>
 
@@ -47,7 +47,7 @@
         [persons: surveyPersons, type: RDStore.CCT_EMAIL])}"/>
 
 <g:set var="mailInfos"
-       value="${"organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}&surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
+       value="${"/organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}&surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
 
 <g:message code="email.text.title" locale="${language}"/> ${userName},
 <br/>
@@ -205,6 +205,7 @@
     <g:message code="surveyOrg.eInvoicePortal.label" locale="${language}"/>: ${surveyOrg.eInvoicePortal ? surveyOrg.eInvoicePortal.getI10n('value', language) : ''}<br/>
     <g:message code="surveyOrg.eInvoiceLeitwegId.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitwegId}<br/>
     <g:message code="surveyOrg.eInvoiceLeitkriterium.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitkriterium}<br/>
+    <g:message code="surveyOrg.peppolReceiverId.label" locale="${language}"/>: ${surveyOrg.peppolReceiverId}<br/>
     <br/>
     <br/>
 </g:if>

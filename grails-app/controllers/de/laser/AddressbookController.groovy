@@ -9,6 +9,7 @@ import de.laser.auth.Role
 import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -350,11 +351,15 @@ class AddressbookController {
             if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
                 Person.withTransaction {
                     try {
-                        List changeList = SurveyOrg.findAllByPerson(obj)
-                        changeList.each { tmp2 ->
-                            tmp2.person = null
-                            tmp2.save()
+                        if(SurveyPersonResult.findByPerson(person)){
+                            List<SurveyPersonResult> surveyPersonResults = SurveyPersonResult.findAllByPerson(person)
+                            if (surveyPersonResults) {
+                                surveyPersonResults.each { SurveyPersonResult surveyPersonResult ->
+                                    surveyPersonResult.delete()
+                                }
+                            }
                         }
+
                         obj.delete() // TODO: check perms
 
                         flash.message = message(code: 'default.deleted.message', args: args)
@@ -454,6 +459,14 @@ class AddressbookController {
                             obj.preferredForSurvey = false
                         }
 
+                        if(SurveyOrg.findByAddress(obj) && !(RDStore.ADDRESS_TYPE_BILLING in obj.type)){
+                            List changeList = SurveyOrg.findAllByAddress(obj)
+                            changeList.each { tmp2 ->
+                                tmp2.address = null
+                                tmp2.save()
+                            }
+                        }
+
                         if (!referer.contains('tab')) {
                             if(referer.contains('?'))
                                 referer += '&tab=addresses'
@@ -519,6 +532,24 @@ class AddressbookController {
 
                     if(obj.preferredSurveyPerson && !PersonRole.findByFunctionTypeAndPrsAndOrg(RDStore.PRS_FUNC_SURVEY_CONTACT, obj, contextService.getOrg())){
                         obj.preferredSurveyPerson = false
+                    }
+
+                    if(SurveyPersonResult.findByPersonAndBillingPerson(obj, true) && !PersonRole.findByFunctionTypeAndPrsAndOrg(RDStore.PRS_FUNC_INVOICING_CONTACT, obj, contextService.getOrg())){
+                        List<SurveyPersonResult> surveyPersonResults = SurveyPersonResult.findAllByPersonAndBillingPerson(obj, true)
+                        if (surveyPersonResults) {
+                            surveyPersonResults.each { SurveyPersonResult surveyPersonResult ->
+                                surveyPersonResult.delete()
+                            }
+                        }
+                    }
+
+                    if(SurveyPersonResult.findByPersonAndSurveyPerson(obj, true) && !PersonRole.findByFunctionTypeAndPrsAndOrg(RDStore.PRS_FUNC_SURVEY_CONTACT, obj, contextService.getOrg())){
+                        List<SurveyPersonResult> surveyPersonResults = SurveyPersonResult.findAllByPersonAndSurveyPerson(obj, true)
+                        if (surveyPersonResults) {
+                            surveyPersonResults.each { SurveyPersonResult surveyPersonResult ->
+                                surveyPersonResult.delete()
+                            }
+                        }
                     }
 
                     if (!obj.save()) {

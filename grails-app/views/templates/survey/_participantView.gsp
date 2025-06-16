@@ -60,7 +60,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'packageSurvey']}">
 
-                    ${message(code: 'surveyconfig.packageSurvey.label')}
+                    ${message(code: 'surveyconfig.packageSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
@@ -72,7 +72,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame + [viewTab: 'vendorSurvey']}">
 
-                    ${message(code: 'surveyconfig.vendorSurvey.label')}
+                    ${message(code: 'surveyconfig.vendorSurvey.short')}
 
                     <ui:bubble float="true"
                                count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
@@ -155,7 +155,7 @@
 
                             <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
                                 ${message(code: 'surveyOrg.eInvoice.label')}
-                                <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}"/>
+                                <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}/${surveyOrg.peppolReceiverId ? '1' : '0'}"/>
                             </a>
                         </div>
                     </div>
@@ -259,6 +259,51 @@
                                                 <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitkriterium"/>
                                             </dd>
                                         </dl>
+
+                                        <div class="content">
+                                            <dl>
+                                                <dt>
+                                                    <g:message code="surveyOrg.peppolReceiverId.label"/>
+                                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                                          data-content="${message(code: 'surveyOrg.peppolReceiverId.expl')}">
+                                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                    </span>
+                                                </dt>
+                                                <dd>
+                                                    <ui:xEditable owner="${surveyOrg}" field="peppolReceiverId"/>
+                                                </dd>
+                                            </dl>
+                                        </div>
+
+                                        <table class="ui table la-js-responsive-table la-table">
+                                            <thead>
+                                            <tr>
+                                                <th>${message(code: 'sidewide.number')}</th>
+                                                <th>${message(code: 'identifier')}</th>
+                                                <th>${message(code: 'default.notes.label')}</th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <g:each in="${surveyOrg.org.getLeitkriteriums()}" var="leitkriterium" status="i">
+                                                <tr>
+                                                    <td>${i+1}</td>
+                                                    <td>${leitkriterium.value}</td>
+                                                    <td>${leitkriterium.note}</td>
+                                                    <td>
+                                                        <g:if test="${editable}">
+                                                            <g:link controller="${controllerName}" action="${actionName}"
+                                                                    id="${surveyInfo.id}"
+                                                                    params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceLeitkriteriumFromOrg: leitkriterium.value]}"
+                                                                    class="${Btn.SIMPLE} right floated">
+                                                                <g:message code="surveyOrg.setEInvoiceLeitkriteriumFromOrg"/>
+                                                            </g:link>
+                                                        </g:if>
+                                                    </td>
+                                                </tr>
+                                            </g:each>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div><!-- .card -->
                             </div>

@@ -43,6 +43,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String LEIT_KR     = "Leitkriterium (intern)"
     public static final String LEIBNIZ_ID  = "leibniz"
     public static final String LOC_ID      = "loc id"
+    public static final String PEPPOL_RECEIVER_ID     = "Peppol-Receiver-ID"
     public static final String VAT         = "VAT"
     public static final String VIAF        = "viaf"
     public static final String WIBID       = "wibid"
@@ -88,7 +89,8 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             WIKIDATA_ID,
             LEIT_ID,
             LEIT_KR,
-            LEIBNIZ_ID
+            LEIBNIZ_ID,
+            PEPPOL_RECEIVER_ID
     ]
 
     /**

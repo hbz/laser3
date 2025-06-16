@@ -36,23 +36,24 @@ class MuleJob extends AbstractJob {
     def execute() {
         SystemEvent sysEvent = start('MULE_START')
 
+        Calendar now = Calendar.getInstance()
+        boolean timeCheck_hourly    = _timeCheck(now, -1, 0) // hourly
+        boolean timeCheck_0600      = _timeCheck(now, 6,  0) // once per day .. 6:00
+        boolean timeCheck_0645      = _timeCheck(now, 6, 45) // once per day .. 6:45
+
         if (! sysEvent) {
             return false
         }
         try {
-            LocalTime now = LocalTime.now()
-
             systemService.maintainUnlockedUserAccounts()
-            // every (full) hour
-//            if (_checkTime(now, -1, 0)) {
+
+//            if (timeCheck_hourly)) {
 //                systemService.maintainUnlockedUserAccounts()
 //            }
-            // once per day .. 6:00
-//            if (_checkTime(now, 6, 0)) {
+//            if (timeCheck_0600) {
 //                wekbNewsService.clearCache()
 //            }
-            // once per day .. 6:45
-            if (_checkTime(now, 6, 45)) {
+            if (timeCheck_0645) {
                 systemService.sendSystemInsightMails()
 //                systemService.maintainExpiredUserAccounts()
             }
@@ -61,15 +62,16 @@ class MuleJob extends AbstractJob {
         catch (Exception e) {
             log.error e.getMessage()
         }
-        stopAndComplete(sysEvent)
+        stopAndComplete(sysEvent, [timeCheck_0645: timeCheck_0645])
     }
 
-    private boolean _checkTime(LocalTime now, int hour, int minute) {
-        if (now.getHour() == hour || hour == -1 ) {
-            if (now.getMinute() == minute || minute == -1) {
-                true
+    private boolean _timeCheck(Calendar now, int hour, int minute) {
+        boolean check = false
+        if (now.get(Calendar.HOUR_OF_DAY) == hour || hour == -1) {
+            if (now.get(Calendar.MINUTE) == minute || minute == -1) {
+                check = true
             }
         }
-        false
+        check
     }
 }

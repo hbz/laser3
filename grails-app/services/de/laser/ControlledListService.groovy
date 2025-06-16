@@ -1444,7 +1444,7 @@ class ControlledListService {
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select alt from p.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
+            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select a from p.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
@@ -1509,7 +1509,7 @@ class ControlledListService {
             consortiumFilter = "and sub.instanceOf is null"
         */
         if (params.query) {
-            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true) "
+            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {

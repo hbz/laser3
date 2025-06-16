@@ -108,7 +108,7 @@ class DeletionService {
         // lic.onixplLicense
 
         result.info << ['Identifikatoren', ids]
-        result.info << ['Dokumente', docContexts]  // delete ? docContext->doc
+        result.info << ['Dokumente (dc)', docContexts]  // delete ? docContext->doc
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]     // delete ? personRole->person
         //result.info << ['Pakete', packages]
@@ -313,7 +313,7 @@ class DeletionService {
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
         result.info << ['Identifikatoren', ids]
-        result.info << ['Dokumente', docContexts]   // delete ? docContext->doc
+        result.info << ['Dokumente (dc)', docContexts]   // delete ? docContext->doc
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]       // delete ? personRole->person
         result.info << ['Pakete', subPkgs]
@@ -658,7 +658,7 @@ class DeletionService {
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
         result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
         result.info << ['Nutzerzugehörigkeiten', affils, FLAG_BLOCKER]
-        result.info << ['Dokumente', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
+        result.info << ['Dokumente (dc)', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
         result.info << ['Platformen', platforms, FLAG_BLOCKER]
         //result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
         //result.info << ['TitleInstitutionProvider (provider)', tipsProviders, FLAG_BLOCKER]
@@ -867,9 +867,11 @@ class DeletionService {
                 result.status = RESULT_BLOCKED
                 result.deletable = false
             }
+        }
 
-            if (user.isLastInstAdminOf(user.formalOrg)) {
-                result.status = RESULT_CUSTOM
+        if (user.isLastInstAdminOf(user.formalOrg)) {
+            result.status = RESULT_CUSTOM
+            if (! user.formalOrg.isArchived()) {
                 result.deletable = false
             }
         }

@@ -29,7 +29,7 @@
 <g:set var="counter" value="${offset + 1}"/>
 
 <%--<div id="filterWrapper"></div>--%>
-<laser:render template="/templates/filter/tipp_ieFilter"/>
+<laser:render template="/templates/filter/tipp_ieFilter" />
 
     <ui:messages data="${flash}"/>
     <g:if test="${errorFile}">

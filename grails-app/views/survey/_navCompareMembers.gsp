@@ -30,7 +30,7 @@
 
     </div>
 
-    <g:if test="${surveyConfig.subSurveyUseForTransfer && !(AuditConfig.getConfig(parentSuccessorSubscription, 'holdingSelection') && parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)}">
+    <g:if test="${surveyConfig.subSurveyUseForTransfer && !auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
         <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
 
             <div class="content">

@@ -16,6 +16,7 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigSubscription
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
@@ -927,6 +928,10 @@ class SurveyController {
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                             ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig))
                         }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
+                        }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
                             String dir = GlobalService.obtainTmpFileLocation()
@@ -987,6 +992,10 @@ class SurveyController {
                         Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
                             ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
                         }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
@@ -1137,9 +1146,13 @@ class SurveyController {
                         String filename = params.costInformation.originalFilename
                         RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
                         String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
-                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                        SurveyConfigSubscription surveyConfigSubscription = params.selectedSurveyConfigSubscriptionID ? SurveyConfigSubscription.get(params.long('selectedSurveyConfigSubscriptionID')) : null
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
-                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, null, surveyConfigSubscription))
+                        }
+                        else if(!encoding) {
+                            ctrlResult.result.afterEnrichment = true
+                            ctrlResult.result.unknownCharsetError = true
                         }
                         if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
@@ -1160,10 +1173,10 @@ class SurveyController {
             }
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
-                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is not null and ci.sub is null and ci.pkg is null) and ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+                SurveyConfigSubscription surveyConfigSubscription = params.selectedSurveyConfigSubscriptionID ? SurveyConfigSubscription.get(params.long('selectedSurveyConfigSubscriptionID')) : null
+                String query = 'select ci.id from CostItem ci where (ci.surveyConfigSubscription is not null and ci.sub is null and ci.pkg is null) and ci.surveyConfigSubscription = :surveyConfigSubscription and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
 
-                Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                Set<CostItem> missing = CostItem.executeQuery(query, [surveyConfigSubscription: surveyConfigSubscription, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
             }
 
@@ -1311,7 +1324,7 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
-            redirect(action: 'surveyCostItems', id: ctrlResult.result.surveyInfo.id, params: params+[selectedCostItemElementID: params.bulkSelectedCostItemElementID])
+            redirect(url: request.getHeader('referer'))
             return
         }
 
@@ -1364,8 +1377,11 @@ class SurveyController {
                        message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
-        if(ctrlResult.surveyConfig.packageSurvey){
+        if(ctrlResult.surveyConfig.packageSurvey && params.costItemsForSurveyPackage == 'true'){
             titles.add('Anbieter-Produkt-ID')
+        }
+        if(ctrlResult.surveyConfig.subscriptionSurvey && params.costItemsForSurveySubscriptions == 'true'){
+            titles.add(message(code: 'subscription.label')+'-LASER-UUID')
         }
         ArrayList rowData = []
         ArrayList row
@@ -2092,10 +2108,12 @@ class SurveyController {
                 redirect action: 'currentSurveysConsortia'
                 return
             }
-
-            if(ctrlResult.result.error) {
+            else if(ctrlResult.result.error) {
                 flash.error = ctrlResult.result.error
 
+                redirect(uri: request.getHeader('referer'))
+                return
+            }else{
                 redirect(uri: request.getHeader('referer'))
                 return
             }
