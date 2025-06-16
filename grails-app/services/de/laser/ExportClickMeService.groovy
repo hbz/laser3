@@ -2063,6 +2063,7 @@ class ExportClickMeService {
             exportFields.put('survey.address', [field: null, label: 'Selected billing address', message: 'surveyOrg.address.selected', defaultChecked: 'true'])
             exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
+            exportFields.put('survey.peppolReceiverId', [field: null, label: ' Leit ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
         }
 
@@ -2174,6 +2175,7 @@ class ExportClickMeService {
             fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.peppolReceiverId': [field: null, label: 'Peppol Receiver ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('survey.person')) {
                 fields.survey.fields.remove('survey.person')
@@ -2186,6 +2188,9 @@ class ExportClickMeService {
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.peppolReceiverId')) {
+                fields.survey.fields.remove('survey.peppolReceiverId')
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
@@ -3619,6 +3624,7 @@ class ExportClickMeService {
             exportFields.put('survey.eInvoicePortal', [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitwegId', [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true'])
             exportFields.put('survey.eInvoiceLeitkriterium', [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true'])
+            exportFields.put('survey.peppolReceiverId', [field: null, label: ' Peppoel ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true'])
         }
 
         exportFields
@@ -3717,6 +3723,7 @@ class ExportClickMeService {
             fields.survey.fields << ['survey.eInvoicePortal': [field: null, label: 'Invoice receipt platform', message: 'surveyOrg.eInvoicePortal.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitwegId': [field: null, label: ' Leit ID', message: 'surveyOrg.eInvoiceLeitwegId.label', defaultChecked: 'true']]
             fields.survey.fields << ['survey.eInvoiceLeitkriterium': [field: null, label: 'Leitkriterium', message: 'surveyOrg.eInvoiceLeitkriterium.label', defaultChecked: 'true']]
+            fields.survey.fields << ['survey.peppolReceiverId': [field: null, label: ' Peppol Receiver ID', message: 'surveyOrg.peppolReceiverId.label', defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('survey.person')) {
                 fields.survey.fields.remove('survey.person')
@@ -3729,6 +3736,9 @@ class ExportClickMeService {
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitwegId')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitwegId')
+            }
+            if(fields.survey.fields.containsKey('survey.peppolReceiverId')) {
+                fields.survey.fields.remove('survey.peppolReceiverId')
             }
             if(fields.survey.fields.containsKey('survey.eInvoiceLeitkriterium')) {
                 fields.survey.fields.remove('survey.eInvoiceLeitkriterium')
@@ -5407,6 +5417,13 @@ class ExportClickMeService {
                     }
                     row.add(createTableCell(format, eInvoiceLeitwegId))
                 }
+                else if (fieldKey == 'survey.peppolReceiverId') {
+                    String peppolReceiverId = ""
+                    if (surveyOrg && surveyOrg.peppolReceiverId) {
+                        peppolReceiverId = surveyOrg.peppolReceiverId
+                    }
+                    row.add(createTableCell(format, peppolReceiverId))
+                }
                 else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
                     String eInvoiceLeitkriterium = ""
                     if (surveyOrg && surveyOrg.eInvoiceLeitkriterium) {
@@ -6595,6 +6612,13 @@ class ExportClickMeService {
                         eInvoiceLeitwegId = participantResult.surveyOrg.eInvoiceLeitwegId
                     }
                     row.add(createTableCell(format, eInvoiceLeitwegId))
+                }
+                else if (fieldKey == 'survey.peppolReceiverId') {
+                    String peppolReceiverId = ""
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.peppolReceiverId) {
+                        peppolReceiverId = participantResult.surveyOrg.peppolReceiverId
+                    }
+                    row.add(createTableCell(format, peppolReceiverId))
                 }
                 else if (fieldKey == 'survey.eInvoiceLeitkriterium') {
                     String eInvoiceLeitkriterium = ""

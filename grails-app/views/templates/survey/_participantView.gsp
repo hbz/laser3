@@ -155,7 +155,7 @@
 
                             <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
                                 ${message(code: 'surveyOrg.eInvoice.label')}
-                                <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}"/>
+                                <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}/${surveyOrg.peppolReceiverId ? '1' : '0'}"/>
                             </a>
                         </div>
                     </div>
@@ -259,6 +259,21 @@
                                                 <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitkriterium"/>
                                             </dd>
                                         </dl>
+
+                                        <div class="content">
+                                            <dl>
+                                                <dt>
+                                                    <g:message code="surveyOrg.peppolReceiverId.label"/>
+                                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                                          data-content="${message(code: 'surveyOrg.peppolReceiverId.expl')}">
+                                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                    </span>
+                                                </dt>
+                                                <dd>
+                                                    <ui:xEditable owner="${surveyOrg}" field="peppolReceiverId"/>
+                                                </dd>
+                                            </dl>
+                                        </div>
 
                                         <table class="ui table la-js-responsive-table la-table">
                                             <thead>

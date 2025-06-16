@@ -2725,6 +2725,7 @@ class SurveyService {
                 if(params.setEInvoiceValuesFromOrg) {
                     result.surveyOrg.eInvoicePortal = participant.eInvoicePortal
                     result.surveyOrg.eInvoiceLeitwegId = participant.getLeitID()?.value
+                    result.surveyOrg.peppolReceiverId = participant.getPeppolReceiverID()?.value
                     result.surveyOrg.eInvoiceLeitkriterium = participant.getLeitkriteriums() ? participant.getLeitkriteriums()[0].value : ''
                     result.surveyOrg.save()
                     params.remove('setEInvoiceValuesFromOrg')
