@@ -632,35 +632,17 @@ class OrganisationController  {
         }
 
         if(identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID && params.leitID1 && params.leitID3){
-            String leitID1
-            String leitID2
-            String leitID3
+            String leitID
 
-            if(params.leitID1 ==~ /[0-9]{2,12}/) {
-                leitID1 = params.leitID1
+            if(params.leitID) {
+                leitID = params.leitID
             }else{
                 flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID1.info')]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
 
-            if(params.leitID2 ==~ /[a-zA-Z0-9]{0,30}/) {
-                leitID2 = params.leitID2
-            }else{
-                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID2.info')]) as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-
-            if(params.leitID3 ==~ /[0-9]{2,2}/) {
-                leitID3 = params.leitID3
-            }else{
-                flash.error = message(code: 'identifier.edit.err.peppolID', args: [message(code: 'identifier.leitID.leitID3.info')]) as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-
-            params.value = '0204:'+leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
+            params.value = '0204:'+leitID
         }
 
         if ( ! params.value){
@@ -1573,19 +1555,25 @@ class OrganisationController  {
             }
         }
         numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
-            years.value.each { Map.Entry<String,ReaderNumber> row ->
+
+            years.value.eachWithIndex { Map.Entry<String,ReaderNumber> row, int i ->
                 yearCols << row.key
-                if(row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) {
-                    ReaderNumber rn = row.value
-                    BigDecimal yearSum = yearSums.get(years.key)
-                    if(rn.value) {
+                ReaderNumber rn = row.value
+                log.debug("at index ${i}: ${rn.referenceGroup.getI10n('value')}")
+                BigDecimal yearSum = yearSums.get(years.key)
+                if(rn.value) {
+                    if((years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')) && row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) ||
+                            !years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value'))) {
                         if(yearSum == null) {
                             yearSum = rn.value
                         }
-                        else yearSum += rn.value
+                        else {
+                            yearSum += rn.value
+                            log.debug("${yearSum}")
+                        }
                     }
-                    yearSums.put(years.key,yearSum)
                 }
+                yearSums.put(years.key,yearSum)
             }
         }
 
