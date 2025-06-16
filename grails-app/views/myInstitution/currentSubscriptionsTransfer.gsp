@@ -459,7 +459,7 @@
                             <g:each in="${documentSet}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
-                                        <div class="ui grid summary">
+                                        <div class="ui middle aligned grid summary">
                                             <div class="eight wide column la-column-right-lessPadding center aligned">
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
@@ -538,7 +538,7 @@
                                 </g:if>
                             </g:each>
                             <div class="ui small feed content">
-                                <div class="ui grid summary">
+                                <div class="ui middle aligned grid summary">
                                     <div class="sixteen wide column">
                                         <ui:xEditable owner="${s}" field="offerNote" validation="maxlength" maxlength="255"/>
                                     </div>
@@ -685,7 +685,7 @@
                             <g:each in="${documentSet2}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                                     <div class="ui small feed content">
-                                        <div class="ui grid summary">
+                                        <div class="ui middle aligned grid summary">
                                             <div class="eight wide column la-column-right-lessPadding center aligned">
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <i class="large icons">
