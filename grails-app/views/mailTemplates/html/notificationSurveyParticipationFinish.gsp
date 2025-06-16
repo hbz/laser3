@@ -216,6 +216,7 @@
     <g:message code="surveyOrg.eInvoicePortal.label" locale="${language}"/>: ${surveyOrg.eInvoicePortal ? surveyOrg.eInvoicePortal.getI10n('value', language) : ''}<br/>
     <g:message code="surveyOrg.eInvoiceLeitwegId.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitwegId}<br/>
     <g:message code="surveyOrg.eInvoiceLeitkriterium.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitkriterium}<br/>
+    <g:message code="surveyOrg.peppolReceiverId.label" locale="${language}"/>: ${surveyOrg.peppolReceiverId}<br/>
     <br/>
     <br/>
 </g:if>

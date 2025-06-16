@@ -504,29 +504,16 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      */
     Map getPeppolReceiverID(){
         String prefix
-        String leitID1
-        String leitID2
-        String leitID3
+        String leitID
         if(this.value){
             List peppolID = this.value.split(':')
             if(peppolID.size() > 1) {
                 prefix = peppolID[0]
-                List leitID = peppolID[1].split('-')
-
-                if (leitID.size() == 2) {
-                    leitID1 = leitID[0]
-                    leitID3 = leitID[1]
-                }
-
-                if (leitID.size() == 3) {
-                    leitID1 = leitID[0]
-                    leitID2 = leitID[1]
-                    leitID3 = leitID[2]
-                }
+                leitID = peppolID[1]
             }
 
         }
 
-        return [prefix: prefix, leitID1: leitID1, leitID2: leitID2, leitID3: leitID3]
+        return [prefix: prefix, leitID: leitID]
     }
 }
