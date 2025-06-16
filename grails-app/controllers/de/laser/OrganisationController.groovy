@@ -1556,18 +1556,21 @@ class OrganisationController  {
         }
         numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
 
-            years.value.each { Map.Entry<String,ReaderNumber> row ->
+            years.value.eachWithIndex { Map.Entry<String,ReaderNumber> row, int i ->
                 yearCols << row.key
                 ReaderNumber rn = row.value
+                log.debug("at index ${i}: ${rn.referenceGroup.getI10n('value')}")
                 BigDecimal yearSum = yearSums.get(years.key)
                 if(rn.value) {
-                    if(yearSum == null) {
-                        yearSum = rn.value
-                    }
-                    else {
-                        if((years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')) && row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) ||
-                        !years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')))
+                    if((years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value')) && row.key != RDStore.READER_NUMBER_FTE.getI10n('value')) ||
+                            !years.value.keySet().contains(RDStore.READER_NUMBER_FTE_TOTAL.getI10n('value'))) {
+                        if(yearSum == null) {
+                            yearSum = rn.value
+                        }
+                        else {
                             yearSum += rn.value
+                            log.debug("${yearSum}")
+                        }
                     }
                 }
                 yearSums.put(years.key,yearSum)
