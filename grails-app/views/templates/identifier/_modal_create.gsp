@@ -51,11 +51,7 @@
                 <g:set var="leitID" value="${identifier.getPeppolReceiverID()}"/>
                 <div class="ui right labeled input">
                     <input type="text" name="praefix" value="0204:" minlength="4" maxlength="4" required disabled>
-                    <input type="text" name="leitID1" value="${leitID.leitID1}" placeholder="${message(code: 'identifier.leitID.leitID1.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="12" pattern="[0-9]{2,12}" required>
-                    <div class="ui basic label">-</div>
-                    <input type="text" name="leitID2" value="${leitID.leitID2}" placeholder="${message(code: 'identifier.leitID.leitID2.info')}" minlength="0" maxlength="30" pattern="[a-zA-Z0-9]{0,30}">
-                    <div class="ui basic label">-</div>
-                    <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
+                    <input type="text" name="leitID" value="${leitID.leitID}" placeholder="Leit-ID (${message(code: 'default.mandatory.tooltip')})" required>
                 </div>
             </g:elseif>
             <g:elseif test="${identifier && identifier.ns.id in namespacesWithValidations.keySet()}">
