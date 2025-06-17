@@ -228,7 +228,8 @@ class YodaService {
                                        'vendor:a1f7c0ee-90fe-42c2-b677-be74d29410fb': 'vendor:e8f3f4ed-4fbf-4fbf-9fdc-eeea0da4672f', //EBSCO
                                        'vendor:4eaecda9-9a2e-4f34-966a-7f46650e12d5': 'vendor:bd01da62-126a-4fc1-8431-ca6f07a35608', //Goethe + Schweitzer
                                        'vendor:52b444d0-00ce-43a7-a6f4-5afea259ddf2': 'vendor:2ce1502c-8d8e-412d-a3ba-e0615dd87ef8', //ims
-                                       'vendor:bf1feac7-b269-4448-8b91-7bdf0dcb4cf8': 'vendor:7633ac5a-e775-432e-af10-56c7a6c9827e'] //Massmann
+                                       'vendor:bf1feac7-b269-4448-8b91-7bdf0dcb4cf8': 'vendor:7633ac5a-e775-432e-af10-56c7a6c9827e', //Massmann
+                                       'vendor:2ae2c418-406c-435e-80d6-1c5054b5b90c': 'vendor:396c09b6-fdc8-4a14-97d8-7bc83856cbb2'] //Sonstiger
         mergers.each { String from, String to ->
             Vendor source = Vendor.findByGlobalUID(from), target = Vendor.findByGlobalUID(to)
             if(source && target) {
