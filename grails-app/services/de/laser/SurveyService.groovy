@@ -1806,21 +1806,25 @@ class SurveyService {
      * @return true if there is perpetual access (= at least one record in {@link PermanentTitle} for the given institution and title, false otherwise
      */
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
-            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
-                    '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
-                    'tipp.status != :tippStatus AND ' +
-                    '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
-                    [hostPlatformURL: tipp.hostPlatformURL,
-                     tippStatus: RDStore.TIPP_STATUS_REMOVED,
-                     tipp: tipp,
-                     org: org,
-                     subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
+        Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
+                '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
+                'tipp.status != :tippStatus AND ' +
+                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
+                [hostPlatformURL: tipp.hostPlatformURL,
+                 tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                 tipp: tipp,
+                 org: org,
+                 subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
+        countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
+                'ie.perpetualAccessBySub in (select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :subscriber) or ' +
+                "ie.perpetualAccessBySub in (select s from OrgRole oc join oc.sub s where oc.org = :context and oc.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))" +
+                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
 
-            if(countPermanentTitles > 0){
-                return true
-            }else {
-                return false
-            }
+        if(countPermanentTitles > 0){
+            return true
+        }else {
+            return false
+        }
     }
 
     /**
