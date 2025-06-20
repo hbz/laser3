@@ -958,11 +958,11 @@ class FinanceService {
             //subscription status
             //we have to distinct between not existent and present but zero length
             if(params.filterSubStatus) {
-                subFilterQuery += " and sub.status = :filterSubStatus "
-                queryParams.filterSubStatus = RefdataValue.get(params.long('filterSubStatus'))
+                subFilterQuery += " and sub.status in (:filterSubStatus) "
+                queryParams.filterSubStatus = Params.getRefdataList(params, 'filterSubStatus')
             }
             //!params.filterSubStatus is insufficient because it checks also the presence of a value - but the absence of a value is a valid setting (= all status except deleted; that is captured by the genericExcludes field)
-            else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus')) {
+            else if(!params.subscription && !params.sub && !params.id && !params.containsKey('filterSubStatus') && !params.containsKey('submit')) {
                 subFilterQuery += " and sub.status = :filterSubStatus "
                 queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
             }
