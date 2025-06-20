@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6677    20.06.2025  rc-3.5  3.5         Andreas Bug         Umrüstung des Lizenzstatusfilters in der Finanzübersicht
+
 6666    13.06.2025  rc-3.5  3.5         Andreas Bug         falsche Summierung der Nutzerzahlen behoben
 
 6665    13.06.2025  rc-3.5  3.5         Andreas Bug         fehlende Verknüpfungen nachgereicht, Haken ausgeblendet
