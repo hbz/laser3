@@ -15,7 +15,7 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 
 **Vergrößern: Auf Bild klicken**
 
-![Screenshot 1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern")
+![Screenshot1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern" medium+)
 
 --------------------
 
@@ -29,5 +29,5 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 
 **Vergrößern: Auf Bild klicken**
 
-![Screenshot 2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern")
+![Screenshot2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern" medium+)
 

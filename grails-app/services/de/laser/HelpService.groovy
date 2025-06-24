@@ -12,6 +12,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet
 import com.vladsch.flexmark.util.misc.Extension
 import de.laser.config.ConfigMapper
 import de.laser.flexmark.BaseExtension
+import de.laser.flexmark.ext.image.ImgSizeExtension
 import de.laser.remote.Wekb
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
@@ -126,7 +127,7 @@ class HelpService {
         MutableDataHolder options = new MutableDataSet()
         options.set(Parser.PARSER_EMULATION_PROFILE, ParserEmulationProfile.COMMONMARK)
         options.set(Parser.EXTENSIONS, Arrays.asList(
-                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create() }
+                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create(), ImgSizeExtension.create() }
         ))
 
         Parser.builder(options).build()
@@ -137,7 +138,7 @@ class HelpService {
         options.set(HtmlRenderer.AUTOLINK_WWW_PREFIX, 'https://')
         options.set(HtmlRenderer.ESCAPE_HTML, true)
         options.set(Parser.EXTENSIONS, Arrays.asList(
-                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create() }
+                new Extension[] { BaseExtension.create(), StrikethroughExtension.create(), TablesExtension.create(), ImgSizeExtension.create() }
         ))
 
         HtmlRenderer.builder(options).build()

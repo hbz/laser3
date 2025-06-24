@@ -250,10 +250,10 @@ Some text to show that the reference links can follow later.
 Here's our logo (hover to see the title text):
 
 Inline-style:
-![alt text](https://laser.hbz-nrw.de/assets/laser.svg "Logo Title Text 1")
+![alt_text](https://laser.hbz-nrw.de/assets/laser.svg "Logo Title Text 1")
 
 Reference-style:
-![alt text][logo_id]
+![alt_text][logo_id]
 
 [logo_id]: https://laser.hbz-nrw.de/assets/gokb.svg "Logo Title Text 2"
 
@@ -263,7 +263,7 @@ Reference-style:
 
 Like links, Images also have a footnote style syntax
 
-![Alt text][id]
+![Alt_text][id]
 
 With a reference later in the document defining the URL location:
 
@@ -273,10 +273,10 @@ With a reference later in the document defining the URL location:
 Here's our logo (hover to see the title text):
 
 Inline-style:
-![alt text](https://laser.hbz-nrw.de/assets/laser.svg "Logo Title Text 1")
+![alt_text](https://laser.hbz-nrw.de/assets/laser.svg "Logo Title Text 1")
 
 Reference-style:
-![alt text][logo_id]
+![alt_text][logo_id]
 
 [logo_id]: https://laser.hbz-nrw.de/assets/gokb.svg "Logo Title Text 2"
 
@@ -286,11 +286,35 @@ Reference-style:
 
 Like links, Images also have a footnote style syntax
 
-![Alt text][id]
+![Alt_text][id]
 
 With a reference later in the document defining the URL location:
 
 [id]: https://laser.hbz-nrw.de/assets/laser.svg  "Something about .."
+
+### Preview sizes
+
+```
+![no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
+
+![preview_small](https://laser.hbz-nrw.de/assets/gasco-logo.jpg small+)
+
+![preview_medium](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_medium" medium+)
+
+![preview_large](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
+
+![preview_big](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
+```
+
+![no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
+
+![preview_small](https://laser.hbz-nrw.de/assets/gasco-logo.jpg small+)
+
+![preview_medium](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_medium" medium+)
+
+![preview_large](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
+
+![preview_big](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
 
 ------
 
@@ -624,14 +648,14 @@ Underscores
 
 # Various
 
-![Image not found]({{url_laser_static}}/media/reporting/global.packages.png "{{url_laser_static}}")
+![Image_not_found]({{url_laser_static}}/media/reporting/global.packages.png "{{url_laser_static}}")
 
 | Option | Description |
 |--------|-------------|
 | this   | ...         |
 | that   | ...         |
 
-![File not found](/assets/laser.svg "Relative Path")
+![File_not_found](/assets/laser.svg "Relative Path")
 
 <table style="background-color: green">
     <tr>
