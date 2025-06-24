@@ -48,4 +48,6 @@
     </div>
 </div>
 
+<g:render template="/public/markdownScript" />
+
 <laser:htmlEnd />

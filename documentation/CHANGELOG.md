@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6681    24.06.2025  rc-3.5  3.5.1       Andreas Bug         Titelfilter verarbeitete Status nicht
+
+6680    24.06.2025  rc-3.5  3.5.1       David   Feature     Bildergrößen in Markdown-Dateien steuern
+
+6679    23.06.2025  rc-3.5  3.5.1       David   Bug         Meine Anbieter 500er
+
+6677    20.06.2025  rc-3.5  3.5.1       Andreas Bug         Umrüstung des Lizenzstatusfilters in der Finanzübersicht
+
 6666    13.06.2025  rc-3.5  3.5         Andreas Bug         falsche Summierung der Nutzerzahlen behoben
 
 6665    13.06.2025  rc-3.5  3.5         Andreas Bug         fehlende Verknüpfungen nachgereicht, Haken ausgeblendet

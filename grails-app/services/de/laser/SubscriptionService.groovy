@@ -1827,7 +1827,11 @@ class SubscriptionService {
                                 identifierConfigMap = parameterGenerics.identifierConfigMap,
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
             //build up title data
-            if(!result.configMap.containsKey('status')) {
+            if(result.configMap.containsKey('tippStatus') && result.configMap.containsKey('ieStatus')) {
+                titleConfigMap.tippStatus = result.configMap.tippStatus[0]
+                issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0]
+            }
+            else if(!result.configMap.containsKey('status')) {
                 titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
                 issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
             }
@@ -1837,10 +1841,9 @@ class SubscriptionService {
                 tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.configMap.identifier))
             }
             if (result.configMap.containsKey('hasPerpetualAccess')) {
-                String permanentTitleStringQuery = "select tipp.hostPlatformURL from PermanentTitle pt join pt.tipp tipp where pt.owner = :subscriber and tipp.status = :current",
+                String permanentTitleStringQuery = "select tipp.hostPlatformURL from PermanentTitle pt join pt.tipp tipp where (pt.owner = :subscriber or pt.subscription in (select oo.sub.instanceOf from OrgRole oo where oo.org = :subscriber and oo.roleType = :subscriberRole)) and tipp.status = :current",
                 permanentTitlesQuery = "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (:currSubPkgs) and tipp.hostPlatformURL in (:subSet) and tipp.status = :current"
-                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia(), current: RDStore.TIPP_STATUS_CURRENT]
-                Set<String> permanentTitleURLs = TitleInstancePackagePlatform.executeQuery(permanentTitleStringQuery, permanentTitleParams)
+                Set<String> permanentTitleURLs = TitleInstancePackagePlatform.executeQuery(permanentTitleStringQuery, [subscriber: result.subscription.getSubscriber(), current: RDStore.TIPP_STATUS_CURRENT, subscriberRole: RDStore.OR_SUBSCRIBER_CONS])
                 Set<Long> tippIDsPurchasedGlobally = []
                 permanentTitleURLs.collate(65000).each { subSet ->
                     tippIDsPurchasedGlobally.addAll(TitleInstancePackagePlatform.executeQuery(permanentTitlesQuery, [subSet: subSet, currSubPkgs: result.subscription.packages.pkg, current: RDStore.TIPP_STATUS_CURRENT]))
@@ -1859,6 +1862,19 @@ class SubscriptionService {
                 checkedCache = ["checked": [:]]
             }
 
+            Set<Subscription> subscriptions = [], parentSubs = []
+            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+            }
+            //else {
+            subscriptions << result.subscription
+            //}
+            subscriptions.each { Subscription s ->
+                if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                    parentSubs << s.instanceOf
+            }
+            subscriptions.addAll(parentSubs)
+
             result.checkedCache = checkedCache.get('checked')
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             switch(params.tab) {
@@ -1874,13 +1890,6 @@ class SubscriptionService {
                     }
                     break
                 case 'selectableTipps':
-                    Set<Subscription> subscriptions = []
-                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
-                    }
-                    //else {
-                        subscriptions << result.subscription
-                    //}
                     if(subscriptions) {
                         Set rows
                         if(result.surveyConfig.pickAndChoosePerpetualAccess) {
@@ -1889,6 +1898,7 @@ class SubscriptionService {
                         else {
                             rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
+                        rows.addAll(issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber()), subscriptions)
                         rows.collate(65000).each { subSet ->
                             tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
                         }
@@ -1943,21 +1953,23 @@ class SubscriptionService {
                     }
                     break
                 case 'currentPerpetualAccessIEs':
-                    Set<Subscription> subscriptions = []
-                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
-                    }
-                    else {
-                        subscriptions << result.subscription
-                    }
                     if(subscriptions) {
+                        subscriptions.each { Subscription s ->
+                            if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                                subscriptions << s.instanceOf.id
+                        }
                         Set<Long> sourceIEs = [], sourceTIPPs = []
                         List rows
+                        String orderClause
+                        if(params.sort && params.order)
+                            orderClause = "order by ${params.sort} ${params.order}"
+                        else
+                            orderClause = "order by ie.tipp.sortname asc"
                         if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id '+orderClause, [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
                         else {
-                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) '+orderClause, [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
                         sourceIEs.addAll(rows["ie_id"])
                         sourceTIPPs.addAll(rows["tipp_id"])
@@ -2256,49 +2268,53 @@ class SubscriptionService {
                     Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                         identifierConfigMap = parameterGenerics.identifierConfigMap,
                                         issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-                    if(!result.configMap.containsKey('status')) {
+                    //build up title data
+                    if(result.configMap.containsKey('tippStatus') && result.configMap.containsKey('ieStatus')) {
+                        titleConfigMap.tippStatus = result.configMap.tippStatus[0]
+                        issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0]
+                    }
+                    else if(!result.configMap.containsKey('status')) {
                         titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
                         issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
                     }
-                    //build up title data
                     Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap), exportData = [:]
                     Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                     if(result.identifier) {
                         tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
                     }
                     userCache.put('progress', 20)
+                    Set<Subscription> subscriptions = [], parentSubs = []
+                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                    }
+                    //else {
+                    subscriptions << result.subscription
+                    subscriptions.each { Subscription s ->
+                        if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                            parentSubs << s.instanceOf
+                    }
+                    subscriptions.addAll(parentSubs)
+                    Set<String> perpetuallyPurchasedTitleURLs = issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions)
                     switch(params.tab) {
-                        case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
-                            Set<String> perpetuallyPurchasedTitleURLs = []
-                            if(perpetuallyPurchasedTitleRows)
-                                perpetuallyPurchasedTitleURLs.addAll(perpetuallyPurchasedTitleRows['tipp_host_platform_url'])
+                        case 'allTipps':
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, perpetuallyPurchasedTitleURLs: perpetuallyPurchasedTitleURLs, withPick: true])
                             break
                         case 'selectableTipps':
-                            Set<Subscription> subscriptions = []
-                            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                                subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
-                            }
-                            //else {
-                            subscriptions << result.subscription
                             //}
                             if(subscriptions) {
-                                Set<Long> sourceTIPPs = []
-                                List rows
+                                Set rows
                                 //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) sense?
                                 if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
+                                    rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
                                 }
                                 else {
-                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                                    rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                                 }
-                                sourceTIPPs.addAll(rows["tipp_id"])
-                                tippIDs = tippIDs.minus(sourceTIPPs)
+                                rows.addAll(perpetuallyPurchasedTitleURLs)
+                                rows.collate(65000).each { subSet ->
+                                    tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
+                                }
                             }
-                            List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
-                            Set<String> perpetuallyPurchasedTitleURLs = []
-                            if(perpetuallyPurchasedTitleRows)
-                                perpetuallyPurchasedTitleURLs.addAll(perpetuallyPurchasedTitleRows['tipp_host_platform_url'])
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, perpetuallyPurchasedTitleURLs: perpetuallyPurchasedTitleURLs, withPick: true])
                             break
                         case 'selectedIEs':
@@ -2312,21 +2328,14 @@ class SubscriptionService {
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
                         case 'currentPerpetualAccessIEs':
-                            Set<Subscription> subscriptions = []
-                            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                                subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
-                            }
-                            else {
-                                subscriptions << result.subscription
-                            }
                             Set<Long> sourceTIPPs = []
                             if(subscriptions) {
                                 List rows
                                 if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id order by tipp.sortname', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                                 }
                                 else {
-                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) order by ie.tipp.sortname', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                                 }
                                 sourceTIPPs.addAll(rows["tipp_id"])
                             }
@@ -2366,8 +2375,12 @@ class SubscriptionService {
                                 startTime.add(Calendar.MONTH, 1)
                             }
                             Map<String, Object> requestResponse = exportService.getReports(sushiQueryMap)
-                            if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
+                            if(requestResponse.containsKey("error") && requestResponse.error instanceof Map && requestResponse.error.code == 202) {
                                 result.status202 = true
+                            }
+                            else if(requestResponse.containsKey("error")) {
+                                userCache.put('progress', 100)
+                                return [result: [error: messageSource.getMessage("default.stats.error.${requestResponse.error}", null, locale)], status: SubscriptionControllerService.STATUS_ERROR]
                             }
                             else {
                                 userCache.put('progress', 40)

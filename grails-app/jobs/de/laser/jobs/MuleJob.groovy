@@ -62,7 +62,7 @@ class MuleJob extends AbstractJob {
         catch (Exception e) {
             log.error e.getMessage()
         }
-        stopAndComplete(sysEvent, [timeCheck_0645: timeCheck_0645])
+        stopAndComplete(sysEvent)
     }
 
     private boolean _timeCheck(Calendar now, int hour, int minute) {

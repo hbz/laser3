@@ -2159,7 +2159,7 @@ class SubscriptionController {
                 fileResult.error = 401
             }
             else {
-                fileResult.error = ctrlResult.error
+                fileResult.error = ctrlResult.result.error
             }
             render template: '/templates/bulkItemDownload', model: fileResult
         }
