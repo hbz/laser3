@@ -11,6 +11,8 @@
 
 6680    24.06.2025  rc-3.5  3.5.1       David   Feature     Bildergrößen in Markdown-Dateien steuern
 
+6678    24.06.2025  rc-3.5  3.5.1       Andreas Feature     Vererbungsbuttons bei Merkmalen in Lizenzverwaltung hinzugefügt
+
 6679    23.06.2025  rc-3.5  3.5.1       David   Bug         Meine Anbieter 500er
 
 6677    20.06.2025  rc-3.5  3.5.1       Andreas Bug         Umrüstung des Lizenzstatusfilters in der Finanzübersicht
