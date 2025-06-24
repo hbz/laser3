@@ -1898,7 +1898,7 @@ class SubscriptionService {
                         else {
                             rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
-                        rows.addAll(issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber()), subscriptions)
+                        rows.addAll(issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions))
                         rows.collate(65000).each { subSet ->
                             tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
                         }
@@ -2270,8 +2270,8 @@ class SubscriptionService {
                                         issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
                     //build up title data
                     if(result.configMap.containsKey('tippStatus') && result.configMap.containsKey('ieStatus')) {
-                        titleConfigMap.tippStatus = result.configMap.tippStatus[0]
-                        issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0]
+                        titleConfigMap.tippStatus = result.configMap.tippStatus[0].id
+                        issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0].id
                     }
                     else if(!result.configMap.containsKey('status')) {
                         titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
