@@ -313,7 +313,7 @@
             </g:if>
         </div>
         <div class="basic center aligned actions">
-            <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email</a>
+            <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email (laser@hbz-nrw.de)</a>
         </div>
     </div>
 </g:elseif>

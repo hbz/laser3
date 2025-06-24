@@ -76,6 +76,7 @@ import java.util.regex.Pattern
 class SurveyService {
 
     AddressbookService addressbookService
+    AuditService auditService
     BatchQueryService batchQueryService
     CompareService compareService
     ComparisonService comparisonService
@@ -1805,21 +1806,25 @@ class SurveyService {
      * @return true if there is perpetual access (= at least one record in {@link PermanentTitle} for the given institution and title, false otherwise
      */
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
-            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
-                    '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
-                    'tipp.status != :tippStatus AND ' +
-                    '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
-                    [hostPlatformURL: tipp.hostPlatformURL,
-                     tippStatus: RDStore.TIPP_STATUS_REMOVED,
-                     tipp: tipp,
-                     org: org,
-                     subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
+        Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
+                '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
+                'tipp.status != :tippStatus AND ' +
+                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
+                [hostPlatformURL: tipp.hostPlatformURL,
+                 tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                 tipp: tipp,
+                 org: org,
+                 subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
+        countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
+                'ie.perpetualAccessBySub in (select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :subscriber) or ' +
+                "ie.perpetualAccessBySub in (select s from OrgRole oc join oc.sub s where oc.org = :context and oc.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))" +
+                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
 
-            if(countPermanentTitles > 0){
-                return true
-            }else {
-                return false
-            }
+        if(countPermanentTitles > 0){
+            return true
+        }else {
+            return false
+        }
     }
 
     /**
@@ -2082,6 +2087,7 @@ class SurveyService {
      * @param subscription the {@link Subscription} whose perpetually accessible titles should be counted
      * @return the count of {@link IssueEntitlement}s to which perpetual access have been granted over all years of the given subscription
      */
+    @Deprecated
     Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
         Integer count = 0
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
@@ -2121,6 +2127,7 @@ class SurveyService {
      * @param surveyConfig the {@link SurveyConfig} in which the titles may be picked
      * @return the count of titles not figuring in the survey's selectable titles
      */
+    @Deprecated
     Integer countPerpetualAccessTitlesBySubAndNotInIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         Integer count = 0
         Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
@@ -2130,24 +2137,28 @@ class SurveyService {
 
         if(subscriptions.size() > 0 && issueEntitlementGroup) {
             List<Object> subIds = []
-            subIds.addAll(subscriptions.id)
+            subscriptions.each { Subscription s ->
+                subIds << s.id
+                if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                    subIds << s.instanceOf.id
+            }
             Sql sql = GlobalService.obtainSqlConnection()
             try {
-            Connection connection = sql.dataSource.getConnection()
-            /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs)  " +
-                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
-                    "and tipp.tipp_host_platform_url in " +
-                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
-                    " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+                Connection connection = sql.dataSource.getConnection()
+                /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                        "where ie.ie_subscription_fk = any(:subs)  " +
+                        "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                        "and tipp.tipp_host_platform_url in " +
+                        "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                        " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                        " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
 
-            def titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
-                    " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and ie2.ie_status_rv_fk = :tippStatus " +
-                    " and ie2.ie_id not in (select igi_ie_fk from issue_entitlement_group_item where igi_ie_group_fk = :ieGroup) group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id, ieGroup: issueEntitlementGroup.id])
+                def titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                        " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                        " and ie2.ie_status_rv_fk = :tippStatus " +
+                        " and ie2.ie_id not in (select igi_ie_fk from issue_entitlement_group_item where igi_ie_group_fk = :ieGroup) group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id, ieGroup: issueEntitlementGroup.id])
 
-            count = titles.size()
+                count = titles.size()
             }
             finally {
                 sql.close()
@@ -2167,37 +2178,6 @@ class SurveyService {
         Integer countIes = issueEntitlementGroup ?
                 IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status",
                         [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_REMOVED])[0]
-                : 0
-        countIes
-    }
-
-    /**
-     *
-     * @param subscription
-     * @param surveyConfig
-     * @param status
-     * @return
-     */
-    Integer countIssueEntitlementsByIEGroupWithStatus(Subscription subscription, SurveyConfig surveyConfig, RefdataValue status) {
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
-        Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
-                        [ieGroup: issueEntitlementGroup, status: status])[0]
-                : 0
-        countIes
-    }
-
-    /**
-     * currently unused
-     * @param subscription
-     * @param surveyConfig
-     * @return
-     */
-    Integer countCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
-        Integer countIes = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select count(*) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status",
-                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         countIes
     }
@@ -2235,35 +2215,6 @@ class SurveyService {
             sumListPrice
         }
         else 0.0
-    }
-
-    /**
-     * currently unused
-     * @param subscription
-     * @param surveyConfig
-     * @param currency
-     * @return
-     */
-    BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
-        BigDecimal sumListPrice = issueEntitlementGroup ?
-                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status = :status)",
-                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
-                : 0.0
-        sumListPrice
-    }
-
-    /**
-     * currently unused
-     * @param subscription
-     * @param currency
-     * @return
-     */
-    BigDecimal sumListPriceTippInCurrencyOfCurrentIssueEntitlements(Subscription subscription, RefdataValue currency) {
-        BigDecimal sumListPrice = 0.0
-        sumListPrice = PriceItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status)",
-                        [sub: subscription, status: RDStore.TIPP_STATUS_CURRENT, currency: currency])[0]
-        sumListPrice
     }
 
     /**

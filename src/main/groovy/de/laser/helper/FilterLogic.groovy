@@ -96,9 +96,27 @@ class FilterLogic {
             switch(params.tab) {
                 case ['allTipps', 'usage']: result.status = [RDStore.TIPP_STATUS_CURRENT]
                     break
-                case 'selectedIEs': Map stResult = resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
-                    result.subTab = stResult.tab
-                    result.status = stResult.status
+                case 'selectedIEs':
+                    switch (params.subTab) {
+                        case 'currentIEs':
+                            result.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                            break
+                        case 'plannedIEs':
+                            result.status = [RDStore.TIPP_STATUS_EXPECTED.id]
+                            break
+                        case 'expiredIEs':
+                            result.status = [RDStore.TIPP_STATUS_RETIRED.id]
+                            break
+                        case 'deletedIEs':
+                            result.status = [RDStore.TIPP_STATUS_DELETED.id]
+                            break
+                        case 'allIEs':
+                            result.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+                            break
+                        default:
+                            result.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                            break
+                    }
                     break
                 case 'currentPerpetualAccessIEs': result.status = [RDStore.TIPP_STATUS_CURRENT]
                     break

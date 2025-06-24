@@ -1,6 +1,6 @@
-### Wo kann ich Anleitungen oder die FAQ finden?
+### Wo kann ich Erklärungen zu LAS:eR finden?
 
-Diese Informationen finden Sie hier: [https://service-wiki.hbz-nrw.de/display/LAS/Startseite](https://service-wiki.hbz-nrw.de/display/LAS/Startseite)
+Informationen zu den einzelnen Funktionen finden Sie in LAS:eR selbst auf den jeweiligen Seiten, indem Sie oben rechts auf das Fragezeichen-Symbol klicken. Sollten Sie dennoch Fragen haben, können Sie unter laser@hbz-nrw.de unser Service-Team erreichen.
 
 ### Anleitung zum Hochladen von Beispiel-Vorlagedatei
 

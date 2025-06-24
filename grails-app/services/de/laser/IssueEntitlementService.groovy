@@ -141,6 +141,16 @@ class IssueEntitlementService {
         [tippIDs: tippIDs, ieIDs: ieIDs]
     }
 
+    Set<String> getPerpetuallyPurchasedTitleHostPlatformURLs(Org context, Set<Subscription> subscriptions) {
+        Set<String> perpetuallyPurchasedTippHostPlatformURLs = []
+        //own hostPlatformURLs
+        perpetuallyPurchasedTippHostPlatformURLs.addAll(PermanentTitle.executeQuery('select tipp.hostPlatformURL from PermanentTitle pt join pt.tipp tipp where pt.owner = :context and tipp.status != :removed', [context: context, removed: RDStore.TIPP_STATUS_REMOVED]))
+        perpetuallyPurchasedTippHostPlatformURLs.addAll(PermanentTitle.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.perpetualAccessBySub in (:subscriptions) and ie.status != :removed', [subscriptions: subscriptions, removed: RDStore.TIPP_STATUS_REMOVED]))
+        //consortial hostPlatformURLs
+        perpetuallyPurchasedTippHostPlatformURLs.addAll(PermanentTitle.executeQuery("select tipp.hostPlatformURL from PermanentTitle pt join pt.issueEntitlement ie join pt.tipp tipp where ie.status != :removed and ie.subscription in (select oo.sub from OrgRole oo join oo.sub s where oo.org = :context and oo.roleType = :subscriber and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [context: context, subscriber: RDStore.OR_SUBSCRIBER_CONS, removed: RDStore.TIPP_STATUS_REMOVED]))
+        perpetuallyPurchasedTippHostPlatformURLs
+    }
+
     /**
      * ex <ul>
      *     <li>{@link SubscriptionService#tippSelectForSurvey(org.springframework.web.multipart.MultipartFile, java.util.Map)}</li>
