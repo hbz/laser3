@@ -1567,7 +1567,10 @@ class AjaxController {
 
         request.setAttribute("editable", params.editable == "true")
         boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if (params.propDefGroup) {
+        if(params.noWrapper) {
+            redirect(url: request.getHeader('referer'))
+        }
+        else if (params.propDefGroup) {
             Org consortium
             boolean atSubscr
             List propDefGroupItems = []
