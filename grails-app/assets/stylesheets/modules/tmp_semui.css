@@ -333,11 +333,13 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 }
 */
 
+/* ERMS-6680 - 2025-06-24 */
+
 .la-markdown img:not(.la-preview) {
     cursor: auto !important;
 }
 .la-markdown img.la-preview {
-    transition-duration: 0.25s;
+    transition-duration: 0.3s;
     transition-timing-function: ease;
     opacity: 1;
 }
