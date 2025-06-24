@@ -314,10 +314,6 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     border-top: 1px solid #E9E9E9;
 }
 
-.la-markdown img {
-    max-width: 100%;
-}
-
 /* todo .. fix markup and remove */
 
 .ui.flyout:not(.la-markdown) {
@@ -337,6 +333,21 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 }
 */
 
+.la-markdown img:not(.la-preview) {
+    cursor: auto !important;
+}
+.la-markdown img.la-preview {
+    transition-duration: 0.25s;
+    transition-timing-function: ease;
+    opacity: 1;
+}
+.la-markdown img.la-preview:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0 1px #d3dae3;
+}
+.la-markdown img.la-preview:not(.fluid):hover {
+    opacity: 0.7;
+}
 
 /* ERMS-6192 */
 
