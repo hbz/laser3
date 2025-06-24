@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.FormService; de.laser.interfaces.CalculatedType; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
@@ -523,17 +523,51 @@
                                                                                 config="${customProperty.type.refdataCategory}"
                                                                              constraint="removeValues_processingProvOrVendor"/>
                                                     </g:elseif>
-
-                                                    <%
-                                                        if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
-                                                            if (sub.instanceOf) {
-                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
-                                                            } else {
-                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
-                                                            }
-                                                        }
-                                                    %>
-
+                                                    <g:if test="${customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)}">
+                                                        <g:if test="${sub.instanceOf}">&nbsp;<ui:auditIcon type="auto"/></g:if>
+                                                        <g:else>&nbsp;<ui:auditIcon type="default"/></g:else>
+                                                    </g:if>
+                                                    <g:elseif test="${sub._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+                                                        <g:if test="${!AuditConfig.getConfig(customProperty)}">
+                                                            <g:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
+                                                                           controller="ajax"
+                                                                           action="togglePropertyAuditConfig"
+                                                                           params='[propClass                                : customProperty.getClass(),
+                                                                                    ownerId                                  : "${sub.id}",
+                                                                                    ownerClass                               : "${sub.class}",
+                                                                                    noWrapper                                : true,
+                                                                                    editable                                 : "${editable}",
+                                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                           ]'
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit2.property", args: [customProperty.type.getI10n('name')])}"
+                                                                           data-confirm-term-how="inherit"
+                                                                           id="${customProperty.id}"
+                                                                           data-content="${message(code:'property.audit.off.tooltip')}"
+                                                                           role="button"
+                                                            >
+                                                                <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
+                                                            </g:link>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <g:link class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
+                                                                           controller="ajax" action="togglePropertyAuditConfig"
+                                                                           params='[propClass: customProperty.getClass(),
+                                                                                    ownerId: "${sub.id}",
+                                                                                    ownerClass: "${sub.class}",
+                                                                                    noWrapper: true,
+                                                                                    editable: "${editable}",
+                                                                                    (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                           ]'
+                                                                           id="${customProperty.id}"
+                                                                           data-content="${message(code:'property.audit.on.tooltip')}"
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.property", args: [customProperty.type.getI10n('name')])}"
+                                                                           data-confirm-term-how="inherit"
+                                                                           role="button"
+                                                            >
+                                                                <i class="${Icon.SIG.INHERITANCE}"></i>
+                                                            </g:link>
+                                                        </g:else>
+                                                    </g:elseif>
                                                 </div>
                                             </g:each>
                                         </g:if><g:else>
