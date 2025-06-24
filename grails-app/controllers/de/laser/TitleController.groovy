@@ -49,9 +49,11 @@ class TitleController  {
         Profiler prf = new Profiler()
         prf.setBenchmark('init')
         Map<String, Object> result = [:], configMap = [:]
+        /*
         Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
         if (ttParams.status) { params.status = ttParams.status }
         if (ttParams.tab)    { params.tab = ttParams.tab }
+        */
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
         if(params.containsKey('filterSet')) {
             params.each { key, value ->
