@@ -2444,7 +2444,7 @@ class SubscriptionService {
                                     }
                                 }
                                 userCache.put('progress', 60)
-                                exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, monthHeaders: monthsInRing, usageData: allReports, withPick: true])
+                                exportData = exportService.generateTitleExport([format: params.exportConfig, perpetuallyPurchasedTitleURLs: perpetuallyPurchasedTitleURLs, tippIDs: tippIDs, monthHeaders: monthsInRing, usageData: allReports, withPick: true])
                             }
                             break
                     }
