@@ -26,7 +26,7 @@
                         <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="systemAnnouncements" target="_blank">${message(code: 'menu.admin.announcements')}</g:link>
+                        <g:link controller="admin" action="serviceMessages" target="_blank">${message(code: 'menu.admin.serviceMessages')}</g:link>
                     </div>
                 </div>
             </div>

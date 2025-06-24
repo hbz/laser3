@@ -10,7 +10,7 @@ Rechts daneben finden Sie die **We:kb-News**. Dort werden alle in der we:kb vorg
 
 Unten befinden sich Reiter mit Ihren aktuellen Benachrichtigungen:
 
-+ **Ankündigungen**: Systemmeldungen wie Wartungshinweise oder Releaseankündigungen werden in diesem Reiter angezeigt.
++ **Service-Meldungen**: Wartungshinweise oder Releaseankündigungen werden in diesem Reiter angezeigt.
 + **Fällige Termine**: In diesem Reiter werden die in Ihrem Benutzerprofil eingestellten Terminerinnerungen, entsprechend der dort hinterlegten Frist, angezeigt.
 + **Änderungen (austehend/erfolgt)**: Hier werden Ihnen Änderungen Ihrer lizenzierten Titeln angezeigt. Außerdem werden Änderungen (Kosten, Nachfolgerlizenzen) bei Ihren konsortial verwalteten Lizenzen angezeigt.
 + **Umfragen**: Hier werden Ihre aktuellen Umfragen angezeigt und der Sprung zu der jeweiligen Umfrage ermöglicht. 

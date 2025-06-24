@@ -83,9 +83,8 @@ class MyInstitutionControllerService {
         result.completedProcesses = processes
         */
 
-        // systemAnnouncements
-        prf.setBenchmark('system announcements')
-        result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
+        prf.setBenchmark('service messages')
+        result.serviceMessages = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
 

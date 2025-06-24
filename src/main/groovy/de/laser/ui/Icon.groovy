@@ -290,8 +290,6 @@ class Icon extends IconAttr {
 
     public static String ADDRESS                    = 'map marker alternate icon'
 
-    public static String ANNOUNCEMENT               = 'flag icon'
-
     public static String DOCUMENT                   = 'file alternate icon'
 
     @UIDoc(usage = 'Symbol for data dashboard')
@@ -322,6 +320,8 @@ class Icon extends IconAttr {
     public static String PROVIDER                   = 'broadcast tower icon'    // TODO
 
     public static String REPORTING                  = 'chart pie icon'
+
+    public static String SERVICE_MESSAGE            = 'flag checkered icon'
 
     public static String STATS                      = 'chart bar icon'
 

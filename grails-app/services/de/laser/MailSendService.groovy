@@ -662,13 +662,13 @@ class MailSendService {
     /**
      * Sends a mail to a given user. The system announcement is being included in a mail template
      * @param user the {@link User} to be notified
-     * @param systemAnnouncement the {@link SystemAnnouncement} to be broadcasted
+     * @param systemMessage the {@link SystemAnnouncement} to be broadcasted
      * @throws Exception
      */
-    void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
+    void sendServiceMessageMail(User user, SystemAnnouncement systemMessage) throws Exception {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.warn 'sendSystemAnnouncementMail failed due grails.mail.disabled = true'
+            log.warn 'sendServiceMessageMail failed due grails.mail.disabled = true'
             return
         }
 
@@ -677,7 +677,7 @@ class MailSendService {
             Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
             Object[] args
-            String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', args, language)
+            String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.serviceMessage', args, language)
 
             boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
             String ccAddress
@@ -694,7 +694,7 @@ class MailSendService {
                         cc ccAddress
                         replyTo ConfigMapper.getNotificationsEmailReplyTo()
                         subject mailSubject
-                        body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: systemMessage])
                     }
                 } else {
                     AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
@@ -702,13 +702,13 @@ class MailSendService {
                         from ConfigMapper.getNotificationsEmailFrom()
                         replyTo ConfigMapper.getNotificationsEmailReplyTo()
                         subject mailSubject
-                        body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: systemMessage])
                     }
                 }
             } catch (Exception e) {
                 String eMsg = e.message
 
-                log.error("sendSystemAnnouncementMail() :: Unable to perform email due to exception: ${eMsg}")
+                log.error("sendServiceMessageMail() :: Unable to perform email due to exception: ${eMsg}")
                 SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName()])
             }
         }

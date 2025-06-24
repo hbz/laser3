@@ -1,9 +1,9 @@
-Wichtige LAS:eR-Wartungs- und Systemmeldung: ${announcement.getCleanTitle()}
+Wichtige LAS:eR-Service-Meldung: ${serviceMessage.getCleanTitle()}
 --------------------------------------------------
 
-${announcement.getCleanTitle()}
+${serviceMessage.getCleanTitle()}
 
-${announcement.getCleanContent()}
+${serviceMessage.getCleanContent()}
 
 --------------------------------------------------
 Sie erhalten diese Meldung aufgrund der Benachrichtigungseinstellungen

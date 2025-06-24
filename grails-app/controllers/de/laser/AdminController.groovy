@@ -97,11 +97,11 @@ class AdminController  {
      * like training course availabilities or new releases of the software. Those messages can be sent via mail as well and it is
      * possible to retire a message from publishing; if a system announcement is being published, it will be displayed on the landing
      * page of the webapp
-     * @return a view containing the all system announcements
+     * @return a view containing the all service messages
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def systemAnnouncements() {
+    def serviceMessages() {
         Map<String, Object> result = [:]
 
         result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
@@ -111,31 +111,31 @@ class AdminController  {
 
             if (sa) {
                 if (params.cmd == 'edit') {
-                    result.currentAnnouncement = sa
+                    result.currentServiceMessage = sa
                 }
                 else if (params.cmd == 'publish') {
                     if (result.mailDisabled) {
                         flash.error = message(code: 'system.config.mail.disabled') as String
                     }
                     else if (sa.publish()) {
-                        flash.message = message(code: 'announcement.published') as String
+                        flash.message = message(code: 'serviceMessage.published') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.published_error') as String
+                        flash.error = message(code: 'serviceMessage.published_error') as String
                     }
                 }
                 else if (params.cmd == 'undo') {
                     sa.isPublished = false
                     if (sa.save()) {
-                        flash.message = message(code: 'announcement.undo') as String
+                        flash.message = message(code: 'serviceMessage.undo') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.undo_error') as String
+                        flash.error = message(code: 'serviceMessage.undo_error') as String
                     }
                 }
                 else if (params.cmd == 'delete') {
                     if (sa.delete()) {
-                        flash.message = message(code: 'default.success') as String
+                        flash.message = message(code: 'default.success') as String // ??? TODO - Bug
                     }
                     else {
                         flash.error = message(code: 'default.delete.error.general.message') as String
@@ -144,7 +144,7 @@ class AdminController  {
             }
         }
         result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
-        result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result.serviceMessages = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
         result
     }
 
@@ -185,7 +185,7 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def createSystemAnnouncement() {
+    def createServiceMessage() {
         if (params.saTitle && params.saContent) {
             SystemAnnouncement sa
             boolean isNew = false
@@ -204,7 +204,7 @@ class AdminController  {
             sa.isPublished = false
 
             if (sa.save()) {
-                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated') as String
+                flash.message = isNew ? message(code: 'serviceMessage.created') : message(code: 'serviceMessage.updated') as String
             }
             else {
                 flash.error = message(code: 'default.save.error.message', args: [sa]) as String
@@ -213,7 +213,7 @@ class AdminController  {
         else {
             flash.error = message(code: 'default.error') as String
         }
-        redirect(action: 'systemAnnouncements')
+        redirect(action: 'serviceMessages')
     }
 
     /**

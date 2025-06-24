@@ -13,7 +13,7 @@ import groovy.util.logging.Slf4j
 import java.time.LocalDate
 
 /**
- * This class reflects system-wide messages which can be shown on the dashboard (for announcements).
+ * This class reflects system-wide messages which can be shown on the dashboard.
  * The system announcement may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
  */
 @Slf4j
@@ -127,7 +127,7 @@ class SystemAnnouncement {
 
             reps.each { u ->
                 try {
-                    mailSendService.sendSystemAnnouncementMail(u, this)
+                    mailSendService.sendServiceMessageMail(u, this)
                     validUserIds << u.id
                 }
                 catch (Exception e) {

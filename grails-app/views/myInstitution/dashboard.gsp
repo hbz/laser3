@@ -52,7 +52,7 @@
     <div class="ui tabular la-tab-with-js top attached small stackable menu">
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             %{--            <i class="${Icon.ANNOUNCEMENT} large"></i>--}%
-            ${message(code:'announcement.plural')} <ui:bubble count="${systemAnnouncements.size()}" />
+            ${message(code:'serviceMessage.plural')} <ui:bubble count="${serviceMessages.size()}" />
         </a>
 
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
@@ -107,16 +107,16 @@
         </div>
         <div class="ui bottom attached segment tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
 
-            <g:message code="profile.dashboardSysAnnTimeWindow"
+            <g:message code="profile.dashboardServiceMessageTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
 
-            <g:if test="${systemAnnouncements.size() > 0 }">
+            <g:if test="${serviceMessages.size() > 0 }">
                 <br /><br /><br />
 
                 <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">
-                            <g:each in="${systemAnnouncements}" var="sa">
+                            <g:each in="${serviceMessages}" var="sa">
                                 <div class="row">
                                     <div class="one wide column">
                                         <i class="arrow alternate circle right outline large icon la-timeLineIcon la-timeLineIcon-announcement"></i>

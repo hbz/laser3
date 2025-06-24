@@ -1,16 +1,16 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
-<laser:htmlStart message="menu.admin.announcements" />
+<laser:htmlStart message="menu.admin.serviceMessages" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.admin" controller="admin" action="index"/>
-        <ui:crumb message="menu.admin.announcements" class="active"/>
+        <ui:crumb message="menu.admin.serviceMessages" class="active"/>
     </ui:breadcrumbs>
 
-    <g:if test="${currentAnnouncement}">
-        <ui:h1HeaderWithIcon message="announcement.update.label" type="admin"/>
+    <g:if test="${currentServiceMessage}">
+        <ui:h1HeaderWithIcon message="serviceMessage.update.label" type="admin"/>
     </g:if>
     <g:else>
-        <ui:h1HeaderWithIcon message="announcement.create.label" type="admin"/>
+        <ui:h1HeaderWithIcon message="serviceMessage.create.label" type="admin"/>
     </g:else>
 
     <ui:messages data="${flash}" />
@@ -19,24 +19,24 @@
         <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
     </g:if>
     <g:else>
-        <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
+        <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'serviceMessage.recipient.count.info', args:[numberOfCurrentRecipients])}" />
     </g:else>
 
-        <ui:form controller="admin" action="createSystemAnnouncement">
-            <input type="hidden" name="saId" value="${currentAnnouncement?.id}">
+        <ui:form controller="admin" action="createServiceMessage">
+            <input type="hidden" name="saId" value="${currentServiceMessage?.id}">
             <div class="field">
-                <label for="saTitle">${message(code:'announcement.subject.label')}</label>
-                <input type="text" id="saTitle" name="saTitle" value="${currentAnnouncement?.title}" />
+                <label for="saTitle">${message(code:'serviceMessage.subject.label')}</label>
+                <input type="text" id="saTitle" name="saTitle" value="${currentServiceMessage?.title}" />
             </div>
             <div class="field">
                 <label for="saContent">${message(code:'default.content.label')}</label>
-                <textarea id="saContent" name="saContent">${currentAnnouncement?.content}</textarea>
+                <textarea id="saContent" name="saContent">${currentServiceMessage?.content}</textarea>
             </div>
             <div class="ui field">
-                <label for="saPreview">${message(code:'announcement.preview.label')}</label>
-                <textarea id="saPreview" name="saPreview" readonly="readonly">${currentAnnouncement?.getCleanTitle()}
+                <label for="saPreview">${message(code:'serviceMessage.preview.label')}</label>
+                <textarea id="saPreview" name="saPreview" readonly="readonly">${currentServiceMessage?.getCleanTitle()}
 
-${currentAnnouncement?.getCleanContent()}
+${currentServiceMessage?.getCleanContent()}
                 </textarea>
             </div>
 
@@ -56,35 +56,35 @@ ${currentAnnouncement?.getCleanContent()}
             </laser:script>
 
             <div class="field">
-                <g:if test="${currentAnnouncement}">
-                    <g:link controller="admin" action="systemAnnouncements" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.reset.label')}</g:link>
+                <g:if test="${currentServiceMessage}">
+                    <g:link controller="admin" action="serviceMessages" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.reset.label')}</g:link>
                     <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.save_changes')}"/>
                 </g:if>
                 <g:else>
-                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'announcement.create.button.label')}" />
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'serviceMessage.create.button.label')}" />
                 </g:else>
             </div>
         </ui:form>
 
     <br />
-    <h2 class="ui header la-clear-before">${message(code:'announcement.previous.label')}</h2>
+    <br />
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
             <tr>
-                <th class="ten wide">Ankündigung</th>
+                <th class="ten wide">${message(code:'serviceMessage.label')}</th>
                 <th class="four wide center aligned">Info</th>
                 <th class="two wide center aligned"><i class="${Icon.SYM.OPTIONS}"></i></th>
             </tr>
         </thead>
         <tbody>
 
-        <g:each in="${announcements}" var="sa">
+        <g:each in="${serviceMessages}" var="sa">
             <tr>
                 <td style="vertical-align: top">
 
                     <g:if test="${sa.isPublished}">
-                        <div class="ui green label"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'announcement.published')}</div>
+                        <div class="ui green label"><i class="${Icon.SERVICE_MESSAGE}"></i>${message(code:'serviceMessage.published')}</div>
                     </g:if>
 
                     <div class="ui header">
@@ -102,20 +102,20 @@ ${currentAnnouncement?.getCleanContent()}
                             %>
 
                             <span class="la-popup-tooltip" data-position="top left" data-content="Zuletzt veröffentlicht">
-                                <i class="${Icon.ANNOUNCEMENT} la-list-icon"></i>
+                                <i class="${Icon.SERVICE_MESSAGE} la-list-icon"></i>
                                 <g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
                             </span>
 
                             <g:if test="${status['failedUserIds']}">
-                                <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
-                                <span class="ui red text"><icon:arrow/>${status['failedUserIds'].size()} ${message(code:'announcement.sendError.label')}</span>
+                                <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
+                                <span class="ui red text"><icon:arrow/>${status['failedUserIds'].size()} ${message(code:'serviceMessage.sendError.label')}</span>
                             </g:if>
                             <g:else>
                                 <g:if test="${status['validUserIds']}">
-                                    <span class="ui green text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
+                                    <span class="ui green text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
                                 </g:if>
                                 <g:else>
-                                    <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'announcement.recipient.label')}</span>
+                                    <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
                                 </g:else>
                             </g:else>
                         </div>
@@ -138,20 +138,20 @@ ${currentAnnouncement?.getCleanContent()}
                 </td>
                 <td>
                     <g:if test="${sa.isPublished}">
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'undo']"
+                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'undo']"
                                 role="button" class="${Btn.SIMPLE}"
-                                onclick="return confirm('${message(code:'announcement.undo.confirm')}')">
+                                onclick="return confirm('${message(code:'serviceMessage.undo.confirm')}')">
                             ${message(code:'default.publish_undo.label')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'delete']"
+                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'delete']"
                                 role="button" class="${Btn.MODERN.NEGATIVE}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
                         </g:link>
 
-                        <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'edit']"
+                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'edit']"
                                 role="button" class="${Btn.MODERN.SIMPLE}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
@@ -163,9 +163,9 @@ ${currentAnnouncement?.getCleanContent()}
                             <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>
                         </g:if>
                         <g:else>
-                            <g:link controller="admin" action="systemAnnouncements" id="${sa.id}" params="[cmd:'publish']"
+                            <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'publish']"
                                     role="button" class="${Btn.SIMPLE}"
-                                    onclick="return confirm('${message(code:'announcement.publish.confirm')}')">
+                                    onclick="return confirm('${message(code:'serviceMessage.publish.confirm')}')">
                                 ${message(code:'default.publish.label')}
                             </g:link>
                         </g:else>

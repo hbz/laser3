@@ -20,7 +20,7 @@
         </div>
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
-        <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>
+        <ui:link addItemAttributes="true" controller="admin" action="serviceMessages"><i class="${Icon.SERVICE_MESSAGE}"></i>${message(code:'menu.admin.serviceMessages')}</ui:link>
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
