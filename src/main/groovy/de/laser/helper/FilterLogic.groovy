@@ -94,7 +94,7 @@ class FilterLogic {
 
         if (params.tab) {
             switch(params.tab) {
-                case ['allTipps', 'usage']: result.status = [RDStore.TIPP_STATUS_CURRENT]
+                case ['allTipps', 'usage']: result.status = [RDStore.TIPP_STATUS_CURRENT.id]
                     break
                 case 'selectedIEs':
                     switch (params.subTab) {
@@ -118,7 +118,7 @@ class FilterLogic {
                             break
                     }
                     break
-                case 'currentPerpetualAccessIEs': result.status = [RDStore.TIPP_STATUS_CURRENT]
+                case 'currentPerpetualAccessIEs': result.status = [RDStore.TIPP_STATUS_CURRENT.id]
                     break
             }
 
