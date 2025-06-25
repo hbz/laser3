@@ -1954,10 +1954,6 @@ class SubscriptionService {
                     break
                 case 'currentPerpetualAccessIEs':
                     if(subscriptions) {
-                        subscriptions.each { Subscription s ->
-                            if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
-                                subscriptions << s.instanceOf.id
-                        }
                         Set<Long> sourceIEs = [], sourceTIPPs = []
                         List rows
                         String orderClause
