@@ -855,7 +855,7 @@ class AjaxHtmlController {
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextService.getOrg(), surveyConfig)
-        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO || (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2) && SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2).refValue != RDStore.YN_YES))
         result.surveyInfo = surveyInfo
         result.surveyConfig = surveyConfig
         result.noParticipation = noParticipation
@@ -876,7 +876,7 @@ class AjaxHtmlController {
             }
         }
 
-        if((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+        if(((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2)?.refValue == RDStore.YN_YES) || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
             result.error = g.message(code: 'surveyResult.finish.invoicingInformation')
         }
         else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
