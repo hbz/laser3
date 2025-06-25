@@ -22,7 +22,7 @@ import de.laser.survey.SurveyResult
 import de.laser.survey.SurveySubscriptionResult
 import de.laser.survey.SurveyTransfer
 import de.laser.survey.SurveyVendorResult
-import de.laser.system.SystemAnnouncement
+import de.laser.system.ServiceMessage
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
@@ -834,7 +834,7 @@ class DeletionService {
         List userRoles          = new ArrayList(user.roles)
         List userSettings       = UserSetting.findAllWhere(user: user)
         List reportingFilter    = ReportingFilter.findAllByOwner(user)
-        List serviceMessages    = SystemAnnouncement.findAllByUser(user)
+        List serviceMessages    = ServiceMessage.findAllByUser(user)
         List marker             = Marker.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)

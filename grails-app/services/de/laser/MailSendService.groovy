@@ -9,7 +9,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.system.SystemAnnouncement
+import de.laser.system.ServiceMessage
 import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
@@ -660,12 +660,12 @@ class MailSendService {
     }
 
     /**
-     * Sends a mail to a given user. The system announcement is being included in a mail template
+     * Sends a mail to a given user. The service message is being included in a mail template
      * @param user the {@link User} to be notified
-     * @param systemMessage the {@link SystemAnnouncement} to be broadcasted
+     * @param serviceMessage the {@link ServiceMessage} to be broadcasted
      * @throws Exception
      */
-    void sendServiceMessageMail(User user, SystemAnnouncement systemMessage) throws Exception {
+    void sendServiceMessageMail(User user, ServiceMessage serviceMessage) throws Exception {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             log.warn 'sendServiceMessageMail failed due grails.mail.disabled = true'
@@ -694,7 +694,7 @@ class MailSendService {
                         cc ccAddress
                         replyTo ConfigMapper.getNotificationsEmailReplyTo()
                         subject mailSubject
-                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: systemMessage])
+                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: serviceMessage])
                     }
                 } else {
                     AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
@@ -702,7 +702,7 @@ class MailSendService {
                         from ConfigMapper.getNotificationsEmailFrom()
                         replyTo ConfigMapper.getNotificationsEmailReplyTo()
                         subject mailSubject
-                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: systemMessage])
+                        body(view: "/mailTemplates/text/serviceMessage", model: [user: user, serviceMessage: serviceMessage])
                     }
                 }
             } catch (Exception e) {

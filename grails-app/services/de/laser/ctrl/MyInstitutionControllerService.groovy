@@ -9,7 +9,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
-import de.laser.system.SystemAnnouncement
+import de.laser.system.ServiceMessage
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
@@ -84,7 +84,7 @@ class MyInstitutionControllerService {
         */
 
         prf.setBenchmark('service messages')
-        result.serviceMessages = SystemAnnouncement.getPublished(periodInDays)
+        result.serviceMessages = ServiceMessage.getPublished(periodInDays)
 
         // tasks
 

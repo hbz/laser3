@@ -4,7 +4,7 @@ package de.laser.system
 import de.laser.utils.LocaleUtils
 
 /**
- * This class represents - next to {@link SystemAnnouncement}s - a messaging channel to users. A system message has nonetheless different purposes and can be shown on different places:
+ * This class represents - next to {@link ServiceMessage} - a messaging channel to users. A system message has nonetheless different purposes and can be shown on different places:
  * <ul>
  *     <li>on the landing page</li>
  *     <li>on top of every page</li>

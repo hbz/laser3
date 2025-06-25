@@ -57,11 +57,11 @@ ${currentServiceMessage?.getCleanContent()}
 
             <div class="field">
                 <g:if test="${currentServiceMessage}">
-                    <g:link controller="admin" action="serviceMessages" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.reset.label')}</g:link>
-                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.save_changes')}"/>
+                    <g:link controller="admin" action="serviceMessages" role="button" class="${Btn.SIMPLE}">${message(code:'default.button.cancel')}</g:link>
+                    <input type="submit" class="${Btn.POSITIVE}" value="${message(code:'default.button.save_changes')}"/>
                 </g:if>
                 <g:else>
-                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'serviceMessage.create.button.label')}" />
+                    <input type="submit" class="${Btn.POSITIVE}" value="${message(code:'serviceMessage.create.button.label')}" />
                 </g:else>
             </div>
         </ui:form>
@@ -79,31 +79,31 @@ ${currentServiceMessage?.getCleanContent()}
         </thead>
         <tbody>
 
-        <g:each in="${serviceMessages}" var="sa">
+        <g:each in="${serviceMessages}" var="msg">
             <tr>
                 <td style="vertical-align: top">
 
-                    <g:if test="${sa.isPublished}">
+                    <g:if test="${msg.isPublished}">
                         <div class="ui green label"><i class="${Icon.SERVICE_MESSAGE}"></i>${message(code:'serviceMessage.published')}</div>
                     </g:if>
 
                     <div class="ui header">
-                        <% print sa.title; /* avoid auto encodeAsHTML() */ %>
+                        <% print msg.title; /* avoid auto encodeAsHTML() */ %>
                     </div>
                     <div class="content">
-                        <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+                        <% print msg.content; /* avoid auto encodeAsHTML() */ %>
                     </div>
 
-                    <g:if test="${sa.lastPublishingDate}">
+                    <g:if test="${msg.lastPublishingDate}">
                         <div class="content">
                             <%
                                 def status = [ validUserIds : [], failedUserIds: [] ]
-                                if (sa.status) { status = grails.converters.JSON.parse(sa.status) }
+                                if (msg.status) { status = grails.converters.JSON.parse(msg.status) }
                             %>
 
                             <span class="la-popup-tooltip" data-position="top left" data-content="Zuletzt veröffentlicht">
                                 <i class="${Icon.SERVICE_MESSAGE} la-list-icon"></i>
-                                <g:formatDate date="${sa.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
+                                <g:formatDate date="${msg.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
                             </span>
 
                             <g:if test="${status['failedUserIds']}">
@@ -124,34 +124,34 @@ ${currentServiceMessage?.getCleanContent()}
                 <td>
                     <span class="la-popup-tooltip" data-position="top left" data-content="${message(code:'default.lastUpdated.label')}">
                         <i class="icon pencil alternate la-list-icon"></i>
-                        <g:formatDate date="${sa.lastUpdated}" format="${message(code:'default.date.format.notime')}"/>
+                        <g:formatDate date="${msg.lastUpdated}" format="${message(code:'default.date.format.notime')}"/>
                     </span>
 
                     <br />
 
                     <span class="la-popup-tooltip" data-position="top left" data-content="Erstellungsdatum">
-                        <i class="icon plus circle la-list-icon"></i>
-                        <g:formatDate date="${sa.dateCreated}" format="${message(code:'default.date.format.notime')}"/>
+                        <i class="${Icon.SIG.NEW_OBJECT} la-list-icon"></i>
+                        <g:formatDate date="${msg.dateCreated}" format="${message(code:'default.date.format.notime')}"/>
                         <br />
-                        ${message(code:'default.from')} <g:link controller="user" action="show" id="${sa.user?.id}">${(sa.user?.displayName)?:sa.user}</g:link>
+                        ${message(code:'default.from')} <g:link controller="user" action="show" id="${msg.user?.id}">${(msg.user?.displayName)?:msg.user}</g:link>
                     </span>
                 </td>
                 <td>
-                    <g:if test="${sa.isPublished}">
-                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'undo']"
+                    <g:if test="${msg.isPublished}">
+                        <g:link controller="admin" action="serviceMessages" id="${msg.id}" params="[cmd:'undo']"
                                 role="button" class="${Btn.SIMPLE}"
                                 onclick="return confirm('${message(code:'serviceMessage.undo.confirm')}')">
                             ${message(code:'default.publish_undo.label')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'delete']"
+                        <g:link controller="admin" action="serviceMessages" id="${msg.id}" params="[cmd:'delete']"
                                 role="button" class="${Btn.MODERN.NEGATIVE}"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
                         </g:link>
 
-                        <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'edit']"
+                        <g:link controller="admin" action="serviceMessages" id="${msg.id}" params="[cmd:'edit']"
                                 role="button" class="${Btn.MODERN.SIMPLE}">
                             <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
@@ -163,7 +163,7 @@ ${currentServiceMessage?.getCleanContent()}
                             <button class="${Btn.SIMPLE}" disabled="disabled">${message(code:'default.publish.label')}</button>
                         </g:if>
                         <g:else>
-                            <g:link controller="admin" action="serviceMessages" id="${sa.id}" params="[cmd:'publish']"
+                            <g:link controller="admin" action="serviceMessages" id="${msg.id}" params="[cmd:'publish']"
                                     role="button" class="${Btn.SIMPLE}"
                                     onclick="return confirm('${message(code:'serviceMessage.publish.confirm')}')">
                                 ${message(code:'default.publish.label')}
