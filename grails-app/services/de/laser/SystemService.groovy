@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
 import de.laser.system.SystemSetting

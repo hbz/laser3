@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemMessage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.system.SystemMessage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 
 <laser:htmlStart message="menu.institutions.dash" />
 
@@ -28,9 +28,9 @@
     %>
 
     <div class="ui tabular la-tab-with-js top attached small menu">
-        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            %{--            <i class="${Icon.ANNOUNCEMENT} large"></i>--}%
-            ${message(code:'announcement.plural')} <ui:bubble count="${systemAnnouncements.size()}" />
+        <a class="${us_dashboard_tab.value == 'Service Messages' ? 'active item' : 'item'}" data-tab="servicemessages">
+            %{--            <i class="${Icon.SERVICE_MESSAGE} large"></i>--}%
+            ${message(code:'serviceMessage.plural')} <ui:bubble count="${serviceMessages.size()}" />
         </a>
 
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
@@ -57,36 +57,36 @@
             </div>
         </div>
 
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Service Messages' ? 'active' : ''}" data-tab="servicemessages">
 
-            <g:message code="profile.dashboardSysAnnTimeWindow"
+            <g:message code="profile.dashboardServiceMessageTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
 
-            <g:if test="${systemAnnouncements.size() > 0 }">
+            <g:if test="${serviceMessages.size() > 0 }">
                 <br /><br /><br />
 
                 <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">
-                            <g:each in="${systemAnnouncements}" var="sa">
+                            <g:each in="${serviceMessages}" var="msg">
                                 <div class="row">
                                     <div class="one wide column">
                                         <i class="arrow alternate circle right outline large icon la-timeLineIcon la-timeLineIcon-announcement"></i>
                                     </div><!-- .column -->
                                     <div class="two wide column">
                                         <h2 class="ui header">
-                                            <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.notime"/>
+                                            <g:formatDate date="${msg.lastPublishingDate}" formatName="default.date.format.notime"/>
                                         </h2>
-                                        ${DateUtils.getSDF_onlyTime().format(sa.lastPublishingDate)}
+                                        ${DateUtils.getSDF_onlyTime().format(msg.lastPublishingDate)}
                                     </div><!-- .column -->
                                     <div class="one wide column">
                                         <i class="arrow right small icon"></i>
                                     </div><!-- .column -->
                                     <div class="twelve wide column">
                                         <h2 class="ui header">
-                                            <% print sa.title; /* avoid auto encodeAsHTML() */ %>
+                                            <% print msg.title; /* avoid auto encodeAsHTML() */ %>
                                         </h2>
-                                        <% print sa.content; /* avoid auto encodeAsHTML() */ %>
+                                        <% print msg.content; /* avoid auto encodeAsHTML() */ %>
                                     </div><!-- .column -->
                                 </div><!-- .row -->
                             </g:each>

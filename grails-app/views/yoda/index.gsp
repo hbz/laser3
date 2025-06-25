@@ -96,7 +96,7 @@
                         <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="systemAnnouncements" target="_blank">${message(code: 'menu.admin.announcements')}</g:link> <span class="ui mini label">Admin</span>
+                        <g:link controller="admin" action="serviceMessages" target="_blank">${message(code: 'menu.admin.serviceMessages')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>

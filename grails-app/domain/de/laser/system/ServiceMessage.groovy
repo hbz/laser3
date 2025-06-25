@@ -13,11 +13,11 @@ import groovy.util.logging.Slf4j
 import java.time.LocalDate
 
 /**
- * This class reflects system-wide messages which can be shown on the dashboard (for announcements).
- * The system announcement may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
+ * This class reflects system-wide messages which can be shown on the dashboard.
+ * The service message may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
  */
 @Slf4j
-class SystemAnnouncement {
+class ServiceMessage {
 
     User    user
     String  title
@@ -54,22 +54,22 @@ class SystemAnnouncement {
     }
 
     /**
-     * Retrieves a {@link List} of system announces which have been published in the given period of days
+     * Retrieves a {@link List} of service messages which have been published in the given period of days
      * @param periodInDays the amount of days to look back for recently published messages
-     * @return a {@link List} of system announces
+     * @return a {@link List} of service messages
      */
-    static List<SystemAnnouncement> getPublished(int periodInDays) {
+    static List<ServiceMessage> getPublished(int periodInDays) {
         Date dcCheck = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(periodInDays) )
 
-        SystemAnnouncement.executeQuery(
-                'select sa from SystemAnnouncement sa ' +
-                'where sa.isPublished = true and sa.lastPublishingDate >= :dcCheck order by sa.lastPublishingDate desc',
+        ServiceMessage.executeQuery(
+                'select msg from ServiceMessage msg ' +
+                'where msg.isPublished = true and msg.lastPublishingDate >= :dcCheck order by msg.lastPublishingDate desc',
                 [dcCheck: dcCheck]
         )
     }
 
     /**
-     * Gets all users who should be notified about system messages. The criteria to be checked is the {@link UserSetting.KEYS#IS_NOTIFICATION_FOR_SYSTEM_MESSAGES} setting
+     * Gets all users who should be notified about service messages. The criteria to be checked is the {@link UserSetting.KEYS#IS_NOTIFICATION_FOR_SYSTEM_MESSAGES} setting
      * @return a {@link List} of {@link User}s to be notified
      */
     static List<User> getRecipients() {
@@ -93,7 +93,7 @@ class SystemAnnouncement {
      * @return the sanitized title string
      */
     String getCleanTitle() {
-        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(title))
+        ServiceMessage.cleanUp(BeanStore.getEscapeService().replaceUmlaute(title))
     }
 
     /**
@@ -101,23 +101,23 @@ class SystemAnnouncement {
      * @return the sanitized content string
      */
     String getCleanContent() {
-        SystemAnnouncement.cleanUp(BeanStore.getEscapeService().replaceUmlaute(content))
+        ServiceMessage.cleanUp(BeanStore.getEscapeService().replaceUmlaute(content))
     }
 
     /**
-     * Publishes the system message via the given channels (display on pages, sending of reminder mails)
+     * Publishes the service message via the given channels (display on pages, sending of reminder mails)
      * @return true if the publishing was successful, false otherwise
      */
     boolean publish() {
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
+            log.debug 'ServiceMessage.publish() failed due grails.mail.disabled = true'
             return false
         }
 
         MailSendService mailSendService = BeanStore.getMailSendService()
         withTransaction {
 
-            List<User> reps = SystemAnnouncement.getRecipients()
+            List<User> reps = ServiceMessage.getRecipients()
             List validUserIds = []
             List failedUserIds = []
 
@@ -127,7 +127,7 @@ class SystemAnnouncement {
 
             reps.each { u ->
                 try {
-                    mailSendService.sendSystemAnnouncementMail(u, this)
+                    mailSendService.sendServiceMessageMail(u, this)
                     validUserIds << u.id
                 }
                 catch (Exception e) {

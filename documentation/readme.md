@@ -8,9 +8,9 @@
 - Micronaut 3.10.4 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 8.1.1
 - Ehcache 3.10.8
-- Elasticsearch 7.17.28
+- Elasticsearch 7.17.29
 - Logback 1.2.12
-- Gradle 8.14.1
+- Gradle 8.14.2
 - Groovy 3.0.23
 - Java 17
 - PostgreSQL 16+

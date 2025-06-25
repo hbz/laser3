@@ -17,7 +17,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.api.v0.ApiToolkit
 
 import de.laser.storage.RDStore
-import de.laser.system.SystemAnnouncement
+import de.laser.system.ServiceMessage
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
 import grails.converters.JSON
@@ -92,59 +92,61 @@ class AdminController  {
     }
 
     /**
-     * This method manages system-wide announcements. Those are made if system-relevant messages need to be transmit to every
-     * registered account like maintenance shutdowns or general announcements are being made which may concern every account, too,
+     * This method manages system-wide messages. Those are made if system-relevant messages need to be transmit to every
+     * registered account like maintenance shutdowns or general info which may concern every account, too,
      * like training course availabilities or new releases of the software. Those messages can be sent via mail as well and it is
-     * possible to retire a message from publishing; if a system announcement is being published, it will be displayed on the landing
+     * possible to retire a message from publishing; if a service message is being published, it will be displayed on the landing
      * page of the webapp
-     * @return a view containing the all system announcements
+     * @return a view containing the all service messages
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def systemAnnouncements() {
+    def serviceMessages() {
         Map<String, Object> result = [:]
 
         result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
 
         if (params.id) {
-            SystemAnnouncement sa = SystemAnnouncement.get(params.long('id'))
+            ServiceMessage msg = ServiceMessage.get(params.long('id'))
 
-            if (sa) {
+            if (msg) {
                 if (params.cmd == 'edit') {
-                    result.currentAnnouncement = sa
+                    result.currentServiceMessage = msg
                 }
                 else if (params.cmd == 'publish') {
                     if (result.mailDisabled) {
                         flash.error = message(code: 'system.config.mail.disabled') as String
                     }
-                    else if (sa.publish()) {
-                        flash.message = message(code: 'announcement.published') as String
+                    else if (msg.publish()) {
+                        flash.message = message(code: 'serviceMessage.published') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.published_error') as String
+                        flash.error = message(code: 'serviceMessage.published_error') as String
                     }
                 }
                 else if (params.cmd == 'undo') {
-                    sa.isPublished = false
-                    if (sa.save()) {
-                        flash.message = message(code: 'announcement.undo') as String
+                    msg.isPublished = false
+                    if (msg.save()) {
+                        flash.message = message(code: 'serviceMessage.undo') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.undo_error') as String
+                        flash.error = message(code: 'serviceMessage.undo_error') as String
                     }
                 }
                 else if (params.cmd == 'delete') {
-                    if (sa.delete()) {
+                    try {
+                        msg.delete()
                         flash.message = message(code: 'default.success') as String
                     }
-                    else {
+                    catch (Exception e) {
+                        log.error(e.getMessage())
                         flash.error = message(code: 'default.delete.error.general.message') as String
                     }
                 }
             }
         }
-        result.numberOfCurrentRecipients = SystemAnnouncement.getRecipients().size()
-        result.announcements = SystemAnnouncement.list(sort: 'lastUpdated', order: 'desc')
+        result.numberOfCurrentRecipients = ServiceMessage.getRecipients().size()
+        result.serviceMessages = ServiceMessage.list(sort: 'lastUpdated', order: 'desc')
         result
     }
 
@@ -180,40 +182,40 @@ class AdminController  {
     }
 
     /**
-     * This controller processes data and creates a new system announcement; if an ID is being provided,
+     * This controller processes data and creates a new service message; if an ID is being provided,
      * a record matching the ID will be retrieved and if successful, the data is being updated
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def createSystemAnnouncement() {
+    def createServiceMessage() {
         if (params.saTitle && params.saContent) {
-            SystemAnnouncement sa
+            ServiceMessage msg
             boolean isNew = false
 
             if (params.saId) {
-                sa = SystemAnnouncement.get(params.long('saId'))
+                msg = ServiceMessage.get(params.long('saId'))
             }
-            if (!sa) {
-                sa = new SystemAnnouncement()
+            if (!msg) {
+                msg = new ServiceMessage()
                 isNew = true
             }
 
-            sa.title = params.saTitle
-            sa.content = params.saContent
-            sa.user = contextService.getUser()
-            sa.isPublished = false
+            msg.title = params.saTitle
+            msg.content = params.saContent
+            msg.user = contextService.getUser()
+            msg.isPublished = false
 
-            if (sa.save()) {
-                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated') as String
+            if (msg.save()) {
+                flash.message = isNew ? message(code: 'serviceMessage.created') : message(code: 'serviceMessage.updated') as String
             }
             else {
-                flash.error = message(code: 'default.save.error.message', args: [sa]) as String
+                flash.error = message(code: 'default.save.error.message', args: [msg]) as String
             }
         }
         else {
             flash.error = message(code: 'default.error') as String
         }
-        redirect(action: 'systemAnnouncements')
+        redirect(action: 'serviceMessages')
     }
 
     /**
