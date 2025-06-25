@@ -12,7 +12,8 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">cc:toggle -> XHR-Toggle for RDConstants.Y_N</div>
+        <div class="header">cc:toggle</div>
+        <div class="meta">XHR-Toggle for RDConstants.Y_N</div>
     </div>
     <div class="content">
         <div class="ui form">
@@ -23,19 +24,46 @@
                 <cc:toggle owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" overwriteEditable="true" />
                 <pre>&#60;cc:toggle owner="&#36;{US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" overwriteEditable="true" /&#62;</pre>
 
+                <div class="ui divider"></div>
                 <g:set var="US_DASHBOARD_SHOW_WEKBNEWS" value="${contextService.getUser().getSetting(UserSetting.KEYS.DASHBOARD_SHOW_WEKBNEWS, RDStore.YN_YES)}" />
 
-                <label>.. With Label</label>
+                <label>${message(code: 'profile.dashboardShowWekbNews')}</label>
                 <cc:toggle owner="${US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" label="${message(code: 'profile.dashboardShowWekbNews')}" overwriteEditable="true" />
                 <pre>&#60;cc:toggle owner="&#36;{US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" label="&#36;{message(code:'profile.dashboardShowWekbNews')}" overwriteEditable="true" /&#62;</pre>
 
-                <label>.. Invalid Params</label>
+                <div class="ui divider"></div>
+
+                <label>Example: (invalid usage)</label>
                 <cc:toggle owner="${null}" field="xyz" />
                 <pre>&#60;cc:toggle owner="&#36;{null}" field="xyz" /&#62;</pre>
 
-                <label>.. Editable/OverwriteEditable = false</label>
+                <div class="ui divider"></div>
+
+                <label>${message(code: 'profile.dashboardShowTopmenu')}</label>
                 <cc:toggle owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" overwriteEditable="false" />
                 <pre>&#60;cc:toggle owner="&#36;{US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" overwriteEditable="false" /&#62;</pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header">cc:boogle</div>
+        <div class="meta">XHR-Toggle for Boolean</div>
+    </div>
+    <div class="content">
+        <div class="ui form">
+            <div class="field">
+                <label>${message(code:'org.isBetaTester.label')}</label>
+                <cc:boogle owner="${contextService.getOrg()}" field="isBetaTester" overwriteEditable="false" />
+                <pre>&#60;cc:boogle owner="&#36;{contextService.getOrg()}}" field="isBetaTester" overwriteEditable="false" /&#62;</pre>
+
+                <div class="ui divider"></div>
+
+                <label>Example: (invalid usage)</label>
+                <cc:boogle owner="${contextService.getOrg()}" field="xyz" />
+                <pre>&#60;cc:boogle owner="&#36;{contextService.getOrg()}" field="xyz" /&#62;</pre>
             </div>
         </div>
     </div>

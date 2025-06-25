@@ -61,7 +61,7 @@ ${currentServiceMessage?.getCleanContent()}
                     <input type="submit" class="${Btn.POSITIVE}" value="${message(code:'default.button.save_changes')}"/>
                 </g:if>
                 <g:else>
-                    <input type="submit" class="${Btn.POSITIVE}" value="${message(code:'serviceMessage.create.button.label')}" />
+                    <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'serviceMessage.create.button.label')}" />
                 </g:else>
             </div>
         </ui:form>
@@ -101,21 +101,21 @@ ${currentServiceMessage?.getCleanContent()}
                                 if (msg.status) { status = grails.converters.JSON.parse(msg.status) }
                             %>
 
-                            <span class="la-popup-tooltip" data-position="top left" data-content="Zuletzt veröffentlicht">
+                            <span class="ui label la-popup-tooltip" data-position="top left" data-content="Zuletzt veröffentlicht">
                                 <i class="${Icon.SERVICE_MESSAGE} la-list-icon"></i>
                                 <g:formatDate date="${msg.lastPublishingDate}" format="${message(code:'default.date.format.noZ')}"/>
                             </span>
 
                             <g:if test="${status['failedUserIds']}">
-                                <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
-                                <span class="ui red text"><icon:arrow/>${status['failedUserIds'].size()} ${message(code:'serviceMessage.sendError.label')}</span>
+                                <span class="ui label basic grey"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
+                                <span class="ui label basic red"><icon:arrow/>${status['failedUserIds'].size()} ${message(code:'serviceMessage.sendError.label')}</span>
                             </g:if>
                             <g:else>
                                 <g:if test="${status['validUserIds']}">
-                                    <span class="ui green text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
+                                    <span class="ui label basic green"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
                                 </g:if>
                                 <g:else>
-                                    <span class="ui grey text"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
+                                    <span class="ui label basic grey"><icon:arrow/>${status['validUserIds'].size()} ${message(code:'serviceMessage.recipient.label')}</span>
                                 </g:else>
                             </g:else>
                         </div>
@@ -139,7 +139,7 @@ ${currentServiceMessage?.getCleanContent()}
                 <td>
                     <g:if test="${msg.isPublished}">
                         <g:link controller="admin" action="serviceMessages" id="${msg.id}" params="[cmd:'undo']"
-                                role="button" class="${Btn.SIMPLE}"
+                                role="button" class="${Btn.NEGATIVE}"
                                 onclick="return confirm('${message(code:'serviceMessage.undo.confirm')}')">
                             ${message(code:'default.publish_undo.label')}
                         </g:link>

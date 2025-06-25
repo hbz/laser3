@@ -109,7 +109,7 @@ class Icon extends IconAttr {
         @UIDoc(usage = 'Only for Property attribute: !isHardData (COLORED)')
         public static String HARDDATA_NOT   = 'times icon red'
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
-        public static String LOGIC          = 'cube icon red'
+        public static String LOGIC          = 'cubes icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (COLORED)')
         public static String MANDATORY      = 'star icon yellow'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
         @UIDoc(usage = 'Only for Property attribute: not mandatory (COLORED)')
@@ -292,7 +292,7 @@ class Icon extends IconAttr {
 
     public static String DOCUMENT                   = 'file alternate icon'
 
-    @UIDoc(usage = 'Symbol for data dashboard')
+    @UIDoc(usage = 'Symbol for Data Dashboard')
     public static String DATA_DASHBOARD             = 'chartline icon'
 
     public static String DUE_DATE                   = 'bell icon'
@@ -321,6 +321,7 @@ class Icon extends IconAttr {
 
     public static String REPORTING                  = 'chart pie icon'
 
+    @UIDoc(usage = 'Symbol for Service Messages')
     public static String SERVICE_MESSAGE            = 'flag checkered icon'
 
     public static String STATS                      = 'chart bar icon'

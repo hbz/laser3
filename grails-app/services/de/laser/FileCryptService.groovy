@@ -38,6 +38,11 @@ class FileCryptService {
         ]
     ]
 
+    /**
+     * Encrypts a file. Successful decryption is implicitly checked. If an error occurs, the file remains unencrypted and no ckey is stored.
+     * @param rawFile
+     * @param doc
+     */
     void encryptRawFileAndUpdateDoc(File rawFile, Doc doc) {
         log.debug '[encryptRawFileAndUpdateDoc] file: ' + rawFile.getName() + ', doc: ' + doc.id
 
@@ -58,6 +63,12 @@ class FileCryptService {
         decTmpFile.delete()
     }
 
+    /**
+     * Creates an encrypted temporary file.
+     * @param inFile
+     * @param ckey
+     * @return
+     */
     File encryptToTmpFile(File inFile, String ckey) {
         String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
 
@@ -66,6 +77,12 @@ class FileCryptService {
         outFile
     }
 
+    /**
+     * Creates a decrypted temporary file. If no ckey is given, the original file is copied instead.
+     * @param inFile
+     * @param ckey
+     * @return
+     */
     File decryptToTmpFile(File inFile, String ckey) {
         String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
 
@@ -80,6 +97,13 @@ class FileCryptService {
         outFile
     }
 
+    /**
+     * Encrypts/decrypts a file. Generates a {@link SystemEvent} in case of an error.
+     * @param inFile
+     * @param outFile
+     * @param cipherMode
+     * @param ckey
+     */
     void doCrypto(File inFile, File outFile, int cipherMode, String ckey) {
         try {
             Map cfg           = getConfig()
