@@ -1,8 +1,10 @@
 package de.laser
 
-import de.laser.storage.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.FutureTask
 
 /**
  * This is a controller for test functions
@@ -11,6 +13,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class DevController  {
 
     ContextService contextService
+    ExecutorService executorService
     LicenseService licenseService
 
     @Secured(['ROLE_ADMIN'])
@@ -49,6 +52,27 @@ class DevController  {
             institution: contextService.getOrg(),
             view: (params.id ?: 'index')
         ]
+
+        if (result.view == 'threads') {
+            List<FutureTask> tasks = []
+
+            (1..20).each { c ->
+                FutureTask f = executorService.submit ({
+                    Thread.currentThread().setName('klodav_sleep_' + de.laser.utils.RandomUtils.getHtmlID())
+                    Thread.sleep(new Random().nextLong(20))
+                })
+                tasks << f
+            }
+            (1..10).each { c ->
+                FutureTask f = executorService.submit ({
+                    Thread.currentThread().setName('klodav_wait_' + de.laser.utils.RandomUtils.getHtmlID())
+                    Thread.wait(new Random().nextLong(20))
+                })
+                tasks << f
+            }
+            result.executorService = executorService
+            result.tasks = tasks
+        }
         render view: 'klodav/' + result.view, model: result
     }
 

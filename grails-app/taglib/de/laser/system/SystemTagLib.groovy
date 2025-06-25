@@ -6,7 +6,7 @@ import de.laser.utils.SwissKnife
 class SystemTagLib {
 
     static namespace = 'laser'
-
+    
     // <laser:serviceInjection/>
 
     def serviceInjection = { attrs, body ->
