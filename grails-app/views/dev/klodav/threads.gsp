@@ -16,9 +16,21 @@
         <br/>
         <br/>
 
+        <g:each in="${Thread.getAllStackTraces().keySet().findAll{it.getName().startsWith('klodav')}.sort{it.getName()}}" var="thread">
+            ${thread} > ${thread.getState()} > ${thread.isAlive()} <br />
+        </g:each>
+
+        <br />
+        <br />
+
         <g:if test="${tasks}">
             <g:each in="${tasks}" var="task">
-                ${task.getProperties()} >>> ${task.state()} >>> ${task}<br />
+                <g:if test="${task instanceof java.util.concurrent.FutureTask}">
+                    ${task.getProperties()} >>> ${task.state()} >>> ${task} <br />
+                </g:if>
+                <g:if test="${task instanceof java.lang.Runnable}">
+                    ${task} <br />
+                </g:if>
             </g:each>
         </g:if>
         <g:else>
