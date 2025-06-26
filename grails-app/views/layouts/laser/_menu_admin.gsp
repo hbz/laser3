@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
+        <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="${Icon.SYSTEM_MESSAGE}"></i>${message(code: 'menu.admin.systemMessages')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="serviceMessages"><i class="${Icon.SERVICE_MESSAGE}"></i>${message(code:'menu.admin.serviceMessages')}</ui:link>
         <div class="divider"></div>
 

@@ -29,8 +29,9 @@ class LoginController {
     def authenticationTrustResolver
 
     GrailsApplication grailsApplication
-    SpringSecurityService springSecurityService
     MailSendService mailSendService
+    SpringSecurityService springSecurityService
+    UserService userService
 
     /**
     * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
@@ -182,7 +183,7 @@ class LoginController {
             flash.error = g.message(code:'menu.user.forgottenPassword.userMissing') as String
         }
         else {
-            User user = User.findByUsername(params.forgotten_username)
+            User user = userService.getUserByUsername(params.forgotten_username)
             if (user) {
                 String newPassword = PasswordUtils.getRandomUserPassword()
                 user.password = newPassword
@@ -205,7 +206,7 @@ class LoginController {
             flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
         }
         else {
-            List<User> users = User.findAllByEmail(params.forgotten_username_mail)
+            List<User> users = userService.getAllUsersByEmail(params.forgotten_username_mail)
             if (users.size() > 0) {
                 flash.message = message(code: 'menu.user.forgottenUsername.success') as String
                 users.each { User user ->

@@ -295,26 +295,26 @@ With a reference later in the document defining the URL location:
 ### Preview sizes
 
 ```
-![no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
+![default_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
 
 ![preview_small](https://laser.hbz-nrw.de/assets/gasco-logo.jpg small+)
 
 ![preview_medium](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_medium" medium+)
 
-![preview_large](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
+![large_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
 
-![preview_big](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
+![big_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
 ```
 
-![no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
+![default_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg)
 
 ![preview_small](https://laser.hbz-nrw.de/assets/gasco-logo.jpg small+)
 
 ![preview_medium](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_medium" medium+)
 
-![preview_large](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
+![large_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg large)
 
-![preview_big](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
+![big_no_preview](https://laser.hbz-nrw.de/assets/gasco-logo.jpg "title_big" big)
 
 ------
 

@@ -23,7 +23,7 @@
             <div class="column">
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
+                        <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessages')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="admin" action="serviceMessages" target="_blank">${message(code: 'menu.admin.serviceMessages')}</g:link>

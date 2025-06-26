@@ -322,13 +322,16 @@ class Icon extends IconAttr {
     public static String REPORTING                  = 'chart pie icon'
 
     @UIDoc(usage = 'Symbol for Service Messages')
-    public static String SERVICE_MESSAGE            = 'flag checkered icon'
+    public static String SERVICE_MESSAGE            = 'dove icon'
 
     public static String STATS                      = 'chart bar icon'
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
     public static String SURVEY                     = 'poll icon'
+
+    @UIDoc(usage = 'Symbol for System Messages')
+    public static String SYSTEM_MESSAGE             = 'volume up icon'
 
     public static String TASK                       = 'calendar check outline icon'
 

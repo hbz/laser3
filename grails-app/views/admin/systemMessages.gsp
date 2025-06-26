@@ -1,13 +1,13 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 
-<laser:htmlStart message="menu.admin.systemMessage" />
+<laser:htmlStart message="menu.admin.systemMessages" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
-    <ui:crumb message="menu.admin.systemMessage" class="active"/>
+    <ui:crumb message="menu.admin.systemMessages" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
+<ui:h1HeaderWithIcon message="menu.admin.systemMessages" type="admin"/>
 
 <div class="la-float-right">
     <a onclick="JSPC.app.systemMessages.edit();" class="${Btn.SIMPLE}" role="button" aria-label="${message(code: 'admin.systemMessage.create')}">
@@ -72,13 +72,13 @@
             </td>
             <td>
                 <g:if test="${SystemMessage.TYPE_GLOBAL == msg.type}">
-                    <span class="ui label orange">Systemmeldung</span>
+                    <span class="ui label orange">${message(code: 'systemMessage.TYPE_GLOBAL')}</span>
                 </g:if>
                 <g:elseif test="${SystemMessage.TYPE_DASHBOARD == msg.type}">
-                    <span class="ui label teal">Dashboard</span>
+                    <span class="ui label teal">${message(code: 'systemMessage.TYPE_DASHBOARD')}</span>
                 </g:elseif>
                 <g:elseif test="${SystemMessage.TYPE_STARTPAGE == msg.type}">
-                    <span class="ui label blue">Startseite</span>
+                    <span class="ui label blue">${message(code: 'systemMessage.TYPE_STARTPAGE')}</span>
                 </g:elseif>
             </td>
             <td>

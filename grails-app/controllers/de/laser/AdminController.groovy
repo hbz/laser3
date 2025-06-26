@@ -1221,13 +1221,13 @@ SELECT * FROM (
             sm.condition = params.condition ?: null
 
             if (sm.save()){
-                flash.message = 'Systemmeldung erfolgreich gespeichert'
+                flash.message = 'System-Ankündigung erfolgreich gespeichert'
             }
             else {
                 if (params.cmd == 'create') {
-                    flash.error = 'Systemmeldung wurde nicht erstellt'
+                    flash.error = 'System-Ankündigung wurde nicht erstellt'
                 } else {
-                    flash.error = 'Systemmeldung konnte nicht gespeichert werden'
+                    flash.error = 'System-Ankündigung konnte nicht gespeichert werden'
                 }
             }
             log.debug 'SystemMessage #' + sm.id + ' -> ' + params.cmd
@@ -1249,7 +1249,7 @@ SELECT * FROM (
 
         if (SystemMessage.get(id)){
             SystemMessage.get(id).delete()
-            flash.message = 'Systemmeldung wurde gelöscht'
+            flash.message = 'System-Ankündigung wurde gelöscht'
         }
 
         redirect(action: 'systemMessages')

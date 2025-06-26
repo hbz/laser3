@@ -8,5 +8,6 @@
     <g:link controller="dev" action="klodav" id="uicc" class="item${view == 'uicc' ? ' active' : ''}"><i class="${Icon.SIG.NEW_OBJECT} red"></i> New UI Core Components</g:link>
     <g:link controller="dev" action="klodav" id="markdown" class="item${view == 'markdown' ? ' active' : ''}"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> Markdown</g:link>
     <g:link controller="dev" action="klodav" id="security" class="item${view == 'security' ? ' active' : ''}"><i class="${Icon.SIG.NEW_OBJECT} red"></i> Security</g:link>
+    <g:link controller="dev" action="klodav" id="threads" class="item${view == 'threads' ? ' active' : ''}"><i class="${Icon.SIG.NEW_OBJECT} purple"></i> Threads</g:link>
     <g:link controller="dev" action="klodav" id="test" class="item${view == 'test' ? ' active' : ''}">Test</g:link>
 </nav>

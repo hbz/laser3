@@ -35,7 +35,10 @@
             <div class="two fields">
                 <div class="field">
                     <label for="type">${message(code: 'default.type.label')}</label>
-                    <g:select from="${[[SystemMessage.TYPE_GLOBAL, 'Systemmeldung'], [SystemMessage.TYPE_DASHBOARD, 'Dashboard'], [SystemMessage.TYPE_STARTPAGE, 'Startseite']]}"
+                    <g:select from="${[[SystemMessage.TYPE_GLOBAL, g.message(code: 'systemMessage.TYPE_GLOBAL')],
+                                       [SystemMessage.TYPE_DASHBOARD, g.message(code: 'systemMessage.TYPE_DASHBOARD')],
+                                       [SystemMessage.TYPE_STARTPAGE, g.message(code: 'systemMessage.TYPE_STARTPAGE')]
+                        ]}"
                               optionKey="${{it[0]}}"
                               optionValue="${{it[1]}}"
                               id="modal_type"
