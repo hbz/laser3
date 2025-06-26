@@ -21,7 +21,7 @@
                 <a class="item" href="${message(code:'url.wekb.' + currentServer)}" target="_blank"><i class="${Icon.WEKB}"></i> we:kb</a>
                 <g:link class="item" controller="gasco"><i class="${Icon.GASCO}"></i>${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
-                    <a href="mailto:laser@hbz-nrw.de" class="ui blue button">
+                    <a  data-content="${message(code: 'statusCode.error.sendSupportMail')}" href="mailto:laser@hbz-nrw.de" class="ui blue la-popup-tooltip button">
                         ${message(code: 'landingpage.feature.button')}
                     </a>
                 </div>
