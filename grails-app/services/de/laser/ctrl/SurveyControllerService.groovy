@@ -2537,7 +2537,7 @@ class SurveyControllerService {
                 params.surveySubscriptions = params.surveySubscriptions ?: SurveySubscriptionResult.executeQuery('select ssr.subscription.id from SurveySubscriptionResult ssr where ssr.surveyConfig = :surveyConfig and exists (select so from SurveyOrg as so where so.finishDate is not null and so.surveyConfig = ssr.surveyConfig and so.org = ssr.participant) order by ssr.subscription.name', [surveyConfig: result.surveyConfig])[0]
 
             }else {
-                result.listTransferredSub  = SurveyTransfer.executeQuery('select st.subscription.instanceOf from SurveyTransfer st where st.surveyConfig = :surveyConfig order by st.subscription.name', [surveyConfig: result.surveyConfig])
+                result.listTransferredSub  = SurveyTransfer.executeQuery('select st.subscription.instanceOf.id from SurveyTransfer st where st.surveyConfig = :surveyConfig group by st.subscription.instanceOf.id', [surveyConfig: result.surveyConfig]).collect{Subscription.get(it)}.sort {it.name}
             }
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
