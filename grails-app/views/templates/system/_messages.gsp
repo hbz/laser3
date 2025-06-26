@@ -13,10 +13,10 @@
         <div class="ui top attached label">
             <i class="icon exclamation circular inverted red"></i>
             <g:if test="${globalMessages.size() > 1}">
-                <strong>Systemmeldungen: ${globalMessages.size()}</strong>
+                <strong>${message(code: 'systemMessage.plural')}: ${globalMessages.size()}</strong>
             </g:if>
             <g:else>
-                <strong>Systemmeldung</strong>
+                <strong>${message(code: 'systemMessage.label')}</strong>
             </g:else>
         </div>
 

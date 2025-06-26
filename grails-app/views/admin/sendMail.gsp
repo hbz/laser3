@@ -13,7 +13,7 @@
     <ui:form controller="admin" action="sendMail">
             <div class="field">
                 <label for="mailAddress">Mail Address</label>
-                <input type="email" id="mailAddress" name="mailAddress" value="laser@hbz-nrw.de" />
+                <input type="email" id="mailAddress" name="mailAddress" value="${contextService.getUser().email}" />
             </div>
             <div class="field">
                 <label for="subject">Subject</label>
