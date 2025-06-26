@@ -2,6 +2,7 @@ package de.laser.custom.auth
 
 import de.laser.SystemService
 import de.laser.auth.User
+import de.laser.storage.BeanStore
 import de.laser.system.SystemEvent
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
@@ -26,7 +27,7 @@ class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         if (exception instanceof BadCredentialsException) {
             try {
                 String uname = request.getParameter('username')
-                User user = User.findByUsername(uname)
+                User user = BeanStore.getUserService().getUserByUsername(uname)
 
                 user.invalidLoginAttempts = (user.invalidLoginAttempts ?: 0 ) + 1
                 if (user.invalidLoginAttempts >= SystemService.UA_FLAG_LOCKED_AFTER_INVALID_ATTEMPTS) {
