@@ -207,7 +207,7 @@
     </div>
     <aside class="five wide column la-sidekick">
 
-            <img  class="ui fluid image previewImage"  data-src="${resource(dir: 'images', file: 'landingpage/laser-konsortialstelle-cd-laser-1400.png')}" style="margin-top: 14rem; cursor: zoom-in;" src="${resource(dir:'images', file:'landingpage/laser-konsortialstelle-cd-laser-1400.png', absolute:true)}" alt="E-Ressourcen intelligent in LAS:eR verwalten" />
+            <img  class="ui fluid image previewImage"  data-src="${resource(dir: 'images', file: 'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png')}" style="margin-top: 14rem; cursor: zoom-in;" src="${resource(dir:'images', file:'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png', absolute:true)}" alt="E-Ressourcen intelligent in LAS:eR verwalten" />
 
 
     </aside>

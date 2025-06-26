@@ -351,8 +351,8 @@ class AddressbookController {
             if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
                 Person.withTransaction {
                     try {
-                        if(SurveyPersonResult.findByPerson(person)){
-                            List<SurveyPersonResult> surveyPersonResults = SurveyPersonResult.findAllByPerson(person)
+                        if(SurveyPersonResult.findByPerson(obj)){
+                            List<SurveyPersonResult> surveyPersonResults = SurveyPersonResult.findAllByPerson(obj)
                             if (surveyPersonResults) {
                                 surveyPersonResults.each { SurveyPersonResult surveyPersonResult ->
                                     surveyPersonResult.delete()

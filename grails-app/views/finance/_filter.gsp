@@ -65,7 +65,7 @@
                     <div class="field">
                         <g:set var="subStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBSCRIPTION_STATUS])}" scope="request"/>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
-                        <ui:select id="filterSubStatus" class="ui fluid dropdown search clearable" name="filterSubStatus"
+                        <ui:select id="filterSubStatus" class="ui fluid dropdown search clearable" name="filterSubStatus" multiple=""
                                       from="${subStatus}"
                                       optionKey="id"
                                       optionValue="value"

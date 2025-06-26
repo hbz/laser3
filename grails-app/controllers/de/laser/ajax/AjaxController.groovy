@@ -63,6 +63,7 @@ import java.util.concurrent.ExecutorService
 class AjaxController {
 
     AccessService accessService
+    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
@@ -509,23 +510,30 @@ class AjaxController {
               if(result.identifier) {
                   tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
               }
+              Set<Subscription> subscriptions = [], parentSubs = []
+              if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                  subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+              }
+              //else {
+              subscriptions << result.subscription
+              //}
+              subscriptions.each { Subscription s ->
+                  if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                      parentSubs << s.instanceOf
+              }
+              subscriptions.addAll(parentSubs)
+              Set<String> perpetuallyPurchasedTitleURLs = issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions)
               switch (params.tab) {
                   case ['allTipps', 'selectableTipps']:
-                      Set<Subscription> subscriptions = []
-                      if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                          subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
-                      }
-                      //else {
-                          subscriptions << result.subscription
-                      //}
                       if(subscriptions) {
                           Set rows
                           if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                              rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                              rows = IssueEntitlement.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
                           }
                           else {
-                              rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                              rows = IssueEntitlement.executeQuery('select ie.tipp.hostPlatformURL from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                           }
+                          rows.addAll(perpetuallyPurchasedTitleURLs)
                           rows.collate(65000).each { subSet ->
                               tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL in (:subSet) and tipp.pkg in (:currSubPkgs)', [subSet: subSet, currSubPkgs: result.subscription.packages.pkg]))
                           }
@@ -1559,7 +1567,10 @@ class AjaxController {
 
         request.setAttribute("editable", params.editable == "true")
         boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if (params.propDefGroup) {
+        if(params.noWrapper) {
+            redirect(url: request.getHeader('referer'))
+        }
+        else if (params.propDefGroup) {
             Org consortium
             boolean atSubscr
             List propDefGroupItems = []

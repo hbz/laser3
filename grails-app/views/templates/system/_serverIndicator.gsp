@@ -5,6 +5,8 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#contextBar').addClass('la-${currentServer.toLowerCase()}');
         $('.la-top-menu').addClass('la-${currentServer.toLowerCase()}');
-         $('#mainContent').addClass('la-${currentServer.toLowerCase()}');
+        <g:if test="${currentServer in [AppUtils.QA, AppUtils.TEST, AppUtils.DEV]}">
+            $('#mainContent').addClass('la-${currentServer.toLowerCase()}');
+        </g:if>
     </laser:script>
 </g:if>
