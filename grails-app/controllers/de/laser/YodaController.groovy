@@ -1469,7 +1469,7 @@ class YodaController {
                         issueEntitlement.perpetualAccessBySub = issueEntitlement.subscription
                         issueEntitlement.save()
 
-                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform) || PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: owner, subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: titleInstancePackagePlatform]).size() > 0) {
                             PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
                                     issueEntitlement: issueEntitlement,
                                     tipp: titleInstancePackagePlatform,

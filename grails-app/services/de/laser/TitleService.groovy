@@ -52,6 +52,7 @@ class TitleService {
         }
         if(configMap.hasPerpetualAccess) {
             Set<Long> currentPTs = PermanentTitle.executeQuery('select pt.tipp.id from PermanentTitle pt where pt.owner = :ctx', [ctx: contextService.getOrg()])
+            currentPTs.addAll(PermanentTitle.executeQuery("select pt.tipp.id from PermanentTitle pt where pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS]))
             if(Long.parseLong(configMap.hasPerpetualAccess) == RDStore.YN_YES.id)
                 tippIDs = tippIDs.intersect(currentPTs)
             else {

@@ -12,7 +12,7 @@
                     <div class="ui raised segments la-accordion-segments">
 
                         <g:render template="/templates/titles/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null]"/>
+                                  model="${[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :owner or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :owner and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [owner: ptOwner, tipp: tipp, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0] : null]}"/>
 
                         <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>

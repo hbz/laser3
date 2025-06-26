@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6578    25.06.2025  rc-3.5  3.5.2       Andreas Bug         verschiedene Korrekturen bei der Abfrage dauerhafter Titel
+
 6681    24.06.2025  rc-3.5  3.5.1       Andreas Bug         Titelfilter verarbeitete Status nicht
 
 6680    24.06.2025  rc-3.5  3.5.1       David   Feature     Bildergrößen in Markdown-Dateien steuern
