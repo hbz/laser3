@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6578    25.06.2025  rc-3.5  3.5.2       Andreas Bug         verschiedene Korrekturen bei der Abfrage dauerhafter Titel
+6695    26.06.2025  rc-3.5  3.5.2       David   Feature     Case-insensitive Nutzererkennung für "Passwort zurücksetzen", etc.
+
+6578    26.06.2025  rc-3.5  3.5.2       Andreas Bug         verschiedene Korrekturen bei der Abfrage dauerhafter Titel
 
 6681    24.06.2025  rc-3.5  3.5.1       Andreas Bug         Titelfilter verarbeitete Status nicht
 

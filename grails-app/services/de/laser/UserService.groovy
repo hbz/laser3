@@ -20,8 +20,19 @@ import org.springframework.validation.FieldError
 class UserService {
 
     ContextService contextService
-    GenericOIDService genericOIDService
     MessageSource messageSource
+
+    User getUserByUsername(String username) {
+        ConfigObject cfg = SpringSecurityUtils.securityConfig
+        User user = cfg.userLookup.usernameIgnoreCase ? User.findByUsernameIlike(username) : User.findByUsername(username)
+        user
+    }
+
+    List<User> getAllUsersByEmail(String username) {
+        ConfigObject cfg = SpringSecurityUtils.securityConfig
+        List<User> users = cfg.userLookup.usernameIgnoreCase ? User.findAllByEmailIlike(username) : User.findAllByEmail(username)
+        users
+    }
 
     /**
      * This method is called after every successful login and checks if mandatory settings have been made for the given user.
