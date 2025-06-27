@@ -14,7 +14,7 @@
             <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
             <g:if test="${statsInfo}">
                 <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
-                    ${statsInfo[0].value} (${statsInfo[0].note})<br>
+                    ${statsInfo[0].value} <g:if test="${statsInfo[0].note}">(${statsInfo[0].note})</g:if><br>
                     <g:if test="${!platform.statisticsFormat.contains('COUNTER')}">
                         <g:message code="default.stats.noCounterSupport"/>
                     </g:if>
@@ -202,7 +202,7 @@
             <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
             <g:if test="${statsInfo}">
                 <ui:msg icon="ui info icon" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
-                    ${statsInfo[0].value} (${statsInfo[0].note})<br>
+                    ${statsInfo[0].value} <g:if test="${statsInfo[0].note}">(${statsInfo[0].note})</g:if><br>
                     <g:if test="${!platform.statisticsFormat.contains('COUNTER')}">
                         <g:message code="default.stats.noCounterSupport"/><br>
                     </g:if>

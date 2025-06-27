@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      27.06.2025  rc-3.5  3.5.2       Andreas Feature     Erweiterung des Passwort-Regex-Bereiches
+
+6699    27.06.2025  rc-3.5  3.5.2       Andreas Bug         Ausgabe der Statistik-Merkmals-Anmerkungen korrigiert
+
 6698    27.06.2025  rc-3.5  3.5.2       Andreas Bug         falsche Ausgabe der Lizenzmerkmale behoben
 
 6695    26.06.2025  rc-3.5  3.5.2       David   Feature     Case-insensitive Nutzererkennung für "Passwort zurücksetzen", etc.
