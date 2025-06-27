@@ -20,13 +20,18 @@
             ${thread} > ${thread.getState()} > ${thread.isAlive()} <br />
         </g:each>
 
-        <br />
-        <br />
+        <pre>
+FutureTask.state =
+    [Completed normally]
+    [Completed exceptionally: ..]
+    [Cancelled]
+    [Not completed] or [Not completed, task = ..]
+        </pre>
 
         <g:if test="${tasks}">
             <g:each in="${tasks}" var="task">
                 <g:if test="${task instanceof java.util.concurrent.FutureTask}">
-                    ${task.getProperties()} >>> ${task.state()} >>> ${task} <br />
+                    ${task.getProperties()} %{-->>> ${task.state()--}% >>> ${task.toString().substring(task.toString().indexOf('['))} <br />
                 </g:if>
                 <g:if test="${task instanceof java.lang.Runnable}">
                     ${task} <br />

@@ -59,21 +59,33 @@ class DevController  {
             (1..10).each { c ->
                 FutureTask f = executorService.submit ({
                     Thread.currentThread().setName('klodav_1_' + c)
-                    Thread.sleep(new Random().nextLong(20))
+                    if (Math.random() > 0.75) {
+                        throw new Exception()
+                    } else {
+                        Thread.sleep(new Random().nextLong(20))
+                    }
                 })
                 tasks << f
             }
             (1..10).each { c ->
                 FutureTask f = executorService.submit ({
                     Thread.currentThread().setName('klodav_2_' + c)
-                    Thread.wait(new Random().nextLong(20))
+                    if (Math.random() > 0.75) {
+                        throw new Exception()
+                    } else {
+                        Thread.wait(new Random().nextLong(20))
+                    }
                 })
                 tasks << f
             }
             (1..10).each { c ->
                 Runnable r = {
                     Thread.currentThread().setName('klodav_3_' + c)
-                    Thread.sleep(new Random().nextLong(20))
+                    if (Math.random() > 0.75) {
+                        throw new Exception()
+                    } else {
+                        Thread.sleep(new Random().nextLong(20))
+                    }
                 }
                 executorService.execute { r }
                 tasks << r
@@ -81,7 +93,11 @@ class DevController  {
             (1..10).each { c ->
                 Runnable r = {
                     Thread.currentThread().setName('klodav_4_' + c)
-                    Thread.wait(new Random().nextLong(20))
+                    if (Math.random() > 0.75) {
+                        throw new Exception()
+                    } else {
+                        Thread.wait(new Random().nextLong(20))
+                    }
                 }
                 executorService.execute { r }
                 tasks << r
