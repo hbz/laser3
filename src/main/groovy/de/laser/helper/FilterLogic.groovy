@@ -115,6 +115,8 @@ class FilterLogic {
                             break
                         default:
                             result.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                            if(!params.containsKey('subTab'))
+                                result.subTab = 'currentIEs'
                             break
                     }
                     break

@@ -5752,7 +5752,11 @@ class ExportClickMeService {
                         List<String> values = [], notes = []
                         subscriptionProperties.each { SubscriptionProperty sp ->
                             values << sp.getValueInI10n()
-                            notes << sp.note != null ? sp.note : ' '
+                            //elvis / ternary operator delivers strange results ...
+                            if(sp.note != null) {
+                                notes << sp.note
+                            }
+                            else notes << ' '
                         }
                         row.add(createTableCell(format, values.join('; ')))
                         row.add(createTableCell(format, notes.join('; ')))
