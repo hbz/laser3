@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6711    30.06.2025  rc-3.5  3.5.2       Andreas Feature     Auswahl von Semester nach hinten erweitert
+
+6710    30.06.2025  rc-3.5  3.5.2       Andreas Bug         500er beim Export von Vertragsidentifikatoren behoben
+
 6706    30.06.2025  rc-3.5  3.5.2       David   Feature     Passwörter (alter Hash) beim Login aktualisieren
 
 --      27.06.2025  rc-3.5  3.5.2       Andreas Feature     Erweiterung des Passwort-Regex-Bereiches
