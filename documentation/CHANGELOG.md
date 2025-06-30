@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6706    30.06.2025  rc-3.5  3.5.2       David   Feature     Passwörter (alter Hash) beim Login aktualisieren
+
 --      27.06.2025  rc-3.5  3.5.2       Andreas Feature     Erweiterung des Passwort-Regex-Bereiches
 
 6699    27.06.2025  rc-3.5  3.5.2       Andreas Bug         Ausgabe der Statistik-Merkmals-Anmerkungen korrigiert
