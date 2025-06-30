@@ -3,21 +3,25 @@
 <%
     Calendar pastYear = GregorianCalendar.getInstance(),
             twoYearsAgo = GregorianCalendar.getInstance(),
+            threeYearsAgo = GregorianCalendar.getInstance(),
             currentYear = GregorianCalendar.getInstance(),
             nextYear = GregorianCalendar.getInstance(),
             dateSwitch = GregorianCalendar.getInstance()
     pastYear.add(Calendar.YEAR, -1)
     twoYearsAgo.add(Calendar.YEAR, -2)
+    threeYearsAgo.add(Calendar.YEAR, -3)
     nextYear.add(Calendar.YEAR, 1)
     SimpleDateFormat sdf = DateUtils.getSDF_yy()
     dateSwitch.set(Calendar.MONTH, 8)
     dateSwitch.set(Calendar.DAY_OF_MONTH, 1)
-    RefdataValue pastTerm, currTerm
+    RefdataValue beforePastTerm, pastTerm, currTerm
     if(currentYear < dateSwitch) {
+        beforePastTerm = RefdataValue.getByValueAndCategory("w${sdf.format(threeYearsAgo.getTime())}/${sdf.format(twoYearsAgo.getTime())}", RDConstants.SEMESTER)
         pastTerm = RefdataValue.getByValueAndCategory("w${sdf.format(twoYearsAgo.getTime())}/${sdf.format(pastYear.getTime())}", RDConstants.SEMESTER)
         currTerm = RefdataValue.getByValueAndCategory("w${sdf.format(pastYear.getTime())}/${sdf.format(currentYear.getTime())}", RDConstants.SEMESTER)
     }
     else {
+        beforePastTerm = RefdataValue.getByValueAndCategory("w${sdf.format(twoYearsAgo.getTime())}/${sdf.format(pastYear.getTime())}", RDConstants.SEMESTER)
         pastTerm = RefdataValue.getByValueAndCategory("w${sdf.format(pastYear.getTime())}/${sdf.format(currentYear.getTime())}", RDConstants.SEMESTER)
         currTerm = RefdataValue.getByValueAndCategory("w${sdf.format(currentYear.getTime())}/${sdf.format(nextYear.getTime())}", RDConstants.SEMESTER)
     }
@@ -69,7 +73,7 @@
                     <g:if test="${withSemester}">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
                         <ui:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
-                                      from="${[pastTerm, currTerm]}"
+                                      from="${[beforePastTerm, pastTerm, currTerm]}"
                                       optionKey="id" optionValue="value" required=""
                                       value="${currTerm.id}"/>
                     </g:if>
