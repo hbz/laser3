@@ -482,33 +482,33 @@
                     <div class="content">
                         <div class="ui form">
                             <div class="field">
-                                <label>${message(code: 'profile.dashboardShowTopmenu')}</label>
+                                <label>${message(code: 'profile.dashboard.showTopmenu')}</label>
                                 <g:set var="US_DASHBOARD_SHOW_TOPMENU" value="${user.getSetting(KEYS.DASHBOARD_SHOW_TOPMENU, RDStore.YN_YES)}" />
                                 <cc:toggle owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" />
 %{--                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_TOPMENU}" field="rdValue" config="${US_DASHBOARD_SHOW_TOPMENU.key.rdc}" validation="notEmpty"/>--}%
                             </div>
                             <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                                 <div class="field">
-                                    <label>${message(code: 'profile.dashboardShowCharts')}</label>
+                                    <label>${message(code: 'profile.dashboard.showCharts')}</label>
                                     <g:set var="US_DASHBOARD_SHOW_CHARTS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CHARTS, RDStore.YN_YES)}" />
                                     <cc:toggle owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" />
 %{--                                    <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CHARTS}" field="rdValue" config="${US_DASHBOARD_SHOW_CHARTS.key.rdc}" validation="notEmpty"/>--}%
                                 </div>
                                 <div class="field">
-                                    <label>${message(code: 'profile.dashboardShowCurrentTestSubscriptions')}</label>
+                                    <label>${message(code: 'profile.dashboard.showCurrentTestSubscriptions')}</label>
                                     <g:set var="US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS, RDStore.YN_YES)}" />
                                     <cc:toggle owner="${US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS}" field="rdValue" />
 %{--                                    <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS}" field="rdValue" config="${US_DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS.key.rdc}" validation="notEmpty"/>--}%
                                 </div>
                             </g:if>
                             <div class="field">
-                                <label>${message(code: 'profile.dashboardShowWekbNews')}</label>
+                                <label>${message(code: 'profile.dashboard.showWekbNews')}</label>
                                 <g:set var="US_DASHBOARD_SHOW_WEKBNEWS" value="${user.getSetting(KEYS.DASHBOARD_SHOW_WEKBNEWS, RDStore.YN_YES)}" />
                                 <cc:toggle owner="${US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" />
 %{--                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" config="${US_DASHBOARD_SHOW_WEKBNEWS.key.rdc}" validation="notEmpty"/>--}%
                             </div>
                             <div class="field">
-                                <label>${message(code: 'profile.dashboardTab')}</label>
+                                <label>${message(code: 'profile.dashboard.tab')}</label>
                                 <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
                                 <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
                             </div>

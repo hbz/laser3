@@ -106,8 +106,7 @@
             </ui:msg>
 
             <g:if test="${serviceMessages.size() > 0 }">
-                <br /><br /><br />
-
+                <br />
                 <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">

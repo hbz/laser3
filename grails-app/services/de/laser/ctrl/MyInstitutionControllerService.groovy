@@ -68,25 +68,9 @@ class MyInstitutionControllerService {
                 break
         }
 
-        int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)
-
-        //completed processes
-        /*
-        deactivated as incomplete
-        Set<String> processes = []
-        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${result.user.id}")
-        if(cache) {
-            cache.getKeys().each { String key ->
-                processes << cache.get(key.split("finish_${result.user.id}_")[1])
-            }
-        }
-        result.completedProcesses = processes
-        */
-
         prf.setBenchmark('service messages')
+        int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)
         result.serviceMessages = ServiceMessage.getPublished(periodInDays)
-
-        // tasks
 
         SimpleDateFormat sdFormat    = DateUtils.getLocalizedSDF_noTime()
         params.taskStatus = 'not done'
