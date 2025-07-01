@@ -2797,7 +2797,7 @@ class ExportClickMeService {
         fields.myLicProperties.fields.clear()
 
 
-        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_LICENSE]).each {
+        IdentifierNamespace.executeQuery('select idns from Identifier id join id.ns idns where idns.nsType = :nsType and id.lic in (select oo.lic from OrgRole oo where oo.org = :ctx) order by coalesce(idns.'+localizedName+', idns.ns)', [ctx: contextOrg, nsType: IdentifierNamespace.NS_LICENSE]).each {
             fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         /*
@@ -5945,7 +5945,7 @@ class ExportClickMeService {
                 }
                 else if(fieldKey.startsWith('identifiers.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.lic = :license and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [lic: license, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.lic = :lic and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [lic: license, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
                     if (identifierList) {
                         row.add(createTableCell(format, identifierList.join("; ")))
                     } else {

@@ -11,7 +11,7 @@ class RandomUtils {
 
     public static final String DICT_ALPHABETIC      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
     public static final String DICT_ALPHANUMERIC    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    public static final String DICT_PASSWORD        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&@#^+*~=:;'
+    public static final String DICT_PASSWORD        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&@#^+*~=_:;-'
 
     static String getAlphabetic(int length = 16) {
         getRandom(DICT_ALPHABETIC.toCharArray(), length)
