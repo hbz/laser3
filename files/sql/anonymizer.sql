@@ -1,22 +1,18 @@
-
 --
 -- laser.anonymizer (1. requirements, examples, tests)
---
--- last modified: 2025-06-05
--- last author:   klodav
 --
 
 -- la helper
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_log_mask(text TEXT, count INT) RETURNS TEXT AS $$
 BEGIN
-    RETURN concat('--- ', lpad(concat(' ', count::TEXT), 8, '-'), ' --- masked entries @ ', text);
+    RETURN concat('--- ', lpad(concat(' ', count::TEXT), 8, '-'), ' --- masked @ ', text);
 END;
 $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_log_delete(text TEXT, count INT) RETURNS TEXT AS $$
 BEGIN
-    RETURN concat('--- ', lpad(concat(' ', count::TEXT), 8, '-'), ' --- deleted entries @ ', text);
+    RETURN concat('--- ', lpad(concat(' ', count::TEXT), 8, '-'), ' --- deleted @ ', text);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -274,9 +270,13 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_numeric(oldValue NUMERIC) RETURNS NUMERIC AS $$
+DECLARE
+    digits TEXT = '1234567890123456789012345';
+    size INT;
 BEGIN
     IF oldValue IS NOT NULL THEN
-        RETURN (oldValue * random() * 3)::numeric(19, 2);
+        size = length(round(oldValue)::TEXT);
+        RETURN concat(substr(digits, 1, size), '.', substr(digits, size + 1, 2))::NUMERIC(19, 2);
     ELSE
         RETURN oldValue;
     END IF;
@@ -311,9 +311,9 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_xval(oldValue TEXT, debugInfo TEXT DEFAU
 BEGIN
     IF trim(coalesce(oldValue, '')) != '' THEN
         IF debugInfo != '' THEN
-            RETURN concat( 'X', substr(md5(random()::text), 1, 8), ' (', debugInfo, ')' );
+            RETURN concat( 'X', substr(md5(random()::TEXT), 1, 8), ' (', debugInfo, ')' );
         ELSE
-            RETURN concat( 'X', substr(md5(random()::text), 1, 8));
+            RETURN concat( 'X', substr(md5(random()::TEXT), 1, 8));
         END IF;
     ELSE
         RETURN oldValue;
@@ -328,48 +328,49 @@ BEGIN
     RAISE NOTICE 'laser.anonymizer -> randomization $ TESTS';
 
     RAISE NOTICE '---> anon_sample';
-    ASSERT length( pg_temp.anon_sample(ARRAY['a', 'b', 'c'])) = 1,   'anon_sample 1 failed';
-    ASSERT length( pg_temp.anon_sample(ARRAY[]::text[])) IS NULL,   'anon_sample 2 failed';
-    ASSERT length( pg_temp.anon_sample() ) IS NULL,   'anon_sample 3 failed';
+    ASSERT length( pg_temp.anon_sample(ARRAY['a', 'b', 'c'])) = 1,  'anon_sample 1 failed';
+    ASSERT length( pg_temp.anon_sample(ARRAY[]::TEXT[])) IS NULL,   'anon_sample 2 failed';
+    ASSERT length( pg_temp.anon_sample() ) IS NULL,                 'anon_sample 3 failed';
 
     RAISE NOTICE '---> anon_lorem';
-    ASSERT length( pg_temp.anon_lorem('old') ) > 0,   'anon_lorem 1 failed';
-    ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,   'anon_lorem 2 failed';
-    ASSERT length( pg_temp.anon_lorem('') ) = 0,   'anon_lorem 3 failed';
-    ASSERT length( pg_temp.anon_lorem('   ',1 ) ) = 3,   'anon_lorem 4 failed';
-    ASSERT         pg_temp.anon_lorem(null) IS null,   'anon_lorem 5 failed';
-    ASSERT         pg_temp.anon_lorem(null, 1) IS null,   'anon_lorem 6 failed';
+    ASSERT length( pg_temp.anon_lorem('old') ) > 0,                 'anon_lorem 1 failed';
+    ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,           'anon_lorem 2 failed';
+    ASSERT length( pg_temp.anon_lorem('') ) = 0,                    'anon_lorem 3 failed';
+    ASSERT length( pg_temp.anon_lorem('   ',1 ) ) = 3,              'anon_lorem 4 failed';
+    ASSERT         pg_temp.anon_lorem(null) IS null,                'anon_lorem 5 failed';
+    ASSERT         pg_temp.anon_lorem(null, 1) IS null,             'anon_lorem 6 failed';
 
     RAISE NOTICE '---> anon_bigint';
-    ASSERT         pg_temp.anon_bigint(5) > 0,   'anon_bigint 1 failed';
+    ASSERT         pg_temp.anon_bigint(5) > 0,          'anon_bigint 1 failed';
     ASSERT         pg_temp.anon_bigint(null) IS NULL,   'anon_bigint 2 failed';
 
     RAISE NOTICE '---> anon_numeric';
-    ASSERT         pg_temp.anon_numeric(5) > 0,   'anon_numeric 1 failed';
-    ASSERT         pg_temp.anon_numeric(33.33) > 0,   'anon_numeric 2 failed';
-    ASSERT         pg_temp.anon_numeric(null) IS NULL,   'anon_numeric 3 failed';
+    ASSERT         pg_temp.anon_numeric(5) = 1.23,          'anon_numeric 1 failed';
+    ASSERT         pg_temp.anon_numeric(3.3) = 1.23,        'anon_numeric 2 failed';
+    ASSERT         pg_temp.anon_numeric(333.333) = 123.45,  'anon_numeric 3 failed';
+    ASSERT         pg_temp.anon_numeric(null) IS NULL,      'anon_numeric 4 failed';
 
     RAISE NOTICE '---> anon_phrase';
-    ASSERT length( pg_temp.anon_phrase('old') ) > 0,   'anon_phrase 1 failed';
+    ASSERT length( pg_temp.anon_phrase('old') ) > 0,            'anon_phrase 1 failed';
     ASSERT length( pg_temp.anon_phrase('old', 'debug') ) > 0,   'anon_phrase 2 failed';
-    ASSERT length( pg_temp.anon_phrase('') ) = 0,   'anon_phrase 3 failed';
+    ASSERT length( pg_temp.anon_phrase('') ) = 0,               'anon_phrase 3 failed';
     ASSERT length( pg_temp.anon_phrase('   ', 'debug') ) = 3,   'anon_phrase 4 failed';
-    ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,   'anon_phrase 5 failed';
-    ASSERT         pg_temp.anon_phrase(null, null) IS null,   'anon_phrase 6 failed';
+    ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,  'anon_phrase 5 failed';
+    ASSERT         pg_temp.anon_phrase(null, null) IS null,     'anon_phrase 6 failed';
 
     RAISE NOTICE '---> anon_url';
-    ASSERT length( pg_temp.anon_url('old') ) > 0,   'anon_url 1 failed';
-    ASSERT         pg_temp.anon_url('') = '',   'anon_url 2 failed';
-    ASSERT         pg_temp.anon_url('   ') = '   ',   'anon_url 3 failed';
-    ASSERT         pg_temp.anon_url(null) IS NULL,   'anon_url 4 failed';
+    ASSERT length( pg_temp.anon_url('old') ) > 0,       'anon_url 1 failed';
+    ASSERT         pg_temp.anon_url('') = '',           'anon_url 2 failed';
+    ASSERT         pg_temp.anon_url('   ') = '   ',     'anon_url 3 failed';
+    ASSERT         pg_temp.anon_url(null) IS NULL,      'anon_url 4 failed';
 
     RAISE NOTICE '---> anon_xval';
-    ASSERT length( pg_temp.anon_xval('old') ) > 0,   'anon_xval 1 failed';
-    ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,   'anon_xval 2 failed';
-    ASSERT length( pg_temp.anon_xval('') ) = 0,   'anon_xval 3 failed';
-    ASSERT length( pg_temp.anon_xval('   ', 'debug') ) = 3,   'anon_xval 4 failed';
-    ASSERT         pg_temp.anon_xval(null, 'debug') IS null,   'anon_xval 5 failed';
-    ASSERT         pg_temp.anon_xval(null, null) IS null,   'anon_xval 6 failed';
+    ASSERT length( pg_temp.anon_xval('old') ) > 0,              'anon_xval 1 failed';
+    ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,     'anon_xval 2 failed';
+    ASSERT length( pg_temp.anon_xval('') ) = 0,                 'anon_xval 3 failed';
+    ASSERT length( pg_temp.anon_xval('   ', 'debug') ) = 3,     'anon_xval 4 failed';
+    ASSERT         pg_temp.anon_xval(null, 'debug') IS null,    'anon_xval 5 failed';
+    ASSERT         pg_temp.anon_xval(null, null) IS null,       'anon_xval 6 failed';
 
     RAISE NOTICE 'laser.anonymizer -> NO errors found';
 END;
@@ -428,7 +429,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_mask_orgs() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_mask_orgs(ignoreCustomerIdentifier BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
         count_org_setting INT;
         count_customer_identifier INT;
@@ -443,16 +444,18 @@ BEGIN
     GET DIAGNOSTICS count_org_setting = ROW_COUNT;
     RAISE NOTICE '%', pg_temp.anon_log_mask('org_setting (os_string_value)', count_org_setting);
 
-    UPDATE customer_identifier SET
-        cid_value           = pg_temp.anon_xval(cid_value),
-        cid_requestor_key   = pg_temp.anon_xval(cid_requestor_key),
-        cid_note            = pg_temp.anon_lorem(cid_note)
-    WHERE cid_customer_fk NOT IN (
-        SELECT org_id FROM org WHERE org_is_beta_tester = true
-    );
+    IF ignoreCustomerIdentifier IS FALSE THEN
+        UPDATE customer_identifier SET
+            cid_value           = pg_temp.anon_xval(cid_value),
+            cid_requestor_key   = pg_temp.anon_xval(cid_requestor_key),
+            cid_note            = pg_temp.anon_lorem(cid_note)
+        WHERE cid_customer_fk NOT IN (
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
+        );
 
-    GET DIAGNOSTICS count_customer_identifier = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('customer_identifier (cid_value, cid_requestor_key, cid_note)', count_customer_identifier);
+        GET DIAGNOSTICS count_customer_identifier = ROW_COUNT;
+        RAISE NOTICE '%', pg_temp.anon_log_mask('customer_identifier (cid_value, cid_requestor_key, cid_note)', count_customer_identifier);
+    END IF;
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -667,7 +670,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_finance() RETURNS VOID AS $$
         count_cost_item_2 INT;
 BEGIN
     UPDATE cost_item SET
-        ci_cost_in_billing_currency = pg_temp.anon_numeric(ci_cost_in_billing_currency::numeric)
+        ci_cost_in_billing_currency = pg_temp.anon_numeric(ci_cost_in_billing_currency::NUMERIC)
     WHERE
         ci_cost_in_billing_currency IS NOT NULL AND
         ci_currency_rate IS NOT NULL AND
@@ -744,7 +747,7 @@ BEGIN
     RAISE NOTICE '%', pg_temp.anon_log_mask('wf_checklist (wfcl_title, wfcl_description, wfcl_comment)', count_wf_checklist);
 
     UPDATE wf_checkpoint SET
-        wfcp_title          = pg_temp.anon_phrase(wfcp_title, wfcp_position::text),
+        wfcp_title          = pg_temp.anon_phrase(wfcp_title, wfcp_position::TEXT),
         wfcp_description    = pg_temp.anon_lorem(wfcp_description, 2),
         wfcp_comment        = pg_temp.anon_lorem(wfcp_comment)
     WHERE wfcp_checklist_fk IN (
@@ -953,7 +956,7 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTester BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
-        VERSION CONSTANT NUMERIC = 2;
+        VERSION CONSTANT TEXT = '30/06/2025';
         count_tmp INT;
 BEGIN
 
@@ -963,8 +966,9 @@ BEGIN
     RAISE NOTICE '--- %', to_char(now(), 'YYYY-MM-DD HH24:MI');
     RAISE NOTICE '--- ---------------------------------------- ---';
     RAISE NOTICE '--- acceptBetaTester: %', acceptBetaTester;
+    RAISE NOTICE '--- ignoreCustomerIdentifier: %', acceptBetaTester;
 
-    IF acceptBetaTester is false THEN
+    IF acceptBetaTester IS FALSE THEN
         UPDATE org SET
             org_is_beta_tester = false
         WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3');
@@ -977,29 +981,32 @@ BEGIN
     END IF;
 
     RAISE NOTICE '--- ---------------------------------------- ---';
-    RAISE NOTICE '--- op: masking';
+    RAISE NOTICE '--- masking data';
 
-    PERFORM pg_temp.anon_mask_users();               -- Users
+    PERFORM pg_temp.anon_mask_users();              -- Users
+    PERFORM pg_temp.anon_mask_orgs(acceptBetaTester);   -- Orgs (OrgSetting, CustomerIdentifier)
 
---     PERFORM pg_temp.anon_mask_orgs();                -- Orgs
---     PERFORM pg_temp.anon_mask_addressbook();         -- Person, Contact
---     PERFORM pg_temp.anon_mask_finance();             -- Finance
---     PERFORM pg_temp.anon_mask_docs();                -- Docs (notes)
---
---     PERFORM pg_temp.anon_mask_properties1();         -- Properties (Org, Person, Platform, Provider, Vendor)
---     PERFORM pg_temp.anon_mask_properties2();         -- Properties (License, Subscription)
---
---     PERFORM pg_temp.anon_mask_tasks();               -- Tasks
---     PERFORM pg_temp.anon_mask_workflows();           -- Workflows
---     PERFORM pg_temp.anon_mask_surveys();             -- Surveys
+    PERFORM pg_temp.anon_mask_addressbook();         -- Person, Contact
+    PERFORM pg_temp.anon_mask_finance();             -- Finance
+    PERFORM pg_temp.anon_mask_docs();                -- Docs (notes)
+
+    PERFORM pg_temp.anon_mask_properties1();         -- Properties (Org, Person, Platform, Provider, Vendor)
+    PERFORM pg_temp.anon_mask_properties2();         -- Properties (License, Subscription)
+
+    PERFORM pg_temp.anon_mask_tasks();               -- Tasks
+    PERFORM pg_temp.anon_mask_workflows();           -- Workflows
+    PERFORM pg_temp.anon_mask_surveys();             -- Surveys
 
     RAISE NOTICE '--- ---------------------------------------- ---';
-    RAISE NOTICE '--- op: deletion';
+    RAISE NOTICE '--- deleting data';
 
---     PERFORM pg_temp.anon_delete_mails();             -- Mails (Grails Asynchronous Mail Plugin)
+    PERFORM pg_temp.anon_delete_mails();             -- Mails (Grails Asynchronous Mail Plugin)
 
     RAISE NOTICE '--- ---------------------------------------- ---';
 END;
 $$ LANGUAGE PLPGSQL;
 
-SELECT pg_temp.anonymize(true); -- local: FALSE, prod: TRUE
+-- LOCAL  : acceptBetaTester -> ignoreCustomerIdentifier = FALSE
+-- DEV/QA : acceptBetaTester -> ignoreCustomerIdentifier = TRUE
+
+SELECT pg_temp.anonymize(TRUE);
