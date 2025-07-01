@@ -330,15 +330,15 @@ BEGIN
     RAISE NOTICE '---> anon_sample';
     ASSERT length( pg_temp.anon_sample(ARRAY['a', 'b', 'c'])) = 1,  'anon_sample 1 failed';
     ASSERT length( pg_temp.anon_sample(ARRAY[]::TEXT[])) IS NULL,   'anon_sample 2 failed';
-    ASSERT length( pg_temp.anon_sample() ) IS NULL,                     'anon_sample 3 failed';
+    ASSERT length( pg_temp.anon_sample() ) IS NULL,                 'anon_sample 3 failed';
 
     RAISE NOTICE '---> anon_lorem';
     ASSERT length( pg_temp.anon_lorem('old') ) > 0,                 'anon_lorem 1 failed';
-    ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,       'anon_lorem 2 failed';
+    ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,           'anon_lorem 2 failed';
     ASSERT length( pg_temp.anon_lorem('') ) = 0,                    'anon_lorem 3 failed';
-    ASSERT length( pg_temp.anon_lorem('   ',1 ) ) = 3,          'anon_lorem 4 failed';
+    ASSERT length( pg_temp.anon_lorem('   ',1 ) ) = 3,              'anon_lorem 4 failed';
     ASSERT         pg_temp.anon_lorem(null) IS null,                'anon_lorem 5 failed';
-    ASSERT         pg_temp.anon_lorem(null, 1) IS null,         'anon_lorem 6 failed';
+    ASSERT         pg_temp.anon_lorem(null, 1) IS null,             'anon_lorem 6 failed';
 
     RAISE NOTICE '---> anon_bigint';
     ASSERT         pg_temp.anon_bigint(5) > 0,          'anon_bigint 1 failed';
@@ -351,9 +351,9 @@ BEGIN
     ASSERT         pg_temp.anon_numeric(null) IS NULL,      'anon_numeric 4 failed';
 
     RAISE NOTICE '---> anon_phrase';
-    ASSERT length( pg_temp.anon_phrase('old') ) > 0,                'anon_phrase 1 failed';
+    ASSERT length( pg_temp.anon_phrase('old') ) > 0,            'anon_phrase 1 failed';
     ASSERT length( pg_temp.anon_phrase('old', 'debug') ) > 0,   'anon_phrase 2 failed';
-    ASSERT length( pg_temp.anon_phrase('') ) = 0,                   'anon_phrase 3 failed';
+    ASSERT length( pg_temp.anon_phrase('') ) = 0,               'anon_phrase 3 failed';
     ASSERT length( pg_temp.anon_phrase('   ', 'debug') ) = 3,   'anon_phrase 4 failed';
     ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,  'anon_phrase 5 failed';
     ASSERT         pg_temp.anon_phrase(null, null) IS null,     'anon_phrase 6 failed';
@@ -365,9 +365,9 @@ BEGIN
     ASSERT         pg_temp.anon_url(null) IS NULL,      'anon_url 4 failed';
 
     RAISE NOTICE '---> anon_xval';
-    ASSERT length( pg_temp.anon_xval('old') ) > 0,                      'anon_xval 1 failed';
+    ASSERT length( pg_temp.anon_xval('old') ) > 0,              'anon_xval 1 failed';
     ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,     'anon_xval 2 failed';
-    ASSERT length( pg_temp.anon_xval('') ) = 0,                         'anon_xval 3 failed';
+    ASSERT length( pg_temp.anon_xval('') ) = 0,                 'anon_xval 3 failed';
     ASSERT length( pg_temp.anon_xval('   ', 'debug') ) = 3,     'anon_xval 4 failed';
     ASSERT         pg_temp.anon_xval(null, 'debug') IS null,    'anon_xval 5 failed';
     ASSERT         pg_temp.anon_xval(null, null) IS null,       'anon_xval 6 failed';
@@ -763,86 +763,157 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_mask_surveys() RETURNS VOID AS $$
 DECLARE
-    count_survey_config INT;
     count_survey_info INT;
+    count_survey_config INT;
     count_survey_org INT;
-    count_survey_package_result INT;
-    count_survey_result INT;
-    count_survey_subscription_result INT;
     count_survey_url INT;
-    count_survey_vendor_result INT;
+    count_survey_result1 INT;
+    count_survey_result2 INT;
+    count_survey_result3 INT;
+    count_survey_package_result1 INT;
+    count_survey_package_result2 INT;
+    count_survey_subscription_result1 INT;
+    count_survey_subscription_result2 INT;
+    count_survey_vendor_result1 INT;
+    count_survey_vendor_result2 INT;
 BEGIN
-    UPDATE survey_config SET
-        surconf_comment                         = pg_temp.anon_lorem(surconf_comment),
-        surconf_internal_comment                = pg_temp.anon_lorem(surconf_internal_comment),
-        surconf_comment_for_new_participants    = pg_temp.anon_lorem(surconf_comment_for_new_participants, 2)
-    WHERE false;
-
-    GET DIAGNOSTICS count_survey_config = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_config (surconf_comment, surconf_internal_comment, surconf_comment_for_new_participants)', count_survey_config);
-
     UPDATE survey_info SET
         surin_comment = pg_temp.anon_lorem(surin_comment)
-    WHERE false;
+    WHERE survey_info.surin_owner_org_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
 
     GET DIAGNOSTICS count_survey_info = ROW_COUNT;
     RAISE NOTICE '%', pg_temp.anon_log_mask('survey_info (surin_comment)', count_survey_info);
 
+    UPDATE survey_config SET
+        surconf_comment                         = pg_temp.anon_lorem(surconf_comment, 2),
+        surconf_internal_comment                = pg_temp.anon_lorem(surconf_internal_comment),
+        surconf_comment_for_new_participants    = pg_temp.anon_lorem(surconf_comment_for_new_participants, 3)
+    WHERE surconf_surinfo_fk NOT IN (
+        SELECT surin_id FROM survey_info
+            JOIN org ON surin_owner_org_fk = org_id
+        WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_config = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_config (surconf_comment, surconf_internal_comment, surconf_comment_for_new_participants)', count_survey_config);
+
     UPDATE survey_org SET
         surorg_owner_comment    = pg_temp.anon_lorem(surorg_owner_comment),
         surorg_pricecomment     = pg_temp.anon_lorem(surorg_pricecomment)
-    WHERE false;
+    WHERE surorg_surveyconfig_fk NOT IN (
+        SELECT surconf_id FROM survey_config
+           JOIN survey_info ON surconf_surinfo_fk = surin_id
+           JOIN org ON surin_owner_org_fk = org_id
+        WHERE org_is_beta_tester = true
+    );
 
     GET DIAGNOSTICS count_survey_org = ROW_COUNT;
     RAISE NOTICE '%', pg_temp.anon_log_mask('survey_org (surorg_owner_comment, surorg_pricecomment)', count_survey_org);
 
-    UPDATE survey_package_result SET
-        surpkgre_comment                = pg_temp.anon_lorem(surpkgre_comment),
-        surpkgre_owner_comment          = pg_temp.anon_lorem(surpkgre_owner_comment),
-        surpkgre_participant_comment    = pg_temp.anon_lorem(surpkgre_participant_comment)
-    WHERE false;
+    UPDATE survey_url SET
+        surur_url_comment = pg_temp.anon_lorem(surur_url_comment)
+    WHERE surur_survey_config_fk NOT IN (
+        SELECT surconf_id FROM survey_config
+            JOIN survey_info ON surconf_surinfo_fk = surin_id
+            JOIN org ON surin_owner_org_fk = org_id
+        WHERE org_is_beta_tester = true
+    );
 
-    GET DIAGNOSTICS count_survey_package_result = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_package_result (surpkgre_comment, surpkgre_owner_comment, surpkgre_participant_comment)', count_survey_package_result);
+    GET DIAGNOSTICS count_survey_url = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_url (surur_url_comment)', count_survey_url);
 
     UPDATE survey_result SET
         surre_note                  = pg_temp.anon_lorem(surre_note),
         surre_string_value          = pg_temp.anon_phrase(surre_string_value, concat(surre_id, ', ', to_char(surre_date_created, 'DD.MM.YYYY'), ', ', surre_is_public)),
         surre_url_value             = pg_temp.anon_url(surre_url_value),
         surre_long_value            = pg_temp.anon_bigint(surre_long_value),
-        surre_dec_value             = pg_temp.anon_numeric(surre_dec_value),
-        surre_comment               = pg_temp.anon_lorem(surre_comment),
-        surre_participant_comment   = pg_temp.anon_lorem(surre_participant_comment),
-        surre_owner_comment         = pg_temp.anon_lorem(surre_owner_comment)
-    WHERE false;
+        surre_dec_value             = pg_temp.anon_numeric(surre_dec_value)
+    WHERE surre_owner_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    ) OR surre_participant_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
 
-    GET DIAGNOSTICS count_survey_result = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_result (surre_note, surre_string_value, surre_url_value, surre_long_value, surre_dec_value, surre_comment, surre_participant_comment, surre_owner_comment)', count_survey_result);
+    GET DIAGNOSTICS count_survey_result1 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_result (surre_note, surre_string_value, surre_url_value, surre_long_value, surre_dec_value)', count_survey_result1);
+
+    UPDATE survey_result SET
+         surre_comment          = pg_temp.anon_lorem(surre_comment),
+         surre_owner_comment    = pg_temp.anon_lorem(surre_owner_comment)
+    WHERE surre_owner_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_result2 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_result (surre_comment, surre_owner_comment)', count_survey_result2);
+
+    UPDATE survey_result SET
+         surre_participant_comment  = pg_temp.anon_lorem(surre_participant_comment)
+    WHERE surre_participant_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_result3 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_result (surre_participant_comment)', count_survey_result3);
+
+    UPDATE survey_package_result SET
+        surpkgre_comment        = pg_temp.anon_lorem(surpkgre_comment),
+        surpkgre_owner_comment  = pg_temp.anon_lorem(surpkgre_owner_comment)
+    WHERE surpkgre_owner_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_package_result1 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_package_result (surpkgre_comment, surpkgre_owner_comment)', count_survey_package_result1);
+
+    UPDATE survey_package_result SET
+        surpkgre_participant_comment = pg_temp.anon_lorem(surpkgre_participant_comment)
+    WHERE surpkgre_participant_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_package_result2 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_package_result (surpkgre_participant_comment)', count_survey_package_result2);
 
     UPDATE survey_subscription_result SET
-        sursubre_comment                = pg_temp.anon_lorem(sursubre_comment),
-        sursubre_owner_comment          = pg_temp.anon_lorem(sursubre_owner_comment),
-        sursubre_participant_comment    = pg_temp.anon_lorem(sursubre_participant_comment)
-    WHERE false;
+        sursubre_comment        = pg_temp.anon_lorem(sursubre_comment),
+        sursubre_owner_comment  = pg_temp.anon_lorem(sursubre_owner_comment)
+    WHERE sursubre_owner_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
 
-    GET DIAGNOSTICS count_survey_subscription_result = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_subscription_result (sursubre_comment, sursubre_owner_comment, sursubre_participant_comment)', count_survey_subscription_result);
+    GET DIAGNOSTICS count_survey_subscription_result1 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_subscription_result (sursubre_comment, sursubre_owner_comment)', count_survey_subscription_result1);
 
-    UPDATE survey_url SET
-       surur_url_comment = pg_temp.anon_lorem(surur_url_comment)
-    WHERE false;
+    UPDATE survey_subscription_result SET
+        sursubre_participant_comment = pg_temp.anon_lorem(sursubre_participant_comment)
+    WHERE sursubre_participant_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
 
-    GET DIAGNOSTICS count_survey_url = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_url (surur_url_comment)', count_survey_url);
+    GET DIAGNOSTICS count_survey_subscription_result2 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_subscription_result (sursubre_participant_comment)', count_survey_subscription_result2);
 
     UPDATE survey_vendor_result SET
-        survenre_comment                = pg_temp.anon_lorem(survenre_comment),
-        survenre_owner_comment          = pg_temp.anon_lorem(survenre_owner_comment),
-        survenre_participant_comment    = pg_temp.anon_lorem(survenre_participant_comment)
-    WHERE false;
+        survenre_comment        = pg_temp.anon_lorem(survenre_comment),
+        survenre_owner_comment  = pg_temp.anon_lorem(survenre_owner_comment)
+    WHERE survenre_owner_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
 
-    GET DIAGNOSTICS count_survey_vendor_result = ROW_COUNT;
-    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_vendor_result (survenre_comment, survenre_owner_comment, survenre_participant_comment)', count_survey_vendor_result);
+    GET DIAGNOSTICS count_survey_vendor_result1 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_vendor_result (survenre_comment, survenre_owner_comment)', count_survey_vendor_result1);
+
+    UPDATE survey_vendor_result SET
+        survenre_participant_comment = pg_temp.anon_lorem(survenre_participant_comment)
+    WHERE survenre_participant_fk NOT IN (
+        SELECT org_id FROM org WHERE org_is_beta_tester = true
+    );
+
+    GET DIAGNOSTICS count_survey_vendor_result2 = ROW_COUNT;
+    RAISE NOTICE '%', pg_temp.anon_log_mask('survey_vendor_result (survenre_participant_comment)', count_survey_vendor_result2);
 
 END;
 $$ LANGUAGE PLPGSQL;
@@ -885,11 +956,14 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTester BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
+        VERSION CONSTANT TEXT = '30/06/2025';
         count_tmp INT;
 BEGIN
 
     RAISE NOTICE '--- ---------------------------------------- ---';
-    RAISE NOTICE '--- laser.anonymizer # 30/06/2025';
+    RAISE NOTICE '--- laser.anonymizer';
+    RAISE NOTICE '--- version %', version;
+    RAISE NOTICE '--- %', to_char(now(), 'YYYY-MM-DD HH24:MI');
     RAISE NOTICE '--- ---------------------------------------- ---';
     RAISE NOTICE '--- acceptBetaTester: %', acceptBetaTester;
     RAISE NOTICE '--- ignoreCustomerIdentifier: %', acceptBetaTester;
@@ -921,6 +995,7 @@ BEGIN
 
     PERFORM pg_temp.anon_mask_tasks();               -- Tasks
     PERFORM pg_temp.anon_mask_workflows();           -- Workflows
+    PERFORM pg_temp.anon_mask_surveys();             -- Surveys
 
     RAISE NOTICE '--- ---------------------------------------- ---';
     RAISE NOTICE '--- deleting data';
@@ -935,3 +1010,4 @@ $$ LANGUAGE PLPGSQL;
 -- DEV/QA : acceptBetaTester -> ignoreCustomerIdentifier = TRUE
 
 SELECT pg_temp.anonymize(TRUE);
+
