@@ -24,7 +24,7 @@
                 <strong>${costItem.owner.name}</strong>
             </div>
         </g:else>
-        <div class="ui blue right right floated mini button la-js-clickButton" data-position="top center" data-title="${costItem.globalUID}"><g:message code="globalUID.label"/></div>
+        <div class="ui blue right right floated mini button la-js-clickButton" data-position="top center" data-title="${costItem.globalUID}"><g:message code="default.uuid.label"/></div>
         <laser:script file="${this.getGroovyPageFileName()}">
             $('.la-js-clickButton').popup({
                 on: 'click'

@@ -63,9 +63,9 @@
 											<span class="item js-copyTriggerParent">
 												<span class="ui small basic image label js-copyTrigger la-popup-tooltip"
 													  data-position="top center"
-													  data-content="${message(code: 'globalUID.label')}">
+													  data-content="${message(code: 'default.uuid.label')}">
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
-													<g:message code="globalUID.label"/>:
+													<g:message code="default.uuid.label"/>:
 													<span class="detail js-copyTopic">
 														<g:fieldValue bean="${organisationInstance}" field="globalUID"/>
 														<g:if test="${organisationInstance.gokbId}">

@@ -3,7 +3,7 @@
     <td>${tableRowNr}</td>
     <td>
         <g:if test="${showGlobalUid}">
-            <g:message code="globalUID.label" />
+            <g:message code="default.uuid.label" />
             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'globalUID.desc')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6493    01.07.2025  rc-3.5  3.5.2       Andreas Feature     Umbenennung in LAS:eR-UUID
+
 6711    30.06.2025  rc-3.5  3.5.2       Andreas Feature     Auswahl von Semester nach hinten erweitert
 
 6710    30.06.2025  rc-3.5  3.5.2       Andreas Bug         500er beim Export von Vertragsidentifikatoren behoben
