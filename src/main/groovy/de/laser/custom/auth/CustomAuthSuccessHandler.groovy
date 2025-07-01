@@ -5,6 +5,7 @@ import de.laser.UserService
 import de.laser.auth.User
 import de.laser.helper.Profiler
 import de.laser.cache.SessionCacheWrapper
+import de.laser.system.SystemEvent
 import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -47,6 +48,17 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
         User user = springSecurityService.getCurrentUser() as User
         user.lastLogin = new Date()
         user.invalidLoginAttempts = 0
+
+        // ERMS-6706 (TMP)
+        if (! user.password.startsWith('{bcrypt}')) {
+            String info1 = 'legacy password updated for user #' + user.id
+            String info2 = ' (' + user.password + ')'
+
+            user.setPassword(request.getParameter('password'))
+
+            log.info( info1 )
+            SystemEvent.createEvent('USER_INFO', [password: info1 + info2])
+        }
         user.save()
 
         if (! SpringSecurityUtils.isAjax(request)) {
