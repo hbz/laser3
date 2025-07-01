@@ -25,6 +25,8 @@ class UserSetting {
         PAGE_SIZE                                   (Integer),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
+        DASHBOARD_TAB_TIME_CHANGES                  (Integer),
+        DASHBOARD_TAB_TIME_SERVICE_MESSAGES         (Integer),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),

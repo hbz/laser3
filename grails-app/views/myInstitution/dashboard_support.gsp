@@ -17,50 +17,47 @@
         <ui:messages data="${flash}" />
 
     <%
-        RefdataValue us_dashboard_tab
+        String currentTab
         switch (params.view) {
-            case "Workflows": us_dashboard_tab = RefdataValue.getByValueAndCategory('Workflows', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "Workflows":   currentTab = RefdataValue.getByValueAndCategory('Workflows', RDConstants.USER_SETTING_DASHBOARD_TAB)
                 break
             default:
-                us_dashboard_tab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
+                                currentTab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             break
         }
     %>
 
     <div class="ui tabular la-tab-with-js top attached small menu">
-        <a class="${us_dashboard_tab.value == 'Service Messages' ? 'active item' : 'item'}" data-tab="servicemessages">
-            %{--            <i class="${Icon.SERVICE_MESSAGE} large"></i>--}%
+        <a class="${currentTab == 'Service Messages' ? 'active item' : 'item'}" data-tab="servicemessages">
             ${message(code:'serviceMessage.plural')} <ui:bubble count="${serviceMessages.size()}" />
         </a>
 
-        <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-%{--            <i class="${Icon.DUE_DATE} large"></i>--}%
+        <a class="${currentTab == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             ${message(code:'myinst.dash.due_dates.label')} <ui:bubble count="${dueDatesCount}" />
         </a>
 
-        <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-%{--            <i class="${Icon.TASK} large"></i>--}%
+        <a class="${currentTab == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
             ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasksCount}" />
         </a>
 
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
-            <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-%{--                <i class="${Icon.WORKFLOW} large"></i>--}%
+            <a class="${currentTab == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 ${message(code:'workflow.plural')} <ui:bubble count="${allChecklistsCount}" />
             </a>
         </g:if>
 
     </div><!-- secondary -->
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached segment tab ${currentTab == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Service Messages' ? 'active' : ''}" data-tab="servicemessages">
+        <div class="ui bottom attached segment tab ${currentTab == 'Service Messages' ? 'active' : ''}" data-tab="servicemessages">
 
-            <g:message code="profile.dashboardServiceMessageTimeWindow"
-                       args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+            <ui:msg class="info" hideClose="true">
+                <g:message code="dashboard.tabTime.serviceMessages" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" />
+            </ui:msg>
 
             <g:if test="${serviceMessages.size() > 0 }">
                 <br /><br /><br />
@@ -96,7 +93,7 @@
             </g:if>
         </div>
 
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached segment tab ${currentTab == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -108,7 +105,7 @@
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <div id="wfFlyout" class="ui very wide flyout"></div>
 
-            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
+            <div class="ui bottom attached segment tab ${currentTab == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
                     <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">
@@ -116,7 +113,6 @@
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.dashboardTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
                         </ui:msg>
                     </g:if>
 

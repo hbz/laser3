@@ -513,8 +513,12 @@
                                 <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
                             </div>
                             <div class="field">
-                                <label>${message(code: 'profile.dashboardTimeWindow')}</label>
-                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
+                                <label>${message(code: 'profile.dashboard.tabTime.serviceMessages')}</label>
+                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" field="strValue" />
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboard.tabTime.changes')}</label>
+                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}" field="strValue" />
                             </div>
                         </div><!-- .form -->
                     </div><!-- .content -->

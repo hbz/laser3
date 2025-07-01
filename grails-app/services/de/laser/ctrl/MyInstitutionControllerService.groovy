@@ -68,7 +68,7 @@ class MyInstitutionControllerService {
                 break
         }
 
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)
 
         //completed processes
         /*
