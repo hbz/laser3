@@ -16,6 +16,7 @@ package de.laser.custom.auth
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.savedrequest.RequestCache
@@ -27,7 +28,7 @@ import javax.servlet.http.HttpServletResponse
 /**
  * @author <a href='mailto:burt@burtbeckwith.com'>Burt Beckwith</a>
  */
-@CompileStatic
+@Slf4j
 class CustomAjaxAwareAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
 	protected RequestCache requestCache
@@ -40,7 +41,7 @@ class CustomAjaxAwareAuthenticationSuccessHandler extends SavedRequestAwareAuthe
 			Authentication authentication) throws ServletException, IOException {
 
 		boolean ajax = SpringSecurityUtils.isAjax(request)
-		boolean grmc = request.getCookies().find{ it.name == 'grails_remember_me' }
+		boolean grmc = request.getCookies().find{ it.name == SpringSecurityUtils.securityConfig.rememberMe.cookieName }
 
 		// GPSPRINGSECURITYCORE-240
 		if (ajax && !grmc) {
