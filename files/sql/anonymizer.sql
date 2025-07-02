@@ -2,7 +2,7 @@
 -- laser.anonymizer (1. requirements, examples, tests)
 --
 
--- la helper
+-- la functions: helper
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_log_mask(text TEXT, count INT) RETURNS TEXT AS $$
 BEGIN
@@ -16,7 +16,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION pg_temp.anon_sample(data TEXT[] DEFAULT NULL) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_get_sample(data TEXT[] DEFAULT NULL) RETURNS TEXT AS $$
 BEGIN
     IF data IS NOT NULL THEN
         RETURN data[floor(random() * cardinality(data) + 1)];
@@ -100,7 +100,7 @@ BEGIN
         'Wer die Wahl hat, hat die Qual',
         'Zahlen lügen nicht'
         ];
-    RETURN pg_temp.anon_sample(data);
+    RETURN pg_temp.anon_get_sample(data);
 END;
 $$ LANGUAGE PLPGSQL;
 
@@ -170,11 +170,11 @@ BEGIN
         ];
 
     IF lower(gender) = 'male' THEN
-        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_mn), pg_temp.anon_sample(data_ln)]);
+        RETURN (SELECT ARRAY[pg_temp.anon_get_sample(data_mn), pg_temp.anon_get_sample(data_ln)]);
     ELSEIF lower(gender) = 'female' THEN
-        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_fn), pg_temp.anon_sample(data_ln)]);
+        RETURN (SELECT ARRAY[pg_temp.anon_get_sample(data_fn), pg_temp.anon_get_sample(data_ln)]);
     ELSEIF lower(gender) = 'third gender' THEN
-        RETURN (SELECT ARRAY[pg_temp.anon_sample(data_nn), pg_temp.anon_sample(data_ln)]);
+        RETURN (SELECT ARRAY[pg_temp.anon_get_sample(data_nn), pg_temp.anon_get_sample(data_ln)]);
     ELSE
         RETURN (SELECT ARRAY[null, concat('Bibo', floor(random() * 1000))]);
     END IF;
@@ -208,20 +208,19 @@ BEGIN
     part1 = ARRAY ['abc.', 'bibo.', 'data.', 'help.', 'www.', ''];
     part2 = ARRAY ['anon.', 'bit.', 'test.'];
 
-    RETURN concat('https://', pg_temp.anon_sample(part1), pg_temp.anon_sample(part2), 'example');
+    RETURN concat('https://', pg_temp.anon_get_sample(part1), pg_temp.anon_get_sample(part2), 'example');
 END;
 $$ LANGUAGE PLPGSQL;
 
--- la functions: generation -> examples
-
-CREATE OR REPLACE FUNCTION pg_temp.anon_run_examples() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_test_generation() RETURNS VOID AS $$
 BEGIN
-    RAISE NOTICE 'laser.anonymizer -> generation $ EXAMPLES';
+    RAISE NOTICE '--- laser.anonymizer';
+    RAISE NOTICE '--- ---> testing generation';
 
     RAISE NOTICE 'anon_log_mask(test, 123) > %', pg_temp.anon_log_mask('test', 123);
 
-    RAISE NOTICE 'anon_sample([a, b, c) > %', (SELECT pg_temp.anon_sample(ARRAY['a', 'b', 'c']));
---     RAISE NOTICE 'anon_sample([]) > %', (SELECT pg_temp.anon_sample(ARRAY[])); -- FAIL
+    RAISE NOTICE 'anon_get_sample([a, b, c) > %', (SELECT pg_temp.anon_get_sample(ARRAY['a', 'b', 'c']));
+--     RAISE NOTICE 'anon_get_sample([]) > %', (SELECT pg_temp.anon_get_sample(ARRAY[])); -- FAIL
 
     RAISE NOTICE 'anon_generate_lorem() > %', (SELECT pg_temp.anon_generate_lorem());
     RAISE NOTICE 'anon_generate_lorem(3) > %', (SELECT pg_temp.anon_generate_lorem(3));
@@ -245,9 +244,9 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- SELECT pg_temp.anon_run_examples();
+-- SELECT pg_temp.anon_test_generation();
 
--- la functions: randomization
+-- la functions: overwrite
 
 CREATE OR REPLACE FUNCTION pg_temp.anon_lorem(oldValue TEXT, length INT DEFAULT 1) RETURNS TEXT AS $$
 BEGIN
@@ -321,18 +320,17 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
--- la functions: randomization -> tests
-
-CREATE OR REPLACE FUNCTION pg_temp.anon_run_tests() RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anon_test_overwrite() RETURNS VOID AS $$
 BEGIN
-    RAISE NOTICE 'laser.anonymizer -> randomization $ TESTS';
+    RAISE NOTICE '--- laser.anonymizer';
+    RAISE NOTICE '--- ---> testing overwrite';
 
-    RAISE NOTICE '---> anon_sample';
-    ASSERT length( pg_temp.anon_sample(ARRAY['a', 'b', 'c'])) = 1,  'anon_sample 1 failed';
-    ASSERT length( pg_temp.anon_sample(ARRAY[]::TEXT[])) IS NULL,   'anon_sample 2 failed';
-    ASSERT length( pg_temp.anon_sample() ) IS NULL,                 'anon_sample 3 failed';
+    RAISE NOTICE '--- anon_get_sample: 3';
+    ASSERT length( pg_temp.anon_get_sample(ARRAY['a', 'b', 'c'])) = 1,  'anon_get_sample 1 failed';
+    ASSERT length( pg_temp.anon_get_sample(ARRAY[]::TEXT[])) IS NULL,   'anon_get_sample 2 failed';
+    ASSERT length( pg_temp.anon_get_sample() ) IS NULL,                 'anon_get_sample 3 failed';
 
-    RAISE NOTICE '---> anon_lorem';
+    RAISE NOTICE '--- anon_lorem: 6';
     ASSERT length( pg_temp.anon_lorem('old') ) > 0,                 'anon_lorem 1 failed';
     ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,           'anon_lorem 2 failed';
     ASSERT length( pg_temp.anon_lorem('') ) = 0,                    'anon_lorem 3 failed';
@@ -340,17 +338,20 @@ BEGIN
     ASSERT         pg_temp.anon_lorem(null) IS null,                'anon_lorem 5 failed';
     ASSERT         pg_temp.anon_lorem(null, 1) IS null,             'anon_lorem 6 failed';
 
-    RAISE NOTICE '---> anon_bigint';
+    RAISE NOTICE '--- anon_bigint: 2';
     ASSERT         pg_temp.anon_bigint(5) > 0,          'anon_bigint 1 failed';
     ASSERT         pg_temp.anon_bigint(null) IS NULL,   'anon_bigint 2 failed';
 
-    RAISE NOTICE '---> anon_numeric';
-    ASSERT         pg_temp.anon_numeric(5) = 1.23,          'anon_numeric 1 failed';
-    ASSERT         pg_temp.anon_numeric(3.3) = 1.23,        'anon_numeric 2 failed';
-    ASSERT         pg_temp.anon_numeric(333.333) = 123.45,  'anon_numeric 3 failed';
-    ASSERT         pg_temp.anon_numeric(null) IS NULL,      'anon_numeric 4 failed';
+    RAISE NOTICE '--- anon_numeric: 7';
+    ASSERT         pg_temp.anon_numeric(5)::TEXT = '1.23',                  'anon_numeric 1 failed';
+    ASSERT         pg_temp.anon_numeric(3.3)::TEXT = '1.23',                'anon_numeric 2 failed';
+    ASSERT         pg_temp.anon_numeric(333.333)::TEXT = '123.45',          'anon_numeric 3 failed';
+    ASSERT         pg_temp.anon_numeric(12345678)::TEXT = '12345678.90',    'anon_numeric 4 failed';
+    ASSERT         pg_temp.anon_numeric(12345678.9)::TEXT = '12345678.90',  'anon_numeric 5 failed';
+    ASSERT         pg_temp.anon_numeric(12345678.12)::TEXT = '12345678.90', 'anon_numeric 6 failed';
+    ASSERT         pg_temp.anon_numeric(null) IS NULL,                      'anon_numeric 7 failed';
 
-    RAISE NOTICE '---> anon_phrase';
+    RAISE NOTICE '--- anon_phrase: 6';
     ASSERT length( pg_temp.anon_phrase('old') ) > 0,            'anon_phrase 1 failed';
     ASSERT length( pg_temp.anon_phrase('old', 'debug') ) > 0,   'anon_phrase 2 failed';
     ASSERT length( pg_temp.anon_phrase('') ) = 0,               'anon_phrase 3 failed';
@@ -358,13 +359,13 @@ BEGIN
     ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,  'anon_phrase 5 failed';
     ASSERT         pg_temp.anon_phrase(null, null) IS null,     'anon_phrase 6 failed';
 
-    RAISE NOTICE '---> anon_url';
+    RAISE NOTICE '--- anon_url: 4';
     ASSERT length( pg_temp.anon_url('old') ) > 0,       'anon_url 1 failed';
     ASSERT         pg_temp.anon_url('') = '',           'anon_url 2 failed';
     ASSERT         pg_temp.anon_url('   ') = '   ',     'anon_url 3 failed';
     ASSERT         pg_temp.anon_url(null) IS NULL,      'anon_url 4 failed';
 
-    RAISE NOTICE '---> anon_xval';
+    RAISE NOTICE '--- anon_xval: 6';
     ASSERT length( pg_temp.anon_xval('old') ) > 0,              'anon_xval 1 failed';
     ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,     'anon_xval 2 failed';
     ASSERT length( pg_temp.anon_xval('') ) = 0,                 'anon_xval 3 failed';
@@ -372,11 +373,11 @@ BEGIN
     ASSERT         pg_temp.anon_xval(null, 'debug') IS null,    'anon_xval 5 failed';
     ASSERT         pg_temp.anon_xval(null, null) IS null,       'anon_xval 6 failed';
 
-    RAISE NOTICE 'laser.anonymizer -> NO errors found';
+    RAISE NOTICE '--- ---> NO errors found';
 END;
 $$ LANGUAGE PLPGSQL;
 
--- SELECT pg_temp.anon_run_tests();
+-- SELECT pg_temp.anon_test_overwrite();
 
 -- la functions: masking
 
@@ -681,7 +682,7 @@ BEGIN
     GET DIAGNOSTICS count_cost_item_1 = ROW_COUNT;
 
     UPDATE cost_item SET
-        ci_cost_in_local_currency = round(cast(ci_cost_in_billing_currency * ci_currency_rate AS NUMERIC), 2)
+        ci_cost_in_local_currency = round(cast(ci_cost_in_billing_currency * ci_currency_rate AS NUMERIC), 2)::NUMERIC
     WHERE
         ci_cost_in_billing_currency IS NOT NULL AND
         ci_currency_rate IS NOT NULL AND
@@ -956,14 +957,14 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTester BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
-        VERSION CONSTANT TEXT = '30/06/2025';
+        VERSION CONSTANT TEXT = '01/07/2025';
         count_tmp INT;
 BEGIN
 
     RAISE NOTICE '--- ---------------------------------------- ---';
     RAISE NOTICE '--- laser.anonymizer';
     RAISE NOTICE '--- version %', version;
-    RAISE NOTICE '--- %', to_char(now(), 'YYYY-MM-DD HH24:MI');
+    RAISE NOTICE '--- now %', to_char(now(), 'YYYY-MM-DD HH24:MI');
     RAISE NOTICE '--- ---------------------------------------- ---';
     RAISE NOTICE '--- acceptBetaTester: %', acceptBetaTester;
     RAISE NOTICE '--- ignoreCustomerIdentifier: %', acceptBetaTester;
