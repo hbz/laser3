@@ -50,7 +50,7 @@
 
                 <g:set var="leitID" value="${identifier.getPeppolReceiverID()}"/>
                 <div class="ui right labeled input">
-                    <input type="text" name="praefix" value="0204:" minlength="4" maxlength="4" required disabled>
+                    <input type="text" name="praefix" value="0204:" minlength="4" maxlength="4" disabled>
                     <input type="text" name="leitID" value="${leitID.leitID}" placeholder="Leit-ID (${message(code: 'default.mandatory.tooltip')})" required>
                 </div>
             </g:elseif>
