@@ -19,7 +19,7 @@ import org.springframework.context.MessageSource
 /**
  * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link de.laser.dates.DueDateObject}
  * @see de.laser.dates.DueDateObject
- * @see DashboardDueDatesService
+ * @see de.laser.DashboardDueDatesService
  * @see de.laser.jobs.DashboardDueDatesJob
  */
 @Slf4j

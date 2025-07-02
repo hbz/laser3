@@ -33,86 +33,80 @@
         </g:if>
 
     <%
-        RefdataValue us_dashboard_tab
+        String currentTab
         switch (params.view) {
-            case "PendingChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('PendingChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "PendingChanges":  currentTab = RefdataValue.getByValueAndCategory('PendingChanges', RDConstants.USER_SETTING_DASHBOARD_TAB).value
                 break
-            case "AcceptedChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('AcceptedChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "AcceptedChanges": currentTab = RefdataValue.getByValueAndCategory('AcceptedChanges', RDConstants.USER_SETTING_DASHBOARD_TAB).value
                 break
-            case "Surveys": us_dashboard_tab = RefdataValue.getByValueAndCategory('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "Surveys":         currentTab = RefdataValue.getByValueAndCategory('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB).value
                 break
-            case "Workflows": us_dashboard_tab = RefdataValue.getByValueAndCategory('Workflows', RDConstants.USER_SETTING_DASHBOARD_TAB)
+            case "Workflows":       currentTab = RefdataValue.getByValueAndCategory('Workflows', RDConstants.USER_SETTING_DASHBOARD_TAB).value
                 break
             default:
-                us_dashboard_tab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
+                                    currentTab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES).value
             break
         }
     %>
 
     <div class="ui tabular la-tab-with-js top attached small stackable menu">
-        <a class="${us_dashboard_tab.value == 'Service Messages' ? 'active item' : 'item'}" data-tab="servicemessages">
-            %{--            <i class="${Icon.SERVICE_MESSAGE} large"></i>--}%
+        <a class="${currentTab == 'Service Messages' ? 'active item' : 'item'}" data-tab="servicemessages">
             ${message(code:'serviceMessage.plural')} <ui:bubble count="${serviceMessages.size()}" />
         </a>
 
-        <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-%{--            <i class="${Icon.DUE_DATE} large"></i>--}%
+        <a class="${currentTab == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             ${message(code:'myinst.dash.due_dates.label')} <ui:bubble count="${dueDatesCount}" />
         </a>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-            <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
-%{--                <i class="history icon large"></i>--}%
+            <a class="${currentTab == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 ${message(code:'myinst.pendingChanges.label', args:[''])} <span id="pendingCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
             </a>
         </g:if>
-        <a class="${us_dashboard_tab.value == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
-%{--            <i class="warning circle icon large"></i>--}%
+
+        <a class="${currentTab == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
             ${message(code:'myinst.acceptedChanges.label', args:[''])} <span id="notificationsCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
         </a>
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
-            <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
-%{--                <i class="${Icon.SURVEY} large"></i>--}%
+            <a class="${currentTab == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 ${message(code:'myinst.dash.survey.label', args:[''])} <span id="surveyCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
             </a>
         </g:if>
 
         <g:if test="${taskService.hasREAD()}">
-            <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-%{--                <i class="${Icon.TASK} large"></i>--}%
+            <a class="${currentTab == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasksCount}" />
             </a>
         </g:if>
 
         <g:if test="${workflowService.hasREAD()}">
-            <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-%{--                <i class="${Icon.WORKFLOW} large"></i>--}%
+            <a class="${currentTab == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 ${message(code:'workflow.plural')} <ui:bubble count="${allChecklistsCount}" />
             </a>
         </g:if>
 
     </div>
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached segment tab ${currentTab == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
+            <div class="ui bottom attached segment tab ${currentTab == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
             </div>
         </g:if>
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
+        <div class="ui bottom attached segment tab ${currentTab == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
         </div>
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Service Messages' ? 'active':''}" data-tab="servicemessages">
+        <div class="ui bottom attached segment tab ${currentTab == 'Service Messages' ? 'active':''}" data-tab="servicemessages">
 
-            <g:message code="profile.dashboardServiceMessageTimeWindow"
-                       args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+            <ui:msg class="info" hideClose="true">
+                <g:message code="dashboard.tabTime.serviceMessages" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" />
+            </ui:msg>
 
             <g:if test="${serviceMessages.size() > 0 }">
-                <br /><br /><br />
-
+                <br />
                 <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">
@@ -145,7 +139,7 @@
         </div>
 
         <g:if test="${taskService.hasREAD()}">
-        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached segment tab ${currentTab == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <div class="ui four columns cards">
                 <g:each in="${tasks}" var="tsk">
@@ -157,7 +151,7 @@
         </g:if>
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
-            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}" data-tab="surveys">
+            <div class="ui bottom attached segment tab ${currentTab == 'Surveys' ? 'active' : ''}" data-tab="surveys">
                 <div class="la-float-right">
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
@@ -177,7 +171,7 @@
         <g:if test="${workflowService.hasREAD()}">
             <div id="wfFlyout" class="ui very wide flyout"></div>
 
-            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
+            <div class="ui bottom attached segment tab ${currentTab == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
                     <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">
@@ -185,7 +179,6 @@
 
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
                                                                                 g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.dashboardTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
                         </ui:msg>
                     </g:if>
 

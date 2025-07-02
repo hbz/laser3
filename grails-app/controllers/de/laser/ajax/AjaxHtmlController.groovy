@@ -203,7 +203,7 @@ class AjaxHtmlController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
+        int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)
         Map<String, Object> pendingChangeConfigMap = [
                 contextOrg: contextService.getOrg(),
                 consortialView: contextService.getOrg().isCustomerType_Consortium(),
@@ -215,6 +215,7 @@ class AjaxHtmlController {
         Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
+        changes.periodInDays = periodInDays
         render template: '/myInstitution/changesWrapper', model: changes
     }
 
