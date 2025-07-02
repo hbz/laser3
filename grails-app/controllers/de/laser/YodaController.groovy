@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
@@ -21,6 +23,9 @@ import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
@@ -68,6 +73,7 @@ class YodaController {
     Filter springSecurityFilterChain
     SessionFactory sessionFactory
 
+    AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
@@ -1514,5 +1520,52 @@ class YodaController {
 
         flash.message = 'removePerpetualAccessByIes process is now running. In SystemEvents you see when removePerpetualAccessByIes is finish!'
         redirect controller: 'yoda', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def surveySetDefaultPreferredConcatsForSurvey(){
+        flash.message = "surveySetDefaultPreferredConcatsForSurvey wurde gestartet"
+
+        List<SurveyConfig> surveyConfigList = SurveyConfig.executeQuery("select sc from SurveyConfig sc where surveyInfo.status in (:status) and sc.invoicingInformation = true", [status: [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_READY]])
+        surveyConfigList.each { SurveyConfig surveyConfig ->
+            surveyConfig.orgs.each { SurveyOrg surveyOrg ->
+
+                Map parameterMap = [:]
+                parameterMap.sort = 'sortname'
+                parameterMap.org = surveyOrg.org
+
+                if (!SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(surveyOrg.org, surveyConfig, true)) {
+                    parameterMap.preferredBillingPerson = true
+                    parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+                    List<Person> visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
+
+                    visiblePersons.each { Person person ->
+                        if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(surveyOrg.org, surveyConfig, person, true)) {
+                            new SurveyPersonResult(participant: surveyOrg.org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
+                            log.debug("surveySetDefaultPreferredConcatsForSurvey -> surveyConfig: ${surveyConfig.id}, org: ${surveyOrg.org.id}, person: ${person.id}")
+                        }
+                    }
+                }
+
+                if (!surveyOrg.address) {
+
+                    Map parameterMap2 = [:]
+                    parameterMap2.sort = 'sortname'
+                    parameterMap2.org = surveyOrg.org
+                    parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
+                    List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
+
+                    addresses.each { Address address ->
+                        if (address.preferredForSurvey) {
+                            surveyOrg.address = address
+                            surveyOrg.save()
+                            log.debug("surveySetDefaultPreferredConcatsForSurvey -> surveyConfig: ${surveyConfig.id}, org: ${surveyOrg.org.id}, address: ${address.id}")
+                        }
+                    }
+                }
+            }
+
+        }
+        redirect(url: request.getHeader('referer'))
     }
 }
