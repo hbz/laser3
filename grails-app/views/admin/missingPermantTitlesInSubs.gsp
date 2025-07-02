@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle; de.laser.Subscription" %>
 
 <laser:htmlStart message="menu.admin.missingPermantTitlesInSubs" />
 
@@ -60,9 +60,21 @@
                 <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
             </td>
             <td>
-                <g:set var="countPT" value="${PermanentTitle.executeQuery('''select count(*) from PermanentTitle
-                        where owner = :owner and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.status != :removed and ie.status != :removed)''', [owner: s.getSubscriberRespConsortia(), sub: s, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>
-                <g:link controller="subscription" action="index" id="${s.id}" params="[hasPerpetualAccess: 1]">${countPT}</g:link>
+                <g:if test="${s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
+                    <%
+                        Set<Subscription> possibleSubs = [s]
+                        if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                            possibleSubs << s.instanceOf
+                    %>
+                    <g:set var="countPT" value="${PermanentTitle.executeQuery('''select count(*) from PermanentTitle
+                        where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:possibleSubs) and ie.tipp.status != :removed and ie.status != :removed)''', [possibleSubs: possibleSubs, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>
+                    <g:link controller="subscription" action="index" id="${s.id}" params="[hasPerpetualAccess: 1]">${countPT}</g:link>
+                </g:if>
+                <g:else>
+                    <g:set var="countPT" value="${PermanentTitle.executeQuery('''select count(*) from PermanentTitle
+                        where owner = :owner and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.status != :removed and ie.status != :removed)''', [owner: s.getSubscriber(), sub: s, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>
+                    <g:link controller="subscription" action="index" id="${s.id}" params="[hasPerpetualAccess: 1]">${countPT}</g:link>
+                </g:else>
             </td>
             <td>
                 <g:set var="countTitles" value="${IssueEntitlement.executeQuery('''select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.status != :removed and ie.status != :removed''', [sub: s, removed: RDStore.TIPP_STATUS_REMOVED])[0]}"/>

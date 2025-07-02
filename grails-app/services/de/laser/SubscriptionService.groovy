@@ -875,6 +875,14 @@ class SubscriptionService {
         }
     }
 
+    Set<Subscription> getSubscriptionsWithPossiblePerpetualTitles(Org subscriber) {
+        //local subscriptions
+        Set<Subscription> candidateSubscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType = :local", [subscriber: subscriber, local: RDStore.OR_SUBSCRIBER])
+        //consortial subscriptions with activated inheritance
+        candidateSubscriptions.addAll(Subscription.executeQuery("select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')", [subscriber: subscriber, subscrCons: RDStore.OR_SUBSCRIBER_CONS]))
+        candidateSubscriptions
+    }
+
     /**
      * Gets the issue entitlements (= the titles) of the given subscription
      * @param subscription the subscription whose holding should be returned
@@ -1398,7 +1406,7 @@ class SubscriptionService {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             log.error("Unable to tipp ${gokbId}")
-        }else if(PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp)){
+        }else if(PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp) || PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() > 0){
             log.error("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
@@ -1432,7 +1440,7 @@ class SubscriptionService {
                 if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
                     new_ie.perpetualAccessBySub = sub
 
-                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp)){
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp) && PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() > 0){
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                                 issueEntitlement: new_ie,
                                 tipp: tipp,
@@ -1473,7 +1481,7 @@ class SubscriptionService {
                 }
                 //issue entitlement does not exist in THIS subscription
                 else {
-                    PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, contextService.getOrg())
+                    PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, configMap.subscription.getSubscriber()) || PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: configMap.subscription.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match]).size() > 0
                     //permanent title exists = title perpetually purchased!
                     if(ptCheck) {
                         perpetuallyPurchasedCount++
@@ -1967,6 +1975,9 @@ class SubscriptionService {
                         else {
                             rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) '+orderClause, [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                         }
+                        Set<String> hostPlatformURLs = issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions)
+                        Set<Package> pkgs = Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription in (:subscriptions)', [subscriptions: subscriptions])
+                        rows.addAll(IssueEntitlement.executeQuery("select new map(pt.issueEntitlement.id as ie_id, tipp.id as tipp_id) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:hostPlatformURLs) and tipp.pkg in (:pkgs) and ((pt.owner = :subscriber and pt.subscription.instanceOf = null) or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [subscriber: result.subscription.getSubscriber(), subscrCons: RDStore.OR_SUBSCRIBER_CONS, pkgs: pkgs, hostPlatformURLs: hostPlatformURLs]))
                         sourceIEs.addAll(rows["ie_id"])
                         sourceTIPPs.addAll(rows["tipp_id"])
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
@@ -2266,8 +2277,8 @@ class SubscriptionService {
                                         issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
                     //build up title data
                     if(result.configMap.containsKey('tippStatus') && result.configMap.containsKey('ieStatus')) {
-                        titleConfigMap.tippStatus = result.configMap.tippStatus[0].id
-                        issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0].id
+                        titleConfigMap.tippStatus = result.configMap.tippStatus[0]
+                        issueEntitlementConfigMap.ieStatus = result.configMap.ieStatus[0]
                     }
                     else if(!result.configMap.containsKey('status')) {
                         titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
@@ -3546,6 +3557,8 @@ class SubscriptionService {
                 IssueEntitlement ieInNewSub = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, subscriberSub, RDStore.TIPP_STATUS_REMOVED)
                 boolean allowedToSelect
                 PermanentTitle participantPerpetualAccessToTitle = PermanentTitle.findByTippAndOwner(match, subscriber)
+                if(!participantPerpetualAccessToTitle)
+                    participantPerpetualAccessToTitle = PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: subscriber, subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match])[0]
                 if (surveyConfig.pickAndChoosePerpetualAccess) {
                     allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id)))
                 }
@@ -4485,8 +4498,9 @@ class SubscriptionService {
             if (rtParams.status) {
                 params.tippStatus = rtParams.status
                 params.ieStatus = rtParams.status
-                result.listOfStatus = Params.getRefdataList(params, 'status')
             }
+            if(params.containsKey('status'))
+                result.listOfStatus = Params.getRefdataList(params, 'status')
             else result.listOfStatus = [RDStore.TIPP_STATUS_CURRENT]
             result.sort = params.sort ?: 'tipp.sortname'
             result.order = params.order ?: 'asc'
