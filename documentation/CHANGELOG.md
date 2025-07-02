@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6714    01.07.2025  rc-3.5  3.5.2       Moe   Bug           NM Peppol-ID wird nicht gespeichert
+
 6713    01.07.2025  rc-3.5  3.5.2       Moe   Feature       Optimierung Rechnungsstellung
 
 6711    30.06.2025  rc-3.5  3.5.2       Andreas Feature     Auswahl von Semester nach hinten erweitert
