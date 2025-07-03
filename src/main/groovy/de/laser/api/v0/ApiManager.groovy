@@ -252,7 +252,7 @@ class ApiManager {
 
             if (tmp.checkFailureCodes_3()) {
                 if(tmp.obj instanceof Subscription)
-                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
+                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg, max, offset)
             }
         }
         else if (checkValidRequest('organisation')) {

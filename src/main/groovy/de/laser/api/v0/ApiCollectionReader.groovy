@@ -608,7 +608,8 @@ class ApiCollectionReader {
             pkg.recordCount = pkg.issueEntitlements ? pkg.issueEntitlements.size() : 0
             pkg.offset = offset
             pkg.max = max
-            pkg.currentPage = (offset/max)+1 //continue here: deliver invalid page count, check we:kb behavior
+            pkg.currentPage = (offset/max)+1
+            pkg.totalPage = Math.ceil(ieCount/max)
             result << pkg
             //}
         }
