@@ -56,7 +56,7 @@ class ApiMapReader {
         }
 
         result.globalUID         = tipp.globalUID
-        result.gokbId            = tipp.gokbId
+        result.wekbId            = tipp.gokbId
         result.name             = tipp.name
         result.medium           = tipp.medium?.value
         result.status           = tipp.status?.value
@@ -120,7 +120,7 @@ class ApiMapReader {
         }
 
         result.globalUID         = row['tipp_guid']
-        result.gokbId            = row['tipp_gokb_id']
+        result.wekbId            = row['tipp_gokb_id']
         result.name              = row['tipp_name']
         result.altnames          = row['altnames'].collect { GroovyRowResult altNameRow -> altNameRow['altname_name'] }
         result.firstAuthor       = row['tipp_first_author']
@@ -156,7 +156,7 @@ class ApiMapReader {
 
         // References
         result.identifiers          = row['ids']       // de.laser.Identifier
-        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.wekb.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.wekb.Platform, fetch Package.nominalPlatform instead
         result.publishers           = row['publishers']
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {

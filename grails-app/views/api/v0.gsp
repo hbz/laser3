@@ -170,6 +170,8 @@ console.log('(http-header) x-authorization: ' + authorization)
                 query_ezbOrgId: 'tr[data-param-name="ezbOrgId"] input',
                 query_changedFrom: 'tr[data-param-name="changedFrom"] input',
                 query_context: 'tr[data-param-name="context"] input',
+                query_max: 'tr[data-param-name="max"] input',
+                query_offset: 'tr[data-param-name="offset"] input',
 
                 top:      '.topbar-wrapper',
                 top_key:  '.topbar-wrapper input[name=apiKey]',
@@ -250,13 +252,17 @@ console.log('(http-header) x-authorization: ' + authorization)
                     var v = jQuery(div).find(selectors.query_v)
                     var ezbOrgId = jQuery(div).find(selectors.query_ezbOrgId)
                     var changedFrom = jQuery(div).find(selectors.query_changedFrom)
+                    var max = jQuery(div).find(selectors.query_max)
+                    var offset = jQuery(div).find(selectors.query_offset)
 
                     q = (q.length && q.val().trim().length) ? "q=" + q.val().trim() : ''
                     v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''
                     ezbOrgId = (ezbOrgId.length && ezbOrgId.val().trim().length) ? "ezbOrgId=" + ezbOrgId.val().trim() : ''
                     changedFrom = (changedFrom.length && changedFrom.val().trim().length) ? "changedFrom=" + changedFrom.val().trim() : ''
+                    max = (max.length && max.val().trim().length) ? "max=" + max.val().trim() : ''
+                    offset = (offset.length && offset.val().trim().length) ? "offset=" + offset.val().trim() : ''
 
-                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '') + ( changedFrom ? (q || v || context ? '&' : '') : '' ) + changedFrom + ( ezbOrgId ? (q || v || context || changedFrom ? '&' : '') : '' ) + ezbOrgId
+                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '') + ( changedFrom ? (q || v || context ? '&' : '') : '' ) + changedFrom + ( ezbOrgId ? (q || v || context || changedFrom ? '&' : '') : '' ) + ezbOrgId + ( max ? (q || v || context || changedFrom || ezbOrgId ? '&' : '') : '' ) + max + ( offset ? (q || v || context || changedFrom || ezbOrgId || max ? '&' : '') : '' ) + offset
                 }
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')

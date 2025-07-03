@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.Constants; de.laser.interfaces.CalculatedType; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.storage.RDConstants; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.storage.Constants; de.laser.interfaces.CalculatedType; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.storage.RDConstants; de.laser.properties.PropertyDefinition; de.laser.finance.CostInformationDefinition; de.laser.storage.RDStore" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -151,6 +151,26 @@
           type: string
           description: Numeric value of the sum with included tax in billing currency.
           example: 615.25
+        costInformation:
+          type: object
+          properties:
+            refdataCategory:
+              type: string
+              description: If the scope is *Refdata*, this is the controlled list token (reference data category) whose values are permitted here.
+              example: "cost.information.source.own"
+            token:
+              type: string
+              description: Primary identifier of the property type.
+              example: "Eigenmittel der Einrichtung"
+            type:
+              type: string
+              description: Data type of property value.
+              enum: <% println "[" + CostInformationDefinition.validTypes.collect{ "\"${it.value['en']}\"" }.join(', ') + "]" %>
+              example: Text
+            value: # mapping attr stringValue, refValue
+              type: string
+              description: the property value
+              example: "Eigenmittel Institute"
         costInLocalCurrency:
           type: string
           description: Numeric value of the sum in local currency.
@@ -382,11 +402,11 @@
           description: The license instances following to this license.
           items:
             $ref: "#/components/schemas/LicenseStub"
-        vendors:
+        LibrarySuppliers:
           type: array
-          description: Vendors related to this license.
+          description: Library suppliers related to this license.
           items:
-            $ref: "#/components/schemas/VendorStub" # resolved ProviderRole
+            $ref: "#/components/schemas/LibrarySupplierStub" # resolved VendorRole
 
 
     OrgAccessPoint:
@@ -549,11 +569,11 @@
           example: ["E-Mail", "Peppol"]
           items:
             type: string
-        invoicingVendors:
+        invoicingLibrarySuppliers:
           type: array
-          description: A set of vendors performing invoicing for the given provider.
+          description: A set of librarySuppliers performing invoicing for the given provider.
           items:
-            $ref: "#/components/schemas/VendorStub" # resolved InvoicingVendor
+            $ref: "#/components/schemas/LibrarySupplierStub" # resolved InvoicingVendor
         kbartDownloaderURL:
           type: string
           description: Web site of the provider where KBART files of the packages may be downloaded.
@@ -666,11 +686,11 @@
             description: The title stock of this package.
             items:
               $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Package"
-          vendors:
+          librarySuppliers:
             type: array
-            description: A set of linked vendors to this package.
+            description: A set of linked librarySuppliers to this package.
             items:
-              $ref: "#/components/schemas/VendorStub" #resolved PackageVendor
+              $ref: "#/components/schemas/LibrarySupplierStub" #resolved PackageVendor
 
 
     Person:
@@ -872,6 +892,11 @@
           description: Timestamp when the subscription has been most recently updated.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2022-04-01T08:17:39"
+        librarySuppliers:
+          type: array
+          description: A set of linked librarySuppliers to this subscription.
+          items:
+            $ref: "#/components/schemas/LibrarySupplierStub" #resolved VendorRole
         license: # mapping attr owner
           description: The underlying license to this subscription.
           $ref: "#/components/schemas/LicenseStub"
@@ -930,11 +955,6 @@
           description: The subscription instances following to this subscription.
           items:
             $ref: "#/components/schemas/SubscriptionStub"
-        vendors:
-          type: array
-          description: A set of linked vendors to this subscription.
-          items:
-            $ref: "#/components/schemas/VendorStub" #resolved VendorRole
 
 
     TitleGroup:
@@ -961,34 +981,34 @@
           $ref: "#/components/schemas/SubscriptionStub"
 
 
-    Vendor:
+    LibrarySupplier:
       description: |
-        "A full vendor record. Vendors are commercial organisations acting as intermediaries for providers. They may be synced from the we:kb knowledge base or recorded in LAS:eR."
+        "A full library supplier record. Library suppliers are commercial organisations acting as intermediaries for providers. They may be synced from the we:kb knowledge base or recorded in LAS:eR."
       allOf:
-        - $ref: "#/components/schemas/VendorStub"
+        - $ref: "#/components/schemas/LibrarySupplierStub"
       properties:
         activationForNewReleases:
           type: string
-          description: Does the vendor notify the customers about new releases? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Does the library supplier notify the customers about new releases? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         altnames:
           type: array
-          description: A set of alternative names of the vendor.
+          description: A set of alternative names of the library supplier.
           items:
             type: string
         ediOrders:
           type: string
-          description: Are orders possible via XML file? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Are orders possible via EDI? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         electronicBillings:
           type: array
-          description: A set of electronic invoicing formats which are supported by the given vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_FORMAT}.
+          description: A set of electronic invoicing formats which are supported by the given library supplier. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_FORMAT}.
           example: ["EDI", "PDF"]
           items:
             type: string
         electronicDeliveryDelayNotifications:
           type: array
-          description: A set of notification channels supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY}.
+          description: A set of notification channels supported by the library supplier. The values map to the RefdataCategory ${RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY}.
           example: ["E-Mail", "EDI"]
           items:
             type: string
@@ -1002,48 +1022,48 @@
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         homepage:
           type: string
-          description: Web site of the vendor.
+          description: Web site of the library supplier.
         individualInvoiceDesign:
           type: string #mapped to boolean
-          description: Does the vendor design an individual invoice for the customer? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Does the library supplier design an individual invoice for the customer? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         invoiceDispatchs:
           type: array
-          description: A set of dispatching ways for invoices used by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_DISPATCH}.
+          description: A set of dispatching ways for invoices used by the library supplier. The values map to the RefdataCategory ${RDConstants.VENDOR_INVOICING_DISPATCH}.
           example: ["E-Mail", "Peppol"]
           items:
             type: string
         lastUpdated:
           type: string
-          description: Timestamp when the vendor record has been most recently updated.
+          description: Timestamp when the library supplier record has been most recently updated.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2021-10-05T12:27:47"
         links:
           type: array
-          description: Other vendors linked to the given one
+          description: Other library suppliers linked to the given one
           items:
-            $ref: "#/components/schemas/Link_Vendor"
+            $ref: "#/components/schemas/Link_Library_Supplier"
         managementOfCredits:
           type: string #mapped to boolean
           description: Does a management of credits take place? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         paperInvoice:
           type: string #mapped to boolean
-          description: Does the vendor issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Does the library supplier issue invoices on paper print? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         packages:
           type: array
-          description: Packages maintained by the given vendor.
+          description: Packages maintained by the given library supplier.
           items:
             $ref: "#/components/schemas/PackageStub" #resolved PackageVendor
         persons: # mapping attr prsLinks
           type: array
-          description: Contacts of the given vendor.
+          description: Contacts of the given library supplier.
           items:
             $ref: "#/components/schemas/Person" # resolved PersonRole
         privateAddresses:
           type: array
-          description: The private contact addresses of the given vendor, belonging to the context organisation.
+          description: The private contact addresses of the given library supplier, belonging to the context organisation.
           items:
             $ref: "#/components/schemas/Address"
         processingOfCompensationPayments:
@@ -1057,7 +1077,7 @@
             $ref: "#/components/schemas/Property"
         publicAddresses:
           type: array
-          description: The public contact addresses of the given vendor.
+          description: The public contact addresses of the given library supplier.
           items:
             $ref: "#/components/schemas/Address"
         prequalificationVOLInfo:
@@ -1068,22 +1088,22 @@
           description: URL of a research platform for e-books.
         retirementDate:
           type: string
-          description: Timestamp when the vendor has ceased to be active.
+          description: Timestamp when the library supplier has ceased to be active.
           format: <% print ApiToolkit.DATE_TIME_PATTERN %>
           example: "2021-06-30T11:36:44"
         shippingMetadata:
           type: string
-          description: Is metadata being shipped by the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Is metadata being shipped by the library supplier? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         supportedLibrarySystems:
           type: array
-          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.SUPPORTED_LIBRARY_SYSTEM}.
+          description: A set of library systems supported by the library supplier. The values map to the RefdataCategory ${RDConstants.SUPPORTED_LIBRARY_SYSTEM}.
           example: ["Alma", "Folio", "Sisis"]
           items:
             type: string
         technicalSupport:
           type: string
-          description: Is a technical support being offered on behalf of the vendor? Maps to the RefdataCategory "${RDConstants.Y_N}".
+          description: Is a technical support being offered on behalf of the library supplier? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         webShopOrders:
           type: string
@@ -1456,15 +1476,15 @@
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
 
-    Link_Vendor:
+    Link_Library_Supplier:
       type: object
       properties:
         linktype:
           type: string
-          description: Type of the link between two provider
+          description: Type of the link between two library suppliers
           example: follows
-      vendor:
-        $ref: "#/components/schemas/VendorStub"
+      librarySupplier:
+        $ref: "#/components/schemas/LibrarySupplierStub"
 
     MailDomain_in_OrgAccessPoint:
       type: object
@@ -1539,9 +1559,9 @@
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
-        gokbId:
+        wekbId:
           type: string
-          description: The identifier of the package in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the package in the we:kb knowledge base.
           example: 2f045791-aaad-42bf-9563-9a3ca39a09a7
         name:
           type: string
@@ -1875,9 +1895,9 @@
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
-        gokbId:
+        wekbId:
           type: string
-          description: The identifier of the package in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the package in the we:kb knowledge base.
           example: 2f045791-aaad-42bf-9563-9a3ca39a09a7
         identifiers: # mapping attr ids
           type: array
@@ -1902,9 +1922,9 @@
           type: string
           description: A global unique identifier to identify the given platform in LAS:eR.
           example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
-        gokbId:
+        wekbId:
           type: string
-          description: The identifier of the platform in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the platform in the we:kb knowledge base.
           example: ac8cc77d-87b8-477e-b99b-ca6320f11aa0
         name:
           type: string
@@ -1927,9 +1947,9 @@
           type: string
           description: A global unique identifier to identify the given provider in LAS:eR.
           example: "provider:ac06387f-2e79-499a-9fa7-140d5395d72e"
-        gokbId:
+        wekbId:
           type: string
-          description: The identifier of the provider in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the provider in the we:kb knowledge base.
           example: 67e3622a-a51c-4382-87dc-c13410fe53b5
         name:
           type: string
@@ -2036,9 +2056,9 @@
           type: string
           description: First editor. Applicable to monographs, i.e., e-books or conference proceedings volumes.
           example: Lavine
-        gokbId:
+        wekbId:
           type: string
-          description: The identifier of the title instance in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the title instance in the we:kb knowledge base.
           example: 44a264a7-c570-4f5b-a6a9-ff80b4e3fee4
         hostPlatformURL:
           type: string
@@ -2092,28 +2112,28 @@
           description: Number of volume for monograph.
           example: XXXIII
 
-    VendorStub:
+    LibrarySupplierStub:
       type: object
       properties:
         globalUID:
           type: string
-          description: A global unique identifier to identify the given vendor in LAS:eR.
-          example: "vendor:bd01da62-126a-4fc1-8431-ca6f07a35608"
-        gokbId:
+          description: A global unique identifier to identify the given library supplier in LAS:eR.
+          example: "librarySupplier:bd01da62-126a-4fc1-8431-ca6f07a35608"
+        wekbId:
           type: string
-          description: The identifier of the vendor in the we:kb knowledge base. Naming gokbId is legacy.
+          description: The identifier of the library supplier in the we:kb knowledge base.
           example: 97a9ba82-de2b-4011-8cdc-e285f8c4c600
         name:
           type: string
-          description: Name of the vendor.
+          description: Name of the library supplier.
           example: "Zentrale Vergabestelle"
         sortname:
           type: string
-          description: Sort name of the vendor for easier retrieval in lists.
+          description: Sort name of the library supplier for easier retrieval in lists.
           example: ZVS
         identifiers: # mapping attr ids
           type: array
-          description: Further set of identifiers of the vendor.
+          description: Further set of identifiers of the library supplier.
           items:
             $ref: "#/components/schemas/Identifier"
         status:

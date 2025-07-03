@@ -86,15 +86,11 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = org.globalUID
-        result.gokbId       = org.gokbId
         result.name         = org.name
         result.sortname     = org.sortname
-//        result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
-        result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-        result.type        = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -113,7 +109,7 @@ class ApiUnsecuredMapReader {
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
         result.altnames     = ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
-        result.gokbId       = pkg.gokbId
+        result.wekbId       = pkg.gokbId
         result.status       = pkg.packageStatus?.value
 
         // References
@@ -139,7 +135,7 @@ class ApiUnsecuredMapReader {
         pkg['altnames'].each { altNameRow ->
             altnames << altNameRow['altname_name']
         }
-        result.gokbId       = pkg['pkg_gokb_id']
+        result.wekbId       = pkg['pkg_gokb_id']
         result.status       = pkg['pkg_status']
 
         // References
@@ -164,7 +160,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = pform.globalUID
-        result.gokbId       = pform.gokbId
+        result.wekbId       = pform.gokbId
         result.name         = pform.name
         result.primaryUrl   = pform.primaryUrl
         result.status       = pform.status?.value
@@ -184,7 +180,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = pform['plat_guid']
-        result.gokbId       = pform['plat_gokb_id']
+        result.wekbId       = pform['plat_gokb_id']
         result.name         = pform['plat_name']
         result.primaryUrl   = pform['plat_primary_url']
         result.status       = pform['plat_status']
@@ -204,7 +200,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = provider.globalUID
-        result.gokbId       = provider.gokbId
+        result.wekbId       = provider.gokbId
         result.name         = provider.name
         result.sortname     = provider.sortname
         result.status       = provider.status?.value
@@ -253,7 +249,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID    = tipp.globalUID
-        result.gokbId       = tipp.gokbId
+        result.wekbId       = tipp.gokbId
         result.title        = tipp.name
         result.normTitle    = tipp.normName
 
@@ -266,24 +262,24 @@ class ApiUnsecuredMapReader {
     }
 
     /**
-     * Returns the essential information for the given vendor for API output
-     * @param vendor the {@link Vendor} called for API
+     * Returns the essential information for the given library supplier for API output
+     * @param librarySupplier the {@link Vendor} called for API
      * @return Map<String, Object> reflecting the vendor details
      */
-    static Map<String, Object> getVendorStubMap(Vendor vendor) {
-        if (!vendor) {
+    static Map<String, Object> getLibrarySupplierStubMap(Vendor librarySupplier) {
+        if (!librarySupplier) {
             return null
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = vendor.globalUID
-        result.gokbId       = vendor.gokbId
-        result.name         = vendor.name
-        result.sortname     = vendor.sortname
-        result.status       = vendor.status?.value
+        result.globalUID    = librarySupplier.globalUID
+        result.wekbId       = librarySupplier.gokbId
+        result.name         = librarySupplier.name
+        result.sortname     = librarySupplier.sortname
+        result.status       = librarySupplier.status?.value
 
         // References
-        result.identifiers = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
+        result.identifiers = ApiCollectionReader.getIdentifierCollection(librarySupplier.ids) // de.laser.Identifier
 
         ApiToolkit.cleanUp(result, true, true)
     }
@@ -406,7 +402,7 @@ class ApiUnsecuredMapReader {
         Map<String, Object> result = [:]
 
         result.globalUID        = pform.globalUID
-        result.gokbId           = pform.gokbId
+        result.wekbId           = pform.gokbId
         result.name             = pform.name
         result.normName         = pform.normname
         result.primaryUrl       = pform.primaryUrl
@@ -440,7 +436,7 @@ class ApiUnsecuredMapReader {
         provider = GrailsHibernateUtil.unwrapIfProxy(provider)
 
         result.globalUID             = provider.globalUID
-        result.gokbId                = provider.gokbId
+        result.wekbId                = provider.gokbId
         result.name                  = provider.name
         result.altNames              = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
         result.sortname              = provider.sortname
@@ -473,7 +469,7 @@ class ApiUnsecuredMapReader {
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // de.laser.addressbook.PersonRole
-        result.invoicingVendors    = ApiCollectionReader.getVendorCollection(provider.invoicingVendors.vendor)
+        result.invoicingLibrarySuppliers    = ApiCollectionReader.getLibrarySuppliers(provider.invoicingVendors.vendor)
 
         result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.ProviderProperty
 
@@ -484,50 +480,50 @@ class ApiUnsecuredMapReader {
     /**
      * Assembles the given vendor attributes into a {@link Map}. The schema of the map can be seen in
      * schemas.gsp
-     * @param vendor the {@link Vendor} which should be output
+     * @param librarySupplier the {@link Vendor} which should be output
      * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
-    static Map<String, Object> getVendorMap(Vendor vendor, Org context) {
+    static Map<String, Object> getLibrarySupplierMap(Vendor librarySupplier, Org context) {
         Map<String, Object> result = [:]
 
-        vendor = GrailsHibernateUtil.unwrapIfProxy(vendor)
+        librarySupplier = GrailsHibernateUtil.unwrapIfProxy(librarySupplier)
 
-        result.globalUID             = vendor.globalUID
-        result.gokbId                = vendor.gokbId
-        result.name                  = vendor.name
-        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(vendor.altnames)
-        result.sortname              = vendor.sortname
-        result.lastUpdated           = ApiToolkit.formatInternalDate(vendor._getCalculatedLastUpdated())
-        result.homepage              = vendor.homepage
-        result.researchPlatformForEbooks = vendor.researchPlatformForEbooks
-        result.prequalificationInfo = vendor.prequalificationInfo
+        result.globalUID             = librarySupplier.globalUID
+        result.wekbId                = librarySupplier.gokbId
+        result.name                  = librarySupplier.name
+        result.altNames              = ApiCollectionReader.getAlternativeNameCollection(librarySupplier.altnames)
+        result.sortname              = librarySupplier.sortname
+        result.lastUpdated           = ApiToolkit.formatInternalDate(librarySupplier._getCalculatedLastUpdated())
+        result.homepage              = librarySupplier.homepage
+        result.researchPlatformForEbooks = librarySupplier.researchPlatformForEbooks
+        result.prequalificationInfo = librarySupplier.prequalificationInfo
         Set<String> boolFields = ['webShopOrders', 'ediOrders', 'xmlOrders', 'paperInvoice', 'managementOfCredits', 'processingOfCompensationPayments', 'individualInvoiceDesign',
                                   'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalification']
-        result.putAll(ApiToolkit.readBoolValues(vendor, boolFields))
+        result.putAll(ApiToolkit.readBoolValues(librarySupplier, boolFields))
 
-        result.retirementDate      = vendor.retirementDate ? ApiToolkit.formatInternalDate(vendor.retirementDate) : null
+        result.retirementDate      = librarySupplier.retirementDate ? ApiToolkit.formatInternalDate(librarySupplier.retirementDate) : null
 
         // RefdataValues
 
-        result.supportedLibrarySystems = vendor.supportedLibrarySystems?.collect { LibrarySystem ls -> ls.librarySystem.value }
-        result.electronicBillings = vendor.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
-        result.electronicDeliveryDelayNotifications = vendor.electronicDeliveryDelays?.collect { ElectronicDeliveryDelayNotification eddn -> eddn.delayNotification.value }
-        result.invoiceDispatchs   = vendor.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
-        result.status         = vendor.status?.value
+        result.supportedLibrarySystems = librarySupplier.supportedLibrarySystems?.collect { LibrarySystem ls -> ls.librarySystem.value }
+        result.electronicBillings = librarySupplier.electronicBillings?.collect { ElectronicBilling eb -> eb.invoicingFormat.value }
+        result.electronicDeliveryDelayNotifications = librarySupplier.electronicDeliveryDelays?.collect { ElectronicDeliveryDelayNotification eddn -> eddn.delayNotification.value }
+        result.invoiceDispatchs   = librarySupplier.invoiceDispatchs?.collect { InvoiceDispatch idi -> idi.invoiceDispatch.value }
+        result.status         = librarySupplier.status?.value
 
         // References
-        Map<String, Object> queryParams = [vendor:vendor]
+        Map<String, Object> queryParams = [vendor:librarySupplier]
 
         result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
         result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.vendor = :vendor and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
-        result.identifiers  = ApiCollectionReader.getIdentifierCollection(vendor.ids) // de.laser.Identifier
-        result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages.pkg)
+        result.identifiers  = ApiCollectionReader.getIdentifierCollection(librarySupplier.ids) // de.laser.Identifier
+        result.packages     = ApiCollectionReader.getPackageCollection(librarySupplier.packages.pkg)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
-                vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
+                librarySupplier.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
         ) // de.laser.addressbook.PersonRole
 
-        result.properties   = ApiCollectionReader.getPropertyCollection(vendor, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
+        result.properties   = ApiCollectionReader.getPropertyCollection(librarySupplier, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
 
 
         ApiToolkit.cleanUp(result, true, true)
