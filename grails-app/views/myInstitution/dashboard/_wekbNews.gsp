@@ -327,10 +327,14 @@
             }
         }
         </laser:script>
-
 </g:if>
 
-<g:if test="${tmplView == 'details'}">
+<g:if test="${tmplView == 'details' && !wekbNews}">
+    <p style="margin:2em">
+        ${message(code: 'dashboard.card.wekbNews.noData')}
+    </p>
+</g:if>
+<g:elseif test="${tmplView == 'details' && wekbNews}">
 
     <%
         tmplConfig = [
@@ -446,4 +450,4 @@
             JSPC.app.dashboard.wekbNews.flyout ($(this).attr('data-obj'), $(this).attr('data-filter'))
         });
     </laser:script>
-</g:if>
+</g:elseif>
