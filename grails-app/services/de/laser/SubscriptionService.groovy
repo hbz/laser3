@@ -1440,11 +1440,11 @@ class SubscriptionService {
                 if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
                     new_ie.perpetualAccessBySub = sub
 
-                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp) && PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() > 0){
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriber(), tipp) && PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriber(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() == 0){
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                                 issueEntitlement: new_ie,
                                 tipp: tipp,
-                                owner: sub.getSubscriberRespConsortia()).save()
+                                owner: sub.getSubscriber()).save()
                     }
 
                 }
