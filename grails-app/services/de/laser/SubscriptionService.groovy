@@ -2345,6 +2345,9 @@ class SubscriptionService {
                                     rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) order by ie.tipp.sortname', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                                 }
                                 sourceTIPPs.addAll(rows["tipp_id"])
+                                Set<String> hostPlatformURLs = issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions)
+                                Set<Package> pkgs = Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription in (:subscriptions)', [subscriptions: subscriptions])
+                                sourceTIPPs.addAll(IssueEntitlement.executeQuery("select tipp.id as tipp_id from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:hostPlatformURLs) and tipp.pkg in (:pkgs) and ((pt.owner = :subscriber and pt.subscription.instanceOf = null) or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [subscriber: result.subscription.getSubscriber(), subscrCons: RDStore.OR_SUBSCRIBER_CONS, pkgs: pkgs, hostPlatformURLs: hostPlatformURLs]))
                             }
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
