@@ -565,8 +565,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Gets the principal subscriber to this subscription
      * @return <ul>
-     *     <li>if it is a local or consortial member license, the subscriber</li>
-     *     <li>else if it is a consortial parent license, the consortium</li>
+     *     <li>if it is a local or consortial member subscription, the subscriber</li>
+     *     <li>else if it is a consortial parent subscription, the consortium</li>
      * </ul>
      */
   Org getSubscriberRespConsortia() {
