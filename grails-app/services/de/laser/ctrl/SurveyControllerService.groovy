@@ -2329,6 +2329,10 @@ class SurveyControllerService {
                 params.participantsFinish = true
             }
 
+            if(params.subs){
+                params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)

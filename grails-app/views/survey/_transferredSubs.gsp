@@ -11,7 +11,7 @@
                     ${message(code: 'subscriptionSurvey.label')}
                 </th>
             </g:if>
-            <th>${message(code: 'surveyTransfer.transferred')} / ${message(code: 'subscription.label')}-${message(code: 'subscriptionDetails.members.members')}</th>
+            <th>${message(code: 'surveyTransfer.transferred')}</th>
             <th>${message(code: 'default.action.label')}</th>
         </tr>
         </thead>
@@ -19,8 +19,6 @@
         <g:each in="${listTransferredSub}" var="sub" status="i">
             <g:set var="subResultCount"
                    value="${SurveySubscriptionResult.executeQuery('select count(*) from SurveySubscriptionResult ssr where ssr.subscription = :parent and ssr.surveyConfig = :surveyConfig and exists (select so from SurveyOrg as so where so.finishDate is not null and so.surveyConfig = ssr.surveyConfig and so.org = ssr.participant)', [parent: sub, surveyConfig: surveyConfig])[0]}"/>
-            <g:set var="childSubCount"
-                   value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent', [parent: sub])[0]}"/>
             <g:set var="transferredSubCount"
                    value="${SurveyTransfer.executeQuery('select count(*) from SurveyTransfer st where st.subscription.instanceOf = :parent and st.surveyConfig = :surveyConfig', [parent: sub, surveyConfig: surveyConfig])[0]}"/>
 
@@ -44,7 +42,7 @@
                     </td>
                 </g:if>
                 <td>
-                    <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}" params="${[surveyConfigID: surveyConfig.id, surveySubscriptions: [sub.id]]}">${transferredSubCount}</g:link> / <g:link controller="subscription" action="members" id="${sub.id}">${childSubCount}</g:link>
+                    <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}" params="${[surveyConfigID: surveyConfig.id, subs: [sub.id]]}">${transferredSubCount}</g:link>
                 </td>
                 <td>
                     <g:if test="${surveyConfig.subscriptionSurvey && subResultCount > 0}">
