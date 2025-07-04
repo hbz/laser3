@@ -265,7 +265,7 @@
                 }
             });
 
-            $radRespOrg.prop ('checked', true);
+            $radRespUser.prop ('checked', true);
             func_toggleResponsibleUser();
 
             <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
