@@ -1440,11 +1440,11 @@ class SubscriptionService {
                 if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
                     new_ie.perpetualAccessBySub = sub
 
-                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp) && PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() > 0){
+                    if(!PermanentTitle.findByOwnerAndTipp(sub.getSubscriber(), tipp) && PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: sub.getSubscriber(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: tipp]).size() == 0){
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                                 issueEntitlement: new_ie,
                                 tipp: tipp,
-                                owner: sub.getSubscriberRespConsortia()).save()
+                                owner: sub.getSubscriber()).save()
                     }
 
                 }
@@ -1481,7 +1481,7 @@ class SubscriptionService {
                 }
                 //issue entitlement does not exist in THIS subscription
                 else {
-                    PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, configMap.subscription.getSubscriber()) || PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: configMap.subscription.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match]).size() > 0
+                    boolean ptCheck = PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :subscriber or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [subscriber: configMap.subscription.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match]).size() > 0
                     //permanent title exists = title perpetually purchased!
                     if(ptCheck) {
                         perpetuallyPurchasedCount++
@@ -2345,6 +2345,9 @@ class SubscriptionService {
                                     rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) order by ie.tipp.sortname', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
                                 }
                                 sourceTIPPs.addAll(rows["tipp_id"])
+                                Set<String> hostPlatformURLs = issueEntitlementService.getPerpetuallyPurchasedTitleHostPlatformURLs(result.subscription.getSubscriber(), subscriptions)
+                                Set<Package> pkgs = Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription in (:subscriptions)', [subscriptions: subscriptions])
+                                sourceTIPPs.addAll(IssueEntitlement.executeQuery("select tipp.id as tipp_id from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:hostPlatformURLs) and tipp.pkg in (:pkgs) and ((pt.owner = :subscriber and pt.subscription.instanceOf = null) or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [subscriber: result.subscription.getSubscriber(), subscrCons: RDStore.OR_SUBSCRIBER_CONS, pkgs: pkgs, hostPlatformURLs: hostPlatformURLs]))
                             }
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break

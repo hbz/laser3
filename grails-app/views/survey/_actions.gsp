@@ -165,13 +165,23 @@
 
             <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id)}">
                 <g:if test="${surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processOpenSurvey']"
-                                            message="openSurvey.button"
-                                            tooltip="${message(code: "openSurvey.button.info2")}"/>
-                    <ui:actionsDropdownItem data-ui="modal"
-                                            href="#openSurveyNow"
-                                            message="openSurveyNow.button"/>
-
+                    <g:if test="${(surveyConfig.subscription && surveyConfig.comment) || surveyConfig.commentForNewParticipants}">
+                        <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processOpenSurvey']"
+                                                message="openSurvey.button"
+                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
+                        <ui:actionsDropdownItem data-ui="modal"
+                                                href="#openSurveyNow"
+                                                message="openSurveyNow.button"/>
+                    </g:if>
+                    <g:else>
+                        <ui:actionsDropdownItem data-ui="modal"
+                                                href="#openSurveyNoComment"
+                                                message="openSurvey.button"
+                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
+                        <ui:actionsDropdownItem data-ui="modal"
+                                                href="#openSurveyNowNoComment"
+                                                message="openSurveyNow.button"/>
+                    </g:else>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItemDisabled message="openSurvey.button" tooltip="${message(code: "openSurvey.button.info")}"/>
@@ -182,7 +192,7 @@
 
             <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
                 <ui:actionsDropdownItem data-ui="modal"
-                                        href="#openSurveyNow"
+                                        href="#endSurveyNow"
                                         message="endSurvey.button"/>
             </g:if>
 
@@ -296,8 +306,38 @@
         </ui:modal>
     </g:if>
 
+    <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
+        <ui:modal id="openSurveyNowNoComment" text="${message(code: 'openSurveyNow.button')}" msgSave="${message(code: 'openSurveyNow.button')}">
+
+            <g:form class="ui form"
+                    url="[controller: 'survey', action: 'setStatus', params: [id: params.id, startNow: true, newStatus: 'processOpenSurvey'], method: 'post']">
+                <div class="field">
+                    <h3>${message(code: "openSurvey.button.info3")}</h3>
+                </div>
+
+                <div class="field">
+                    <p>${message(code: "openSurveyNow.button.info2")}</p>
+                </div>
+
+            </g:form>
+
+        </ui:modal>
+    </g:if>
+
+    <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
+        <ui:modal id="openSurveyNoComment" text="${message(code: 'openSurvey.button')}" msgSave="${message(code: 'openSurvey.button')}">
+            <g:form class="ui form"
+                    url="[controller: 'survey', action: 'setStatus', params: [id: params.id, newStatus: 'processOpenSurvey'], method: 'post']">
+                <div class="field">
+                    <h3>${message(code: "openSurvey.button.info4")}</h3>
+                </div>
+            </g:form>
+
+        </ui:modal>
+    </g:if>
+
     <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id}">
-        <ui:modal id="openSurveyNow" text="${message(code: 'endSurvey.button')}"
+        <ui:modal id="endSurveyNow" text="${message(code: 'endSurvey.button')}"
                   msgSave="${message(code: 'endSurvey.button')}">
 
             <g:form class="ui form"

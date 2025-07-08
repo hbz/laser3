@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6721    08.07.2025  rc-3.5  3.5.3       Andreas Bug         Überprüfung dauerhafter Titel schlug fehl
+
+6718    04.07.2025  rc-3.5  3.5.3       David   Feature     WekbNews asynchron aktualisieren
+
+6715    03.07.2025  rc-3.5  3.5.3       David   Bug         Aufgabenzuweisung von Einzelne auf Alle zurückgestellt
+
+6674    03.07.2025  rc-3.5  3.5.3       Andreas Feature     Referenzwert "tagesaktuell" aufgenommen
+
 6704    02.07.2025  rc-3.5  3.5.2       Moe   Bug           Rechnungsstellungsinformationen setzen wenn Vorauswahl getroffen ist
 
 6714    02.07.2025  rc-3.5  3.5.2       Moe   Bug           NM Peppol-ID wird nicht gespeichert

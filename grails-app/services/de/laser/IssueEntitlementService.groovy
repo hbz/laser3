@@ -4,6 +4,7 @@ import com.opencsv.CSVParserBuilder
 import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
+import com.opencsv.exceptions.CsvMalformedLineException
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.RDStore
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -167,8 +168,10 @@ class IssueEntitlementService {
             userCache.put('label', 'Verarbeite Titel ...')
             userCache.put('progress', configMap.floor)
             boolean pickWithNoPick = false, wrongSeparator = false
+            String fileErrors = null
             int countRows = 0, total = 0, toAddCount = 0, start, percentage = 0
             Set<String> titleRow = []
+            Set<Integer> truncatedRows = []
             Map<TitleInstancePackagePlatform, Map<String, Object>> matchedTitles = [:] //use keySet() to use only the retrieved we:kb keys
             Set<Map<String, Object>> notAddedTitles = [], notInPackage = []
             //now, assemble the identifiers available to highlight
@@ -186,180 +189,191 @@ class IssueEntitlementService {
                                            listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1,
                                            titleUrlCol: -1, titleIdCol: -1, doiCol: -1, pick: -1]
             inputFile.getInputStream().withReader(configMap.encoding) { reader ->
-                char separator = '\t'
-                ICSVParser csvp = new CSVParserBuilder().withSeparator(separator).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
-                CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
-                List<String[]> lines = csvr.readAll()
-                if(lines[0].size() == 1) {
-                    wrongSeparator = true
-                }
-                else {
-                    total = lines.size()
-                    if(!configMap.containsKey('withPick'))
-                        toAddCount = total
-                    if(configMap.containsKey('withIDOnly')) {
-                        start = 0
+                try {
+                    char separator = '\t'
+                    ICSVParser csvp = new CSVParserBuilder().withSeparator(separator).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+                    CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
+                    List<String[]> lines = csvr.readAll()
+                    if(lines[0].size() == 1) {
+                        wrongSeparator = true
                     }
                     else {
-                        start = 1
-                        titleRow.addAll(lines[0])
-                        if(titleRow[0]) {
-                            titleRow.eachWithIndex{ String headerCol, int c ->
-                                switch (headerCol.toLowerCase().trim()) {
-                                    case ["title_url", "zugriffs-url", "access url"]: colMap.titleUrlCol = c
-                                        break
-                                    case "title_id": colMap.titleIdCol = c
-                                        break
-                                    case ["doi", "doi_identifier"]: colMap.doiCol= c
-                                        break
-                                    case "zdb_id": colMap.zdbCol = c
-                                        break
-                                    case ["print_identifier","print identifier"]: colMap.printIdentifierCol = c
-                                        break
-                                    case ["online_identifier","online identifier"]: colMap.onlineIdentifierCol = c
-                                        break
-                                    case ["title", "publication_title"]: colMap.publicationTitleCol = c
-                                        break
-                                    case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
-                                        break
-                                    case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
-                                        break
-                                    case "date_first_issue_online": colMap.startDateCol = c
-                                        break
-                                    case "num_first_vol_online": colMap.startVolumeCol = c
-                                        break
-                                    case "num_first_issue_online": colMap.startIssueCol = c
-                                        break
-                                    case "date_last_issue_online": colMap.endDateCol = c
-                                        break
-                                    case "num_last_vol_online": colMap.endVolumeCol = c
-                                        break
-                                    case "num_last_issue_online": colMap.endIssueCol = c
-                                        break
-                                    case "access_start_date": colMap.accessStartDateCol = c
-                                        break
-                                    case "access_end_date": colMap.accessEndDateCol = c
-                                        break
-                                    case "embargo_info": colMap.embargoCol = c
-                                        break
-                                    case "coverage_depth": colMap.coverageDepthCol = c
-                                        break
-                                    case "notes": colMap.coverageNotesCol = c
-                                        break
-                                    case "listprice_eur": colMap.listPriceEurCol = c
-                                        break
-                                    case "listprice_usd": colMap.listPriceUsdCol = c
-                                        break
-                                    case "listprice_gbp": colMap.listPriceGbpCol = c
-                                        break
-                                    case "localprice_eur": colMap.localPriceEurCol = c
-                                        break
-                                    case "localprice_usd": colMap.localPriceUsdCol = c
-                                        break
-                                    case "localprice_gbp": colMap.localPriceGbpCol = c
-                                        break
-                                    case ["pick", "auswahl"]: colMap.pick = c
-                                        break
+                        total = lines.size()
+                        if(!configMap.containsKey('withPick'))
+                            toAddCount = total
+                        if(configMap.containsKey('withIDOnly')) {
+                            start = 0
+                        }
+                        else {
+                            start = 1
+                            titleRow.addAll(lines[0])
+                            if(titleRow[0]) {
+                                titleRow.eachWithIndex{ String headerCol, int c ->
+                                    switch (headerCol.toLowerCase().trim()) {
+                                        case ["title_url", "zugriffs-url", "access url"]: colMap.titleUrlCol = c
+                                            break
+                                        case "title_id": colMap.titleIdCol = c
+                                            break
+                                        case ["doi", "doi_identifier"]: colMap.doiCol= c
+                                            break
+                                        case "zdb_id": colMap.zdbCol = c
+                                            break
+                                        case ["print_identifier","print identifier"]: colMap.printIdentifierCol = c
+                                            break
+                                        case ["online_identifier","online identifier"]: colMap.onlineIdentifierCol = c
+                                            break
+                                        case ["title", "publication_title"]: colMap.publicationTitleCol = c
+                                            break
+                                        case "date_monograph_published_print": colMap.dateFirstInPrintCol = c
+                                            break
+                                        case "date_monograph_published_online": colMap.dateFirstOnlineCol = c
+                                            break
+                                        case "date_first_issue_online": colMap.startDateCol = c
+                                            break
+                                        case "num_first_vol_online": colMap.startVolumeCol = c
+                                            break
+                                        case "num_first_issue_online": colMap.startIssueCol = c
+                                            break
+                                        case "date_last_issue_online": colMap.endDateCol = c
+                                            break
+                                        case "num_last_vol_online": colMap.endVolumeCol = c
+                                            break
+                                        case "num_last_issue_online": colMap.endIssueCol = c
+                                            break
+                                        case "access_start_date": colMap.accessStartDateCol = c
+                                            break
+                                        case "access_end_date": colMap.accessEndDateCol = c
+                                            break
+                                        case "embargo_info": colMap.embargoCol = c
+                                            break
+                                        case "coverage_depth": colMap.coverageDepthCol = c
+                                            break
+                                        case "notes": colMap.coverageNotesCol = c
+                                            break
+                                        case "listprice_eur": colMap.listPriceEurCol = c
+                                            break
+                                        case "listprice_usd": colMap.listPriceUsdCol = c
+                                            break
+                                        case "listprice_gbp": colMap.listPriceGbpCol = c
+                                            break
+                                        case "localprice_eur": colMap.localPriceEurCol = c
+                                            break
+                                        case "localprice_usd": colMap.localPriceUsdCol = c
+                                            break
+                                        case "localprice_gbp": colMap.localPriceGbpCol = c
+                                            break
+                                        case ["pick", "auswahl"]: colMap.pick = c
+                                            break
+                                    }
                                 }
                             }
                         }
-                    }
-                    if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
-                        for(int i = start; i < total; i++) {
-                            String[] line = lines[i]
-                            //if(line[0]) {
-                            /*
-                                here the switch between the matching methods:
-                                Select from total list (KBART) -> used now in tippSelectForSurvey()
-                                Select (KBART) -> used now in selectEntitlementsWithKBART()
-                                Select (with ID only) -> should contain one single column without header which contains the ID
-                                continue with tests
-                             */
-                            boolean select = !configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick >= 0 && line[colMap.pick].trim().toLowerCase() in [RDStore.YN_YES.value.toLowerCase(), RDStore.YN_YES.getI10n('value').toLowerCase(), 'x'])
-                            if((line.size() == titleRow.size() && select) || configMap.containsKey('withIDOnly')) {
-                                countRows++
-                                log.debug("now processing row ${countRows}")
-                                TitleInstancePackagePlatform match = null
-                                //cascade: 1. title_url, 2. title_id, 3. identifier map
-                                if(configMap.containsKey('withIDOnly')) {
-                                    match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[0].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
-                                    if(!match) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[0].trim(), ns: namespaces.values(), removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                }
-                                else {
-                                    if (colMap.titleUrlCol >= 0 && line[colMap.titleUrlCol] != null && !line[colMap.titleUrlCol].trim().isEmpty()) {
-                                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[colMap.titleUrlCol].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
-                                    }
-                                    if (!match && colMap.titleIdCol >= 0 && line[colMap.titleIdCol] != null && !line[colMap.titleIdCol].trim().isEmpty()) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                    if (!match && colMap.doiCol >= 0 && line[colMap.doiCol] != null && !line[colMap.doiCol].trim().isEmpty()) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                    if (!match && colMap.onlineIdentifierCol >= 0 && line[colMap.onlineIdentifierCol] != null && !line[colMap.onlineIdentifierCol].trim().isEmpty()) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                    if (!match && colMap.printIdentifierCol >= 0 && line[colMap.printIdentifierCol] != null && !line[colMap.printIdentifierCol].trim().isEmpty()) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                    if (!match && colMap.zdbCol >= 0 && line[colMap.zdbCol] != null && !line[colMap.zdbCol].trim().isEmpty()) {
-                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
-                                        if (matchList.size() == 1)
-                                            match = matchList[0] as TitleInstancePackagePlatform
-                                    }
-                                }
-                                Map<String, Object> externalTitleData = [:]
-                                if(configMap.containsKey('withIDOnly')) {
-                                    externalTitleData.put('id', line[0].trim())
-                                }
-                                else {
-                                    colMap.each { String colName, int colNo ->
-                                        if (colNo > -1 && line[colNo]) {
-                                            String cellEntry = line[colNo].trim()
-                                            if (cellEntry)
-                                                externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
+                        if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
+                            for(int i = start; i < total; i++) {
+                                String[] line = lines[i]
+                                //if(line[0]) {
+                                /*
+                                    here the switch between the matching methods:
+                                    Select from total list (KBART) -> used now in tippSelectForSurvey()
+                                    Select (KBART) -> used now in selectEntitlementsWithKBART()
+                                    Select (with ID only) -> should contain one single column without header which contains the ID
+                                    continue with tests
+                                 */
+                                boolean select = !configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick >= 0 && line[colMap.pick].trim().toLowerCase() in [RDStore.YN_YES.value.toLowerCase(), RDStore.YN_YES.getI10n('value').toLowerCase(), 'x'])
+                                if((line.size() == titleRow.size() && select) || configMap.containsKey('withIDOnly')) {
+                                    countRows++
+                                    log.debug("now processing row ${countRows}")
+                                    TitleInstancePackagePlatform match = null
+                                    //cascade: 1. title_url, 2. title_id, 3. identifier map
+                                    if(configMap.containsKey('withIDOnly')) {
+                                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[0].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                                        if(!match) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[0].trim(), ns: namespaces.values(), removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
                                         }
-                                        //fill up empty cells for an eventual return file
-                                        else if(colName in ['found_in_package', 'already_purchased_at']) {
-                                            if(colName == 'already_purchased_at' && !configMap.containsKey('issueEntitlementEnrichment'))
-                                                externalTitleData.put(colName, null)
+                                    }
+                                    else {
+                                        if (colMap.titleUrlCol >= 0 && line[colMap.titleUrlCol] != null && !line[colMap.titleUrlCol].trim().isEmpty()) {
+                                            match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[colMap.titleUrlCol].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
                                         }
-                                        else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
+                                        if (!match && colMap.titleIdCol >= 0 && line[colMap.titleIdCol] != null && !line[colMap.titleIdCol].trim().isEmpty()) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
+                                        }
+                                        if (!match && colMap.doiCol >= 0 && line[colMap.doiCol] != null && !line[colMap.doiCol].trim().isEmpty()) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
+                                        }
+                                        if (!match && colMap.onlineIdentifierCol >= 0 && line[colMap.onlineIdentifierCol] != null && !line[colMap.onlineIdentifierCol].trim().isEmpty()) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
+                                        }
+                                        if (!match && colMap.printIdentifierCol >= 0 && line[colMap.printIdentifierCol] != null && !line[colMap.printIdentifierCol].trim().isEmpty()) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
+                                        }
+                                        if (!match && colMap.zdbCol >= 0 && line[colMap.zdbCol] != null && !line[colMap.zdbCol].trim().isEmpty()) {
+                                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                                            if (matchList.size() == 1)
+                                                match = matchList[0] as TitleInstancePackagePlatform
+                                        }
+                                    }
+                                    Map<String, Object> externalTitleData = [:]
+                                    if(configMap.containsKey('withIDOnly')) {
+                                        externalTitleData.put('id', line[0].trim())
+                                    }
+                                    else {
+                                        colMap.each { String colName, int colNo ->
+                                            if (colNo > -1 && line[colNo]) {
+                                                String cellEntry = line[colNo].trim()
+                                                if (cellEntry)
+                                                    externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
+                                            }
+                                            //fill up empty cells for an eventual return file
+                                            else if(colName in ['found_in_package', 'already_purchased_at']) {
+                                                if(colName == 'already_purchased_at' && !configMap.containsKey('issueEntitlementEnrichment'))
+                                                    externalTitleData.put(colName, null)
+                                            }
+                                            else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
+                                        }
+                                    }
+                                    if (match) {
+                                        matchedTitles.put(match, externalTitleData)
+                                        if(configMap.containsKey('withPick'))
+                                            toAddCount++
+                                    }
+                                    else if(!match) {
+                                        notInPackage << externalTitleData
+                                        externalTitleData.put('found_in_package', RDStore.YN_NO.getI10n('value'))
+                                        notAddedTitles << externalTitleData
                                     }
                                 }
-                                if (match) {
-                                    matchedTitles.put(match, externalTitleData)
-                                    if(configMap.containsKey('withPick'))
-                                        toAddCount++
+                                else if(line.size() != titleRow.size()) {
+                                    truncatedRows << i
                                 }
-                                else if(!match) {
-                                    notInPackage << externalTitleData
-                                    externalTitleData.put('found_in_package', RDStore.YN_NO.getI10n('value'))
-                                    notAddedTitles << externalTitleData
-                                }
+                                //start from floor, end at ceil
+                                percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
+                                userCache.put('progress', percentage)
+                                //}
                             }
-                            //start from floor, end at ceil
-                            percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
-                            userCache.put('progress', percentage)
-                            //}
                         }
+                        else pickWithNoPick = true
                     }
-                    else pickWithNoPick = true
+                }
+                catch (CsvMalformedLineException e) {
+                    fileErrors = e.getMessage()
                 }
             }
             userCache.put('progress', configMap.ceil)
-            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, wrongSeparator: wrongSeparator, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
+            String truncatedRowsString = null
+            if(truncatedRows)
+                truncatedRowsString = "${truncatedRows.first()}-${truncatedRows.last()}" //temp solution, non-consequent ranges are not covered
+            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, truncatedRows: truncatedRowsString, fileErrors: fileErrors, wrongSeparator: wrongSeparator, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
         }
     }
 

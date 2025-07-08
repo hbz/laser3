@@ -27,6 +27,9 @@
 <g:if test="${truncatedRows}">
     <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
 </g:if>
+<g:if test="${fileErrors}">
+    <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.fileErrors" args="[fileErrors]"/>
+</g:if>
 <g:elseif test="${errMess}">
     <ui:msg class="error" showIcon="true" message="${errMess}" args="[errorCount]"/>
     <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
