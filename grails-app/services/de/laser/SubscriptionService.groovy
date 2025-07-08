@@ -1481,7 +1481,7 @@ class SubscriptionService {
                 }
                 //issue entitlement does not exist in THIS subscription
                 else {
-                    PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, configMap.subscription.getSubscriber()) || PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: configMap.subscription.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match]).size() > 0
+                    boolean ptCheck = PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.tipp = :tipp and (pt.owner = :subscriber or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))", [subscriber: configMap.subscription.getSubscriberRespConsortia(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS, tipp: match]).size() > 0
                     //permanent title exists = title perpetually purchased!
                     if(ptCheck) {
                         perpetuallyPurchasedCount++
