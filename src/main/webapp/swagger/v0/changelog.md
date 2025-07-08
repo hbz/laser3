@@ -7,6 +7,9 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - added new attribute: `CostItem.costInformation`
 - deprecated endpoint: `/statistic/packages/list`
 - deprecated endpoint: `/statistic/packages`
+- pagination: added new optional argument `max` to `subscription` and `oamonitor/subscriptions`
+- pagination: added new optional argument `offset` to `subscription` and `oamonitor/subscriptions`
+- pagination: introduction of pagination and restriction of record count in `Subscription.packages.issueEntitlements` and `Package.tipps` to 20000 entries
 - removed attribute: `EZBInstitutionStub.status`
 - removed attribute: `OrganisationStub.gokbId`
 - removed attribute: `OrganisationStub.status`

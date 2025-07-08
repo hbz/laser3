@@ -6,6 +6,7 @@ import de.laser.wekb.Package
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -56,10 +57,10 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting the record
      * @return JSON
      */
-    static getPackage(Package pkg, Org context) {
+    static getPackage(Package pkg, Org context, int max, int offset) {
         Map<String, Object> result = [:]
 
-        result = getPackageMap(pkg, context)
+        result = getPackageMap(pkg, context, max, offset)
 
         return result ? new JSON(result) : null
     }
@@ -71,7 +72,7 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getPackageMap(Package pkg, Org context) {
+	static Map<String, Object> getPackageMap(Package pkg, Org context, int max, int offset) {
 		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
@@ -102,7 +103,15 @@ class ApiPkg {
 		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.wekb.Provider
 		result.vendors			= ApiCollectionReader.getLibrarySuppliers(pkg.vendors?.vendor) //de.laser.wekb.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
-		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+		Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg, [max: max, offset: offset, sort: 'sortname'])
+		int total = TitleInstancePackagePlatform.countByPkg(pkg)
+		result.tipps            = ApiCollectionReader.getTippCollection(tipps, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+		result.recordTotalCount = total
+		result.recordCount = tipps ? tipps.size() : 0
+		result.offset = offset
+		result.max = max
+		result.currentPage = (offset/max)+1
+		result.totalPage = Math.ceil(total/max)
 
 		ApiToolkit.cleanUp(result, true, true)
 	}

@@ -306,6 +306,8 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/max"
+        - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/authorization"
 
       responses:

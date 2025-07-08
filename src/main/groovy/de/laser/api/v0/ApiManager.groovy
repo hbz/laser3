@@ -281,7 +281,7 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg)
+                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg, max, offset)
             }
         }
         else if (checkValidRequest('platform')) {

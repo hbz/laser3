@@ -140,10 +140,12 @@ var timestamp     = &quot;&quot; // not used yet
 var nounce        = &quot;&quot; // not used yet
 var q             = &quot;&lt;q&gt;&quot;
 var v             = &quot;&lt;v&gt;&quot;
-var context       = &quot;&lt;context&gt;&quot;
+var context       = &quot;&lt;context&gt;&quot; // only used in /costItem, /orgAccessPoint for that an organisation may be indicated whose data should be retrieved
 var changedFrom   = &quot;&lt;changedFrom&gt;&quot;
+var max           = &quot;&lt;max&gt;&quot;
+var offset        = &quot;&lt;offset&gt;&quot;
 
-var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null), (changedFrom ? &quot;changedFrom=&quot; + changedFrom : null)], function(e, i){ return e }).join('&amp;')
+var query         = $.grep( [(q ? &quot;q=&quot; + q : null), (v ? &quot;v=&quot; + v : null), (context ? &quot;context=&quot; + context : null), (changedFrom ? &quot;changedFrom=&quot; + changedFrom : null), (max ? &quot;max=&quot; + max : null), (offset ? &quot;offset=&quot; + offset : null)], function(e, i){ return e }).join('&amp;')
 var body          = &quot;&quot; // not used yet
 
 var message       = method + path + timestamp + nounce + query + body

@@ -4,11 +4,33 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 
 #### 4.0
 
+- added new attribute: `CostItem.costInformation`
+- deprecated endpoint: `/statistic/packages/list`
+- deprecated endpoint: `/statistic/packages`
+- pagination: added new optional argument `max` to `subscription` and `oamonitor/subscriptions`
+- pagination: added new optional argument `offset` to `subscription` and `oamonitor/subscriptions`
+- pagination: introduction of pagination and restriction of record count in `Subscription.packages.issueEntitlements` and `Package.tipps` to 20000 entries
 - removed attribute: `EZBInstitutionStub.status`
+- removed attribute: `OrganisationStub.gokbId`
 - removed attribute: `OrganisationStub.status`
+- removed attribute: `OrganisationStub.type`
+- removed attribute: `Organisation.gokbId`
 - removed attribute: `Organisation.links`
 - removed attribute: `Organisation.retirementDate`
-- removed new virtual object: `Link_Org`
+- removed attribute: `Organisation.status`
+- removed attribute: `Organisation.type`
+- removed virtual object: `Link_Org`
+- renamed attribute: `License.vendors` => `License.librarySuppliers`
+- renamed attribute: `Package.gokbId` => `Package.wekbId`
+- renamed attribute: `Platform.gokbId` => `Platform.wekbId`
+- renamed attribute: `Provider.invoicingVendors` => `Provider.invoicingLibrarySuppliers`
+- renamed attribute: `Subscription.vendors` => `Subscription.librarySuppliers`
+- renamed attribute: `TitleInstancePackagePlatform.gokbId` => `TitleInstancePackagePlatform.wekbId`
+- renamed attribute: `Vendor.gokbId` => `LibrarySupplier.wekbId`
+- renamed endpoint: `/vendor` => `/librarySupplier`
+- renamed object: `Vendor` => `LibrarySupplier`
+- renamed object stub: `VendorStub` => `LibrarySupplierStub`
+- renamed virtual object: `Link_Vendor` => `Link_Library_Supplier`
 
 #### 3.7 (ERMS-6506)
 

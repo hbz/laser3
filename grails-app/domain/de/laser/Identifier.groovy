@@ -450,7 +450,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                     result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val', [val: idstrParts[0]])
                     break
                 case 2:
-                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstrParts[1], ns: idstrParts[0]])
+                    result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val and lower(ident.ns.ns) = :ns', [val: idstrParts[1], ns: idstrParts[0].toLowerCase()])
                     break
                 default:
                     break
