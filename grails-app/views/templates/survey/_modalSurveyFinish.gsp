@@ -1,3 +1,4 @@
+<laser:serviceInjection/>
 <ui:modal id="surveyFinishModal" modalSize="tiny"
           msgSave="${message(code: 'confirm.dialog.concludeBinding')}"
           msgClose="${error ? message(code: 'surveyInfo.backToSurvey') : message(code: 'default.button.cancel')}"
@@ -14,7 +15,7 @@
             </g:if>
         </div>
 
-        <g:if test="${surveyConfig.subSurveyUseForTransfer && noParticipation}">
+        <g:if test="${surveyConfig.subSurveyUseForTransfer && de.laser.survey.SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, de.laser.storage.PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == de.laser.storage.RDStore.YN_NO}">
             <div class="field">
                 <label for="surveyResultComment">${message(code: 'surveyResult.noParticipation.info')}:</label>
 

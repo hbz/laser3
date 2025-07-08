@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6718    04.07.2025  rc-3.5  3.5.3       David   Feature     WekbNews asynchron aktualisieren
+
 6715    03.07.2025  rc-3.5  3.5.3       David   Bug         Aufgabenzuweisung von Einzelne auf Alle zurückgestellt
 
 6674    03.07.2025  rc-3.5  3.5.3       Andreas Feature     Referenzwert "tagesaktuell" aufgenommen
