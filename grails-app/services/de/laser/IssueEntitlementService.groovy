@@ -171,6 +171,7 @@ class IssueEntitlementService {
             String fileErrors = null
             int countRows = 0, total = 0, toAddCount = 0, start, percentage = 0
             Set<String> titleRow = []
+            Set<Integer> truncatedRows = []
             Map<TitleInstancePackagePlatform, Map<String, Object>> matchedTitles = [:] //use keySet() to use only the retrieved we:kb keys
             Set<Map<String, Object>> notAddedTitles = [], notInPackage = []
             //now, assemble the identifiers available to highlight
@@ -352,6 +353,9 @@ class IssueEntitlementService {
                                         notAddedTitles << externalTitleData
                                     }
                                 }
+                                else if(line.size() != titleRow.size()) {
+                                    truncatedRows << i
+                                }
                                 //start from floor, end at ceil
                                 percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
                                 userCache.put('progress', percentage)
@@ -366,7 +370,10 @@ class IssueEntitlementService {
                 }
             }
             userCache.put('progress', configMap.ceil)
-            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, fileErrors: fileErrors, wrongSeparator: wrongSeparator, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
+            String truncatedRowsString = null
+            if(truncatedRows)
+                truncatedRowsString = "${truncatedRows.first()}-${truncatedRows.last()}" //temp solution, non-consequent ranges are not covered
+            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, truncatedRows: truncatedRowsString, fileErrors: fileErrors, wrongSeparator: wrongSeparator, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
         }
     }
 
