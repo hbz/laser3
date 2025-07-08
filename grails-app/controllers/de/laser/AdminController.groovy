@@ -843,9 +843,8 @@ class AdminController  {
         }
 
         FilterService.Result fsr = filterService.getOrgQuery(fp)
-        List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
-        result.orgList = orgList.drop(result.offset).take(result.max)
-        result.orgListTotal = orgList.size()
+        result.orgList      = Org.executeQuery(fsr.query, fsr.queryParams + [max: result.max, offset: result.offset])
+        result.orgListTotal = Org.executeQuery('select o.id ' + fsr.query, fsr.queryParams).size()
 
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
