@@ -875,34 +875,36 @@ class AjaxHtmlController {
                     notProcessedMandatoryProperties << surre.type.getI10n('name')
                 }
             }
-        }
 
-        if(((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2)?.refValue == RDStore.YN_YES) || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+            if(((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2)?.refValue == RDStore.YN_YES) || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
 
-            if (!surveyOrg.address) {
-                result.error = g.message(code: 'surveyResult.finish.invoicingInformation.address')
-            } else if (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0) {
-                result.error = g.message(code: 'surveyResult.finish.invoicingInformation.contact')
-            }
-
-        }
-        else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
-            if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
-                boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
-                int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
-                        'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
-                if (vendorInvoicing && vendorCount == 0) {
-                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey')
-                } else if (!vendorInvoicing && vendorCount > 0) {
-                    result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                if (!surveyOrg.address) {
+                    result.error = g.message(code: 'surveyResult.finish.invoicingInformation.address')
+                } else if (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0) {
+                    result.error = g.message(code: 'surveyResult.finish.invoicingInformation.contact')
                 }
-            }
-        }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
 
+            }
+            else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+                if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
+                    boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                    int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                    if (vendorInvoicing && vendorCount == 0) {
+                        result.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                    } else if (!vendorInvoicing && vendorCount > 0) {
+                        result.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
+                    }
+                }
+            }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.subscriptionSurvey) {
+
+            }
+            else if (notProcessedMandatoryProperties.size() > 0) {
+                result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+            }
         }
-        else if (notProcessedMandatoryProperties.size() > 0) {
-            result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-        }
+
+
 
         if(!result.error) {
             if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
