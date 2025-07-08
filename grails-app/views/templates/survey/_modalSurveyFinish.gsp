@@ -15,7 +15,7 @@
             </g:if>
         </div>
 
-        <g:if test="${surveyConfig.subSurveyUseForTransfer && de.laser.survey.SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, de.laser.storage.PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == de.laser.storage.RDStore.YN_NO}">
+        <g:if test="${!error && surveyConfig.subSurveyUseForTransfer && de.laser.survey.SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, de.laser.storage.PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == de.laser.storage.RDStore.YN_NO}">
             <div class="field">
                 <label for="surveyResultComment">${message(code: 'surveyResult.noParticipation.info')}:</label>
 
