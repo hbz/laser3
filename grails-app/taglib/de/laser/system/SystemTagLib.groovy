@@ -49,6 +49,7 @@ class SystemTagLib {
         g.set( var:'systemService',                 bean:'systemService' )
         g.set( var:'taskService',                   bean:'taskService' )
         g.set( var:'userService',                   bean:'userService' )
+        g.set( var:'wekbNewsService',               bean:'wekbNewsService' )
         g.set( var:'workflowService',               bean:'workflowService' )
         g.set( var:'vendorService',                 bean:'vendorService' )
         g.set( var:'yodaService',                   bean:'yodaService' )
