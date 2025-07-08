@@ -253,6 +253,7 @@ class ApiController {
             response.setCharacterEncoding(Constants.UTF8)
             response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
             response.setStatus(status)
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${respStruct.length().toString()})")
             render respStruct
             /*
             if (debugMode) {
