@@ -2657,10 +2657,12 @@ class MyInstitutionController  {
                 }
             }
 
-            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+            if(surveyConfig.subSurveyUseForTransfer && SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)){
                 SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
-                surveyResult.comment = params.surveyResultComment
-                surveyResult.save()
+                if(surveyResult.refValue == RDStore.YN_NO) {
+                    surveyResult.comment = params.surveyResultComment
+                    surveyResult.save()
+                }
             }
 
             if (sendSurveyFinishMail) {
