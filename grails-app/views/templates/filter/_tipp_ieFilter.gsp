@@ -52,6 +52,17 @@
                     </select>
                 </div>
             </g:if>
+            <g:elseif test="${actionName == 'currentPermanentTitles'}">
+                <div class="field">
+                    <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
+                    <select class="ui dropdown clearable" multiple="multiple" name="pkgfilter" id="pkgfilter">
+                        <option value="">${message(code: 'default.all')}</option>
+                        <g:each in="${permanentTitlePackages}" var="pkg">
+                            <option value="${pkg.id}" ${pkg.id in Params.getLongList(params, 'pkgfilter') ? 'selected=true' : ''}>${pkg.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:elseif>
             <%-- removed as of ERMS-6370
             <g:if test="${!showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
