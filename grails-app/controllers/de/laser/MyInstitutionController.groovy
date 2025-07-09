@@ -2602,7 +2602,11 @@ class MyInstitutionController  {
                 }
                 if(((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2)?.refValue == RDStore.YN_YES) || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
-                    flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+                    if (!surveyOrg.address) {
+                        flash.error = g.message(code: 'surveyResult.finish.invoicingInformation.address')
+                    } else if (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0) {
+                        flash.error = g.message(code: 'surveyResult.finish.invoicingInformation.contact')
+                    }
                 }
                 else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
@@ -2653,10 +2657,12 @@ class MyInstitutionController  {
                 }
             }
 
-            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+            if(surveyConfig.subSurveyUseForTransfer && SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)){
                 SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
-                surveyResult.comment = params.surveyResultComment
-                surveyResult.save()
+                if(surveyResult.refValue == RDStore.YN_NO) {
+                    surveyResult.comment = params.surveyResultComment
+                    surveyResult.save()
+                }
             }
 
             if (sendSurveyFinishMail) {

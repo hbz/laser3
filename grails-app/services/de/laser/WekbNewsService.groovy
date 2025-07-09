@@ -4,6 +4,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
 import de.laser.remote.Wekb
 import de.laser.utils.DateUtils
+import de.laser.helper.FutureHelper
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
@@ -12,6 +13,8 @@ import grails.gorm.transactions.Transactional
 
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Future
 
 /**
  * This service keeps track of the changes performed in the <a href="https://wekb.hbz-nrw.de">we:kb knowledge base</a>. It replaces the entirely
@@ -24,10 +27,14 @@ class WekbNewsService {
 
     CacheService cacheService
     ContextService contextService
+    ExecutorService executorService
     GokbService gokbService
     MarkerService markerService
 
-    static final String CACHE_KEY = 'WekbNewsService'
+    public static final String CACHE_KEY   = 'WekbNewsService'
+    public static final String THREAD_KEY  = 'WekbNewsService_updateCache'
+
+    public Future state = null
 
     /**
      * Gets the current changes from the cache and assembles them in a map of counts being recently performed. Also the count
@@ -46,9 +53,9 @@ class WekbNewsService {
     Map getCurrentNews() {
         EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
 
-        if (! ttl1800.get('wekbNews')) {
-            return [:]
-        }
+        if (! state || FutureHelper.isRunning(state)) { return [:] }
+        if (! ttl1800.get('wekbNews')) { return [:] }
+
         Map result = ttl1800.get('wekbNews') as Map
 
         ['package', 'platform', 'provider', 'vendor'].each { type ->
@@ -112,19 +119,34 @@ class WekbNewsService {
     }
 
     /**
-     * Triggered by Cronjob: {@link de.laser.jobs.MuleJob}
+     * Triggered by {@link de.laser.jobs.MuleJob} or Yoda.
      * Triggers the update of the cache of the recent changes performed in the we:kb
      */
     void updateCache() {
-        EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
-
-        Map<String, Object> result = processData()
-        ttl1800.put('wekbNews', result)
+        if (FutureHelper.isRunning(state)) {
+            log.debug THREAD_KEY + ' already running ..'
+        }
+        else {
+            state = executorService.submit {
+                try {
+                    Thread.currentThread().setName( THREAD_KEY )
+                    EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
+                    Map<String, Object> result = processData()
+                    ttl1800.put('wekbNews', result)
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+                finally {
+                }
+            }
+        }
     }
 
     void clearCache() {
         EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache(CACHE_KEY)
         ttl1800.remove('wekbNews')
+        state = null
     }
 
     /**

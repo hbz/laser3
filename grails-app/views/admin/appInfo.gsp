@@ -1,4 +1,4 @@
-<%@ page import="java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.helper.FutureHelper; java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -188,7 +188,13 @@
         </tbody>
     </table>
 
-    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
+    </div>
+</div>
+
+<g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
+    <div class="ui fluid card">
+        <div class="content">
+
         <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
@@ -219,7 +225,28 @@
             </tr>
             </tbody>
         </table>
-    </g:if>
+
+        </div>
+    </div>
+</g:if>
+
+<div class="ui fluid card">
+    <div class="content">
+        <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+            <thead>
+            <tr><th class="seven wide">We:kb-News</th><th class="nine wide"></th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>${FutureHelper.getState(wekbNewsService.state)}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>

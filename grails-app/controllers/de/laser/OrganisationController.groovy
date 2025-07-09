@@ -631,7 +631,7 @@ class OrganisationController  {
             params.value = leitID1 + '-' + (leitID2 ? leitID2 + '-' : '') + leitID3
         }
 
-        if(identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID && params.leitID1 && params.leitID3){
+        if(identifier.ns.ns == IdentifierNamespace.PEPPOL_RECEIVER_ID && params.leitID){
             String leitID
 
             if(params.leitID) {

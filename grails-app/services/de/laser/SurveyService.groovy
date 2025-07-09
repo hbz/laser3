@@ -1811,10 +1811,10 @@ class SurveyService {
                  tipp: tipp,
                  org: org,
                  subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
-        countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
+        /*countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
                 'ie.perpetualAccessBySub in (select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :subscriber) or ' +
                 "ie.perpetualAccessBySub in (select s from OrgRole oc join oc.sub s where oc.org = :context and oc.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))" +
-                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])*/
 
         if(countPermanentTitles > 0){
             return true
@@ -2680,6 +2680,11 @@ class SurveyService {
                     params.remove('setEInvoiceValuesFromOrg')
                 }
 
+                if(params.setContactAndAddressFromOrg) {
+                    setDefaultPreferredConcatsForSurvey(result.surveyConfig, participant)
+                    params.remove('setContactAndAddressFromOrg')
+                }
+
                 if(params.setEInvoiceLeitkriteriumFromOrg) {
                     result.surveyOrg.eInvoiceLeitkriterium = params.setEInvoiceLeitkriteriumFromOrg
                     result.surveyOrg.save()
@@ -3000,7 +3005,7 @@ class SurveyService {
 
     void setDefaultPreferredConcatsForSurvey(SurveyConfig surveyConfig, Org org){
         SurveyOrg surOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)
-        if(surOrg) {
+        if(surOrg && surveyConfig.invoicingInformation) {
             Map parameterMap = [:]
             parameterMap.org = org
 
@@ -3008,39 +3013,39 @@ class SurveyService {
             parameterMap.preferredBillingPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             List<Person> visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
-            if(surveyConfig.invoicingInformation) {
-                visiblePersons.each { Person person ->
-                    if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
-                        new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
-                    }
+
+            visiblePersons.each { Person person ->
+                if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
+                    new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
             }
+
 
             parameterMap.remove('preferredBillingPerson')
             parameterMap.preferredSurveyPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_SURVEY_CONTACT.id]
             visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
             visiblePersons.each { Person person ->
-                if(person.preferredSurveyPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)){
+                if (person.preferredSurveyPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)) {
                     new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, surveyPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
             }
 
-            if(!surOrg.address && surveyConfig.invoicingInformation) {
-                Map parameterMap2 = [:]
-                parameterMap2.org = org
-                parameterMap2.sort = 'sortname'
-                parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
-                List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
 
-                addresses.each { Address address ->
-                    if (address.preferredForSurvey) {
-                        surOrg.address = address
-                        surOrg.save()
-                    }
+            Map parameterMap2 = [:]
+            parameterMap2.org = org
+            parameterMap2.sort = 'sortname'
+            parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
+            List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
+
+            addresses.each { Address address ->
+                if (address.preferredForSurvey) {
+                    surOrg.address = address
+                    surOrg.save()
                 }
-
             }
+
+
         }
     }
 
