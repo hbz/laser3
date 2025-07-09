@@ -436,10 +436,9 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * @param identifierString the value to search for
      * @return a {@link List} of objects matching to the given identifier value
      */
-    static List lookupObjectsByIdentifierString(def object, String identifierString) {
+    static List lookupObjectsByIdentifierString(String objType, String identifierString) {
         List result = []
 
-        String objType = object.getClass().getSimpleName()
         log.debug( "lookupObjectsByIdentifierString(${objType}, ${identifierString})" )
 
         if (objType) {

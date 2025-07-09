@@ -56,7 +56,7 @@ class ApiLibrarySupplier {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Vendor(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Vendor.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST

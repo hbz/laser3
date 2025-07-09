@@ -30,12 +30,14 @@ class ApiBox {
      */
     void validatePrecondition_1() {
         if (obj) {
-            if (obj.size() == 1) {
-                obj = obj.get(0)
-            }
-            else {
-                obj = null
-                status = Constants.HTTP_PRECONDITION_FAILED
+            if (obj instanceof Collection) {
+                if(obj.size() == 1) {
+                    obj = obj.get(0)
+                }
+                else {
+                    obj = null
+                    status = Constants.HTTP_PRECONDITION_FAILED
+                }
             }
         } else {
             obj = null

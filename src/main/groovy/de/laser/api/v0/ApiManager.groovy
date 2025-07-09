@@ -277,7 +277,7 @@ class ApiManager {
         }
         else if (checkValidRequest('package')) {
 
-            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            ApiBox tmp = ApiPkg.findPackageBy(query, value, max)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {

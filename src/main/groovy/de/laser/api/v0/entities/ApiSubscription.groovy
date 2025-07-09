@@ -32,7 +32,7 @@ class ApiSubscription {
 		if(max <= 20000) {
 			switch(query) {
 				case 'id':
-					result.obj = Subscription.findAllById(Long.parseLong(value))
+					result.obj = Subscription.get(value)
 					if(!result.obj) {
 						DeletedObject.withTransaction {
 							result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Subscription.class.name)
@@ -40,7 +40,7 @@ class ApiSubscription {
 					}
 					break
 				case 'globalUID':
-					result.obj = Subscription.findAllByGlobalUID(value)
+					result.obj = Subscription.findByGlobalUID(value)
 					if(!result.obj) {
 						DeletedObject.withTransaction {
 							result.obj = DeletedObject.findAllByOldGlobalUID(value)
@@ -48,7 +48,7 @@ class ApiSubscription {
 					}
 					break
 				case 'ns:identifier':
-					result.obj = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
+					result.obj = Identifier.lookupObjectsByIdentifierString(Subscription.class.getSimpleName(), value)
 					break
 				default:
 					result.status = Constants.HTTP_BAD_REQUEST

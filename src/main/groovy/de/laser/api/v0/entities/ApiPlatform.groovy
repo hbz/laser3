@@ -25,16 +25,16 @@ class ApiPlatform {
 
         switch(query) {
             case 'id':
-                result.obj = Platform.findAllWhere(id: Long.parseLong(value))
+                result.obj = Platform.get(value)
                 break
             case 'globalUID':
-                result.obj = Platform.findAllWhere(globalUID: value)
+                result.obj = Platform.findByGlobalUID(value)
                 break
-            case 'gokbId':
-                result.obj = Platform.findAllWhere(gokbId: value)
+            case 'wekbId':
+                result.obj = Platform.findByGokbId(value)
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Platform(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Platform.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST

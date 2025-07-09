@@ -22,31 +22,36 @@ class ApiPkg {
      * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
      */
-    static ApiBox findPackageBy(String query, String value) {
+    static ApiBox findPackageBy(String query, String value, int max) {
 		ApiBox result = ApiBox.get()
 
-        switch(query) {
-            case 'id':
-				result.obj = Package.findAllWhere(id: Long.parseLong(value))
-                break
-            case 'globalUID':
-				result.obj = Package.findAllWhere(globalUID: value)
-                break
-            case 'gokbId':
-				result.obj = Package.findAllWhere(gokbId: value)
-                break
-            case 'ns:identifier':
-				result.obj = Identifier.lookupObjectsByIdentifierString(new Package(), value)
-                break
-            default:
-				result.status = Constants.HTTP_BAD_REQUEST
-                return result
-                break
-        }
-		result.validatePrecondition_1()
+		if(max <= 20000) {
+			switch(query) {
+				case 'id':
+					result.obj = Package.get(value)
+					break
+				case 'globalUID':
+					result.obj = Package.findByGlobalUID(value)
+					break
+				case 'wekbId':
+					result.obj = Package.findByGokbId(value)
+					break
+				case 'ns:identifier':
+					result.obj = Identifier.lookupObjectsByIdentifierString(Package.class.getSimpleName(), value)
+					break
+				default:
+					result.status = Constants.HTTP_BAD_REQUEST
+					return result
+					break
+			}
+			result.validatePrecondition_1()
 
-		if (result.obj instanceof Package) {
-			result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
+			if (result.obj instanceof Package) {
+				result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
+			}
+		}
+		else {
+			result.status = Constants.HTTP_BAD_REQUEST
 		}
 		result
     }
@@ -78,7 +83,7 @@ class ApiPkg {
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 
 		result.globalUID        	= pkg.globalUID
-		result.gokbId           	= pkg.gokbId
+		result.wekbId           	= pkg.gokbId
 		result.name             	= pkg.name
 		result.altnames     		= ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
 
@@ -103,11 +108,11 @@ class ApiPkg {
 		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.wekb.Provider
 		result.vendors			= ApiCollectionReader.getLibrarySuppliers(pkg.vendors?.vendor) //de.laser.wekb.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
-		Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg, [max: max, offset: offset, sort: 'sortname'])
+		Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg order by tipp.sortname', [pkg: pkg, max: max, offset: offset])
 		int total = TitleInstancePackagePlatform.countByPkg(pkg)
-		result.tipps            = ApiCollectionReader.getTippCollection(tipps, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+		result.tipps            = ApiCollectionReader.getTippCollection(tippIDs, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
 		result.recordTotalCount = total
-		result.recordCount = tipps ? tipps.size() : 0
+		result.recordCount = tippIDs ? tippIDs.size() : 0
 		result.offset = offset
 		result.max = max
 		result.currentPage = (offset/max)+1

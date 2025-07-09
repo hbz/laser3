@@ -31,6 +31,7 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - renamed object: `Vendor` => `LibrarySupplier`
 - renamed object stub: `VendorStub` => `LibrarySupplierStub`
 - renamed virtual object: `Link_Vendor` => `Link_Library_Supplier`
+- internal refactorings
 
 #### 3.7 (ERMS-6506)
 

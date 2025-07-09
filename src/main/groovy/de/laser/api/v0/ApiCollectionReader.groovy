@@ -400,7 +400,7 @@ class ApiCollectionReader {
             langRows.addAll(sql.rows("select lang_tipp_fk, json_agg(json_build_object('value', rdv_value, 'value_de', rdv_value_de, 'value_en', rdv_value_en)) as languages from language join refdata_value on lang_rv_fk = rdv_id where lang_tipp_fk = any(:tippIDs) group by lang_tipp_fk", tippSubParams))
             coverageRows.addAll(sql.rows("select tc_tipp_fk, json_agg(json_build_object('startDate', coalesce(to_char(tc_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'startIssue', tc_start_issue, 'startVolume', tc_start_volume, 'endDate', coalesce(to_char(tc_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'endIssue', tc_end_issue, 'endVolume', tc_end_volume, 'coverageDepth', tc_coverage_depth, 'coverageNote', tc_coverage_note, 'embargo', tc_embargo, 'lastUpdated', tc_last_updated)) as coverages from tippcoverage where tc_tipp_fk = any(:tippIDs) group by tc_tipp_fk, tc_start_date, tc_start_volume, tc_start_issue", tippSubParams))
         //}
-        List<GroovyRowResult> altNameRows = sql.rows("select altname_name, altname_tipp_fk from alternative_name join title_instance_package_platform on altname_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId", pkgParams),
+        List<GroovyRowResult> altNameRows = sql.rows("select altname_name from alternative_name where altname_tipp_fk = any(:tippIDs)", tippSubParams),
         //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
         packageOfSubscription = sql.rows("select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
         packageIDs = sql.rows("select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId", pkgParams),
@@ -413,7 +413,7 @@ class ApiCollectionReader {
         languageMap = langRows.collectEntries { GroovyRowResult row -> [row['lang_tipp_fk'], slurper.parseText(row['languages'].toString())] }
         //platformMap = ExportService.preprocessRows(platformsOfSubscription, 'plat_id'),
         //publisherMap = titlePublishers.collectEntries { GroovyRowResult row -> [row['or_tipp_fk'], slurper.parseText(row['publishers'].toString())] }
-        Map<Long, List<GroovyRowResult>> altNameMap = ExportService.preprocessRows(altNameRows, 'altname_tipp_fk')
+        //Map<Long, List<GroovyRowResult>> altNameMap = ExportService.preprocessRows(altNameRows, 'altname_tipp_fk')
         Map<String, Object> pkgData = packageOfSubscription.get(0)
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
@@ -438,7 +438,7 @@ class ApiCollectionReader {
                     row.ids = identifierMap.containsKey(row['tipp_id']) ? identifierMap.get(row['tipp_id']) : []
                     row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
                     row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
-                    row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
+                    row.altnames = altNameRows
                     row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
                     if(ignoreRelation != ApiReader.IGNORE_ALL) {
                         //println "processing references"
@@ -823,16 +823,16 @@ class ApiCollectionReader {
     /**
      * Builds a collection of title entries for API output.
      * Access rights due wrapping object
-     * @param list a {@link Collection} of {@link TitleInstancePackagePlatform}
+     * @param list a {@link Collection} of {@link TitleInstancePackagePlatform} IDs
      * @param ignoreRelation should further relations be followed up?
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @return a {@link Collection<Object>} reflecting the titles in the list
      */
-    static Collection<Object> getTippCollection(Collection<TitleInstancePackagePlatform> list, def ignoreRelation, Org context) {
+    static Collection<Object> getTippCollection(Collection<Long> list, def ignoreRelation, Org context) {
         Collection<Object> result = []
 
-        list.each { TitleInstancePackagePlatform it -> // de.laser.wekb.TitleInstancePackagePlatform
-            result << ApiMapReader.getTippMap(it, ignoreRelation, context)
+        list.each { Long tippId -> // de.laser.wekb.TitleInstancePackagePlatform
+            result << ApiMapReader.getTippMap(tippId, ignoreRelation, context)
         }
 
         result

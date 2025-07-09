@@ -58,7 +58,7 @@ class ApiOrg {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Org(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Org.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST

@@ -28,7 +28,7 @@ class ApiLicense {
 
         switch(query) {
             case 'id':
-                result.obj = License.findAllWhere(id: Long.parseLong(value))
+                result.obj = License.get(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), License.class.name)
@@ -36,7 +36,7 @@ class ApiLicense {
                 }
                 break
             case 'globalUID':
-                result.obj = License.findAllWhere(globalUID: value)
+                result.obj = License.findByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGlobalUID(value)
@@ -44,7 +44,7 @@ class ApiLicense {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(License.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
