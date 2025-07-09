@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6724    09.07.2025  rc-3.5  3.5.4       Andreas Feature     neues Filterfeld in "Meine dauerhafte Titel" eingebaut
+
 6721    08.07.2025  rc-3.5  3.5.3       Andreas Bug         Überprüfung dauerhafter Titel schlug fehl
 
 6718    04.07.2025  rc-3.5  3.5.3       David   Feature     WekbNews asynchron aktualisieren
