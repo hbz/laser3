@@ -1916,6 +1916,8 @@ class MyInstitutionController  {
         Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
         result.filterSet = query.filterSet
         Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+        Set<Package> permanentTitlePackages = Package.executeQuery("select pkg from PermanentTitle pt join pt.tipp tipp join tipp.pkg pkg where pt.owner = :context or pt.subscription in (:inherited) order by pkg.name", [context: contextService.getOrg(), inherited: subsWithInheritance])
+        result.permanentTitlePackages = permanentTitlePackages
 
         result.num_tipp_rows = tipps.size()
 
