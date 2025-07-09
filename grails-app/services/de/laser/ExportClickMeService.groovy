@@ -1310,7 +1310,7 @@ class ExportClickMeService {
         return [
                 participant                   : [
                         label  : 'Participant',
-                        message: 'surveyParticipants.label',
+                        message: 'default.institution',
                         fields : [
                                 'participant.sortname'                : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                                 'participant.name'                    : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
@@ -7387,7 +7387,7 @@ class ExportClickMeService {
 
                 row.add(createTableCell(format, peopleStr))
                 row.add(createTableCell(format, userStr))
-
+                /*
                 BigDecimal sum = 0, sumStudFTE = 0, sumStudHeads = 0
                 if(readerNumberStudents){
                     sum = sum + (readerNumberStudents.value != null ? readerNumberStudents.value : 0)
@@ -7420,7 +7420,7 @@ class ExportClickMeService {
                     row.add(createTableCell(format, ' '))
                 else
                     row.add(createTableCell(format, sum))
-
+                */
                 String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberTotalWithYear ? readerNumberTotalWithYear.dateGroupNote : (readerNumberFTEWithYear ? readerNumberFTEWithYear.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
@@ -7785,10 +7785,12 @@ class ExportClickMeService {
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))
+                    /*
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudFTE.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sumStudHeads.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.sum.label', null, locale)))
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.note.label', null, locale)))
+                    */
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem' || fieldKey == 'renewalSurveyCostItems') && maxCostItemsElements > 0 && selectedCostItemFields.size() > 0) {
                     for(int i = 0; i < maxCostItemsElements; i++) {
