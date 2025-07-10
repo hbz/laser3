@@ -8,6 +8,7 @@ import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
+import groovy.sql.Sql
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -106,11 +107,12 @@ class ApiPkg {
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // de.laser.License
 		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform, context) // de.laser.wekb.Platform
 		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.wekb.Provider
-		result.vendors			= ApiCollectionReader.getLibrarySuppliers(pkg.vendors?.vendor) //de.laser.wekb.Vendor
+		result.librarySuppliers	= ApiCollectionReader.getLibrarySuppliers(pkg.vendors?.vendor) //de.laser.wekb.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
 		Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg order by tipp.sortname', [pkg: pkg, max: max, offset: offset])
 		int total = TitleInstancePackagePlatform.countByPkg(pkg)
-		result.tipps            = ApiCollectionReader.getTippCollection(tippIDs, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+		//move to native sql
+		result.tipps            = ApiCollectionReader.getTippCollection(tippIDs, ApiReader.IGNORE_ALL) // de.laser.wekb.TitleInstancePackagePlatform
 		result.recordTotalCount = total
 		result.recordCount = tippIDs ? tippIDs.size() : 0
 		result.offset = offset

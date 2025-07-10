@@ -356,6 +356,7 @@ class ApiUnsecuredMapReader {
      * @param pi the {@link PriceItem} to be retrieved
      * @return a {@link Map} reflecting the price item for API output
      */
+    @Deprecated
     static Map<String, Object> getPriceItemMap(PriceItem pi) {
         if(!pi)
             return null

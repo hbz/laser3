@@ -22,6 +22,7 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed virtual object: `Link_Org`
 - renamed attribute: `License.vendors` => `License.librarySuppliers`
 - renamed attribute: `Package.gokbId` => `Package.wekbId`
+- renamed attribute: `Package.librarySuppliers` => `Package.librarySuppliers`
 - renamed attribute: `Platform.gokbId` => `Platform.wekbId`
 - renamed attribute: `Provider.invoicingVendors` => `Provider.invoicingLibrarySuppliers`
 - renamed attribute: `Subscription.vendors` => `Subscription.librarySuppliers`

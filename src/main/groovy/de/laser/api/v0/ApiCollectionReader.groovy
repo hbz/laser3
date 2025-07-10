@@ -507,14 +507,8 @@ class ApiCollectionReader {
             if (it.lic && (ApiReader.IGNORE_LICENSE != ignoreRelationType)) {
                 tmp.license = ApiStubReader.requestLicenseStub(it.lic, context) // de.laser.License
             }
-            if (it.pkg && (ApiReader.IGNORE_PACKAGE != ignoreRelationType)) {
-                tmp.package = ApiUnsecuredMapReader.getPackageStubMap(it.pkg) // de.laser.wekb.Package
-            }
             if (it.sub && (ApiReader.IGNORE_SUBSCRIPTION != ignoreRelationType)) {
                 tmp.subscription = ApiStubReader.requestSubscriptionStub(it.sub, context) // de.laser.Subscription
-            }
-            if (it.tipp && (ApiReader.IGNORE_TIPP != ignoreRelationType)) {
-                tmp.title = ApiMapReader.getTippMap(it.tipp, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
             }
 
             result << ApiToolkit.cleanUp(tmp, true, false)
@@ -825,16 +819,150 @@ class ApiCollectionReader {
      * Access rights due wrapping object
      * @param list a {@link Collection} of {@link TitleInstancePackagePlatform} IDs
      * @param ignoreRelation should further relations be followed up?
-     * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @return a {@link Collection<Object>} reflecting the titles in the list
      */
-    static Collection<Object> getTippCollection(Collection<Long> list, def ignoreRelation, Org context) {
-        Collection<Object> result = []
+    static Collection<Object> getTippCollection(Collection<Long> list, def ignoreRelation) {
+        Collection<Object> result
+        Set<String> fieldClauses = [], coverageFieldClauses = [], priceItemFieldClauses = [], identifierFieldClauses = [], ddcFieldClauses = [], langFieldClauses = []
 
-        list.each { Long tippId -> // de.laser.wekb.TitleInstancePackagePlatform
-            result << ApiMapReader.getTippMap(tippId, ignoreRelation, context)
+        fieldClauses << "tipp.globalUID as globalUID"
+        fieldClauses << "tipp.gokbId as wekbId"
+        fieldClauses << "tipp.name as name"
+        fieldClauses << "(select rdv.value from RefdataValue rdv where rdv.id = tipp.medium.id) as medium"
+        fieldClauses << "(select rdv.value from RefdataValue rdv where rdv.id = tipp.status.id) as status"
+
+        coverageFieldClauses << "to_char(tc.startDate,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as startDate"
+        coverageFieldClauses << "tc.startVolume as startVolume"
+        coverageFieldClauses << "tc.startIssue as startIssue"
+        coverageFieldClauses << "to_char(tc.endDate,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as endDate"
+        coverageFieldClauses << "tc.endVolume as endVolume"
+        coverageFieldClauses << "tc.endIssue as endIssue"
+        coverageFieldClauses << "tc.embargo as embargo"
+        coverageFieldClauses << "tc.coverageDepth as coverageDepth"
+        coverageFieldClauses << "tc.coverageNote as coverageNote"
+        coverageFieldClauses << "to_char(tc.lastUpdated,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as lastUpdated"
+        //fieldClauses << "(select new map(${coverageFieldClauses.join(',')}) from tipp.coverages as tc) as coverages"
+
+        priceItemFieldClauses << "pi.listPrice as listPrice"
+        priceItemFieldClauses << "pi.listCurrency.value as listCurrency"
+        //fieldClauses << "(select new map(${priceItemFieldClauses.join(',')}) from tipp.priceItems as pi) as priceItems"
+
+        fieldClauses << "(select ta.name from tipp.altnames as ta) as altnames"
+        fieldClauses << "tipp.firstAuthor as firstAuthor"
+        fieldClauses << "tipp.firstEditor as firstEditor"
+        fieldClauses << "tipp.editionStatement as editionStatement"
+        fieldClauses << "tipp.publisherName as publisherName"
+        fieldClauses << "tipp.hostPlatformURL as hostPlatformURL"
+        fieldClauses << "to_char(tipp.dateFirstInPrint,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as dateFirstInPrint"
+        fieldClauses << "to_char(tipp.dateFirstOnline,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as dateFirstOnline"
+        fieldClauses << "tipp.seriesName as seriesName"
+        fieldClauses << "tipp.subjectReference as subjectReference"
+        fieldClauses << "tipp.titleType as titleType"
+        fieldClauses << "tipp.volume as volume"
+        fieldClauses << "to_char(tipp.lastUpdated,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as lastUpdated"
+        fieldClauses << "(select rdv.value from RefdataValue rdv where rdv.id = tipp.accessType.id) as accessType"
+        fieldClauses << "(select rdv.value from RefdataValue rdv where rdv.id = tipp.openAccess.id) as openAccess"
+
+        identifierFieldClauses << "id.ns.ns as namespace"
+        identifierFieldClauses << "id.value as value"
+        //fieldClauses << "(select new map(${identifierFieldClauses.join(',')}) from tipp.ids as id) as identifiers" // de.laser.Identifier
+
+        ddcFieldClauses << "ddc.ddc.value as value"
+        ddcFieldClauses << "ddc.ddc.value_de as value_de"
+        ddcFieldClauses << "ddc.ddc.value_en as value_en"
+        //fieldClauses << "(select new map(${ddcFieldClauses.join(',')}) from tipp.ddcs as ddc) as ddcs"  //de.laser.DeweyDecimalClassification
+
+        langFieldClauses << "lang.language.value as value"
+        //fieldClauses << "(select new map(${langFieldClauses.join(',')}) from tipp.languages as lang) as languages"  //de.laser.Language
+
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
+                Set<String> packageClauses = []
+                packageClauses << "pkg.globalUID as globalUID"
+                packageClauses << "pkg.name as name"
+                packageClauses << "(select pa.name from pkg.altnames as pa) as altnames"
+                packageClauses << "pkg.gokbId as wekbId"
+                packageClauses << "pkg.packageStatus.value as status"
+                packageClauses << "(select new map(${identifierFieldClauses.join(',')}) from pkg.ids as id) as identifiers"
+                fieldClauses << "(select new map(${packageClauses.join(',')}) from tipp.pkg as pkg) as package" // de.laser.wekb.Package
+            }
+        }
+        if (!(ignoreRelation in [ApiReader.IGNORE_SUBSCRIPTION, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE])) {
+            //list here every property which may differ on entitlement level (= GlobalSourceSyncService's controlled properties, see getTippDiff() for the properties to be excluded here)
+            fieldClauses << "to_char(tipp.accessStartDate,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as accessStartDate"
+            fieldClauses << "to_char(tipp.accessEndDate,'${ApiToolkit.DATE_TIME_PATTERN_HQL}') as accessEndDate"
         }
 
-        result
+        String baseQuery = "select new map(${fieldClauses.join(',')}) from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) order by tipp.sortname"
+        result = TitleInstancePackagePlatform.executeQuery(baseQuery, [tippIDs: list])
+        /*
+        list.each { Long tippId -> // de.laser.wekb.TitleInstancePackagePlatform
+            result << ApiMapReader.getTippMap(tippId, ignoreRelation)
+        }
+        */
+
+        return ApiToolkit.cleanUp(result, true, true)
     }
+
+    /* TODO delete
+    static Collection<Object> getTippCollectionWithSQL(Sql sql, Collection<Long> list, def ignoreRelation) {
+        Set<String> fieldClauses = []
+        fieldClauses << "tipp_global_uid"
+        String baseQuery = "select ${fieldClauses.join(',')} from title_instance_package_platform where tipp_id = any(:tippIDs)"
+        sql.withTransaction { Connection c ->
+            Map<String, Object> baseQueryParams = [tippIDs: c.createArrayOf('bigint', list.toArray())]
+        }
+        Map<String, Object> result = [:]
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippId)
+        if (! tipp) {
+            return null
+        }
+
+        result.globalUID         = tipp.globalUID
+        result.wekbId            = tipp.gokbId
+        result.name             = tipp.name
+        result.medium           = tipp.medium?.value
+        result.status           = tipp.status?.value
+        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.wekb.TIPPCoverage
+        result.priceItems       = priceItems //de.laser.finance.PriceItem with pi.tipp != null
+        result.altnames          = ApiCollectionReader.getAlternativeNameCollection(tipp.altnames)
+        result.firstAuthor       = tipp.firstAuthor
+        result.firstEditor       = tipp.firstEditor
+        result.editionStatement  = tipp.editionStatement
+        result.publisherName     = tipp.publisherName
+        result.hostPlatformURL   = tipp.hostPlatformURL
+        result.dateFirstInPrint  = tipp.dateFirstInPrint ? ApiToolkit.formatInternalDate(tipp.dateFirstInPrint) : null
+        result.dateFirstOnline   = tipp.dateFirstOnline ? ApiToolkit.formatInternalDate(tipp.dateFirstOnline) : null
+        result.seriesName        = tipp.seriesName
+        result.subjectReference  = tipp.subjectReference
+        result.titleType         = tipp.titleType
+        result.volume            = tipp.volume
+        result.lastUpdated       = ApiToolkit.formatInternalDate(tipp.lastUpdated)
+
+        // RefdataValues
+        result.accessType        = tipp.accessType?.value
+        result.openAccess        = tipp.openAccess?.value
+
+        // References
+        result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.wekb.Platform
+        result.ddcs                 = ApiCollectionReader.getDeweyDecimalCollection(tipp.ddcs)  //de.laser.DeweyDecimalClassification
+        result.languages            = ApiCollectionReader.getLanguageCollection(tipp.languages) //de.laser.Language
+        //unsure construction; remains open u.f.n.
+        //result.titleHistory         = ApiCollectionReader.getTitleHistoryCollection(tipp.historyEvents) //de.laser.titles.TitleHistoryEvent
+
+        if (ignoreRelation != ApiReader.IGNORE_ALL) {
+            if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
+                result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.wekb.Package
+            }
+        }
+        if (!(ignoreRelation in [ApiReader.IGNORE_SUBSCRIPTION, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE])) {
+            //list here every property which may differ on entitlement level (= GlobalSourceSyncService's controlled properties, see getTippDiff() for the properties to be excluded here)
+            result.accessStartDate  = tipp.accessStartDate ? ApiToolkit.formatInternalDate(tipp.accessStartDate) : null
+            result.accessEndDate    = tipp.accessEndDate ? ApiToolkit.formatInternalDate(tipp.accessEndDate) : null
+        }
+
+        return ApiToolkit.cleanUp(result, true, true)
+    }
+    */
 }
