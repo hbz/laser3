@@ -28,18 +28,6 @@
             </div>
         </div>
 
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                <i class="memory icon"></i> Profiler <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="profilerTimeline">${message(code:'menu.yoda.profilerTimeline')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="profilerActivity">${message(code:'menu.yoda.profilerActivity')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="profilerCurrent">${message(code:'menu.yoda.profilerCurrent')}</ui:link>
-            </div>
-        </div>
-
         <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
         <div class="divider"></div>
 

@@ -63,13 +63,13 @@
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
+                        <g:link controller="admin" action="appInfo" target="_blank">${message(code:'menu.admin.appInfo')}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="systemConfiguration" target="_blank">${message(code:'menu.yoda.systemConfiguration')}</g:link>
-                    </div>
-                    <div class="item">
-                        <g:link controller="yoda" action="systemThreads" target="_blank">${message(code:'menu.yoda.systemThreads')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="systemQuartz" target="_blank">${message(code:'menu.yoda.systemQuartz')}</g:link>
@@ -78,10 +78,10 @@
                         <g:link controller="yoda" action="systemCache" target="_blank">${message(code:'menu.yoda.systemCache')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="systemOddments" target="_blank">${message(code:'menu.yoda.systemOddments')}</g:link>
+                        <g:link controller="yoda" action="systemThreads" target="_blank">${message(code:'menu.yoda.systemThreads')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="appInfo" target="_blank">${message(code:'menu.admin.appInfo')}</g:link> <span class="ui mini label">Admin</span>
+                        <g:link controller="yoda" action="systemOddments" target="_blank">${message(code:'menu.yoda.systemOddments')}</g:link>
                     </div>
                 </div>
             </div>
@@ -115,17 +115,17 @@
         </div>
 
         <div class="column">
-            <h3 class="ui header">${message(code:'menu.yoda.profiler')}</h3>
+            <h3 class="ui header">${message(code:'menu.admin.profiler')}</h3>
             <div>
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="yoda" action="profilerLoadtime" target="_blank">${message(code:'menu.yoda.profilerLoadtime')}</g:link>
+                        <g:link controller="admin" action="profilerLoadtime" target="_blank">${message(code:'menu.admin.profilerLoadtime')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="profilerActivity" target="_blank">${message(code:'menu.yoda.profilerActivity')}</g:link>
+                        <g:link controller="admin" action="profilerActivity" target="_blank">${message(code:'menu.admin.profilerActivity')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="profilerTimeline" target="_blank">${message(code:'menu.yoda.profilerTimeline')}</g:link>
+                        <g:link controller="admin" action="profilerTimeline" target="_blank">${message(code:'menu.admin.profilerTimeline')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>
             </div>

@@ -20,7 +20,7 @@ abstract class AbstractBase {
     String globalUID
 
     /**
-     * Sets the global UID of the object. The global UID is in the structure className:UUID
+     * Sets the Laser-ID of the object. The Laser-ID is in the structure className:UUID
      */
     void setGlobalUID() {
 
@@ -32,7 +32,7 @@ abstract class AbstractBase {
     }
 
     /**
-     * Before the object is being persisted, the global UID is being created if not called manually before
+     * Before the object is being persisted, the Laser-ID is being created if not called manually before
      */
     protected void beforeInsertHandler() {
 
@@ -44,7 +44,7 @@ abstract class AbstractBase {
     }
 
     /**
-     * Before each update, set the global UID if it does not exist and output the changes to be persisted
+     * Before each update, set the Laser-ID if it does not exist and output the changes to be persisted
      * @return a {@link Map} reflecting the changes done on the object
      */
     protected Map<String, Object> beforeUpdateHandler() {

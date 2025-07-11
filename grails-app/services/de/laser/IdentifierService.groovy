@@ -72,7 +72,7 @@ class IdentifierService {
         if(object.globalUID) {
             SortedSet idSet = new TreeSet()
             idSet << object.globalUID
-            objectIds.put(messageSource.getMessage('globalUID.label', null, locale), idSet)
+            objectIds.put(messageSource.getMessage('laserID.label', null, locale), idSet)
         }
         if(object.hasProperty("ids")) {
             object.ids.each { Identifier ident ->

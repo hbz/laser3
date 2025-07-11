@@ -698,7 +698,7 @@ class SubscriptionController {
         List<Org> consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
 
-        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
+        ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -750,7 +750,7 @@ class SubscriptionController {
         List<Org> consortiaMembers = result.subscription.getDerivedNonHiddenSubscribers()
         Platform platform = Platform.get(params.platform)
 
-        ArrayList titles = ['LAS:eR-UUID', message(code: 'default.sortname.label'), 'Customer ID', 'Requestor ID']
+        ArrayList titles = ['Laser-ID', message(code: 'default.sortname.label'), 'Customer ID', 'Requestor ID']
 
         ArrayList rowData = [], row
         consortiaMembers.each { Org org ->

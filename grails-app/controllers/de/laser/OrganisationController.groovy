@@ -195,8 +195,8 @@ class OrganisationController  {
         result.filterSet = params.filterSet ? true : false
 
         List<Org> orgListTotal  = Org.findAll(fsr.query, fsr.queryParams)
-        result.orgListTotal = orgListTotal.size()
-        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
+        result.orgList      = Org.executeQuery(fsr.query, fsr.queryParams + [max: result.max, offset: result.offset])
+        result.orgListTotal = Org.executeQuery('select o.id ' + fsr.query, fsr.queryParams).size()
 
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())

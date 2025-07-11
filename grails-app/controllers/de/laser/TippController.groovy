@@ -30,7 +30,7 @@ class TippController  {
   //-----
 
   /**
-   * Shows the given title. The title may be called by database ID, we:kb UUID or globalUID
+   * Shows the given title. The title may be called by database ID, we:kb UUID or Laser-ID
    * @return the details view of the title
    */
   @DebugInfo(isInstUser_denySupport = [])

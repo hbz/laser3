@@ -1302,7 +1302,7 @@ class SurveyControllerService {
                         if (headerCol.startsWith("\uFEFF"))
                             headerCol = headerCol.substring(1)
                         switch (headerCol.toLowerCase().trim()) {
-                            case ["laser-uuid", "las:er-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)", "las:er-uuid (einrichtungslizenz)", "las:er-uuid (institution subscription)"]: colMap.uuidCol = c
+                            case ["laser-id", "laser-id (einrichtung)", "laser-id (institution)", "laser-id (einrichtungslizenz)", "laser-id (institution subscription)"]: colMap.uuidCol = c
                                 break
                             case "gnd-id": colMap.gndCol = c
                                 break

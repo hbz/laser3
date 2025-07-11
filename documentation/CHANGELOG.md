@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6493    11.07.2025  dev     3.6         David   Feature     Globale UID/LAS:eR UUID in Laser-ID umbenennen
+
+6725    10.07.2025  rc-3.5  3.5.4       David   Feature     SystemProfiler -> Admin
+
 6667    09.07.2025  rc-3.5  3.5.4       Andreas Feature     Entfernen der Summenspalten von der Ausgabe der Nutzerzahlen
 
 6724    09.07.2025  rc-3.5  3.5.4       Andreas Feature     neues Filterfeld in "Meine dauerhafte Titel" eingebaut

@@ -559,7 +559,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * <ol>
      *     <li>sortname</li>
      *     <li>name</li>
-     *     <li>globalUID</li>
+     *     <li>Laser-ID</li>
      *     <li>database id</id>
      * </ol>
      * @return one of the fields listed above

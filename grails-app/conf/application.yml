@@ -67,6 +67,8 @@ spring:
 server:
     servlet:
         session:
+            cookie:
+                name: 'LASER_SESSION'
             persistent: false
             timeout: 1800 # 1800 seconds - 30 minutes
 
@@ -206,6 +208,9 @@ grails:
 #                defaultFailureUrl: '/login/authfail?login_error=1'
             logout:
                 postOnly: false
+            rememberMe:
+                cookieName: 'LASER_REMEMBER_ME'
+                key:        'laserRocks%123' # todo
             controllerAnnotations:
                 staticRules:
                     -   pattern: '/assets/**'

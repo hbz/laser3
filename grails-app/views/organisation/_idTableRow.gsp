@@ -3,8 +3,8 @@
     <td>${tableRowNr}</td>
     <td>
         <g:if test="${showGlobalUid}">
-            <g:message code="globalUID.label" />
-            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'globalUID.desc')}">
+            <g:message code="laserID.label" />
+            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'laserID.desc')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
             </span>
         </g:if>
