@@ -63,10 +63,10 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting the record
      * @return JSON
      */
-    static getPackage(Package pkg, Org context, int max, int offset) {
+    static getPackage(Sql sql, Package pkg, Org context, int max, int offset) {
         Map<String, Object> result = [:]
 
-        result = getPackageMap(pkg, context, max, offset)
+        result = getPackageMap(sql, pkg, context, max, offset)
 
         return result ? new JSON(result) : null
     }
@@ -78,7 +78,7 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getPackageMap(Package pkg, Org context, int max, int offset) {
+	static Map<String, Object> getPackageMap(Sql sql, Package pkg, Org context, int max, int offset) {
 		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
@@ -112,7 +112,7 @@ class ApiPkg {
 		Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg order by tipp.sortname', [pkg: pkg, max: max, offset: offset])
 		int total = TitleInstancePackagePlatform.countByPkg(pkg)
 		//move to native sql
-		result.tipps            = ApiCollectionReader.getTippCollection(tippIDs, ApiReader.IGNORE_ALL) // de.laser.wekb.TitleInstancePackagePlatform
+		result.tipps            = ApiCollectionReader.getTippCollectionWithSQL(sql, tippIDs, ApiReader.IGNORE_ALL) // de.laser.wekb.TitleInstancePackagePlatform
 		result.recordTotalCount = total
 		result.recordCount = tippIDs ? tippIDs.size() : 0
 		result.offset = offset

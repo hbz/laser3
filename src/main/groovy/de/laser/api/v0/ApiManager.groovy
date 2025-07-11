@@ -281,7 +281,19 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg, max, offset)
+                try {
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    try {
+                        result = ApiPkg.getPackage(sql, (Package) tmp.obj, contextOrg, max, offset)
+                    }
+                    finally {
+                        sql.close()
+                    }
+                }
+                catch (NativeSqlException e) {
+                    log.error(e.getMessage())
+                    result = Constants.HTTP_SERVICE_UNAVAILABLE
+                }
             }
         }
         else if (checkValidRequest('platform')) {

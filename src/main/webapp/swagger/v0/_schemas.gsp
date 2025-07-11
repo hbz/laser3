@@ -1523,11 +1523,6 @@
     OrganisationRole_Virtual:
       description: A relation of a license, package, subscription or title instance with an organisation. Only one of license, package, subscription and title can be set for one link.
       properties:
-        endDate:
-          type: string
-          description: End date of the duration of this organisational relation.
-          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
-          example: "1998-12-01 00:00:00"
         organisation:
           $ref: "#/components/schemas/OrganisationStub"
         roleType:
@@ -1535,11 +1530,6 @@
           description: The type of linking. Maps to the RefdataCategory "${RDConstants.ORGANISATIONAL_ROLE}"
           enum: <% printRefdataEnum(RDConstants.ORGANISATIONAL_ROLE, 12) %>
           example: ${RDStore.OR_SUBSCRIBER_CONS.value}
-        startDate:
-          type: string
-          description: Start date of the duration of this organisational relation.
-          format: <% print ApiToolkit.DATE_TIME_PATTERN %>
-          example: "2019-12-31 00:00:00"
 
 
     Package_in_Subscription:
@@ -2089,11 +2079,6 @@
           type: string
           description: Publisher name. Not to be confused with third-party platform hosting name.
           example: American Chemical Society
-        providers:
-          type: array
-          description: List of provider and agency organisations related to this title.
-          items:
-            $ref: "#/components/schemas/OrganisationRole_Virtual"
         seriesName:
           type: string
           description: Series name.

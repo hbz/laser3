@@ -19,6 +19,8 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed attribute: `Organisation.retirementDate`
 - removed attribute: `Organisation.status`
 - removed attribute: `Organisation.type`
+- removed attribute: `TitleInstancePackagePlatform.providers`
+- removed attribute: `TitleInstancePackagePlatformStub.providers`
 - removed virtual object: `Link_Org`
 - renamed attribute: `License.vendors` => `License.librarySuppliers`
 - renamed attribute: `Package.gokbId` => `Package.wekbId`
