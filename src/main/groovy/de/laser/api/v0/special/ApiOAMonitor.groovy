@@ -137,33 +137,16 @@ class ApiOAMonitor {
             //def context = org // TODO
 
             result.laserID      = org.globalUID
-            result.gokbId       = org.gokbId
             result.name         = org.name
-            result.shortname    = org.sortname //deprecated and to be removed for 3.2
             result.sortname     = org.sortname
             result.region       = org.region?.value
             result.country      = org.country?.value
             result.libraryType  = org.libraryType?.value
             result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
 
-            //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
-            //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
-
-            // RefdataValues
-
-            result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-//            result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
-            result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
-
             // References
 
-            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address
-            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.addressbook.Contact
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-            //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
-            //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // de.laser.addressbook.PersonRole
-
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
 
