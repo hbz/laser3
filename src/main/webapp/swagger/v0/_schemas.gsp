@@ -113,7 +113,7 @@
     CostItem:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: Global unique identifier for system-wide identification in LAS:eR.
           example: "costitem:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
@@ -413,7 +413,7 @@
       type: object
       description: "An access point configuration for the calling institution. May be one of the following methods: ezproxy, ip, openathens, proxy or shibboleth."
       properties:
-        globalUID:
+        laserID:
           type: string
           description: Global unique identifier for system-wide identification in LAS:eR.
           example: "orgaccesspoint:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
@@ -454,6 +454,8 @@
           description: The country where the organisation is seated. Maps to the RefdataCategory "${RDConstants.COUNTRY}".
           enum: <% printRefdataEnum(RDConstants.COUNTRY, 12) %>
           example: DE
+        #discoverySystemFrontend:
+        #discoverySystemIndex:
         eInvoice:
           type: string #mapped to boolean
           description: Is the institution connected to the eInvoice portal? Maps to the RefdataCategory "${RDConstants.Y_N}".
@@ -463,6 +465,8 @@
           description: To which eInvoice portal is the given institution connected? Maps to the RefdataCategory "${RDConstants.E_INVOICE_PORTAL}".
           enum: <% printRefdataEnum(RDConstants.E_INVOICE_PORTAL, 12) %>
           example: E-Rechnungsportal NRW
+        #funderType:
+        #funderHskType:
         lastUpdated:
           type: string
           description: Timestamp when the organisation record has been most recently updated.
@@ -472,6 +476,7 @@
           type: string
           description: Name of the legal patron of the institution.
           example: Akademie der Künste
+        #libraryNetwork:
         libraryType:
           type: string
           description: The type of library if the organisation called is a library. Maps to the RefdataCategory "${RDConstants.LIBRARY_TYPE}".
@@ -526,6 +531,7 @@
           example: ["socialSciences", "artMusicDesign", "teaching", "mathematicsSciences", "medicineHealthScience", "languagesCulturalStudies", "economicsLaw", "civilService"]
           items:
             type: string
+        #supportedLibrarySystem:
         url:
           type: string
           description: Web site of the organisation.
@@ -696,7 +702,7 @@
     Person:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: global unique identifier for system-wide identification in LAS:eR.
           example: "person:a45a3cf0-f3ad-f231-d5ab-fc1d217f583c"
@@ -1120,7 +1126,7 @@
       items:
         type: object
         properties:
-          globalUID:
+          laserID:
             type: string
             description: global unique identifier for system-wide identification in LAS:eR.
             example: "costitem:be3227d3-0d69-4ebd-ac11-906a13d59057"
@@ -1396,7 +1402,7 @@
       type: object
       description: An element of the current title holding stock.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given issue entitlement.
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
@@ -1545,7 +1551,7 @@
     Package_in_CostItem:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
@@ -1791,7 +1797,7 @@
     OrgAccessPointStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation access point in LAS:eR.
           example: "orgaccesspoint:d64b3dc9-1c1f-4470-9e2b-ae3c341ebc3c"
@@ -1805,7 +1811,7 @@
     OrganisationStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation in LAS:eR.
           example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"
@@ -1840,10 +1846,40 @@
           example: ["Institution"]
 
 
+    LibrarySupplierStub:
+      type: object
+      properties:
+        laserID:
+          type: string
+          description: A global unique identifier to identify the given library supplier in LAS:eR.
+          example: "librarySupplier:bd01da62-126a-4fc1-8431-ca6f07a35608"
+        wekbId:
+          type: string
+          description: The identifier of the library supplier in the we:kb knowledge base.
+          example: 97a9ba82-de2b-4011-8cdc-e285f8c4c600
+        name:
+          type: string
+          description: Name of the library supplier.
+          example: "Zentrale Vergabestelle"
+        abbreviatedName:
+          type: string
+          description: Short name of the library supplier for easier retrieval in lists.
+          example: ZVS
+        identifiers: # mapping attr ids
+          type: array
+          description: Further set of identifiers of the library supplier.
+          items:
+            $ref: "#/components/schemas/Identifier"
+        status:
+          type: string
+          description: Status of the provider. Maps to the RefdataCategory "${RDConstants.VENDOR_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.VENDOR_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
+          example: ${RDStore.VENDOR_STATUS_CURRENT.value}
+
     LicenseStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given license.
           example: "license:7e1e667b-77f0-4495-a1dc-a45ab18c1410"
@@ -1857,7 +1893,7 @@
           description: Further set of identifiers of the license.
           items:
             $ref: "#/components/schemas/Identifier"
-        reference:
+        name:
           type: string
           description: Name of the license.
           example: Analysestadtverbund-Grundvertrag
@@ -1881,7 +1917,7 @@
     PackageStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
@@ -1908,7 +1944,7 @@
       type: object
       description: A record for a platform hosting one or more title instances.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given platform in LAS:eR.
           example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
@@ -1933,7 +1969,7 @@
     ProviderStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given provider in LAS:eR.
           example: "provider:ac06387f-2e79-499a-9fa7-140d5395d72e"
@@ -1945,9 +1981,9 @@
           type: string
           description: Name of the provider.
           example: "Eiserfranckh'sche Verlagshandlung"
-        sortname:
+        abbreviatedName:
           type: string
-          description: Sort name of the provider for easier retrieval in lists.
+          description: Short name of the provider for easier retrieval in lists.
           example: Eiserfranckh
         identifiers: # mapping attr ids
           type: array
@@ -1964,7 +2000,7 @@
       type: object
       description: A subscription record for an electronic resource.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given subscription.
           example: "subscription:e96bd7eb-3a00-49c5-bac9-e84d5d335ef1"
@@ -2004,7 +2040,7 @@
       type: object
       description: A title instance record.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given title instance.
           example: "titleinstancepackageplatform:9d5c918a-80b5-a121-a7f8-b05ac53004a"
@@ -2096,36 +2132,6 @@
           type: string
           description: Number of volume for monograph.
           example: XXXIII
-
-    LibrarySupplierStub:
-      type: object
-      properties:
-        globalUID:
-          type: string
-          description: A global unique identifier to identify the given library supplier in LAS:eR.
-          example: "librarySupplier:bd01da62-126a-4fc1-8431-ca6f07a35608"
-        wekbId:
-          type: string
-          description: The identifier of the library supplier in the we:kb knowledge base.
-          example: 97a9ba82-de2b-4011-8cdc-e285f8c4c600
-        name:
-          type: string
-          description: Name of the library supplier.
-          example: "Zentrale Vergabestelle"
-        sortname:
-          type: string
-          description: Sort name of the library supplier for easier retrieval in lists.
-          example: ZVS
-        identifiers: # mapping attr ids
-          type: array
-          description: Further set of identifiers of the library supplier.
-          items:
-            $ref: "#/components/schemas/Identifier"
-        status:
-          type: string
-          description: Status of the provider. Maps to the RefdataCategory "${RDConstants.VENDOR_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.VENDOR_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
-          example: ${RDStore.VENDOR_STATUS_CURRENT.value}
 
 <%-- lists --%>
 
@@ -2397,7 +2403,7 @@
     EZBInstitutionStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation in LAS:eR.
           example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"

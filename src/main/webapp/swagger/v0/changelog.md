@@ -7,8 +7,8 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - added new attribute: `CostItem.costInformation`
 - deprecated endpoint: `/statistic/packages/list`
 - deprecated endpoint: `/statistic/packages`
-- pagination: added new optional argument `max` to `subscription` and `oamonitor/subscriptions`
-- pagination: added new optional argument `offset` to `subscription` and `oamonitor/subscriptions`
+- pagination: added new optional argument `max` to `/package`, `/subscription` and `oamonitor/subscriptions`
+- pagination: added new optional argument `offset` to `/package`, `/subscription` and `oamonitor/subscriptions`
 - pagination: introduction of pagination and restriction of record count in `Subscription.packages.issueEntitlements` and `Package.tipps` to 20000 entries
 - removed attribute: `EZBInstitutionStub.status`
 - removed attribute: `OrganisationStub.gokbId`
@@ -22,14 +22,29 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed attribute: `TitleInstancePackagePlatform.providers`
 - removed attribute: `TitleInstancePackagePlatformStub.providers`
 - removed virtual object: `Link_Org`
+- renamed attribute: `EZBInstitutionStub.globalUID` => `EZBInstitutionStub.laserID`
+- renamed attribute: `CostItem.globalUID` => `CostItem.laserID`
+- renamed attribute: `CostItemCollection.globalUID` => `CostItemCollection.laserID`
+- renamed attribute: `IssueEntitlement.globalUID` => `IssueEntitlement.laserID`
+- renamed attribute: `License.globalUID` => `License.laserID`
+- renamed attribute: `License.reference` => `License.name`
 - renamed attribute: `License.vendors` => `License.librarySuppliers`
+- renamed attribute: `Org.globalUID` => `Org.laserID`
+- renamed attribute: `OrgAccessPoint.globalUID` => `OrgAccessPoint.laserID`
+- renamed attribute: `Package.globalUID` => `Package.laserID`
 - renamed attribute: `Package.gokbId` => `Package.wekbId`
 - renamed attribute: `Package.librarySuppliers` => `Package.librarySuppliers`
+- renamed attribute: `Person.globalUID` => `Person.laserID`
+- renamed attribute: `Platform.globalUID` => `Platform.laserID`
 - renamed attribute: `Platform.gokbId` => `Platform.wekbId`
 - renamed attribute: `Provider.invoicingVendors` => `Provider.invoicingLibrarySuppliers`
+- renamed attribute: `Provider.sortname` => `Provider.abbreviatedName`
+- renamed attribute: `Subscription.globalUID` => `Subscription.laserID`
 - renamed attribute: `Subscription.vendors` => `Subscription.librarySuppliers`
+- renamed attribute: `TitleInstancePackagePlatform.globalUID` => `TitleInstancePackagePlatform.laserID`
 - renamed attribute: `TitleInstancePackagePlatform.gokbId` => `TitleInstancePackagePlatform.wekbId`
 - renamed attribute: `Vendor.gokbId` => `LibrarySupplier.wekbId`
+- renamed attribute: `Vendor.sortname` => `LibrarySupplier.abbreviatedName`
 - renamed endpoint: `/vendor` => `/librarySupplier`
 - renamed object: `Vendor` => `LibrarySupplier`
 - renamed object stub: `VendorStub` => `LibrarySupplierStub`

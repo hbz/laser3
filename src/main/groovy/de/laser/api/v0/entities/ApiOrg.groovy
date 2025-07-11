@@ -1,5 +1,7 @@
 package de.laser.api.v0.entities
 
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.RefdataValue
 import de.laser.addressbook.Address
 import de.laser.Combo
@@ -21,7 +23,7 @@ class ApiOrg {
 
     /**
      * Locates the given {@link Org} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -41,7 +43,7 @@ class ApiOrg {
                     }
                 }
                 break
-            case 'globalUID':
+            case 'laserID':
                 result.obj = Org.findAllByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
@@ -107,7 +109,7 @@ class ApiOrg {
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
-        result.globalUID           = org.globalUID
+        result.laserID             = org.globalUID
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
         result.sortname            = org.sortname
@@ -135,27 +137,24 @@ class ApiOrg {
 
         // RefdataValues
 
-        result.eInvoicePortal = org.eInvoicePortal?.value
-        result.region         = org.region?.value
-        result.country        = org.country?.value
-        result.libraryType    = org.libraryType?.value
-        result.funderType     = org.funderType?.value
-        result.funderHskType  = org.funderHskType?.value
-        result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
-        result.libraryNetwork = org.libraryNetwork?.value
-        result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-//        result.status         = org.status?.value // TODO: ERMS-6224 - remove org.status
-        result.status         = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
-
+        result.country                  = org.country?.value
+        result.discoverySystemFrontends = org.discoverySystemFrontends.collect { DiscoverySystemFrontend dsf -> dsf.frontend.value }
+        result.discoverySystemIndices   = org.discoverySystemIndices.collect { DiscoverySystemIndex dsi -> dsi.index.value }
+        result.eInvoicePortal           = org.eInvoicePortal?.value
+        result.funderType               = org.funderType?.value
+        result.funderHskType            = org.funderHskType?.value
+        result.libraryNetwork           = org.libraryNetwork?.value
+        result.libraryType              = org.libraryType?.value
+        result.region                   = org.region?.value
+        result.subjectGroup             = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
+        result.supportedLibrarySystem   = org.supportedLibrarySystem?.value
         // References
         Map<String, Object> queryParams = [org:org]
 
         result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
         result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-        result.persons      = ApiCollectionReader.getPrsLinkCollection(
-                org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.addressbook.PersonRole
+        result.persons      = ApiCollectionReader.getPrsLinkCollection(org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context) // de.laser.addressbook.PersonRole
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 

@@ -115,7 +115,7 @@ class ApiStatistic {
         boolean hasAccess = calculateAccess(pkg)
         if (hasAccess) {
 
-            result.globalUID        = pkg.globalUID
+            result.laserID          = pkg.globalUID
             result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
             result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
             result.lastUpdated      = ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
@@ -190,7 +190,7 @@ class ApiStatistic {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pform.globalUID
+        result.laserID      = pform.globalUID
         result.name         = pform.name
         //result.identifiers  = ApiCollectionReader.resolveIdentifiers(pform.ids) // de.laser.Identifier
 

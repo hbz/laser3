@@ -21,7 +21,7 @@ class ApiSubscription {
 
     /**
 	 * Locates the given {@link Subscription} and returns the object (or null if not found) and the request status for further processing
-	 * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+	 * @param the field to look for the identifier, one of {id, laserID, namespace:id}
 	 * @param the identifier value with namespace, if needed
      * @return {@link ApiBox}(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
@@ -39,7 +39,7 @@ class ApiSubscription {
 						}
 					}
 					break
-				case 'globalUID':
+				case 'laserID':
 					result.obj = Subscription.findByGlobalUID(value)
 					if(!result.obj) {
 						DeletedObject.withTransaction {
@@ -169,7 +169,7 @@ class ApiSubscription {
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
-		result.globalUID            	= sub.globalUID
+		result.laserID	            	= sub.globalUID
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())

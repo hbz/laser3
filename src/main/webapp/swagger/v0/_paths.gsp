@@ -41,7 +41,7 @@
         - Lists
       summary: Retrieving a list of owner related cost items
       description: >
-        Supported are queries by following identifiers: *globalUID*. Optional identifier/constraint *timestamp* is supported.
+        Supported are queries by following identifiers: *laserID*. Optional identifier/constraint *timestamp* is supported.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -108,7 +108,7 @@
         - Objects
       summary: Retrieving a single license
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -143,7 +143,7 @@
         - Lists
       summary: Retrieving a list of owner related licenses
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -209,7 +209,7 @@
         - Objects
       summary: Retrieving a single organisation
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -243,7 +243,7 @@
         - Objects
       summary: Retrieving a single provider
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID*, *wekbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -301,7 +301,7 @@
         - Objects
       summary: Retrieving a single package
       description: >
-        Supported are queries by following identifiers: *wekbId*, *globalUID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *wekbId*, *laserID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -338,7 +338,7 @@
       - Objects
       summary: Retrieving a single platform
       description: >
-        Supported are queries by following identifiers: *wekbId*, *globalUID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *wekbId*, *laserID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -445,7 +445,7 @@
       - Objects
       summary: Retrieving a single subscription
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *laserID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -482,7 +482,7 @@
         - Lists
       summary: Retrieving a list of owner related subscriptions
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -515,7 +515,7 @@
         - Objects
       summary: Retrieving a single vendor
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID*, *wekbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -573,7 +573,7 @@
         - "Special: EZB"
       summary: Retrieving the interlibrary loan (ILL) indicators for a given license
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
 
       parameters:
         - $ref: "#/components/parameters/q"

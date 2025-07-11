@@ -19,7 +19,7 @@ class ApiLicense {
 
     /**
      * Locates the given {@link License} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+     * @param the field to look for the identifier, one of {id, laserID, namespace:id}
      * @param the identifier value with namespace, if needed
      * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
@@ -35,7 +35,7 @@ class ApiLicense {
                     }
                 }
                 break
-            case 'globalUID':
+            case 'laserID':
                 result.obj = License.findByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
@@ -161,14 +161,14 @@ class ApiLicense {
 
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
-        result.globalUID        = lic.globalUID
+        result.laserID          = lic.globalUID
         result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.altnames         = ApiCollectionReader.getAlternativeNameCollection(lic.altnames)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
-        result.reference        = lic.reference
+        result.name             = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
 
         // erms-888
