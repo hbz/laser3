@@ -115,7 +115,7 @@ class ApiStatistic {
         boolean hasAccess = calculateAccess(pkg)
         if (hasAccess) {
 
-            result.globalUID        = pkg.globalUID
+            result.laserID          = pkg.laserID
             result.startDate        = ApiToolkit.formatInternalDate(pkg.startDate)
             result.endDate          = ApiToolkit.formatInternalDate(pkg.endDate)
             result.lastUpdated      = ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
@@ -190,7 +190,7 @@ class ApiStatistic {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pform.globalUID
+        result.laserID    = pform.laserID
         result.name         = pform.name
         //result.identifiers  = ApiCollectionReader.resolveIdentifiers(pform.ids) // de.laser.Identifier
 
@@ -275,7 +275,7 @@ class ApiStatistic {
                 }
                 else {
                     if (ApiToolkit.isDebugMode()) {
-                        // result.add( ['NO_APPROVAL': subPkg.subscription.globalUID] )
+                        // result.add( ['NO_APPROVAL': subPkg.subscription.laserID] )
                         result.add(["NO_ACCESS": ApiToolkit.NO_ACCESS_DUE_NO_APPROVAL])
                     }
                 }

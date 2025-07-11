@@ -21,7 +21,7 @@ class ApiOrg {
 
     /**
      * Locates the given {@link Org} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -41,11 +41,11 @@ class ApiOrg {
                     }
                 }
                 break
-            case 'globalUID':
-                result.obj = Org.findAllByGlobalUID(value)
+            case 'laserID':
+                result.obj = Org.findAllByLaserID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
-                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                        result.obj = DeletedObject.findAllByOldLaserID(value)
                     }
                 }
                 break
@@ -107,7 +107,7 @@ class ApiOrg {
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
-        result.globalUID           = org.globalUID
+        result.laserID             = org.laserID
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
         result.sortname            = org.sortname

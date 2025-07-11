@@ -5,7 +5,7 @@ skinparam linetype ortho
 
 class Subscription {
     * id <<generated>>
-    * globalUID <<generated>>
+    * laserID <<generated>>
     * name
     startDate
     endDate

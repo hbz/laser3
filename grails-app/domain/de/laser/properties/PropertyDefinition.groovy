@@ -203,7 +203,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                 throw new UnexpectedTypeException()
             }
 
-            Org tenant          = map.get('tenant') ? Org.findByGlobalUID(map.get('tenant')) : null
+            Org tenant          = map.get('tenant') ? Org.findByLaserID(map.get('tenant')) : null
             Map i10n = map.get('i10n') ?: [
                     name_de: token,
                     name_en: token,

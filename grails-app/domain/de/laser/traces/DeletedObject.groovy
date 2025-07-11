@@ -18,7 +18,7 @@ class DeletedObject {
     String oldName
     String oldCalculatedType
     String oldObjectType
-    String oldGlobalUID
+    String oldLaserID
     String oldGokbID
     Date oldStartDate
     Date oldEndDate
@@ -39,7 +39,7 @@ class DeletedObject {
         oldName                             column: 'do_old_name', type: 'text'
         oldCalculatedType                   column: 'do_old_calculated_type'
         oldObjectType                       column: 'do_old_object_type', index: 'do_old_object_type_idx, do_old_db_id_obj_idx'
-        oldGlobalUID                        column: 'do_old_global_uid', index: 'do_old_global_idx'
+        oldLaserID                          column: 'do_old_global_uid', index: 'do_old_global_idx'
         oldGokbID                           column: 'do_old_gokb_id', index: 'do_old_gokb_idx'
         oldStartDate                        column: 'do_old_start_date'
         oldEndDate                          column: 'do_old_end_date'
@@ -61,7 +61,7 @@ class DeletedObject {
     ]
 
     static constraints = {
-        oldGlobalUID (nullable: true)
+        oldLaserID (nullable: true)
         oldName (nullable: true, blank: false)
         oldCalculatedType (nullable: true, blank: false)
         oldStartDate (nullable: true)
@@ -76,7 +76,7 @@ class DeletedObject {
                                                      reference: 'oldName',
                                                      startDate: 'oldStartDate',
                                                      endDate: 'oldEndDate',
-                                                     globalUID: 'oldGlobalUID',
+                                                     laserID: 'oldLaserID',
                                                      gokbId: 'oldGokbID']
 
     /**
@@ -88,8 +88,8 @@ class DeletedObject {
      */
     static DeletedObject construct(delObj, Set<String> delRelations) throws CreationException {
         DeletedObject trace = construct(delObj)
-        delRelations.each { String globalUID ->
-            DelCombo delCombo = new DelCombo(delObjTrace: trace, accessibleOrg: globalUID)
+        delRelations.each { String laserID ->
+            DelCombo delCombo = new DelCombo(delObjTrace: trace, accessibleOrg: laserID)
             if(!delCombo.save())
                 throw new CreationException(delCombo.getErrors().getAllErrors())
         }
@@ -127,7 +127,7 @@ class DeletedObject {
             trace.referencePackageWekbID = delObj.pkg.gokbId
         else if(delObj instanceof IssueEntitlement) {
             trace.referencePackageWekbID = delObj.tipp.pkg.gokbId
-            trace.referenceSubscriptionUID = delObj.subscription.globalUID
+            trace.referenceSubscriptionUID = delObj.subscription.laserID
             trace.referenceTitleWekbID = delObj.tipp.gokbId
         }
 

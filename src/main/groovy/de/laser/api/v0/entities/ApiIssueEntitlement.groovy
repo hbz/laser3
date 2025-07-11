@@ -76,7 +76,7 @@ class ApiIssueEntitlement {
             return null
         }
 
-        result.globalUID        = ie.globalUID
+        result.laserID          = ie.laserID
         //result.name             = ie.name
         result.accessStartDate  = ApiToolkit.formatInternalDate(ie.accessStartDate)
         result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)

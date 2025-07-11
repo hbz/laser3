@@ -14,7 +14,7 @@ class ApiOrgAccessPoint {
 
     /**
      * Locates the given {@link OrgAccessPoint} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID}
+     * @param the field to look for the identifier, one of {id, laserID}
      * @param the identifier value
      * @return ApiBox(obj: OrgAccessPoint | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -26,8 +26,8 @@ class ApiOrgAccessPoint {
             case 'id':
                 result.obj = OrgAccessPoint.findAllWhere(id: Long.parseLong(value))
                 break
-            case 'globalUID':
-                result.obj = OrgAccessPoint.findAllWhere(globalUID: value)
+            case 'laserID':
+                result.obj = OrgAccessPoint.findAllWhere(laserID: value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
@@ -88,7 +88,7 @@ class ApiOrgAccessPoint {
 
         boolean hasAccess = (owner.id == context.id)
         if (hasAccess) {
-                result = OrgAccessPoint.findAllByOrg(owner).globalUID
+                result = OrgAccessPoint.findAllByOrg(owner).laserID
                 result = ApiToolkit.cleanUp(result, true, true)
         }
 
@@ -107,7 +107,7 @@ class ApiOrgAccessPoint {
 
         orgAccessPoint = GrailsHibernateUtil.unwrapIfProxy(orgAccessPoint)
 
-        result.globalUID = orgAccessPoint.globalUID
+        result.laserID = orgAccessPoint.laserID
 
         result."${orgAccessPoint.accessMethod.value}" = [:]
 

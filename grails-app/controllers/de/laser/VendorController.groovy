@@ -293,7 +293,7 @@ class VendorController {
         Vendor.withTransaction {
 
             Vendor vendor = new Vendor(name: params.vendor, status: RDStore.VENDOR_STATUS_CURRENT, createdBy: contextService.getOrg())
-            vendor.setGlobalUID()
+            vendor.setLaserID()
             if (vendor.save()) {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'vendor.label'), vendor.name]) as String
                 redirect action: 'show', id: vendor.id

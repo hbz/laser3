@@ -77,7 +77,7 @@
                                 <g:if test="${cp.startsWith('http://') || cp.startsWith('https://')}">
                                     <g:if test="${cp.indexOf('@') > 0}">
                                         <g:if test="${options.useHyperlinks}">
-                                            <a href="${cp.split('@')[0]}">${cp.split('@')[1]}</a><br/>%{-- masking globalUID and gokbId --}%
+                                            <a href="${cp.split('@')[0]}">${cp.split('@')[1]}</a><br/>%{-- masking laserID and gokbId --}%
                                         </g:if>
                                         <g:else>
                                             ${cp.split('@')[0]}<br/>

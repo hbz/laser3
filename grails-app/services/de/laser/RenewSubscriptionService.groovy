@@ -66,7 +66,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                             Subscription copySub = new Subscription()
                             InvokerHelper.setProperties(copySub, newProperties)
                             copySub.id = null
-                            copySub.globalUID = null
+                            copySub.laserID = null
                             copySub.ids = null
                             copySub.packages = null
                             copySub.issueEntitlements = null
@@ -180,7 +180,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                             OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                             InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                             newOrgAccessPointLink.subPkg = newSubscriptionPackage
-                                            newOrgAccessPointLink.globalUID = null
+                                            newOrgAccessPointLink.laserID = null
 
                                             if (!newOrgAccessPointLink.save()) {
                                                 log.error("Problem saving OrgAccessPointLink ${newOrgAccessPointLink.errors}")
@@ -217,7 +217,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                         newIssueEntitlement.coverages = null
                                         newIssueEntitlement.ieGroups = null
                                         newIssueEntitlement.priceItems = null
-                                        newIssueEntitlement.globalUID = null
+                                        newIssueEntitlement.laserID = null
                                         newIssueEntitlement.subscription = copySub
 
                                         if (newIssueEntitlement.save()) {
@@ -247,7 +247,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                                 newPriceItem.listCurrency = priceItem.listCurrency
                                                 newPriceItem.localPrice = priceItem.localPrice
                                                 newPriceItem.localCurrency = priceItem.localCurrency
-                                                newPriceItem.setGlobalUID()
+                                                newPriceItem.setLaserID()
 
 
                                                 if (!newPriceItem.save()) {
@@ -403,7 +403,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     CostItem newCostItem = new CostItem()
                                     InvokerHelper.setProperties(newCostItem, costItemProperties)
                                     newCostItem.sub = copySub
-                                    newCostItem.globalUID = null
+                                    newCostItem.laserID = null
 
                                     if (!newCostItem.save()) {
                                         log.error("Problem saving CostItem ${newCostItem.errors}")

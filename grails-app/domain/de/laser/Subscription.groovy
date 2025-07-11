@@ -187,7 +187,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         sort name: 'asc'
         id          column:'sub_id'
         version     column:'sub_version'
-        globalUID   column:'sub_guid'
+        laserID     column:'sub_guid'
         status      column:'sub_status_rv_fk',  index: 'sub_status_idx'
         type        column:'sub_type_rv_fk',    index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk',    index: 'sub_kind_idx'
@@ -241,7 +241,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        laserID     (nullable:true, blank:false, unique:true, maxSize:255)
         type        (nullable:true)
         kind        (nullable:true)
         form        (nullable:true)
@@ -288,7 +288,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
     }
     @Override
     def afterInsert() {

@@ -2266,7 +2266,7 @@ class MyInstitutionController  {
             List<String> row = []
             keys.eachWithIndex { String entry, int i ->
                 if(entry == "subscription") {
-                    row[i] = subChild.globalUID
+                    row[i] = subChild.laserID
                 }else if(entry == "subscriber.sortname") {
                     row[i] = subChild.getSubscriberRespConsortia().sortname
                 }else if(entry == "subscriber.name") {
@@ -3856,7 +3856,7 @@ join sub.orgRelations or_sub where
                 //subscription Laser-ID
                 //log.debug("insert subscription Laser-ID")
                 cell = row.createCell(cellnum++)
-                cell.setCellValue(subCons.globalUID)
+                cell.setCellValue(subCons.laserID)
                 //license name
                 //log.debug("insert license name")
                 cell = row.createCell(cellnum++)
@@ -4022,7 +4022,7 @@ join sub.orgRelations or_sub where
                         //subscription global Laser-ID
                         //log.debug("insert Laser-ID")
                         cellnum++
-                        row.add(subCons.globalUID)
+                        row.add(subCons.laserID)
                         //license name
                         //log.debug("insert license name")
                         cellnum++

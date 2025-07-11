@@ -28,7 +28,7 @@ class PlatformExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'gokbId'                        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
@@ -129,7 +129,7 @@ class PlatformExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'platform', action: 'show', absolute: true ) + '/' + plt.getProperty(key) + '@' + plt.getProperty(key) )
                 }
                 else if (key == 'gokbId') {

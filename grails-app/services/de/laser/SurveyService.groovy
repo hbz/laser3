@@ -2340,7 +2340,7 @@ class SurveyService {
             if(cols.size() == titleRow.size()) {
                 Org match = null
                 if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
-                    match = Org.findByGlobalUIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
+                    match = Org.findByLaserIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
                 }
                 if (!match && colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
                     List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib])
@@ -2743,7 +2743,7 @@ class SurveyService {
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
                 result.platformInstanceRecords = [:]
                 result.platforms = subscribedPlatforms
-                result.platformsJSON = subscribedPlatforms.globalUID as JSON
+                result.platformsJSON = subscribedPlatforms.laserID as JSON
                 result.keyPairs = [:]
                 if (!params.containsKey('tab'))
                     params.tab = subscribedPlatforms[0].id.toString()
@@ -3081,7 +3081,7 @@ class SurveyService {
                             if (check.size() == 1)
                                 match = check[0]
                             if (!match)
-                                match = Org.findByGlobalUID(idStr)
+                                match = Org.findByLaserID(idStr)
                             if (!match) {
                                 check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
                                 if (check.size() == 1)

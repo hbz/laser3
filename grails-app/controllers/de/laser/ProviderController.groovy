@@ -304,7 +304,7 @@ class ProviderController {
         Provider.withTransaction {
 
             Provider provider = new Provider(name: params.provider, status: RDStore.PROVIDER_STATUS_CURRENT, createdBy: contextService.getOrg())
-            provider.setGlobalUID()
+            provider.setLaserID()
             if (provider.save()) {
                 flash.message = message(code: 'default.created.message', args: [message(code: 'provider.label'), provider.name]) as String
                 redirect action: 'show', id: provider.id

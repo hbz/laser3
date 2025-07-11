@@ -2811,7 +2811,7 @@ class SubscriptionService {
                     List<String> licenseKeys = cols[colMap.licenses].split(',')
                     candidate.licenses = []
                     licenseKeys.each { String licenseKey ->
-                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey.trim(), roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
+                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.laserID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey.trim(), roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
                         if (licCandidates.size() == 1) {
                             License license = licCandidates[0]
                             candidate.licenses << genericOIDService.getOID(license)
@@ -2884,7 +2884,7 @@ class SubscriptionService {
                     String providerIdCandidate = cols[colMap.provider]?.trim()
                     if(providerIdCandidate) {
                         Long idCandidate = providerIdCandidate.isLong() ? Long.parseLong(providerIdCandidate) : null
-                        Provider provider = Provider.findByIdOrGlobalUID(idCandidate,providerIdCandidate)
+                        Provider provider = Provider.findByIdOrLaserID(idCandidate,providerIdCandidate)
                         if(provider)
                             candidate.provider = "${provider.class.name}:${provider.id}"
                         else {
@@ -2897,7 +2897,7 @@ class SubscriptionService {
                     String vendorIdCandidate = cols[colMap.vendor]?.trim()
                     if(vendorIdCandidate) {
                         Long idCandidate = vendorIdCandidate.isLong() ? Long.parseLong(vendorIdCandidate) : null
-                        Vendor vendor = Vendor.findByIdOrGlobalUID(idCandidate,vendorIdCandidate)
+                        Vendor vendor = Vendor.findByIdOrLaserID(idCandidate,vendorIdCandidate)
                         if(vendor)
                             candidate.vendor = "${vendor.class.name}:${vendor.id}"
                         else {
@@ -2978,8 +2978,8 @@ class SubscriptionService {
                     String idCandidate = cols[colMap.instanceOf].trim()
                     String memberIdCandidate = cols[colMap.member].trim()
                     if(idCandidate && memberIdCandidate) {
-                        List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.globalUID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
-                        List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.globalUID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
+                        List<Subscription> parentSubs = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :contextOrg and oo.roleType in :roleTypes and :idCandidate in (cast(oo.sub.id as string),oo.sub.laserID)",[contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM], idCandidate: idCandidate])
+                        List<Org> possibleOrgs = Org.executeQuery("select distinct ident.org from Identifier ident, Combo c where c.fromOrg = ident.org and :idCandidate in (cast(ident.org.id as string), ident.org.laserID) or (ident.value = :idCandidate and ident.ns = :wibid) and c.toOrg = :contextOrg and c.type = :type", [idCandidate:memberIdCandidate,wibid:IdentifierNamespace.findByNs('wibid'),contextOrg: contextOrg,type: comboType])
                         if(parentSubs.size() == 1) {
                             Subscription instanceOf = parentSubs[0]
                             candidate.instanceOf = "${instanceOf.class.name}:${instanceOf.id}"
@@ -3313,7 +3313,7 @@ class SubscriptionService {
                                 log.error("Unparseable number ${cellEntry}")
                             }
                             if (priceItem?.localPrice && priceItem?.localCurrency) {
-                                priceItem.setGlobalUID()
+                                priceItem.setLaserID()
                                 if (!priceItem.save()) {
                                     throw new Exception(priceItem.errors.toString())
                                 } else {
@@ -3519,7 +3519,7 @@ class SubscriptionService {
                                             log.error("Unparseable number ${cellEntry}")
                                         }
                                         if (priceItem?.localPrice && priceItem?.localCurrency) {
-                                            priceItem.setGlobalUID()
+                                            priceItem.setLaserID()
                                             if (!priceItem.save()) {
                                                 throw new Exception(priceItem.errors.toString())
                                             } else {
@@ -4379,7 +4379,7 @@ class SubscriptionService {
             if(cols.size() == titleRow.size()) {
                 Org match = null
                 if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
-                    match = Org.findByGlobalUIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
+                    match = Org.findByLaserIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
                 }
                 if(!match) {
                     if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
@@ -4441,12 +4441,12 @@ class SubscriptionService {
         Integer processRow = 0
         List orgList = []
         ArrayList<String> rows = stream.getText().split('\n')
-        Map<String, Integer> colMap = [globalUIDCol: -1, customerIdCol: -1, requestorIdCol: -1]
+        Map<String, Integer> colMap = [laserIDCol: -1, customerIdCol: -1, requestorIdCol: -1]
         //read off first line of KBART file
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
-                case "laser-id": colMap.globalUIDCol = c
+                case "laser-id": colMap.laserIDCol = c
                     break
                 case "customer id": colMap.customerIdCol = c
                     break
@@ -4460,8 +4460,8 @@ class SubscriptionService {
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 CustomerIdentifier match = null
-                if (colMap.globalUIDCol >= 0 && cols[colMap.globalUIDCol] != null && !cols[colMap.globalUIDCol].trim().isEmpty()) {
-                    List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.customer o where o.globalUID = :globalUID and ci.platform = :platform', [globalUID: cols[colMap.globalUIDCol].trim(), platform: platform])
+                if (colMap.laserIDCol >= 0 && cols[colMap.laserIDCol] != null && !cols[colMap.laserIDCol].trim().isEmpty()) {
+                    List matchList = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci join ci.customer o where o.laserID = :laserID and ci.platform = :platform', [laserID: cols[colMap.laserIDCol].trim(), platform: platform])
                     if (matchList.size() == 1)
                         match = matchList[0] as CustomerIdentifier
                     if (match) {

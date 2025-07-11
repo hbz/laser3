@@ -215,24 +215,24 @@ class WekbNewsService {
                     List match = []
 
                     if (key == 'package') {
-                        match = Package.executeQuery('select id, globalUID from Package where gokbId = :gokbId', [gokbId: it.uuid])
+                        match = Package.executeQuery('select id, laserID from Package where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'platform') {
-                        match = Platform.executeQuery('select id, globalUID from Platform where gokbId = :gokbId', [gokbId: it.uuid])
+                        match = Platform.executeQuery('select id, laserID from Platform where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'provider') {
-                        match = Provider.executeQuery('select id, globalUID from Provider where gokbId = :gokbId', [gokbId: it.uuid])
+                        match = Provider.executeQuery('select id, laserID from Provider where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'vendor') {
-                        match = Vendor.executeQuery('select id, globalUID from Vendor where gokbId = :gokbId', [gokbId: it.uuid])
+                        match = Vendor.executeQuery('select id, laserID from Vendor where gokbId = :gokbId', [gokbId: it.uuid])
                     }
 
                     if (match) {
                         it.id = match[0][0]
-                        it.globalUID = match[0][1]
+                        it.laserID = match[0][1]
                     }
 
-                    if (it.globalUID) { result[key].countInLaser++ }
+                    if (it.laserID) { result[key].countInLaser++ }
 
                     result[key].all << it
                 }

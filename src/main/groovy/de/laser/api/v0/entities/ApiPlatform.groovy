@@ -15,7 +15,7 @@ class ApiPlatform {
 
     /**
      * Locates the given {@link Platform} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Platform | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -27,8 +27,8 @@ class ApiPlatform {
             case 'id':
                 result.obj = Platform.findAllWhere(id: Long.parseLong(value))
                 break
-            case 'globalUID':
-                result.obj = Platform.findAllWhere(globalUID: value)
+            case 'laserID':
+                result.obj = Platform.findAllWhere(laserID: value)
                 break
             case 'gokbId':
                 result.obj = Platform.findAllWhere(gokbId: value)

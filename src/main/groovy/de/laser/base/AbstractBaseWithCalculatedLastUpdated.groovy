@@ -11,8 +11,8 @@ import groovy.util.logging.Slf4j
  *  implementation guide for implementing classes:
  *  class Test extends AbstractBaseWithCalculatedLastUpdated
  *
- *  static mapping     = { globalUID column:'test_guid' .. }
- *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
+ *  static mapping     = { laserID column:'test_guid' .. }
+ *  static constraints = { laserID(nullable:true, blank:false, unique:true, maxSize:255) .. }
  */
 @Slf4j
 abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase

@@ -58,7 +58,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static mapping = {
         id              column:'prs_id'
-        globalUID       column:'prs_guid'
+        laserID         column:'prs_guid'
         version         column:'prs_version'
         title           column:'prs_title'
         first_name      column:'prs_first_name'
@@ -95,7 +95,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     ]
     
     static constraints = {
-        globalUID   (nullable:true,  blank:false, unique:true, maxSize:255)
+        laserID     (nullable:true,  blank:false, unique:true, maxSize:255)
         title       (nullable:true,  blank:false)
         first_name  (nullable:true,  blank:false)
         middle_name (nullable:true,  blank:false)

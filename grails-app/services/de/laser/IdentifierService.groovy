@@ -69,9 +69,9 @@ class IdentifierService {
             idSet << object.gokbId
             objectIds.put(messageSource.getMessage('org.wekbId.label', null, locale), idSet)
         }
-        if(object.globalUID) {
+        if(object.laserID) {
             SortedSet idSet = new TreeSet()
-            idSet << object.globalUID
+            idSet << object.laserID
             objectIds.put(messageSource.getMessage('laserID.label', null, locale), idSet)
         }
         if(object.hasProperty("ids")) {

@@ -113,7 +113,7 @@
     CostItem:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: Global unique identifier for system-wide identification in LAS:eR.
           example: "costitem:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
@@ -393,7 +393,7 @@
       type: object
       description: "An access point configuration for the calling institution. May be one of the following methods: ezproxy, ip, openathens, proxy or shibboleth."
       properties:
-        globalUID:
+        laserID:
           type: string
           description: Global unique identifier for system-wide identification in LAS:eR.
           example: "orgaccesspoint:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
@@ -676,7 +676,7 @@
     Person:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: global unique identifier for system-wide identification in LAS:eR.
           example: "person:a45a3cf0-f3ad-f231-d5ab-fc1d217f583c"
@@ -1100,7 +1100,7 @@
       items:
         type: object
         properties:
-          globalUID:
+          laserID:
             type: string
             description: global unique identifier for system-wide identification in LAS:eR.
             example: "costitem:be3227d3-0d69-4ebd-ac11-906a13d59057"
@@ -1376,7 +1376,7 @@
       type: object
       description: An element of the current title holding stock.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given issue entitlement.
           example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
@@ -1535,7 +1535,7 @@
     Package_in_CostItem:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
@@ -1781,7 +1781,7 @@
     OrgAccessPointStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation access point in LAS:eR.
           example: "orgaccesspoint:d64b3dc9-1c1f-4470-9e2b-ae3c341ebc3c"
@@ -1795,7 +1795,7 @@
     OrganisationStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation in LAS:eR.
           example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"
@@ -1833,7 +1833,7 @@
     LicenseStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given license.
           example: "license:7e1e667b-77f0-4495-a1dc-a45ab18c1410"
@@ -1871,7 +1871,7 @@
     PackageStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given package in LAS:eR.
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
@@ -1898,7 +1898,7 @@
       type: object
       description: A record for a platform hosting one or more title instances.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given platform in LAS:eR.
           example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
@@ -1923,7 +1923,7 @@
     ProviderStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given provider in LAS:eR.
           example: "provider:ac06387f-2e79-499a-9fa7-140d5395d72e"
@@ -1954,7 +1954,7 @@
       type: object
       description: A subscription record for an electronic resource.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given subscription.
           example: "subscription:e96bd7eb-3a00-49c5-bac9-e84d5d335ef1"
@@ -1994,7 +1994,7 @@
       type: object
       description: A title instance record.
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given title instance.
           example: "titleinstancepackageplatform:9d5c918a-80b5-a121-a7f8-b05ac53004a"
@@ -2095,7 +2095,7 @@
     VendorStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given vendor in LAS:eR.
           example: "vendor:bd01da62-126a-4fc1-8431-ca6f07a35608"
@@ -2392,7 +2392,7 @@
     EZBInstitutionStub:
       type: object
       properties:
-        globalUID:
+        laserID:
           type: string
           description: A global unique identifier to identify the given organisation in LAS:eR.
           example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"

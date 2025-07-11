@@ -137,7 +137,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                 sort 'sortname'
                 id          column:'org_id'
            version          column:'org_version'
-         globalUID          column:'org_guid'
+         laserID            column:'org_guid'
               name          column:'org_name',      index:'org_name_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
    legalPatronName          column:'org_legal_patronname'
@@ -179,7 +179,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     static constraints = {
-           globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+             laserID(nullable:true, blank:false, unique:true, maxSize:255)
                 name(blank:false, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
@@ -248,7 +248,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
     }
     @Override
     def afterInsert() {
@@ -565,7 +565,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return one of the fields listed above
      */
     String getDesignation() {
-        sortname ?: (name ?: (globalUID ?: id))
+        sortname ?: (name ?: (laserID ?: id))
     }
 
     /**

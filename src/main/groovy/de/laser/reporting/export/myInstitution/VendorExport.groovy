@@ -27,7 +27,7 @@ class VendorExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'homepage'          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -71,7 +71,7 @@ class VendorExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'vendor', action: 'show', absolute: true ) + '/' + ven.getProperty(key) + '@' + ven.getProperty(key) )
                 }
                 else {

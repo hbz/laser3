@@ -42,7 +42,7 @@
                     <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseDetailsExport.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
 
-                            <g:if test="${field.key == 'globalUID'}">
+                            <g:if test="${field.key == 'laserID'}">
                                 <div class="ui checkbox">
                                     <input type="checkbox" name="cde:${field.key}" id="cde:${field.key}">
                                     <label for="cde:${field.key}">${export.getFieldLabel(field.key as String)}</label>

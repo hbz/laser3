@@ -29,7 +29,7 @@ class OrgExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'customerType'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'libraryType'       : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -46,14 +46,14 @@ class OrgExport extends BaseDetailsExport {
                                     'subjectGroup'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
                             provider: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
                             ],
                             agency: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
@@ -114,7 +114,7 @@ class OrgExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) + '@' + org.getProperty(key) )
                 }
                 else {

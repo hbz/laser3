@@ -320,7 +320,7 @@ class StatsSyncService {
                     if (c4as[1] != null) {
                         String statsUrl = c4as[1]
                         //.endsWith('/') ? c4as[1] : c4as[1]+'/' does not work with every platform!
-                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c4asPlatform])
+                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.laserID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c4asPlatform])
                         if (keyPairs) {
                             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                                 keyPairs.eachWithIndexParallel { Map keyPair, int i ->
@@ -460,7 +460,7 @@ class StatsSyncService {
                                 statsUrl = c5as[1] + 'reports'
                             else statsUrl = c5as[1] + '/reports'
                         }
-                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c5asPlatform])
+                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.laserID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c5asPlatform])
                         if (keyPairs) {
                             Map<String, List<Map<String, Object>>> reports = [:]
                             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
@@ -650,7 +650,7 @@ class StatsSyncService {
                             Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                             Map<String, Object> configMap = [reportType: reportData.reportName, version: 0]
                             configMap.reportInstitution = customerUID
-                            configMap.platform = c4asPlatform.globalUID
+                            configMap.platform = c4asPlatform.laserID
                             configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
@@ -742,7 +742,7 @@ class StatsSyncService {
                                     }
                                     configMap.reportInstitution = customerUID
                                     configMap.databaseName = reportItem.'ns2:ItemName'.text()
-                                    configMap.platform = c4asPlatform.globalUID
+                                    configMap.platform = c4asPlatform.laserID
                                     configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                                     configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
                                     configMap.category = category
@@ -813,7 +813,7 @@ class StatsSyncService {
                         performance.Instance.each { Map instance ->
                             Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0]
                             configMap.reportInstitution = customerUID
-                            configMap.platform = c5asPlatform.globalUID
+                            configMap.platform = c5asPlatform.laserID
                             configMap.publisher = reportItem.Publisher
                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
@@ -890,7 +890,7 @@ class StatsSyncService {
                                     //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
                                     Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0, isbn: null, doi: null, onlineIdentifier: null, printIdentifier: null, proprietaryIdentifier: null]
                                     configMap.reportInstitution = customerUID
-                                    configMap.platform = c5asPlatform.globalUID
+                                    configMap.platform = c5asPlatform.laserID
                                     configMap.databaseName = reportItem.Database
                                     configMap.publisher = reportItem.Publisher
                                     String identifierHashBase = ''

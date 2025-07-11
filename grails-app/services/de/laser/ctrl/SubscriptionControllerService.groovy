@@ -1237,7 +1237,7 @@ class SubscriptionControllerService {
                     org.sub = subChild
                     org.name = subscr.name
                     org.sortname = subscr.sortname
-                    org.globalUID = subChild.globalUID
+                    org.laserID = subChild.laserID
                     org.libraryType = subscr.libraryType
                     org.libraryNetwork = subscr.libraryNetwork
                     org.funderType = subscr.funderType
@@ -3093,7 +3093,7 @@ class SubscriptionControllerService {
                                 }
                                 else {
                                     pi = new PriceItem(issueEntitlement: ie)
-                                    pi.setGlobalUID()
+                                    pi.setLaserID()
                                 }
                                 pi.localPrice = localPrice
                                 pi.localCurrency = localCurrency //in case if localCurrency is null
@@ -3178,7 +3178,7 @@ class SubscriptionControllerService {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
             if(ie) {
                 PriceItem pi = new PriceItem(issueEntitlement: ie)
-                pi.setGlobalUID()
+                pi.setLaserID()
                 if(!pi.save()) {
                     log.error(pi.errors.toString())
                     result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.priceItemNotSaved',null,locale)

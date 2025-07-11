@@ -38,7 +38,7 @@ components:
       in: query
       schema:
         type: string
-        default: globalUID
+        default: laserID
       required: true
       description: Identifier type for this query
 
@@ -95,7 +95,7 @@ components:
         type: string
         default: ${apiContext}
       required: true
-      description: Concrete globalUID of context organisation
+      description: Concrete laserID of context organisation
 </g:if>
 <g:else>
     context:
@@ -104,7 +104,7 @@ components:
       schema:
         type: string
       required: true
-      description: Concrete globalUID of context organisation
+      description: Concrete laserID of context organisation
 </g:else>
 
     ezbOrgId:

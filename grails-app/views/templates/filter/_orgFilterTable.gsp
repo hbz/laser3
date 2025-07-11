@@ -585,14 +585,14 @@
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.laserID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:elseif>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID]}"
+                                    params="${[identifier: org.laserID]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
                                 <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>

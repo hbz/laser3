@@ -63,7 +63,7 @@ class ApiDeletedObject {
         }
         */
         DelCombo.withTransaction {
-            if (DelCombo.findByDelObjTraceAndAccessibleOrg(delObj, context.globalUID)) {
+            if (DelCombo.findByDelObjTraceAndAccessibleOrg(delObj, context.laserID)) {
                 hasAccess = true
             }
         }
@@ -81,7 +81,7 @@ class ApiDeletedObject {
 
         DeletedObject.withTransaction {
             delObj = GrailsHibernateUtil.unwrapIfProxy(delObj)
-            result.globalUID                = delObj.oldGlobalUID
+            result.laserID                  = delObj.oldLaserID
             result.dateCreated          	= ApiToolkit.formatInternalDate(delObj.dateCreated)
             result.endDate              	= ApiToolkit.formatInternalDate(delObj.oldEndDate)
             result.lastUpdated          	= ApiToolkit.formatInternalDate(delObj.oldLastUpdated)

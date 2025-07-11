@@ -6,7 +6,7 @@
         subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
     }
     Map<String, Map> platformInstanceRecords = [:]
-    JSON platformsJSON = subscribedPlatforms.globalUID as JSON
+    JSON platformsJSON = subscribedPlatforms.laserID as JSON
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []
@@ -142,7 +142,7 @@
                 reportType: $(this).val(),
                 platforms: platforms,
                 multiple: false,
-                customer: '${subscriber.globalUID}',
+                customer: '${subscriber.laserID}',
                 subscription: ${subscription.id}
             }
         }).done(function(response) {

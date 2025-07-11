@@ -16,7 +16,7 @@ class ApiPkg {
 
     /**
 	 * Locates the given {@link Package} and returns the object (or null if not found) and the request status for further processing
-	 * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+	 * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
 	 * @param the identifier value
      * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
@@ -28,8 +28,8 @@ class ApiPkg {
             case 'id':
 				result.obj = Package.findAllWhere(id: Long.parseLong(value))
                 break
-            case 'globalUID':
-				result.obj = Package.findAllWhere(globalUID: value)
+            case 'laserID':
+				result.obj = Package.findAllWhere(laserID: value)
                 break
             case 'gokbId':
 				result.obj = Package.findAllWhere(gokbId: value)
@@ -76,7 +76,7 @@ class ApiPkg {
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 
-		result.globalUID        	= pkg.globalUID
+		result.laserID        	    = pkg.laserID
 		result.gokbId           	= pkg.gokbId
 		result.name             	= pkg.name
 		result.altnames     		= ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)

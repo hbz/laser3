@@ -35,7 +35,7 @@ class PackageExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'                     : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'gokbId'                        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
@@ -122,7 +122,7 @@ class PackageExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'package', action: 'show', absolute: true ) + '/' + pkg.getProperty(key) + '@' + pkg.getProperty(key) )
                 }
                 else if (key == 'gokbId') {

@@ -31,7 +31,7 @@ class LicenseExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'reference'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'startDate'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -57,7 +57,7 @@ class LicenseExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'reference'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'startDate'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -122,7 +122,7 @@ class LicenseExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'license', action: 'show', absolute: true ) + '/' + lic.getProperty(key) + '@' + lic.getProperty(key) )
                 }
                 else {

@@ -1388,9 +1388,9 @@ class FinanceService {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
                     if(contextService.getOrg().isCustomerType_Consortium())
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.laserID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER]])
                     else if(contextService.getOrg().isCustomerType_Inst_Pro())
-                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+                        subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.laserID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
@@ -1416,12 +1416,12 @@ class FinanceService {
                     if(subscription == null)
                         mappingErrorBag.packageWithoutSubscription = true
                     else {
-                        //List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.globalUID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
+                        //List<Package> pkgMatches = Package.executeQuery("select distinct idOcc.pkg from IdentifierOccurrence idOcc join idOcc.identifier id where cast(idOcc.pkg.id as string) = :idCandidate or idOcc.pkg.laserID = :idCandidate or (id.value = :idCandidate and id.ns = :isil)",[idCandidate:subPkgIdentifier,isil:namespaces.isil])
                         List<Package> pkgMatches = []
                         if(pkgIdentifier.isLong())
                             pkgMatches.add(Package.get(pkgIdentifier))
                         if(!pkgMatches) {
-                            pkgMatches.addAll(Package.findAllByGlobalUID(pkgIdentifier))
+                            pkgMatches.addAll(Package.findAllByLaserID(pkgIdentifier))
                             if(!pkgMatches) {
                                 pkgMatches = Package.executeQuery("select distinct ident.pkg from Identifier ident where (ident.ns = :isil and ident.value = :idCandidate)")
                                 if(!pkgMatches)
@@ -1868,7 +1868,7 @@ class FinanceService {
                             if (check.size() == 1)
                                 match = check[0]
                             if (!match)
-                                match = Org.findByGlobalUID(idStr)
+                                match = Org.findByLaserID(idStr)
                             if (!match) {
                                 check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
                                 if (check.size() == 1)

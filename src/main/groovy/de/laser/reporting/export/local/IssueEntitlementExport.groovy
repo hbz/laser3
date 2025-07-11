@@ -26,7 +26,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'                           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'                           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '@-entitlement-tippName'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippTitleType'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippMedium'            : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -101,7 +101,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) + '@' + ie.getProperty(key) )
                 }
                 else {

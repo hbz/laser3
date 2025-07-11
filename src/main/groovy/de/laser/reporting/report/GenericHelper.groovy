@@ -98,7 +98,7 @@ class GenericHelper {
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {
             // ReportingTagLib:filterProperty
 
-            Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
+            Field prop = (fieldName == 'laserID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
 
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)

@@ -106,31 +106,31 @@ class SubscriptionsQueryService {
 
         if (params.identifier) {
 
-            // globalUID based
+            // laserID based
             if (params.identifier.startsWith('org:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from OrgRole as idMatch where idMatch.sub = s and idMatch.org.laserID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('provider:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from ProviderRole as idMatch where idMatch.subscription = s and idMatch.provider.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from ProviderRole as idMatch where idMatch.subscription = s and idMatch.provider.laserID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('vendor:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from VendorRole as idMatch where idMatch.subscription = s and idMatch.vendor.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from VendorRole as idMatch where idMatch.subscription = s and idMatch.vendor.laserID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('license:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Links li join li.sourceLicense idMatch where li.destinationSubscription = s and li.linkType = :linkType and idMatch.laserID = :identifier ) ) "
                 qry_params.put('linkType',RDStore.LINKTYPE_LICENSE)
             }
             else if (params.identifier.startsWith('subscription:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from Subscription as idMatch where idMatch = s and idMatch.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from Subscription as idMatch where idMatch = s and idMatch.laserID = :identifier ) ) "
             }
             else if (params.identifier.startsWith('package:')) {
 
-                base_qry += "AND ( exists ( select idMatch.id from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.globalUID = :identifier ) ) "
+                base_qry += "AND ( exists ( select idMatch.id from SubscriptionPackage as idMatch where idMatch.subscription = s and idMatch.pkg.laserID = :identifier ) ) "
             }
             // identifier based
             else {

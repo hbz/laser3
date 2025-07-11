@@ -415,8 +415,8 @@
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
                         </div>
                         <div class="column nine wide">
-                            <g:if test="${obj.globalUID}">
-                                <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
+                            <g:if test="${obj.laserID}">
+                                <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.laserID]}">${obj.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${obj.name}

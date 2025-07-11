@@ -20,7 +20,7 @@ class ApiMapReader {
         Map<String, Object> result = [:]
 
         if (prs) {
-            result.globalUID       = prs.globalUID
+            result.laserID         = prs.laserID
             result.firstName       = prs.first_name
             result.middleName      = prs.middle_name
             result.lastName        = prs.last_name
@@ -55,7 +55,7 @@ class ApiMapReader {
             return null
         }
 
-        result.globalUID         = tipp.globalUID
+        result.laserID           = tipp.laserID
         result.gokbId            = tipp.gokbId
         result.name             = tipp.name
         result.medium           = tipp.medium?.value
@@ -119,7 +119,7 @@ class ApiMapReader {
             return null
         }
 
-        result.globalUID         = row['tipp_guid']
+        result.laserID           = row['tipp_guid']
         result.gokbId            = row['tipp_gokb_id']
         result.name              = row['tipp_name']
         result.altnames          = row['altnames'].collect { GroovyRowResult altNameRow -> altNameRow['altname_name'] }

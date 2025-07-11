@@ -1618,7 +1618,7 @@ class ExportService {
                             break
                     }
                     if(!metricRow) {
-                        metricRow = ['Database': report.databaseName, 'Publisher': report.publisher, 'Platform': Platform.findByGlobalUID(report.platformUID).name]
+                        metricRow = ['Database': report.databaseName, 'Publisher': report.publisher, 'Platform': Platform.findByLaserID(report.platformUID).name]
                     }
                     else periodTotal = metricRow.get('Reporting Period Total')
                     if(report.reportType == Counter4Report.DATABASE_REPORT_1)

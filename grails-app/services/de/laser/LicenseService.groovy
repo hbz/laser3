@@ -274,7 +274,7 @@ class LicenseService {
                         //LicenseIdentifier does not support proprietary namespaces
                         ExpressionIdentifier {
                             ExpressionIDType('onixPL:Proprietary')
-                            IDTypeName('globalUID')
+                            IDTypeName('laserID')
                             IDValue('license:xxxxxxxxxxxxxxxxx')
                         }
                         ExpressionStatus('onixPL:Approved') //license.status => LicenseDocument
@@ -341,7 +341,7 @@ class LicenseService {
                             AgentType('onixPL:Organization')
                             AgentIdentifier {
                                 AgentIDType('onixPL:Proprietary')
-                                IDTypeName('globalUID')
+                                IDTypeName('laserID')
                                 IDValue('org:xxxxxxxxxxxxxxxxxx')
                             }
                             //for each identifier, ISIL, WIBID, etc.
@@ -365,7 +365,7 @@ class LicenseService {
                             //Authority() n/a
                             AgentIdentifier {
                                 AgentIDType('onixPL:Proprietary')
-                                IDTypeName('globalUID')
+                                IDTypeName('laserID')
                                 IDValue('org:xxxxxxxxxxxxxxxxxx')
                             }
                             //for each identifier, ISIL, WIBID, etc.
@@ -409,7 +409,7 @@ class LicenseService {
                             ResourceType('onixPL:LicensedContent') //supplying; ResourceType has no controlled list behind
                             ResourceIdentifier {
                                 ResourceIDType('onixPL:Proprietary')
-                                IDTypeName('globalUID')
+                                IDTypeName('laserID')
                                 IDValue('subscription:xxxxxxxxxxxxxxxxxxxxx')
                             }
                             Description('Gentz: Alle Werke') //subscription.name
@@ -1405,8 +1405,8 @@ class LicenseService {
                         //LicenseIdentifier does not support proprietary namespaces
                         ExpressionIdentifier {
                             ExpressionIDType('onixPL:Proprietary')
-                            IDTypeName('globalUID')
-                            IDValue(lic.globalUID)
+                            IDTypeName('laserID')
+                            IDValue(lic.laserID)
                         }
                         ExpressionStatus('onixPL:Approved')
                     }
@@ -1483,8 +1483,8 @@ class LicenseService {
                                 AgentType('onixPL:Organization')
                                 AgentIdentifier {
                                     AgentIDType('onixPL:Proprietary')
-                                    IDTypeName('globalUID')
-                                    IDValue(oo.org.globalUID)
+                                    IDTypeName('laserID')
+                                    IDValue(oo.org.laserID)
                                 }
                                 //for each identifier, ISIL, WIBID, etc.
                                 AgentIdentifier {
@@ -1499,8 +1499,8 @@ class LicenseService {
                                 }
                                 AgentIdentifier {
                                     AgentIDType('onixPL:Proprietary')
-                                    IDTypeName('globalUID')
-                                    IDValue(oo.org.globalUID)
+                                    IDTypeName('laserID')
+                                    IDValue(oo.org.laserID)
                                 }
                                 AgentName {
                                     AgentNameType('onixPL:RegisteredName')
@@ -1575,8 +1575,8 @@ class LicenseService {
                                     ResourceLabel('Subscription')
                                     ResourceIdentifier {
                                         ResourceIDType('onixPL:Proprietary')
-                                        IDTypeName('globalUID')
-                                        IDValue(s.globalUID)
+                                        IDTypeName('laserID')
+                                        IDValue(s.laserID)
                                     }
                                     Description(s.name)
                                 }

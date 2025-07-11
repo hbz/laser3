@@ -31,7 +31,7 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                  : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'startDate'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'               : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -61,7 +61,7 @@ class SubscriptionExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                  : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'startDate'             : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'endDate'               : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -143,7 +143,7 @@ class SubscriptionExport extends BaseDetailsExport {
             // --> generic properties
             if (type == BaseDetailsExport.FIELD_TYPE_PROPERTY) {
 
-                if (key == 'globalUID') {
+                if (key == 'laserID') {
                     content.add( g.createLink( controller: 'subscription', action: 'show', absolute: true ) + '/' + sub.getProperty(key) + '@' + sub.getProperty(key) )
                 }
                 else {

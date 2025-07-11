@@ -214,7 +214,7 @@ class DeletionService {
                     lic.orgRelations.clear()
                     Set<String> delRelations = []
                     oRoles.each { tmp ->
-                        delRelations << tmp.org.globalUID
+                        delRelations << tmp.org.laserID
                         tmp.delete()
                     }
 
@@ -416,7 +416,7 @@ class DeletionService {
                     Set<String> delRelations = []
                     oRoles.each { tmp ->
                         if(tmp.roleType != RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
-                            delRelations << tmp.org.globalUID
+                            delRelations << tmp.org.laserID
                         tmp.delete()
                     }
 
@@ -1092,12 +1092,12 @@ class DeletionService {
      */
     boolean deleteCostItem(CostItem ci) {
         if (ci) {
-            Set<String> accessibleOrgs = [ci.owner.globalUID]
+            Set<String> accessibleOrgs = [ci.owner.laserID]
             CostItem.withTransaction { ts ->
                 Order order = ci.order
                 Invoice invoice = ci.invoice
                 if(ci.sub && ci.isVisibleForSubscriber) {
-                    accessibleOrgs << ci.sub.getSubscriberRespConsortia().globalUID
+                    accessibleOrgs << ci.sub.getSubscriberRespConsortia().laserID
                 }
                 ci.order = null
                 ci.invoice = null

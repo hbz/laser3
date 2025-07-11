@@ -75,7 +75,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static mapping = {
                 id column:'ie_id'
-         globalUID column:'ie_guid'
+           laserID column:'ie_guid'
            version column:'ie_version'
              notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
@@ -92,7 +92,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     }
 
     static constraints = {
-        globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
+        laserID        (nullable: true, blank: false, unique:true, maxSize:255)
 
         notes          (nullable:true)
         accessStartDate(nullable:true)
@@ -158,7 +158,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                         ip.endDate = tp.endDate
                         ip.listPrice = tp.listPrice
                         ip.listCurrency = tp.listCurrency
-                        ip.setGlobalUID()
+                        ip.setLaserID()
                         if (!ip.save())
                             throw new EntitlementCreationException(ip.errors)
                     }
@@ -188,7 +188,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
      * Call to delete the given issue entitlement from the ElasticSearch index
      */
   void afterDelete() {
-      BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+      BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
   }
 
     /**

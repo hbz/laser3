@@ -154,7 +154,7 @@ class ApiToolkit {
      * @see OrgSetting.KEYS#NATSTAT_SERVER_ACCESS
      */
     static List<Org> getOrgsWithSpecialAPIAccess(String specGrant) {
-        Org.executeQuery('select o.globalUID from OrgSetting os join os.org o where os.key = :customerType and os.strValue = :specGrant', [customerType: OrgSetting.KEYS.API_LEVEL, specGrant: specGrant])
+        Org.executeQuery('select o.laserID from OrgSetting os join os.org o where os.key = :customerType and os.strValue = :specGrant', [customerType: OrgSetting.KEYS.API_LEVEL, specGrant: specGrant])
     }
 
     static Map<String, String> readBoolValues(obj, Set<String> boolFields) {
