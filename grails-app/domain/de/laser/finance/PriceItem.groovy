@@ -47,7 +47,7 @@ class PriceItem extends AbstractBase {
     static mapping = {
         id                  column: 'pi_id'
         version             column: 'pi_version'
-        laserID             column: 'pi_guid'
+        laserID             column: 'pi_laser_id'
         listPrice           column: 'pi_list_price'
         listCurrency        column: 'pi_list_currency_rv_fk', index: 'pi_list_currency_idx'
         localPrice          column: 'pi_local_price'

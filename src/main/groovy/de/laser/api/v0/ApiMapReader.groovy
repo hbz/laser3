@@ -119,7 +119,7 @@ class ApiMapReader {
             return null
         }
 
-        result.laserID           = row['tipp_guid']
+        result.laserID           = row['tipp_laser_id']
         result.gokbId            = row['tipp_gokb_id']
         result.name              = row['tipp_name']
         result.altnames          = row['altnames'].collect { GroovyRowResult altNameRow -> altNameRow['altname_name'] }

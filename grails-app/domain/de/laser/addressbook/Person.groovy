@@ -58,7 +58,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
 
     static mapping = {
         id              column:'prs_id'
-        laserID         column:'prs_guid'
+        laserID         column:'prs_laser_id'
         version         column:'prs_version'
         title           column:'prs_title'
         first_name      column:'prs_first_name'

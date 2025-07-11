@@ -97,7 +97,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         name column: 'prov_name', index: 'prov_name_idx'
         sortname column: 'prov_sortname', index: 'prov_sortname_idx'
         gokbId column: 'prov_gokb_id', type: 'text', index: 'prov_gokb_idx'
-        laserID column: 'prov_guid', index: 'prov_guid_idx'
+        laserID column: 'prov_laser_id'
         status column: 'prov_status_rv_fk'
         createdBy column:'prov_created_by_fk'
         legallyObligedBy column: 'prov_legally_obliged_by_fk'

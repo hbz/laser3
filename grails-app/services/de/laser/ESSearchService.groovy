@@ -206,7 +206,7 @@ class ESSearchService{
           sw.write("\"${params.q}\"")
         }else {
           sw.write("${params.q}")
-          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT laserID:'${params.q}')) ")
         }
       }else {
         if(params.q.contains(":") || params.q.contains("-")) {
@@ -214,7 +214,7 @@ class ESSearchService{
           sw.write("\"${params.q}\"")
         }else if (params.q.count("\"") >= 2){
           sw.write("${params.q}")
-          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT laserID:'${params.q}')) ")
         }else{
 
           if(DateUtils.isDate(params.q)){
@@ -223,7 +223,7 @@ class ESSearchService{
 
           params.q = params.q.replaceAll('\\"', '')
           sw.write("${params.q}")
-          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT guid:'${params.q}')) ")
+          sw.write(" AND ((NOT gokbId:'${params.q}') AND (NOT laserID:'${params.q}')) ")
         }
       }
     }

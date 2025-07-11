@@ -1986,7 +1986,7 @@ class SurveyService {
         try {
         Connection connection = sql.dataSource.getConnection()
 
-        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_laser_id, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
                 "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         if(newIes.size() > 0){
@@ -2002,7 +2002,7 @@ class SurveyService {
             and ie.ie_id = any(:ieIds) order  by ic_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
 
-            sql.executeInsert('''insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price)
+            sql.executeInsert('''insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_laser_id, pi_list_currency_rv_fk, pi_list_price)
                                 select 0, i.ie_id, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item
                                 join issue_entitlement ie on ie.ie_id = price_item.pi_ie_fk
                                 join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk

@@ -85,7 +85,7 @@
         },
         "type": "text"
       },
-      "guid": {
+      "laserID": {
         "fields": {
           "keyword": {
             "ignore_above": 256,

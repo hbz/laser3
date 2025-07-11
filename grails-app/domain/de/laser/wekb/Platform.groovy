@@ -106,7 +106,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   static mapping = {
                 id column:'plat_id'
-         laserID   column:'plat_guid'
+         laserID   column:'plat_laser_id'
            version column:'plat_version'
             gokbId column:'plat_gokb_id', type:'text'
               name column:'plat_name'

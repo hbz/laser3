@@ -177,7 +177,7 @@ class DataloadService {
                 result.dbId = org.id
 
                 result.gokbId = org.gokbId
-                result.guid = org.laserID ?: ''
+                result.laserID = org.laserID ?: ''
 
                 result.name = org.name
                 result.altnames = []
@@ -236,7 +236,7 @@ class DataloadService {
                 result.dbId = vendor.id
 
                 result.gokbId = vendor.gokbId
-                result.guid = vendor.laserID ?: ''
+                result.laserID = vendor.laserID ?: ''
 
                 result.name = vendor.name
                 result.altnames = []
@@ -280,7 +280,7 @@ class DataloadService {
                 result.dbId = provider.id
 
                 result.gokbId = provider.gokbId
-                result.guid = provider.laserID ?: ''
+                result.laserID = provider.laserID ?: ''
 
                 result.name = provider.name
                 result.altnames = []
@@ -334,7 +334,7 @@ class DataloadService {
                     result.dbId = tipp.id
 
                     result.gokbId = tipp.gokbId
-                    result.guid = tipp.laserID ?: ''
+                    result.laserID = tipp.laserID ?: ''
                     result.name = tipp.name
                     tipp.altnames.each { AlternativeName altname ->
                         result.altnames << altname.name
@@ -395,7 +395,7 @@ class DataloadService {
                 result.priority = 30
                 result.dbId = pkg.id
                 result.gokbId = pkg.gokbId
-                result.guid = pkg.laserID ?: ''
+                result.laserID = pkg.laserID ?: ''
                 result.name = "${pkg.name}"
                 pkg.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
@@ -450,7 +450,7 @@ class DataloadService {
                 result.priority = 30
                 result.dbId = plat.id
                 result.gokbId = plat.gokbId
-                result.guid = plat.laserID ?: ''
+                result.laserID = plat.laserID ?: ''
                 result.name = plat.name
                 plat.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
@@ -489,7 +489,7 @@ class DataloadService {
 
                 result.priority = 50
                 result.dbId = lic.id
-                result.guid = lic.laserID ?: ''
+                result.laserID = lic.laserID ?: ''
                 result.name = lic.reference
                 result.altnames = []
                 lic.altnames.each { AlternativeName altname ->
@@ -565,7 +565,7 @@ class DataloadService {
 
                 result.priority = 70
                 result.dbId = sub.id
-                result.guid = sub.laserID ?: ''
+                result.laserID = sub.laserID ?: ''
                 result.name = sub.name
                 result.altnames = []
                 sub.altnames.each { AlternativeName altname ->

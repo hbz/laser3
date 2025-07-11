@@ -13,7 +13,7 @@ class DelCombo {
         datasource 'storage'
         id column: 'delc_id'
         version column: 'delc_version'
-        accessibleOrg column: 'delc_acc_org_guid', index: 'delc_org_trace_idx'
+        accessibleOrg column: 'delc_acc_org_laser_id', index: 'delc_org_trace_idx'
         delObjTrace column: 'delc_trace_fk', index: 'delc_org_trace_idx'
     }
 

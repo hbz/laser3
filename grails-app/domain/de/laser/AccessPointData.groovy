@@ -28,7 +28,7 @@ class AccessPointData extends AbstractBase {
         id              column:'apd_id'
         version         column:'apd_version'
 
-        laserID         column:'apd_guid'
+        laserID         column:'apd_laser_id'
         orgAccessPoint  column:'apd_org_access_point_fk', index: 'apd_org_access_point_idx'
         datatype        column:'apd_datatype'
         data            column:'apd_data'

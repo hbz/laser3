@@ -187,7 +187,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         sort name: 'asc'
         id          column:'sub_id'
         version     column:'sub_version'
-        laserID     column:'sub_guid'
+        laserID     column:'sub_laser_id'
         status      column:'sub_status_rv_fk',  index: 'sub_status_idx'
         type        column:'sub_type_rv_fk',    index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk',    index: 'sub_kind_idx'

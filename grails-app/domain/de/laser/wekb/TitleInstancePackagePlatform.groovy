@@ -136,7 +136,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
   static mapping = {
                 id column:'tipp_id'
-         laserID   column:'tipp_guid'
+         laserID   column:'tipp_laser_id'
            version column:'tipp_version'
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx, tipp_pkg_idx, tipp_status_pkg_idx, tipp_status_plat_pkg_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx, tipp_plat_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
