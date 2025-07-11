@@ -133,7 +133,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.laserID      = pkg['pkg_guid']
+        result.laserID      = pkg['pkg_laser_id']
         result.name         = pkg['pkg_name']
         List<String> altnames = []
         pkg['altnames'].each { altNameRow ->
@@ -183,7 +183,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.laserID      = pform['plat_guid']
+        result.laserID      = pform['plat_laser_id']
         result.gokbId       = pform['plat_gokb_id']
         result.name         = pform['plat_name']
         result.primaryUrl   = pform['plat_primary_url']

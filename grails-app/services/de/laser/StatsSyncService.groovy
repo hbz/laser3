@@ -633,7 +633,7 @@ class StatsSyncService {
     @Deprecated
     void processCounter4ReportData(Map<String, Object> reportData, Platform c4asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
         if (reportData.reportID in Counter4Report.COUNTER_4_PLATFORM_REPORTS) {
-            int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+            int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_laser_id, c4r_publisher, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                     "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                 int t = 0
                 //titles.each { row ->
@@ -657,12 +657,12 @@ class StatsSyncService {
                             configMap.category = category
                             configMap.metricType = metricType
                             configMap.reportCount = count
-                            //c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                            //c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
                             Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                             selMap.remove('version')
                             selMap.remove('reportCount')
-                            List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
-                                    'and c4r_report_institution_guid = :reportInstitution ' +
+                            List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_laser_id = :platform ' +
+                                    'and c4r_report_institution_laser_id = :reportInstitution ' +
                                     'and c4r_report_type = :reportType ' +
                                     'and c4r_metric_type = :metricType ' +
                                     'and c4r_report_from = :reportFrom ' +
@@ -679,20 +679,20 @@ class StatsSyncService {
             //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
         }
         else {
-            String batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_database_name, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_yop, c4r_identifier_hash) " +
+            String batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_database_name, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_yop, c4r_identifier_hash) " +
                     "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :databaseName, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
-                    "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_guid, c4r_report_institution_guid, c4r_identifier_hash) " +
+                    "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_identifier_hash) " +
                     "do update set c4r_report_count = :reportCount, c4r_yop = :yop, c4r_database_name = :databaseName"
             /*if(reportData.reportID == Counter4Report.JOURNAL_REPORT_5) {
-                batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_yop, c4r_identifier_hash) " +
+                batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_yop, c4r_identifier_hash) " +
                         "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
-                        "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_guid, c4r_report_institution_guid, c4r_identifier_hash, c4r_yop) where c4r_yop is not null " +
+                        "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_identifier_hash, c4r_yop) where c4r_yop is not null " +
                         "do update set c4r_report_count = :reportCount"
             }
             else {
-                batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_identifier_hash) " +
+                batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_identifier_hash) " +
                         "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount, :identifierHash) " +
-                        "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_guid, c4r_report_institution_guid, c4r_identifier_hash) where c4r_yop is null " +
+                        "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_identifier_hash) where c4r_yop is null " +
                         "do update set c4r_report_count = :reportCount"
             }*/
             //GParsPool.withExistingPool(pool) {
@@ -704,12 +704,12 @@ class StatsSyncService {
                     }
                     */
                     //int ctr = 0
-                    //List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    //List<GroovyRowResult> rows = sql.rows("select tipp_laser_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                     //if (rows) {
                         //log.debug("${Thread.currentThread().getName()} processes report item ${t}")
                         //do not commit
                         //rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                            //String title = row.get('tipp_guid')
+                            //String title = row.get('tipp_laser_id')
                             reportItem.'ns2:ItemPerformance'.each { performance ->
                                 performance.'ns2:Instance'.each { instance ->
                                     //findAll seems to be less performant than loop processing
@@ -760,12 +760,12 @@ class StatsSyncService {
                                     }
                                     configMap.identifierHash = identifierHashBase.md5()
                                     configMap.reportCount = count
-                                    //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                    //c4r_title_laser_id, c4r_publisher, c4r_platform_laser_id, c4r_report_institution_laser_id, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
                                     /*Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
-                                            'and c4r_report_institution_guid = :reportInstitution ' +
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_laser_id = :platform ' +
+                                            'and c4r_report_institution_laser_id = :reportInstitution ' +
                                             'and c4r_report_type = :reportType ' +
                                             'and c4r_metric_type = :metricType ' +
                                             'and c4r_report_from = :reportFrom ' +
@@ -805,7 +805,7 @@ class StatsSyncService {
     void processCounter5ReportData(Map<String, Object> reportData, Platform c5asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
         //Connection sqlConn = sql.getDataSource().getConnection()
         if (reportData.reportID in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
-            int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
+            int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_publisher, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
                     "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                 reportData.reports.items.each { Map reportItem ->
                     //int ctr = 0
@@ -828,8 +828,8 @@ class StatsSyncService {
                             }
                             else selMap.remove('dataType')
                             List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
-                                    'and c5r_platform_guid = :platform ' +
-                                    'and c5r_report_institution_guid = :reportInstitution ' +
+                                    'and c5r_platform_laser_id = :platform ' +
+                                    'and c5r_report_institution_laser_id = :reportInstitution ' +
                                     'and c5r_report_type = :reportType ' +
                                     'and c5r_metric_type = :metricType ' +
                                      dataTypeExclude +
@@ -856,20 +856,20 @@ class StatsSyncService {
                 items.addAll(reportData.reports.items)
             }
             items.eachWithIndex { Map reportItem, int t ->
-                String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_database_name, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_yop, c5r_identifier_hash) " +
+                String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_database_name, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_yop, c5r_identifier_hash) " +
                         "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :databaseName, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
-                        "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash) " +
+                        "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_identifier_hash) " +
                         "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod, c5r_database_name = :databaseName, c5r_yop = :yop"
                 /*if(reportData.reportID.toLowerCase() in [Counter5Report.BOOK_REQUESTS, Counter5Report.BOOK_ACCESS_DENIED, Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE, Counter5Report.JOURNAL_REQUESTS_BY_YOP, Counter5Report.JOURNAL_REQUESTS, Counter5Report.JOURNAL_ACCESS_DENIED, Counter5Report.JOURNAL_ARTICLE_REQUESTS, Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE]) {
-                    batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_yop, c5r_report_count, c5r_identifier_hash) " +
+                    batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_yop, c5r_report_count, c5r_identifier_hash) " +
                             "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :yop, :reportCount, :identifierHash) " +
-                            "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash, c5r_yop) where c5r_yop is not null " +
+                            "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_identifier_hash, c5r_yop) where c5r_yop is not null " +
                             "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod"
                 }
                 else {
-                    batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_identifier_hash) " +
+                    batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_identifier_hash) " +
                             "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :identifierHash) " +
-                            "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash) where c5r_yop is null " +
+                            "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_laser_id, c5r_report_institution_laser_id, c5r_identifier_hash) where c5r_yop is null " +
                             "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod"
                 }*/
                 int[] resultCount = statsSql.withBatch(batchQuery) { stmt ->
@@ -878,13 +878,13 @@ class StatsSyncService {
                     reportItem["Item_ID"].each { idData ->
                         identifiers << idData.Value
                     }*/
-                    //List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    //List<GroovyRowResult> rows = sql.rows("select tipp_laser_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                     List<Map> performances = reportItem.Performance as List<Map>
                     //if (rows) {
                         //log.debug("${Thread.currentThread().getName()} processes report item ${t}")
                         //do not commit
                         //rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                            //String title = row.get('tipp_guid')
+                            //String title = row.get('tipp_laser_id')
                             performances.each { Map performance ->
                                 performance.Instance.each { Map instance ->
                                     //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
@@ -933,8 +933,8 @@ class StatsSyncService {
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
                                     List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
-                                            'and c5r_platform_guid = :platform ' +
-                                            'and c5r_report_institution_guid = :reportInstitution ' +
+                                            'and c5r_platform_laser_id = :platform ' +
+                                            'and c5r_report_institution_laser_id = :reportInstitution ' +
                                             'and c5r_report_type = :reportType ' +
                                             'and c5r_metric_type = :metricType ' +
                                             'and c5r_data_type = :dataType ' +

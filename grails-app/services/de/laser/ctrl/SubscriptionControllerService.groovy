@@ -2967,7 +2967,7 @@ class SubscriptionControllerService {
                         PriceItem.executeUpdate('update PriceItem pi set pi.localPrice = :localPrice, pi.localCurrency = :localCurrency where (pi.localCurrency = :localCurrency or ((pi.listCurrency = :localCurrency and pi.localCurrency = null) or (pi.listCurrency = null and pi.localCurrency = null))) and pi.issueEntitlement.id in (select ie.id '+query.query+')', query.queryParams+[localPrice: localPrice, localCurrency: localCurrency])
                         Sql sql = GlobalService.obtainSqlConnection()
                         try {
-                        sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_guid, pi_date_created, pi_last_updated, pi_local_price, pi_local_currency_rv_fk) values (0, :id, :guid, now(), now(), :localPrice, :localCurrency)') { BatchingStatementWrapper stmt ->
+                        sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_laser_id, pi_date_created, pi_last_updated, pi_local_price, pi_local_currency_rv_fk) values (0, :id, :guid, now(), now(), :localPrice, :localCurrency)') { BatchingStatementWrapper stmt ->
                             IssueEntitlement.executeQuery('select ie.id '+query.query+' and not exists (select pi from PriceItem pi where pi.issueEntitlement = ie and (pi.localCurrency = :localCurrency or ((pi.listCurrency = :localCurrency and pi.localCurrency = null) or (pi.listCurrency = null and pi.localCurrency = null))))', query.queryParams+[localCurrency: localCurrency]).each { Long ieid ->
                                 stmt.addBatch([id: ieid, guid: PriceItem.class.name+':'+RandomUtils.getUUID(), localPrice: localPrice, localCurrency: localCurrency.id])
                             }

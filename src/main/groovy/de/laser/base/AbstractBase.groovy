@@ -10,7 +10,7 @@ import groovy.util.logging.Slf4j
  *  implementation guide for implementing classes:
  *  class Test extends AbstractBase
  *
- *  static mapping     = { laserID column:'test_guid' .. }
+ *  static mapping     = { laserID column:'test_laser_id' .. }
  *  static constraints = { laserID(nullable:true, blank:false, unique:true, maxSize:255) .. }
  *
  */

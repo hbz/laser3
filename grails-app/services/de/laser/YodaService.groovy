@@ -82,9 +82,9 @@ class YodaService {
         if(toUpdate == 'laserID') {
             int max = 200000
             Sql sql = globalService.obtainSqlConnection()
-            int total = sql.rows('select count(*) from issue_entitlement ie where ie_guid is null')[0]['count']
+            int total = sql.rows('select count(*) from issue_entitlement ie where ie_laser_id is null')[0]['count']
             for(int ctr = 0; ctr < total; ctr += max) {
-                sql.executeUpdate("update issue_entitlement set ie_last_updated = now(), ie_guid = concat('issueentitlement:',gen_random_uuid()) where ie_id in (select ie_id from issue_entitlement where ie_guid is null limit "+max+")")
+                sql.executeUpdate("update issue_entitlement set ie_last_updated = now(), ie_laser_id = concat('issueentitlement:',gen_random_uuid()) where ie_id in (select ie_id from issue_entitlement where ie_laser_id is null limit "+max+")")
                 log.debug("processed: ${ctr}")
             }
         }
@@ -152,7 +152,7 @@ class YodaService {
                 Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.laserID as oldLaserID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId) from IssueEntitlement ie where ie.subscription = :subConcerned", [subConcerned: s])
                 int offset = 0, step = 5000, total = data.size()
                 processedTotal += data.size()
-                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldLaserID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
+                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_laser_id, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldLaserID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
                 Set<Long> toDelete = []
                 log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records, processed in total: ${processedTotal}")
                 if(data) {

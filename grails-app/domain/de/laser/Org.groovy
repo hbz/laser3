@@ -137,7 +137,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                 sort 'sortname'
                 id          column:'org_id'
            version          column:'org_version'
-         laserID            column:'org_guid'
+          laserID           column:'org_laser_id'
               name          column:'org_name',      index:'org_name_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
    legalPatronName          column:'org_legal_patronname'

@@ -109,7 +109,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         version column: 'ven_version'
 
         gokbId column: 'ven_gokb_id', index: 'ven_gokb_idx'
-        laserID column: 'ven_guid', index: 'ven_guid_idx'
+        laserID column: 'ven_laser_id'
         name column: 'ven_name'
         sortname column: 'ven_sortname'
         status column: 'ven_status_rv_fk'

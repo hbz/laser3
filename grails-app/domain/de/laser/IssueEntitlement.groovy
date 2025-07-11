@@ -75,7 +75,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static mapping = {
                 id column:'ie_id'
-           laserID column:'ie_guid'
+           laserID column:'ie_laser_id'
            version column:'ie_version'
              notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'

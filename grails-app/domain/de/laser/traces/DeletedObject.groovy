@@ -39,7 +39,7 @@ class DeletedObject {
         oldName                             column: 'do_old_name', type: 'text'
         oldCalculatedType                   column: 'do_old_calculated_type'
         oldObjectType                       column: 'do_old_object_type', index: 'do_old_object_type_idx, do_old_db_id_obj_idx'
-        oldLaserID                          column: 'do_old_global_uid', index: 'do_old_global_idx'
+        oldLaserID                          column: 'do_old_laser_id', index: 'do_old_global_idx'
         oldGokbID                           column: 'do_old_gokb_id', index: 'do_old_gokb_idx'
         oldStartDate                        column: 'do_old_start_date'
         oldEndDate                          column: 'do_old_end_date'

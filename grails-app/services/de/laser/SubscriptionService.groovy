@@ -1161,7 +1161,7 @@ class SubscriptionService {
             int batchStep = 5000
             int total = sql.rows("select count(*) from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id])[0]["count"]
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_perpetual_access_by_sub_fk) select " +
+            sql.withBatch("insert into issue_entitlement (ie_version, ie_laser_id, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_perpetual_access_by_sub_fk) select " +
                     "0, concat('issueentitlement:',gen_random_uuid()), now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
                     "where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed limit :limit offset :offset") { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
@@ -1188,7 +1188,7 @@ class SubscriptionService {
                     stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
-            sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) select ' +
+            sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_laser_id, pi_list_currency_rv_fk, pi_list_price) select ' +
                     "0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id " +
                     'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
@@ -1758,7 +1758,7 @@ class SubscriptionService {
                 }
                 */
                 ieDirectMapSet.eachWithIndex { Map<String, Object> configMap, int i ->
-                    sql.withBatch(5000, "insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                    sql.withBatch(5000, "insert into issue_entitlement (ie_version, ie_laser_id, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
                             "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                         stmt.addBatch([wekbId: configMap.wekbId])
                     }
@@ -1788,7 +1788,7 @@ class SubscriptionService {
                     }
                 }
                 priceItemDirectSet.each { Map<String, Object> configMap ->
-                    sql.withBatch("insert into price_item (pi_version, pi_date_created, pi_last_updated, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
+                    sql.withBatch("insert into price_item (pi_version, pi_date_created, pi_last_updated, pi_laser_id, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
                             "select 0, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
                         stmt.addBatch(configMap)
                     }

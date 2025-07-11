@@ -119,7 +119,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                     sort sortableReference: 'asc'
                      id column:'lic_id'
                 version column:'lic_version'
-                laserID column:'lic_guid'
+                laserID column:'lic_laser_id'
                  status column:'lic_status_rv_fk',  index:'lic_status_idx'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
