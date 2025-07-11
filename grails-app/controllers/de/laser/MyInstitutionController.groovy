@@ -3805,7 +3805,7 @@ join sub.orgRelations or_sub where
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'globalUID.label'),
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'laserID.label'),
                            message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
                            message(code: 'subscription.referenceYear.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
@@ -3851,8 +3851,8 @@ join sub.orgRelations or_sub where
                 if(subLinks.getKey(subCons.id))
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
-                //subscription globalUID
-                //log.debug("insert subscription global UID")
+                //subscription Laser-ID
+                //log.debug("insert subscription Laser-ID")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(subCons.globalUID)
                 //license name
@@ -3979,7 +3979,7 @@ join sub.orgRelations or_sub where
                     result
                 }
                 csv {
-                    List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'globalUID.label'),
+                    List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'laserID.label'),
                                    message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
                                    message(code: 'subscription.referenceYear.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
                                    message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
@@ -4017,8 +4017,8 @@ join sub.orgRelations or_sub where
                         if (subLinks.getKey(subCons.id))
                             subscriptionString += " (${message(code: 'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',', ' '))
-                        //subscription global uid
-                        //log.debug("insert global uid")
+                        //subscription global Laser-ID
+                        //log.debug("insert Laser-ID")
                         cellnum++
                         row.add(subCons.globalUID)
                         //license name

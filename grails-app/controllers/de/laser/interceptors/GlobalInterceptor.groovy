@@ -51,7 +51,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
     }
 
     /**
-     * Checks if - in case an ID has been submitted - it is a global UID and the requested global UID points to a valid object
+     * Checks if - in case an ID has been submitted - it is a Laser-ID and points to a valid object
      * @param params the request parameter map; if found, the requested object is being passed into the parameter map
      */
     private void _handleGlobalUID(GrailsParameterMap params) {
@@ -69,7 +69,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
                     def match = dc.findByGlobalUID(params.id)
 
                     if (match) {
-                        log.debug("requested by globalUID: [ ${params.id} ] > ${dc} # ${match.id}")
+                        log.debug("requested by Laser-ID: [ ${params.id} ] > ${dc} # ${match.id}")
                         params.id = match.getId()
                     }
                     else {

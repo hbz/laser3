@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6493    11.07.2025  dev     3.6         David   Feature     Globale UID/LAS:eR UUID in Laser-ID umbenennen
+
 6721    08.07.2025  rc-3.5  3.5.3       Andreas Bug         Überprüfung dauerhafter Titel schlug fehl
 
 6718    04.07.2025  rc-3.5  3.5.3       David   Feature     WekbNews asynchron aktualisieren

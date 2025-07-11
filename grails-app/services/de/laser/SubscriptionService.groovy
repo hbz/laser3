@@ -4349,7 +4349,7 @@ class SubscriptionService {
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
-                case ["laser-uuid", "las:er-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)", "las:er-uuid (einrichtungslizenz)", "las:er-uuid (institution subscription)"]: colMap.uuidCol = c
+                case ["laser-id", "laser-id (einrichtung)", "laser-id (institution)", "laser-id (einrichtungslizenz)", "laser-id (institution subscription)"]: colMap.uuidCol = c
                     break
                 case "gnd-id": colMap.gndCol = c
                     break
@@ -4446,7 +4446,7 @@ class SubscriptionService {
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
-                case "las:er-uuid": colMap.globalUIDCol = c
+                case "laser-id": colMap.globalUIDCol = c
                     break
                 case "customer id": colMap.customerIdCol = c
                     break

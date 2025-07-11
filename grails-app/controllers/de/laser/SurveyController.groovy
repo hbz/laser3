@@ -1368,7 +1368,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
+        ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
@@ -1381,7 +1381,7 @@ class SurveyController {
             titles.add('Anbieter-Produkt-ID')
         }
         if(ctrlResult.surveyConfig.subscriptionSurvey && params.costItemsForSurveySubscriptions == 'true'){
-            titles.add(message(code: 'subscription.label')+'-LASER-UUID')
+            titles.add(message(code: 'subscription.label')+'-LASER-ID')
         }
         ArrayList rowData = []
         ArrayList row
@@ -1453,7 +1453,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
+        ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row

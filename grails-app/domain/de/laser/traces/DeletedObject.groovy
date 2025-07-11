@@ -109,7 +109,7 @@ class DeletedObject {
      * <ul>
      *     <li>if {@link Subscription} or {@link License}: the {@link de.laser.interfaces.CalculatedType}</li>
      *     <li>if {@link TitleInstancePackagePlatform}: the we:kb ID</li>
-     *     <li>if {@link IssueEntitlement}: the we:kb ID of the title and of the package and the subscription global UID</li>
+     *     <li>if {@link IssueEntitlement}: the we:kb ID of the title and of the package and the subscription Laser-ID</li>
      * </ul>
      * @return the object trace
      * @throws CreationException

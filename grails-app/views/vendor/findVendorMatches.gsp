@@ -45,7 +45,7 @@
 									<td>${vendorInstance.name} <g:link controller="vendor" action="show" id="${vendorInstance.id}">(${message(code:'default.button.edit.label')})</g:link></td>
 									<td>
 										<ul>
-											<li><g:message code="globalUID.label" />: <g:fieldValue bean="${vendorInstance}" field="globalUID"/></li>
+											<li><g:message code="laserID.label" />: <g:fieldValue bean="${vendorInstance}" field="globalUID"/></li>
 											<g:if test="${vendorInstance.gokbId}">
 												<li><g:message code="org.wekbId.label" />: <g:fieldValue bean="${vendorInstance}" field="gokbId"/></li>
 											</g:if>
