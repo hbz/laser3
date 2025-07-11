@@ -972,7 +972,8 @@ BEGIN
     IF acceptBetaTester IS FALSE THEN
         UPDATE org SET
             org_is_beta_tester = false
-        WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3');
+--         WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3'); -- QA/PROD
+        WHERE org_laser_id NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3'); -- DEV
 
         GET DIAGNOSTICS count_tmp = ROW_COUNT;
         RAISE NOTICE '%', pg_temp.anon_log_mask('org (org_is_beta_tester)', count_tmp);

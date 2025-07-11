@@ -3,7 +3,7 @@
 object subscription {
     sub_id : bigint
     sub_version : bigint
-    sub_guid : character varying
+    sub_laser_id : character varying
     sub_status_rv_fk : bigint
     sub_type_rv_fk : bigint
     sub_kind_rv_fk : bigint
