@@ -26,7 +26,7 @@ class CostItemElementConfiguration extends AbstractBase {
     static mapping = {
         id                  column: 'ciec_id'
         version             column: 'ciec_version'
-        globalUID           column: 'ciec_guid'
+        laserID             column: 'ciec_guid'
         costItemElement     column: 'ciec_cie_rv_fk'
         elementSign         column: 'ciec_cc_rv_fk'
         forOrganisation     column: 'ciec_org_fk'
@@ -37,7 +37,7 @@ class CostItemElementConfiguration extends AbstractBase {
     }
 
     static constraints = {
-        globalUID           (nullable: true, blank: false, unique: true, maxSize: 255)
+        laserID             (nullable: true, blank: false, unique: true, maxSize: 255)
     }
 
     @Override

@@ -79,7 +79,7 @@ class YodaService {
      * Copies missing values into the issue entitlements; values are being taken from the title the holding records have been derived
      */
     void fillValue(String toUpdate) {
-        if(toUpdate == 'globalUID') {
+        if(toUpdate == 'laserID') {
             int max = 200000
             Sql sql = globalService.obtainSqlConnection()
             int total = sql.rows('select count(*) from issue_entitlement ie where ie_guid is null')[0]['count']
@@ -149,10 +149,10 @@ class YodaService {
         //in order to distribute memory load
         try {
             subsConcerned.eachWithIndex { Subscription s, int si ->
-                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.globalUID as oldGlobalUID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId) from IssueEntitlement ie where ie.subscription = :subConcerned", [subConcerned: s])
+                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.laserID as oldLaserID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId) from IssueEntitlement ie where ie.subscription = :subConcerned", [subConcerned: s])
                 int offset = 0, step = 5000, total = data.size()
                 processedTotal += data.size()
-                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldGlobalUID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
+                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldLaserID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
                 Set<Long> toDelete = []
                 log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records, processed in total: ${processedTotal}")
                 if(data) {
@@ -163,7 +163,7 @@ class YodaService {
                             ieTrace.oldName = tipp.name
                             ieTrace.referencePackageWekbId = tipp.pkg.gokbId
                             ieTrace.referenceTitleWekbId = tipp.gokbId
-                            ieTrace.refereceSubscriptionUID = s.globalUID
+                            ieTrace.refereceSubscriptionUID = s.laserID
                             stmt.addBatch(ieTrace)
                             if(offset % step == 0 && offset > 0) {
                                 log.debug("reached ${offset} rows")
@@ -215,7 +215,7 @@ class YodaService {
                 "provider:cc7f12e6-cc80-436e-b1e4-dc509ca10568": "provider:54a569b6-8f9e-405d-802a-5c921af08c0c"
         ]
         mergers.each { String from, String to ->
-            Provider source = Provider.findByGlobalUID(from), target = Provider.findByGlobalUID(to)
+            Provider source = Provider.findByLaserID(from), target = Provider.findByLaserID(to)
             if(source && target) {
                 providerService.mergeProviders(source, target, false)
             }
@@ -231,7 +231,7 @@ class YodaService {
                                        'vendor:bf1feac7-b269-4448-8b91-7bdf0dcb4cf8': 'vendor:7633ac5a-e775-432e-af10-56c7a6c9827e', //Massmann
                                        'vendor:2ae2c418-406c-435e-80d6-1c5054b5b90c': 'vendor:396c09b6-fdc8-4a14-97d8-7bc83856cbb2'] //Sonstiger
         mergers.each { String from, String to ->
-            Vendor source = Vendor.findByGlobalUID(from), target = Vendor.findByGlobalUID(to)
+            Vendor source = Vendor.findByLaserID(from), target = Vendor.findByLaserID(to)
             if(source && target) {
                 vendorService.mergeVendors(source, target, false)
             }
@@ -318,7 +318,7 @@ class YodaService {
         1.1 create in addition a property Invoice Processing if not exists and set it to Library Supplier
         */
         lsToKeep.eachWithIndex { String lsGUID, int i ->
-            Vendor sourceVen = Vendor.findByGlobalUID(lsGUID)
+            Vendor sourceVen = Vendor.findByLaserID(lsGUID)
             log.debug("now processing library supplier to keep ${i+1} out of ${lsToKeep.size()}")
             Set<VendorRole> rolesToProcess = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToProcess.eachWithIndex { VendorRole sourceVR, int j ->
@@ -345,13 +345,13 @@ class YodaService {
         treatedGUIDs.addAll(lsToKeep)
         treatedGUIDs.addAll(lsToProviderGUIDs)
         treatedGUIDs.addAll(lsConsortium.keySet())
-        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.globalUID in (:guids)', [guids: lsToProviderGUIDs]),
-        other = Vendor.executeQuery('select v from Vendor v where v.globalUID not in (:guids)', [guids: treatedGUIDs])
+        Set<Vendor> lsToProviders = Vendor.executeQuery('select v from Vendor v where v.laserID in (:guids)', [guids: lsToProviderGUIDs]),
+        other = Vendor.executeQuery('select v from Vendor v where v.laserID not in (:guids)', [guids: treatedGUIDs])
         lsToProviders.eachWithIndex{ Vendor sourceVen, int i ->
             log.debug("checking existence of target ...")
-            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
-            //if(sourceVen.globalUID in lsToProviderGUIDs) {
-                Provider targetProv = Provider.findByGlobalUID(targetGUID)
+            String targetGUID = sourceVen.laserID.replace('vendor', 'provider')
+            //if(sourceVen.laserID in lsToProviderGUIDs) {
+                Provider targetProv = Provider.findByLaserID(targetGUID)
                 if(!targetProv) {
                     log.debug("*** provider not found by target Laser-ID ${targetGUID}, creating new")
                     targetProv = new Provider(guid: targetGUID, sortname: sourceVen.sortname, name: sourceVen.name)
@@ -391,8 +391,8 @@ class YodaService {
         }
         lsToProviders.eachWithIndex { Vendor sourceVen, int i ->
             log.debug("now migrating library supplier to provider ${i+1} out of ${lsToProviders.size()}")
-            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
-            Provider targetProv = Provider.findByGlobalUID(targetGUID)
+            String targetGUID = sourceVen.laserID.replace('vendor', 'provider')
+            Provider targetProv = Provider.findByLaserID(targetGUID)
             Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
             Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
@@ -447,15 +447,15 @@ class YodaService {
             log.debug("${sourceVen.name}:${sourceVen.id}: survey vendor results deleted: ${info}")
             info = SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
             log.debug("${sourceVen.name}:${sourceVen.id}: survey config vendors deleted: ${info}")
-            //if(sourceVen.globalUID in lsToProviderGUIDs) {
+            //if(sourceVen.laserID in lsToProviderGUIDs) {
                 sourceVen.delete()
             //}
             globalService.cleanUpGorm()
         }
         other.eachWithIndex { Vendor sourceVen, int i ->
             log.debug("now repointing library supplier to provider ${i+1} out of ${other.size()}, *without* creating a second provider link!")
-            String targetGUID = sourceVen.globalUID.replace('vendor', 'provider')
-            Provider targetProv = Provider.findByGlobalUID(targetGUID)
+            String targetGUID = sourceVen.laserID.replace('vendor', 'provider')
+            Provider targetProv = Provider.findByLaserID(targetGUID)
             Map<String, Object> genericUpdateParams = [target: targetProv, source: sourceVen]
             Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
             rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->
@@ -483,7 +483,7 @@ class YodaService {
             log.debug("${sourceVen.name}:${sourceVen.id}: survey vendor results deleted: ${info}")
             info = SurveyConfigVendor.executeUpdate('delete from SurveyConfigVendor scv where scv.vendor = :vendor', [vendor: sourceVen])
             log.debug("${sourceVen.name}:${sourceVen.id}: survey config vendors deleted: ${info}")
-            //if(sourceVen.globalUID in lsToProviderGUIDs) {
+            //if(sourceVen.laserID in lsToProviderGUIDs) {
                 sourceVen.delete()
             //}
             globalService.cleanUpGorm()
@@ -512,7 +512,7 @@ class YodaService {
         "ZBW – Leibniz-Informationszentrum Wirtschaft"	"vendor:58b76622-02b6-4c26-a5a7-2537cd63e2b4"
          */
         lsConsortium.each { String sourceGUID, RefdataValue localConsortiumEquivalent ->
-            Vendor sourceVen = Vendor.findByGlobalUID(sourceGUID)
+            Vendor sourceVen = Vendor.findByLaserID(sourceGUID)
             if(sourceVen) {
                 Set<VendorRole> rolesToMigrate = VendorRole.findAllByVendorAndSharedFromIsNull(sourceVen)
                 rolesToMigrate.eachWithIndex { VendorRole sourceVR, int j ->

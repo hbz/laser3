@@ -20,7 +20,7 @@ class ApiLicense {
 
     /**
      * Locates the given {@link License} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+     * @param the field to look for the identifier, one of {id, laserID, namespace:id}
      * @param the identifier value with namespace, if needed
      * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
@@ -36,11 +36,11 @@ class ApiLicense {
                     }
                 }
                 break
-            case 'globalUID':
-                result.obj = License.findAllWhere(globalUID: value)
+            case 'laserID':
+                result.obj = License.findAllWhere(laserID: value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
-                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                        result.obj = DeletedObject.findAllByOldLaserID(value)
                     }
                 }
                 break
@@ -129,7 +129,7 @@ class ApiLicense {
             deleted.addAll(DeletedObject.executeQuery(
                     'SELECT DISTINCT(del) FROM DeletedObject del JOIN del.combos delc WHERE delc.accessibleOrg = :owner AND del.oldObjectType = :objType' ,
                     [
-                            owner: owner.globalUID,
+                            owner: owner.laserID,
                             objType: License.class.name
                     ]
             ))
@@ -162,7 +162,7 @@ class ApiLicense {
 
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
-        result.globalUID        = lic.globalUID
+        result.laserID          = lic.laserID
         result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.altnames         = ApiCollectionReader.getAlternativeNameCollection(lic.altnames)

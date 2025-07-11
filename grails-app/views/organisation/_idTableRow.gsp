@@ -2,7 +2,7 @@
 <tr>
     <td>${tableRowNr}</td>
     <td>
-        <g:if test="${showGlobalUid}">
+        <g:if test="${showLaserID}">
             <g:message code="laserID.label" />
             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'laserID.desc')}">
                 <i class="${Icon.TOOLTIP.HELP}"></i>
@@ -25,8 +25,8 @@
         </g:else>
     </td>
     <td>
-        <g:if test="${showGlobalUid}">
-            ${orgInstance.globalUID}
+        <g:if test="${showLaserID}">
+            ${orgInstance.laserID}
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
@@ -39,7 +39,7 @@
             </g:if>
         </g:else>
     </td>
-    <g:if test="${ ! showGlobalUid && ! showWekbId}">
+    <g:if test="${ ! showLaserID && ! showWekbId}">
         <td>${id.note}</td>
         <td>
             <g:if test="${editable}">

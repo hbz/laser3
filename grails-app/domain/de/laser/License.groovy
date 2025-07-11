@@ -119,7 +119,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                     sort sortableReference: 'asc'
                      id column:'lic_id'
                 version column:'lic_version'
-              globalUID column:'lic_guid'
+                laserID column:'lic_guid'
                  status column:'lic_status_rv_fk',  index:'lic_status_idx'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
@@ -146,7 +146,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        laserID(nullable:true, blank:false, unique:true, maxSize:255)
         reference(blank:false)
         sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         noticePeriod(nullable:true, blank:true)
@@ -180,7 +180,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     def afterDelete() {
         super.afterDeleteHandler()
 
-        BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
     }
     @Override
     def afterInsert() {

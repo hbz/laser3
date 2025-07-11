@@ -94,7 +94,7 @@ class ApiController {
 
         result.apiKey       = (apiKey != OrgSetting.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
         result.apiPassword  = (apiPass != OrgSetting.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
-        result.apiContext   = org?.globalUID ?: ''
+        result.apiContext   = org?.laserID ?: ''
 
         result
     }
@@ -150,7 +150,7 @@ class ApiController {
 
             // getting context (fallback)
             if (params.get('context')) {
-                contextOrg = Org.findWhere(globalUID: params.get('context'))
+                contextOrg = Org.findWhere(laserID: params.get('context'))
             }
             else {
                 contextOrg = apiOrg

@@ -151,7 +151,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                                'participant.uuid'                    : [field: 'participant.globalUID', label: 'Laser-ID', message: null],
+                                'participant.uuid'                    : [field: 'participant.laserID', label: 'Laser-ID', message: null],
                                 'participant.libraryNetwork'          : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
@@ -210,7 +210,7 @@ class ExportClickMeService {
                                 'subscription.hasPerpetualAccess'    : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                                 'subscription.hasPublishComponent'   : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-ID', message: null],
+                                'subscription.uuid'                  : [field: 'sub.laserID', label: 'Laser-ID', message: null],
                         ]
                 ]
         ]
@@ -238,7 +238,7 @@ class ExportClickMeService {
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                                 'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'          : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-ID (Institution subscription)', message: 'laserID.inst.sub.label'],
+                                'subscription.uuid'                  : [field: 'sub.laserID', label: 'Laser-ID (Institution subscription)', message: 'laserID.inst.sub.label'],
                         ]
                 ],
                 participant                   : [
@@ -265,7 +265,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'Laser-ID (Institution)', message: 'laserID.inst.label'],
+                                'participant.uuid'                   : [field: 'orgs.laserID', label: 'Laser-ID (Institution)', message: 'laserID.inst.label'],
                                 'participant.libraryNetwork'          : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'                  : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -392,7 +392,7 @@ class ExportClickMeService {
                                 'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                                 'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-ID',  message: null],
+                                'subscription.uuid'                         : [field: 'laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -408,7 +408,7 @@ class ExportClickMeService {
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                                 'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
                                 'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
-                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-ID',  message: null],
+                                'license.uuid'            : [field: 'licenses.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -540,7 +540,7 @@ class ExportClickMeService {
                                 'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
                                 'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-ID',  message: null],
+                                'subscription.uuid'                         : [field: 'laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -556,7 +556,7 @@ class ExportClickMeService {
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                                 'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
                                 'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
-                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-ID',  message: null],
+                                'license.uuid'            : [field: 'licenses.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -650,7 +650,7 @@ class ExportClickMeService {
                                 'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                                 'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-ID',  message: null],
+                                'subscription.uuid'                         : [field: 'sub.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -666,7 +666,7 @@ class ExportClickMeService {
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                                 'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
                                 'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
-                                'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-ID',  message: null],
+                                'license.uuid'            : [field: 'licenses.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -694,7 +694,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'Laser-ID (Institution)', message: 'laserID.inst.label'],
+                                'participant.uuid'                   : [field: 'orgs.laserID', label: 'Laser-ID (Institution)', message: 'laserID.inst.label'],
                                 'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -800,7 +800,7 @@ class ExportClickMeService {
                                 'subscription.resource'              : [field: 'sub.resource', label: 'Resource', message: 'subscription.resource.label'],
                                 'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'          : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-ID', message: null],
+                                'subscription.uuid'                  : [field: 'sub.laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
 
@@ -816,7 +816,7 @@ class ExportClickMeService {
                                 'license.openEnded'      : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                                 'license.notes'          : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
                                 'license.notes.shared'   : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
-                                'license.uuid'           : [field: 'licenses.globalUID', label: 'Laser-ID', message: null],
+                                'license.uuid'           : [field: 'licenses.laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
 
@@ -938,7 +938,7 @@ class ExportClickMeService {
                                 'license.openEnded'      : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
                                 'license.notes'          : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'license.notes.shared'   : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'license.uuid'           : [field: 'globalUID', label: 'Laser-ID', message: null],
+                                'license.uuid'           : [field: 'laserID', label: 'Laser-ID', message: null],
                                 'subscription.name'      : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
                         ]
                 ],
@@ -962,7 +962,7 @@ class ExportClickMeService {
                             'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                             'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                             'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                            'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-ID',  message: null],
+                            'subscription.uuid'                         : [field: 'laserID', label: 'Laser-ID',  message: null],
                     ]
             ],*/
 
@@ -1031,7 +1031,7 @@ class ExportClickMeService {
                                 'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
                                 'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
-                                'license.uuid'            : [field: 'globalUID', label: 'Laser-ID',  message: null],
+                                'license.uuid'            : [field: 'laserID', label: 'Laser-ID',  message: null],
                                 'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
                         ]
                 ],
@@ -1076,7 +1076,7 @@ class ExportClickMeService {
                                 'consortium.eInvoice'           : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                                 'consortium.eInvoicePortal'     : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                                 'consortium.linkResolverBaseURL': [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                                'consortium.uuid'               : [field: 'globalUID', label: 'Laser-ID', message: null],
+                                'consortium.uuid'               : [field: 'laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
                 consortiumContacts    : [
@@ -1184,7 +1184,7 @@ class ExportClickMeService {
                                 'participant.libraryNetwork'    : [field: 'sub.subscriberRespConsortia.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'           : [field: 'sub.subscriberRespConsortia.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'            : [field: 'sub.subscriberRespConsortia.region', label: 'Region', message: 'org.region.label'],
-                                'participant.uuid'              : [field: 'sub.subscriberRespConsortia.globalUID', label: 'Laser-ID',  message: null],
+                                'participant.uuid'              : [field: 'sub.subscriberRespConsortia.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -1206,7 +1206,7 @@ class ExportClickMeService {
                                 'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                                 'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                 'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-ID',  message: null],
+                                'subscription.uuid'                         : [field: 'sub.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
                 participantIdentifiers : [
@@ -1283,7 +1283,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
-                                'participant.uuid'              : [field: 'surveyOrg.org.globalUID', label: 'Laser-ID',  message: null],
+                                'participant.uuid'              : [field: 'surveyOrg.org.laserID', label: 'Laser-ID',  message: null],
                         ]
                 ],
 
@@ -1744,7 +1744,7 @@ class ExportClickMeService {
                                 'participant.libraryNetwork'     : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'            : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'             : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
-                                'participant.uuid'               : [field: 'participant.globalUID', label: 'Laser-ID', message: null],
+                                'participant.uuid'               : [field: 'participant.laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
                 participantAccessPoints       : [
@@ -1796,7 +1796,7 @@ class ExportClickMeService {
                                 'subscription.hasPerpetualAccess'    : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                                 'subscription.hasPublishComponent'   : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'Laser-ID', message: null],
+                                'subscription.uuid'                  : [field: 'sub.laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
 
@@ -1896,7 +1896,7 @@ class ExportClickMeService {
                                 'subscription.hasPerpetualAccess'    : [field: 'subscription.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                                 'subscription.hasPublishComponent'   : [field: 'subscription.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                'subscription.uuid'                  : [field: 'subscription.globalUID', label: 'Laser-ID', message: null],
+                                'subscription.uuid'                  : [field: 'subscription.laserID', label: 'Laser-ID', message: null],
                         ]
                 ],
                 subscriptionIdentifiers: [
@@ -3090,7 +3090,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
-                exportFields.put("participant.uuid", [field: 'globalUID', label: 'Laser-ID',  message: null])
+                exportFields.put("participant.uuid", [field: 'laserID', label: 'Laser-ID',  message: null])
 
                 Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3118,7 +3118,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
-                exportFields.put("participant.uuid", [field: 'globalUID', label: 'Laser-ID',  message: null])
+                exportFields.put("participant.uuid", [field: 'laserID', label: 'Laser-ID',  message: null])
 
                 Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3196,7 +3196,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
-                fields.participantIdentifiers.fields << ['participant.uuid':[field: 'globalUID', label: 'Laser-ID',  message: null]]
+                fields.participantIdentifiers.fields << ['participant.uuid':[field: 'laserID', label: 'Laser-ID',  message: null]]
                 fields.participantCustomerIdentifiers.fields.clear()
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -3250,7 +3250,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
             exportFields.put("vendorIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        exportFields.put("vendor.uuid", [field: 'globalUID', label: 'Laser-ID',  message: null])
+        exportFields.put("vendor.uuid", [field: 'laserID', label: 'Laser-ID',  message: null])
         exportFields.put("vendor.wekbId", [field: 'gokbId', label: 'we:kb-ID',  message: null])
 
         Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
@@ -3290,7 +3290,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
             fields.vendorIdentifiers.fields << ["vendorIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        fields.vendorIdentifiers.fields << ['vendor.uuid':[field: 'globalUID', label: 'Laser-ID',  message: null]]
+        fields.vendorIdentifiers.fields << ['vendor.uuid':[field: 'laserID', label: 'Laser-ID',  message: null]]
         fields.vendorIdentifiers.fields << ['vendor.wekbId':[field: 'gokbId', label: 'we:kb-ID',  message: null]]
         fields.vendorCustomerIdentifiers.fields.clear()
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
@@ -3339,7 +3339,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
             exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        exportFields.put("provider.uuid", [field: 'globalUID', label: 'Laser-ID',  message: null])
+        exportFields.put("provider.uuid", [field: 'laserID', label: 'Laser-ID',  message: null])
         exportFields.put("provider.wekbId", [field: 'gokbId', label: 'we:kb-ID',  message: null])
 
         Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
@@ -3379,7 +3379,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
             fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Laser-ID',  message: null]]
+        fields.providerIdentifiers.fields << ['provider.uuid':[field: 'laserID', label: 'Laser-ID',  message: null]]
         fields.providerIdentifiers.fields << ['provider.wekbId':[field: 'gokbId', label: 'we:kb-ID',  message: null]]
         fields.providerCustomerIdentifiers.fields.clear()
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
@@ -3783,7 +3783,7 @@ class ExportClickMeService {
                                 'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                                 'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                                 'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
-                                'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-ID', message: null]
+                                'subscription.uuid'                         : [field: 'sub.laserID', label: 'Laser-ID', message: null]
                         ]
                 ])
             }

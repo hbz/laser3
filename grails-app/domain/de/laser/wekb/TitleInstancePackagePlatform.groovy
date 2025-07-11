@@ -136,7 +136,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
   static mapping = {
                 id column:'tipp_id'
-         globalUID column:'tipp_guid'
+         laserID   column:'tipp_guid'
            version column:'tipp_version'
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx, tipp_pkg_idx, tipp_status_pkg_idx, tipp_status_plat_pkg_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx, tipp_plat_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
@@ -180,7 +180,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
   }
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        laserID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
         name        (nullable:true)
         sortname    (nullable:true)

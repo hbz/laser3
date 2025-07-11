@@ -35,7 +35,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         response.setHeader("Pragma", "no-cache")
         response.setHeader("Expires", "0")
 
-        _handleGlobalUID(params)
+        _handleLaserID(params)
         _handleWekbID(params)
         _handleDebugMode(params)
 
@@ -54,7 +54,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
      * Checks if - in case an ID has been submitted - it is a Laser-ID and points to a valid object
      * @param params the request parameter map; if found, the requested object is being passed into the parameter map
      */
-    private void _handleGlobalUID(GrailsParameterMap params) {
+    private void _handleLaserID(GrailsParameterMap params) {
 
         if (params.id && params.id.contains(':')) {
             try {
@@ -66,7 +66,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
                     dc = CodeUtils.getAllDomainClasses().find {it.simpleName.equalsIgnoreCase( objName ) }
                 }
                 if (dc) {
-                    def match = dc.findByGlobalUID(params.id)
+                    def match = dc.findByLaserID(params.id)
 
                     if (match) {
                         log.debug("requested by Laser-ID: [ ${params.id} ] > ${dc} # ${match.id}")

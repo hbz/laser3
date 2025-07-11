@@ -106,7 +106,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   static mapping = {
                 id column:'plat_id'
-         globalUID column:'plat_guid'
+         laserID   column:'plat_guid'
            version column:'plat_version'
             gokbId column:'plat_gokb_id', type:'text'
               name column:'plat_name'
@@ -145,7 +145,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   }
 
   static constraints = {
-    globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+    laserID(nullable:true, blank:false, unique:true, maxSize:255)
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     titleNamespace(nullable:true, blank:false)
@@ -194,7 +194,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   def afterDelete() {
     super.afterDeleteHandler()
 
-    BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+    BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
   }
   @Override
   def afterInsert() {

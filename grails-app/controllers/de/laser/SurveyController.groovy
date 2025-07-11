@@ -1393,7 +1393,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-            row.add(org.globalUID)
+            row.add(org.laserID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
@@ -1465,7 +1465,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-            row.add(org.globalUID)
+            row.add(org.laserID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')

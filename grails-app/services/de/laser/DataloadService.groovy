@@ -168,7 +168,7 @@ class DataloadService {
             _updateES(Org.class, BULK_SIZE_MEDIUM) { Org org ->
                 Map result = [:]
 
-                result._id = org.globalUID
+                result._id = org.laserID
                 if (!result._id) {
                     return result
                 }
@@ -177,7 +177,7 @@ class DataloadService {
                 result.dbId = org.id
 
                 result.gokbId = org.gokbId
-                result.guid = org.globalUID ?: ''
+                result.guid = org.laserID ?: ''
 
                 result.name = org.name
                 result.altnames = []
@@ -227,7 +227,7 @@ class DataloadService {
             _updateES(Vendor.class, BULK_SIZE_MEDIUM) { Vendor vendor ->
                 Map result = [:]
 
-                result._id = vendor.globalUID
+                result._id = vendor.laserID
                 if (!result._id) {
                     return result
                 }
@@ -236,7 +236,7 @@ class DataloadService {
                 result.dbId = vendor.id
 
                 result.gokbId = vendor.gokbId
-                result.guid = vendor.globalUID ?: ''
+                result.guid = vendor.laserID ?: ''
 
                 result.name = vendor.name
                 result.altnames = []
@@ -271,7 +271,7 @@ class DataloadService {
             _updateES(Provider.class, BULK_SIZE_MEDIUM) { Provider provider ->
                 Map result = [:]
 
-                result._id = provider.globalUID
+                result._id = provider.laserID
                 if (!result._id) {
                     return result
                 }
@@ -280,7 +280,7 @@ class DataloadService {
                 result.dbId = provider.id
 
                 result.gokbId = provider.gokbId
-                result.guid = provider.globalUID ?: ''
+                result.guid = provider.laserID ?: ''
 
                 result.name = provider.name
                 result.altnames = []
@@ -325,7 +325,7 @@ class DataloadService {
                         //
                     }
 
-                    result._id = tipp.globalUID
+                    result._id = tipp.laserID
                     if (!result._id) {
                         return result
                     }
@@ -334,7 +334,7 @@ class DataloadService {
                     result.dbId = tipp.id
 
                     result.gokbId = tipp.gokbId
-                    result.guid = tipp.globalUID ?: ''
+                    result.guid = tipp.laserID ?: ''
                     result.name = tipp.name
                     tipp.altnames.each { AlternativeName altname ->
                         result.altnames << altname.name
@@ -387,7 +387,7 @@ class DataloadService {
             _updateES(Package.class, BULK_SIZE_MEDIUM) { Package pkg ->
                 Map result = [:]
 
-                result._id = pkg.globalUID
+                result._id = pkg.laserID
                 if (!result._id) {
                     return result
                 }
@@ -395,7 +395,7 @@ class DataloadService {
                 result.priority = 30
                 result.dbId = pkg.id
                 result.gokbId = pkg.gokbId
-                result.guid = pkg.globalUID ?: ''
+                result.guid = pkg.laserID ?: ''
                 result.name = "${pkg.name}"
                 pkg.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
@@ -442,7 +442,7 @@ class DataloadService {
             _updateES(Platform.class, BULK_SIZE_MEDIUM) { Platform plat ->
                 Map result = [:]
 
-                result._id = plat.globalUID
+                result._id = plat.laserID
                 if (!result._id) {
                     return result
                 }
@@ -450,7 +450,7 @@ class DataloadService {
                 result.priority = 30
                 result.dbId = plat.id
                 result.gokbId = plat.gokbId
-                result.guid = plat.globalUID ?: ''
+                result.guid = plat.laserID ?: ''
                 result.name = plat.name
                 plat.altnames.each { AlternativeName altname ->
                     result.altnames << altname.name
@@ -482,14 +482,14 @@ class DataloadService {
             _updateES(License.class, BULK_SIZE_MEDIUM) { License lic ->
                 Map result = [:]
 
-                result._id = lic.globalUID
+                result._id = lic.laserID
                 if (!result._id) {
                     return result
                 }
 
                 result.priority = 50
                 result.dbId = lic.id
-                result.guid = lic.globalUID ?: ''
+                result.guid = lic.laserID ?: ''
                 result.name = lic.reference
                 result.altnames = []
                 lic.altnames.each { AlternativeName altname ->
@@ -558,14 +558,14 @@ class DataloadService {
             _updateES(Subscription.class, BULK_SIZE_MEDIUM) { Subscription sub ->
                 Map result = [:]
 
-                result._id = sub.globalUID
+                result._id = sub.laserID
                 if (!result._id) {
                     return result
                 }
 
                 result.priority = 70
                 result.dbId = sub.id
-                result.guid = sub.globalUID ?: ''
+                result.guid = sub.laserID ?: ''
                 result.name = sub.name
                 result.altnames = []
                 sub.altnames.each { AlternativeName altname ->
@@ -867,7 +867,7 @@ class DataloadService {
             _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
                 Map result = [:]
 
-                result._id = ie.globalUID
+                result._id = ie.laserID
                 if (!result._id) {
                     return result
                 }

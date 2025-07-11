@@ -97,7 +97,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         name column: 'prov_name', index: 'prov_name_idx'
         sortname column: 'prov_sortname', index: 'prov_sortname_idx'
         gokbId column: 'prov_gokb_id', type: 'text', index: 'prov_gokb_idx'
-        globalUID column: 'prov_guid', index: 'prov_guid_idx'
+        laserID column: 'prov_guid', index: 'prov_guid_idx'
         status column: 'prov_status_rv_fk'
         createdBy column:'prov_created_by_fk'
         legallyObligedBy column: 'prov_legally_obliged_by_fk'
@@ -119,7 +119,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
 
     static constraints = {
         gokbId                      (unique: true, nullable: true)
-        globalUID                   (unique: true)
+        laserID                     (unique: true)
         sortname                    (nullable: true)
         kbartDownloaderURL          (nullable: true)
         metadataDownloaderURL       (nullable: true)
@@ -145,7 +145,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         super.beforeInsertHandler()
 
         //TODO implement ESIndex population
-        //BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        //BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
     }
 
     @Override
@@ -232,14 +232,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         if(provider.gokbId) {
             p = Provider.findByGokbId(provider.gokbId)
             if(p) {
-                p.globalUID = provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase())
+                p.laserID = provider.laserID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase())
                 p.legallyObligedBy = null
             }
         }
         if(!p)
-            p = Provider.findByGlobalUID(provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
+            p = Provider.findByLaserID(provider.laserID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
         if(!p)
-            p = new Provider(globalUID: provider.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
+            p = new Provider(laserID: provider.laserID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
         p.name = provider.name
         p.sortname = provider.sortname
         p.gokbId = provider.gokbId //for the case providers have already recorded as orgs by sync

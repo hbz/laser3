@@ -96,7 +96,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     sort sortname: 'asc'
                       id column:'pkg_id'
                  version column:'pkg_version'
-               globalUID column:'pkg_guid'
+               laserID   column:'pkg_guid'
                     name column:'pkg_name'
                 sortname column:'pkg_sort_name'
                   gokbId column:'pkg_gokb_id'
@@ -128,7 +128,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
   static constraints = {
-                 globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+                   laserID (nullable:true, blank:false, unique:true, maxSize:255)
                contentType (nullable:true)
              packageStatus (nullable:true)
            nominalPlatform (nullable:true)

@@ -421,7 +421,7 @@ class CopyElementsService {
                         if (newSubscriptionPackage.save()) {
                             pkgOapls.each { oapl ->
 
-                                //oapl.globalUID = null
+                                //oapl.laserID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                                 //InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                                 newOrgAccessPointLink.platform = oapl.platform
@@ -441,7 +441,7 @@ class CopyElementsService {
                     /*subMember.issueEntitlements?.each { ie ->
                         if (ie.status != RDStore.TIPP_STATUS_REMOVED) {
                             def ieProperties = ie.properties
-                            ieProperties.globalUID = null
+                            ieProperties.laserID = null
 
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
@@ -1858,7 +1858,7 @@ class CopyElementsService {
                         pkgOapls.each { OrgAccessPointLink oapl ->
 
                             def oaplProperties = oapl.properties
-                            oaplProperties.globalUID = null
+                            oaplProperties.laserID = null
                             OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
                             InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
                             newOrgAccessPointLink.subPkg = newSubscriptionPackage
@@ -1928,7 +1928,7 @@ class CopyElementsService {
                     flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                 } else {
                     def properties = ieToTake.properties
-                    properties.globalUID = null
+                    properties.laserID = null
                     IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                     InvokerHelper.setProperties(newIssueEntitlement, properties)
                     newIssueEntitlement.coverages = null

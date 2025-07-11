@@ -130,7 +130,7 @@ class CostItem extends AbstractBase
 
     static mapping = {
         id              column: 'ci_id'
-        globalUID       column: 'ci_guid'
+        laserID         column: 'ci_guid'
         type            column: 'ci_type_rv_fk',    index: 'ci_type_idx'
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
@@ -173,7 +173,7 @@ class CostItem extends AbstractBase
     }
 
     static constraints = {
-        globalUID(nullable: true, blank: false, unique: true, maxSize: 255)
+        laserID (nullable: true, blank: false, unique: true, maxSize: 255)
         type    (nullable: true)
         sub     (nullable: true)
         issueEntitlementGroup   (nullable: true)

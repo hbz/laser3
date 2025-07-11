@@ -227,7 +227,7 @@ class GlobalExportHelper extends BaseExportHelper {
         else if (fieldName in ['x-property', 'x-memberSubscriptionProperty']) {
             return BaseDetailsExport.getExportLabel('x-property') + ': ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (fieldName in ['globalUID', 'x-provider'] || fieldName.startsWith('@')) {
+        else if (fieldName in ['laserID', 'x-provider'] || fieldName.startsWith('@')) {
             return BaseDetailsExport.getExportLabel(fieldName)
         }
 

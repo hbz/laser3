@@ -47,7 +47,7 @@ class PriceItem extends AbstractBase {
     static mapping = {
         id                  column: 'pi_id'
         version             column: 'pi_version'
-        globalUID           column: 'pi_guid'
+        laserID             column: 'pi_guid'
         listPrice           column: 'pi_list_price'
         listCurrency        column: 'pi_list_currency_rv_fk', index: 'pi_list_currency_idx'
         localPrice          column: 'pi_local_price'
@@ -61,7 +61,7 @@ class PriceItem extends AbstractBase {
     }
 
     static constraints = {
-        globalUID           (blank: false, unique: true, maxSize: 255)
+        laserID             (blank: false, unique: true, maxSize: 255)
         tipp                (nullable: true)
         issueEntitlement    (nullable: true)
         listPrice           (nullable: true)

@@ -46,14 +46,14 @@ class OrgAccessPoint extends AbstractBase {
         name            column:'oar_name'
         org             column:'oar_org_fk'
         note            column:'oar_note', type: 'text'
-        globalUID       column:'oar_guid'
+        laserID         column:'oar_guid'
         accessMethod    column:'oar_access_method_rv_fk'
         dateCreated     column:'oar_date_created'
         lastUpdated     column:'oar_last_updated'
     }
     
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        laserID(nullable:true, blank:false, unique:true, maxSize:255)
         note(nullable: true)
         name(unique: ['org'])
   }

@@ -28,7 +28,7 @@ class AccessPointData extends AbstractBase {
         id              column:'apd_id'
         version         column:'apd_version'
 
-        globalUID       column:'apd_guid'
+        laserID         column:'apd_guid'
         orgAccessPoint  column:'apd_org_access_point_fk', index: 'apd_org_access_point_idx'
         datatype        column:'apd_datatype'
         data            column:'apd_data'
@@ -38,7 +38,7 @@ class AccessPointData extends AbstractBase {
     }
     
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255) 
+        laserID(nullable:true, blank:false, unique:true, maxSize:255)
         datatype(nullable:true, blank:true)
         data(nullable:true, blank:true)
         lastUpdated (nullable: true)

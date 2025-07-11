@@ -1292,7 +1292,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         name: providerRecord.name,
                         gokbId: providerRecord.uuid
                 )
-                provider.setGlobalUID()
+                provider.setLaserID()
             }
         }
         //avoid creating new deleted entries
@@ -1460,7 +1460,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             name: vendorRecord.name,
                             gokbId: vendorRecord.uuid
                     )
-                    vendor.setGlobalUID() //needed because beforeInsertHandler() is being executed after validation only!
+                    vendor.setLaserID() //needed because beforeInsertHandler() is being executed after validation only!
                 }
             }
             //avoid creating new deleted entries
@@ -1922,7 +1922,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             listCurrency: piB.listCurrency,
                             tipp: tippA
                     )
-                    priceItem.setGlobalUID()
+                    priceItem.setLaserID()
                     if(!priceItem.save())
                         throw new SyncException("Error on saving price data: ${priceItem.errors}")
                 }
@@ -2047,7 +2047,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         listCurrency: piB.listCurrency,
                         tipp: newTIPP
                 )
-                priceItem.setGlobalUID()
+                priceItem.setLaserID()
                 if(!priceItem.save())
                     throw new SyncException("Error on saving price data: ${priceItem.errors}")
             }

@@ -67,7 +67,7 @@
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 													<g:message code="laserID.label"/>:
 													<span class="detail js-copyTopic">
-														<g:fieldValue bean="${organisationInstance}" field="globalUID"/>
+														<g:fieldValue bean="${organisationInstance}" field="laserID"/>
 														<g:if test="${organisationInstance.gokbId}">
 															<g:message code="org.wekbId.label"/>:
 															<g:fieldValue bean="${organisationInstance}"

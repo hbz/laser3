@@ -1355,7 +1355,7 @@ class SurveyControllerService {
                         List<String> cols = row.split('\t', -1)
                         Org match = null
                         if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
-                            match = Org.findByGlobalUIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
+                            match = Org.findByLaserIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
                         }
 
                         if (!match && colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
@@ -2918,7 +2918,7 @@ class SurveyControllerService {
                                     category: PropertyDefinition.SVY_PROP,
                                     type    : params.pd_type,
                                     rdc     : rdc ? rdc.getDesc() : null,
-                                    tenant  : result.institution.globalUID,
+                                    tenant  : result.institution.laserID,
                                     i10n    : [
                                             name_de: params.pd_name,
                                             name_en: params.pd_name,
@@ -4558,7 +4558,7 @@ class SurveyControllerService {
                         Map properties = costItem.properties
                         CostItem copyCostItem = new CostItem()
                         InvokerHelper.setProperties(copyCostItem, properties)
-                        copyCostItem.globalUID = null
+                        copyCostItem.laserID = null
                         copyCostItem.surveyOrg = null
                         copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                         copyCostItem.sub = participantSub
@@ -4639,7 +4639,7 @@ class SurveyControllerService {
                     Map properties = costItem.properties
                     CostItem copyCostItem = new CostItem()
                     InvokerHelper.setProperties(copyCostItem, properties)
-                    copyCostItem.globalUID = null
+                    copyCostItem.laserID = null
                     copyCostItem.surveyOrg = null
                     copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                     copyCostItem.sub = participantSub
@@ -4776,7 +4776,7 @@ class SurveyControllerService {
                         Map properties = costItem.properties
                         CostItem copyCostItem = new CostItem()
                         InvokerHelper.setProperties(copyCostItem, properties)
-                        copyCostItem.globalUID = null
+                        copyCostItem.laserID = null
                         copyCostItem.surveyOrg = null
                         copyCostItem.isVisibleForSubscriber = params.isVisibleForSubscriber ? true : false
                         copyCostItem.sub = participantSub
@@ -4993,7 +4993,7 @@ class SurveyControllerService {
                         ]
 
                         if(surveyProperty.tenant){
-                            map.tenant = surveyProperty.tenant.globalUID
+                            map.tenant = surveyProperty.tenant.laserID
                         }
                         propDef = PropertyDefinition.construct(map)
                     }

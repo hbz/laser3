@@ -4,30 +4,30 @@ import de.laser.utils.RandomUtils
 import groovy.util.logging.Slf4j
 
 /**
- *  This base class contains principal methods common to all classes which implement globalUID storage for an
+ *  This base class contains principal methods common to all classes which implement laserID storage for an
  *  eventual data exchange.
  *
  *  implementation guide for implementing classes:
  *  class Test extends AbstractBase
  *
- *  static mapping     = { globalUID column:'test_guid' .. }
- *  static constraints = { globalUID(nullable:true, blank:false, unique:true, maxSize:255) .. }
+ *  static mapping     = { laserID column:'test_guid' .. }
+ *  static constraints = { laserID(nullable:true, blank:false, unique:true, maxSize:255) .. }
  *
  */
 @Slf4j
 abstract class AbstractBase {
 
-    String globalUID
+    String laserID
 
     /**
      * Sets the Laser-ID of the object. The Laser-ID is in the structure className:UUID
      */
-    void setGlobalUID() {
+    void setLaserID() {
 
-        if (! globalUID) {
+        if (! laserID) {
             String scn = this.getClass().getSimpleName().toLowerCase()
 
-            globalUID = scn + ":" + RandomUtils.getUUID()
+            laserID = scn + ":" + RandomUtils.getUUID()
         }
     }
 
@@ -38,8 +38,8 @@ abstract class AbstractBase {
 
         //log.debug("beforeInsertHandler()")
 
-        if (! globalUID) {
-            setGlobalUID()
+        if (! laserID) {
+            setLaserID()
         }
     }
 
@@ -49,8 +49,8 @@ abstract class AbstractBase {
      */
     protected Map<String, Object> beforeUpdateHandler() {
 
-        if (! globalUID) {
-            setGlobalUID()
+        if (! laserID) {
+            setLaserID()
         }
         Map<String, Object> changes = [
                 oldMap: [:],

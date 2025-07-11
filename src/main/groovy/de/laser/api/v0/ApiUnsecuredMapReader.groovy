@@ -42,7 +42,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID        = lic.globalUID
+        result.laserID          = lic.laserID
         result.reference        = lic.reference
         result.calculatedType   = lic._getCalculatedType()
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
@@ -68,7 +68,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID        = orgAccessPoint.globalUID
+        result.laserID          = orgAccessPoint.laserID
         result.type             = orgAccessPoint.accessMethod?.value
 
         ApiToolkit.cleanUp(result, true, true)
@@ -85,7 +85,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = org.globalUID
+        result.laserID      = org.laserID
         result.gokbId       = org.gokbId
         result.name         = org.name
         result.sortname     = org.sortname
@@ -110,7 +110,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pkg.globalUID
+        result.laserID      = pkg.laserID
         result.name         = pkg.name
         result.altnames     = ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
         result.gokbId       = pkg.gokbId
@@ -133,7 +133,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pkg['pkg_guid']
+        result.laserID      = pkg['pkg_guid']
         result.name         = pkg['pkg_name']
         List<String> altnames = []
         pkg['altnames'].each { altNameRow ->
@@ -163,7 +163,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pform.globalUID
+        result.laserID      = pform.laserID
         result.gokbId       = pform.gokbId
         result.name         = pform.name
         result.primaryUrl   = pform.primaryUrl
@@ -183,7 +183,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = pform['plat_guid']
+        result.laserID      = pform['plat_guid']
         result.gokbId       = pform['plat_gokb_id']
         result.name         = pform['plat_name']
         result.primaryUrl   = pform['plat_primary_url']
@@ -203,7 +203,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = provider.globalUID
+        result.laserID      = provider.laserID
         result.gokbId       = provider.gokbId
         result.name         = provider.name
         result.sortname     = provider.sortname
@@ -226,7 +226,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID        = sub.globalUID
+        result.laserID          = sub.laserID
         result.name             = sub.name
         result.calculatedType   = sub._getCalculatedType()
         result.startDate        = ApiToolkit.formatInternalDate(sub.startDate)
@@ -252,7 +252,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = tipp.globalUID
+        result.laserID      = tipp.laserID
         result.gokbId       = tipp.gokbId
         result.title        = tipp.name
         result.normTitle    = tipp.normName
@@ -276,7 +276,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID    = vendor.globalUID
+        result.laserID      = vendor.laserID
         result.gokbId       = vendor.gokbId
         result.name         = vendor.name
         result.sortname     = vendor.sortname
@@ -299,7 +299,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID        = delObj.oldGlobalUID
+        result.laserID          = delObj.oldLaserID
         result.name             = delObj.oldName
         result.calculatedType   = delObj.oldCalculatedType
         result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
@@ -405,7 +405,7 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.globalUID        = pform.globalUID
+        result.laserID          = pform.laserID
         result.gokbId           = pform.gokbId
         result.name             = pform.name
         result.normName         = pform.normname
@@ -439,7 +439,7 @@ class ApiUnsecuredMapReader {
 
         provider = GrailsHibernateUtil.unwrapIfProxy(provider)
 
-        result.globalUID             = provider.globalUID
+        result.laserID               = provider.laserID
         result.gokbId                = provider.gokbId
         result.name                  = provider.name
         result.altNames              = ApiCollectionReader.getAlternativeNameCollection(provider.altnames)
@@ -493,7 +493,7 @@ class ApiUnsecuredMapReader {
 
         vendor = GrailsHibernateUtil.unwrapIfProxy(vendor)
 
-        result.globalUID             = vendor.globalUID
+        result.laserID               = vendor.laserID
         result.gokbId                = vendor.gokbId
         result.name                  = vendor.name
         result.altNames              = ApiCollectionReader.getAlternativeNameCollection(vendor.altnames)

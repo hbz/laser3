@@ -82,7 +82,7 @@ class BaseExportHelper {
                     value = value.join('\n')
                 }
                 if (value.startsWith('http://') || value.startsWith('https://')) {
-                    List<String> parts = value.split('@') // masking globalUID and gokbId
+                    List<String> parts = value.split('@') // masking laserID and gokbId
                     value = parts[0]
 
                     if (useHyperlinks) {

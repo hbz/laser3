@@ -24,7 +24,7 @@ class OrgAccessPointLink extends AbstractBase {
     ]
 
     static constraints = {
-        globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        laserID (nullable:true, blank:false, unique:true, maxSize:255)
         platform(nullable:true)
         oap     (nullable:true) //intentional, null used in program logic
         subPkg  (nullable:true) //intentional, null used in program logic
@@ -33,7 +33,7 @@ class OrgAccessPointLink extends AbstractBase {
     static mapping = {
         id              column:'oapl_id'
         active          column:'oapl_active'
-        globalUID       column:'oapl_guid'
+        laserID         column:'oapl_guid'
         version         column:'oapl_version'
         oap             column:'oapl_oap_fk'
         platform        column:'oapl_platform_fk'

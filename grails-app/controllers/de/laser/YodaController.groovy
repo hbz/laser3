@@ -576,12 +576,12 @@ class YodaController {
         if(fullReset) {
             if(params.counterRevision == 'r4') {
                 Counter4Report.withTransaction {
-                    Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platformUID = :plat', [plat: platform.globalUID])
+                    Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platformUID = :plat', [plat: platform.laserID])
                 }
             }
             else if(params.counterRevision == 'r5') {
                 Counter5Report.withTransaction {
-                    Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platformUID = :plat', [plat: platform.globalUID])
+                    Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platformUID = :plat', [plat: platform.laserID])
                 }
             }
             statsSyncService.doFetch(false, platform.gokbId, params.sushiURL, params.counterRevision)
@@ -692,7 +692,7 @@ class YodaController {
             String dataToLoad = params.dataToLoad, objType = params.objType
             executorService.execute({
                 Thread.currentThread().setName("UpdateData")
-                if (dataToLoad in ["medium", "openAccess", "accessType", "globalUID"] && objType == 'issueEntitlement')
+                if (dataToLoad in ["medium", "openAccess", "accessType", "laserID"] && objType == 'issueEntitlement')
                     yodaService.fillValue(dataToLoad)
                 else
                     globalSourceSyncService.updateData(dataToLoad)

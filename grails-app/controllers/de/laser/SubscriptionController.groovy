@@ -197,7 +197,7 @@ class SubscriptionController {
         result.platformInstanceRecords = [:]
         if(subscribedPlatforms) {
             result.platforms = subscribedPlatforms
-            result.platformsJSON = subscribedPlatforms.globalUID as JSON
+            result.platformsJSON = subscribedPlatforms.laserID as JSON
             result.keyPairs = [:]
             if(!params.containsKey('tab'))
                 params.tab = subscribedPlatforms[0].id.toString()
@@ -710,7 +710,7 @@ class SubscriptionController {
             String gnd = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
 
-            row.add(org.globalUID)
+            row.add(org.laserID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
@@ -755,7 +755,7 @@ class SubscriptionController {
         ArrayList rowData = [], row
         consortiaMembers.each { Org org ->
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
-            row = [org.globalUID, org.sortname]
+            row = [org.laserID, org.sortname]
             if(ci?.value)
                 row << ci.value
             else row << ''

@@ -20,7 +20,7 @@ class ApiCostItem {
 
     /**
      * Locates the given {@link CostItem} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID}
+     * @param the field to look for the identifier, one of {id, laserID}
      * @param the identifier value
      * @return {@link ApiBox}(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -37,11 +37,11 @@ class ApiCostItem {
                     }
                 }
                 break
-            case 'globalUID':
-                result.obj = CostItem.findAllByGlobalUID(value)
+            case 'laserID':
+                result.obj = CostItem.findAllByLaserID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
-                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                        result.obj = DeletedObject.findAllByOldLaserID(value)
                     }
                 }
                 break
@@ -108,9 +108,9 @@ class ApiCostItem {
 
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
-            result = CostItem.findAllByOwner(owner).globalUID
+            result = CostItem.findAllByOwner(owner).laserID
             DeletedObject.withTransaction {
-                result.addAll(DeletedObject.executeQuery('select do.oldGlobalUID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.oldObjectType = :costItem', [owner: owner.globalUID, costItem: CostItem.class.name]))
+                result.addAll(DeletedObject.executeQuery('select do.oldLaserID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.oldObjectType = :costItem', [owner: owner.laserID, costItem: CostItem.class.name]))
             }
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -136,9 +136,9 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             Date today = new Date()
-            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).laserID
             DeletedObject.withTransaction {
-                result.addAll(DeletedObject.executeQuery('select do.oldGlobalUID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.lastUpdated <= :apiDate and do.lastUpdated >= :today and do.oldObjectType = :costItem', [owner: owner.globalUID, apiDate: apiDate, today: today, costItem: CostItem.class.name]))
+                result.addAll(DeletedObject.executeQuery('select do.oldLaserID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.lastUpdated <= :apiDate and do.lastUpdated >= :today and do.oldObjectType = :costItem', [owner: owner.laserID, apiDate: apiDate, today: today, costItem: CostItem.class.name]))
             }
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -159,7 +159,7 @@ class ApiCostItem {
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
 
-        result.globalUID           = costItem.globalUID
+        result.laserID             = costItem.laserID
 
         result.costInBillingCurrency            = costItem.costInBillingCurrency
         result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax

@@ -338,7 +338,7 @@
                     data: {
                         reportType: $(this).val(),
                         platforms: platforms,
-                        customer: '${subscription.getSubscriberRespConsortia().globalUID}',
+                        customer: '${subscription.getSubscriberRespConsortia().laserID}',
                         subscription: ${subscription.id}
                     }
                 }).done(function(response) {

@@ -109,7 +109,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         version column: 'ven_version'
 
         gokbId column: 'ven_gokb_id', index: 'ven_gokb_idx'
-        globalUID column: 'ven_guid', index: 'ven_guid_idx'
+        laserID column: 'ven_guid', index: 'ven_guid_idx'
         name column: 'ven_name'
         sortname column: 'ven_sortname'
         status column: 'ven_status_rv_fk'
@@ -139,7 +139,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     static constraints = {
         gokbId                      (unique: true, nullable: true)
-        globalUID                   (unique: true)
+        laserID                     (unique: true)
         sortname                    (nullable: true)
         homepage                    (nullable: true, maxSize: 512)
         retirementDate              (nullable: true)
@@ -185,7 +185,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         super.afterDeleteHandler()
 
         //TODO implement ESIndex population
-        //BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
+        //BeanStore.getDeletionService().deleteDocumentFromIndex(this.laserID, this.class.simpleName)
     }
 
     @Override
@@ -257,14 +257,14 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         if(agency.gokbId) {
             v = Vendor.findByGokbId(agency.gokbId)
             if(v) {
-                v.globalUID = agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
+                v.laserID = agency.laserID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase())
                 v.legallyObligedBy = null
             }
         }
         if(!v)
-            v = Vendor.findByGlobalUID(agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+            v = Vendor.findByLaserID(agency.laserID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
         if(!v)
-            v = new Vendor(globalUID: agency.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
+            v = new Vendor(laserID: agency.laserID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
         v.name = agency.name
         v.sortname = agency.sortname
         v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync

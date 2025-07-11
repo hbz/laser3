@@ -53,7 +53,7 @@
             </thead>
             <tbody>
             <laser:render template="idTableRow"
-                      model="[orgInstance:orgInstance, tableRowNr:1, showGlobalUid:true, editable:false]"
+                      model="[orgInstance:orgInstance, tableRowNr:1, showLaserID:true, editable:false]"
             />
             <g:if test="${orgInstance.gokbId}">
                 <laser:render template="idTableRow" model="[orgInstance:orgInstance, tableRowNr:2, showWekbId:true, editable:false]"/>

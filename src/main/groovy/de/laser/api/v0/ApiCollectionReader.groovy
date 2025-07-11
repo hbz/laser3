@@ -133,7 +133,7 @@ class ApiCollectionReader {
 
             Map<String, Object> tmp     = [:]
 
-            tmp.globalUID               = it.globalUID
+            tmp.laserID                 = it.laserID
             tmp.isVisibleForSubscriber  = it.isVisibleForSubscriber ? "Yes" : "No"
             tmp.costInBillingCurrency   = it.costInBillingCurrency
             tmp.costInLocalCurrency     = it.costInLocalCurrency
@@ -169,7 +169,7 @@ class ApiCollectionReader {
             // References
             //def context = null // TODO: use context
             tmp.budgetCodes         = it.budgetcodes.collect{ BudgetCode bc -> bc.value }.unique()
-            tmp.copyBase            = it.copyBase?.globalUID
+            tmp.copyBase            = it.copyBase?.laserID
             tmp.invoiceNumber       = it.invoice?.invoiceNumber // retrieveInvoiceMap(it.invoice) // de.laser.finance.Invoice
             // tmp.issueEntitlement    = ApiIssueEntitlement.retrieveIssueEntitlementMap(it.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
             tmp.orderNumber         = it.order?.orderNumber // retrieveOrderMap(it.order) // de.laser.finance.Order
@@ -386,7 +386,7 @@ class ApiCollectionReader {
         packageOfSubscription = sql.rows("select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
         packageIDs = sql.rows("select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId", pkgParams),
         packageAltNames = sql.rows("select altname_name from alternative_name where altname_pkg_fk = :pkgId", pkgParams)
-        //titlePublishers = sql.rows("select or_tipp_fk, json_agg(json_build_object('roleType', rdv_value, 'globalUID', org_guid, 'gokbId', org_gokb_id, 'name', org_name, 'sortname', org_sortname, 'endDate', coalesce(to_char(or_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')), 'startDate', coalesce(to_char(or_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')))) as publishers from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join issue_entitlement on or_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by or_tipp_fk", subParams)
+        //titlePublishers = sql.rows("select or_tipp_fk, json_agg(json_build_object('roleType', rdv_value, 'laserID', org_guid, 'gokbId', org_gokb_id, 'name', org_name, 'sortname', org_sortname, 'endDate', coalesce(to_char(or_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')), 'startDate', coalesce(to_char(or_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"')))) as publishers from org_role join refdata_value on or_roletype_fk = rdv_id join org on or_org_fk = org_id join issue_entitlement on or_tipp_fk = ie_tipp_fk where ie_subscription_fk = :subId group by or_tipp_fk", subParams)
         Map<Long, Map> priceItemMap = priceItemRows.collectEntries { GroovyRowResult row -> [row['pi_tipp_fk'], slurper.parseText(row['price_items'].toString())] },
         identifierMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] },
         coverageMap = coverageRows.collectEntries { GroovyRowResult row -> [row['tc_tipp_fk'], slurper.parseText(row['coverages'].toString())] },
@@ -403,7 +403,7 @@ class ApiCollectionReader {
                 Subscription.withTransaction {
                     //println "now processing row ${i}"
                     //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
-                    Map<String, Object> ie = [globalUID: row['ie_guid']]
+                    Map<String, Object> ie = [laserID: row['ie_guid']]
                     //ie.name = row['ie_name']
                     ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
                     ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
@@ -702,8 +702,8 @@ class ApiCollectionReader {
 
             // nested prs
             if(it.prs) {
-                String x = it.prs.globalUID
-                def person = tmp.find {it.globalUID == x}
+                String x = it.prs.laserID
+                def person = tmp.find {it.laserID == x}
 
                 if(!person) {
                     person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.addressbook.Person

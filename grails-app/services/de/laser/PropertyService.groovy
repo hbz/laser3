@@ -209,7 +209,7 @@ class PropertyService {
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant.globalUID]
+                    tenant      : tenant.laserID]
 
             CostInformationDefinition privateCIDef = CostInformationDefinition.construct(map)
             Object[] args = [messageSource.getMessage("costInformationDefinition.create.label", null, locale), privateCIDef.getI10n('name')]
@@ -260,7 +260,7 @@ class PropertyService {
                             expl_de: params.pd_expl?.trim(),
                             expl_en: params.pd_expl?.trim()
                     ],
-                    tenant      : tenant.globalUID]
+                    tenant      : tenant.laserID]
 
             PropertyDefinition privatePropDef = PropertyDefinition.construct(map)
             Object[] args = [messageSource.getMessage("propertyDefinition.${privatePropDef.descr}.create.label", null, locale), privatePropDef.getI10n('name')]

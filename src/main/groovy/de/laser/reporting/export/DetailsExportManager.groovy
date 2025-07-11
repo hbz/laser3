@@ -171,7 +171,7 @@ class DetailsExportManager {
                     return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
                 }
                 else if (it instanceof String && (it.startsWith('http://') || it.startsWith('https://'))) {
-                    // masking globalUID and gokbId
+                    // masking laserID and gokbId
                     if (it.indexOf('@') > 0) {
                         it = it.split('@')[0]
                     }
