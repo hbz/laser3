@@ -22,18 +22,23 @@ class UserSetting {
      * The settings for an {@link User} which can be configured
      */
     static enum KEYS {
-        PAGE_SIZE                                   (Integer),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
+        LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
+        LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
+        SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
+        PAGE_SIZE                                   (Integer),
+
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_TAB_TIME_CHANGES                  (Integer),
+//        DASHBOARD_TAB_TIME_DUEDATES                 (Integer),
         DASHBOARD_TAB_TIME_SERVICE_MESSAGES         (Integer),
+//        DASHBOARD_TAB_TIME_SURVEYS                  (Integer),
+        DASHBOARD_TAB_TIME_TASKS                    (Integer),
+        DASHBOARD_TAB_TIME_WORKFLOWS                (Integer),
         DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS   (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_WEKBNEWS                     (RefdataValue, RDConstants.Y_N),
-        LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
-        LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
-        SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
 
         REMIND_CC_EMAILADDRESS                      (String),
         NOTIFICATION_CC_EMAILADDRESS                (String),

@@ -42,8 +42,9 @@ class PendingChangeService extends AbstractLockableService {
      */
     Map<String, Object> getSubscriptionChanges(Map configMap) {
         Map<String, Object> result = [:]
-        Locale locale = LocaleUtils.getCurrentLocale()
+//        Locale locale = LocaleUtils.getCurrentLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
+
         /*
         get all subscription packages about whose movements the subscriber wishes to be notified about or needs to act
         */
@@ -246,7 +247,7 @@ class PendingChangeService extends AbstractLockableService {
                     changes = pending.containsKey(pc.costItem.sub) ? pending.get(pc.costItem.sub) : []
                 if(changes != null) { */
                     Object[] args = [pc.oldValue, pc.newValue]
-                    Map<String, Object> change = [event: pc.msgToken, costItem: pc.costItem, changeId: pc.id, args: args, subscription: pc.costItem.sub]
+                    Map<String, Object> change = [event: pc.msgToken, costItem: pc.costItem, changeId: pc.id, args: args, subscription: pc.costItem.sub, _actionDate: pc.actionDate, _ts: pc.ts]
                     if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED) {
                         if(pc.actionDate >= time || pc.ts >= time) {
                             //notifications.put(pc.costItem.sub, changes)
@@ -254,8 +255,10 @@ class PendingChangeService extends AbstractLockableService {
                         }
                     }
                     else if(pc.status == RDStore.PENDING_CHANGE_PENDING) {
-                        //pending.put(pc.costItem.sub, changes)
-                        pending << change
+                        if(pc.actionDate >= time || pc.ts >= time) {
+                            //pending.put(pc.costItem.sub, changes)
+                            pending << change
+                        }
                     }
                 //}
             }
@@ -267,7 +270,7 @@ class PendingChangeService extends AbstractLockableService {
                     else if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                         changes = pending.containsKey(previous) ? pending.get(previous) : []
                     if(changes != null) { */
-                        Map change = [event: pc.msgToken, source: genericOIDService.getOID(previous), changeId: pc.id, target: genericOIDService.getOID(pc.subscription), subscription: previous]
+                        Map change = [event: pc.msgToken, source: genericOIDService.getOID(previous), changeId: pc.id, target: genericOIDService.getOID(pc.subscription), subscription: previous, _actionDate: pc.actionDate, _ts: pc.ts]
                         if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED) {
                             if(pc.actionDate >= time || pc.ts >= time) {
                                 //notifications.put(previous, changes)
@@ -275,8 +278,10 @@ class PendingChangeService extends AbstractLockableService {
                             }
                         }
                         else if(pc.status == RDStore.PENDING_CHANGE_PENDING) {
-                            //pending.put(previous, changes)
-                            pending << change
+                            if(pc.actionDate >= time || pc.ts >= time) {
+                                //pending.put(previous, changes)
+                                pending << change
+                            }
                         }
                     //}
                 }
@@ -320,12 +325,10 @@ class PendingChangeService extends AbstractLockableService {
         */
         //log.debug(pending.toMapString())
         //log.debug(notifications.toMapString())
-        result.notifications = notifications.drop(configMap.acceptedOffset).take(configMap.max)
+        result.notifications = notifications.sort{ it._actionDate }.reverse() //.drop(configMap.acceptedOffset).take(configMap.max)
         result.notificationsCount = notifications.size()
-        result.pending = pending.drop(configMap.pendingOffset).take(configMap.max)
+        result.pending = pending.sort{ it._ts }.reverse() //.drop(configMap.pendingOffset).take(configMap.max)
         result.pendingCount = pending.size()
-        result.acceptedOffset = configMap.acceptedOffset
-        result.pendingOffset = configMap.pendingOffset
         result
     }
 
@@ -453,6 +456,9 @@ class PendingChangeService extends AbstractLockableService {
                     }
                 }
                 if(hasObject) {
+                    eventRow._actionDate = pc.get("actionDate")
+                    eventRow._ts = pc.get("pc_ts")
+
                     if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
                         pending << eventRow
                     else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {

@@ -1,8 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
-<h3 class="ui header"><g:message code="surveys.active"/></h3>
 
-<div style="padding-top:2em;">
+<div>
     <g:each in="${surveys}" var="survey" status="i">
 
         <g:set var="surveyConfig" value="${SurveyConfig.get(survey.key)}"/>

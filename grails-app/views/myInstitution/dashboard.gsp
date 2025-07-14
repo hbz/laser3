@@ -76,34 +76,31 @@
 
         <g:if test="${taskService.hasREAD()}">
             <a class="${currentTab == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-                ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasksCount}" />
+                ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasks.size()}${tasksCount > tasks.size() ? '+' : ''}" />
             </a>
         </g:if>
 
         <g:if test="${workflowService.hasREAD()}">
             <a class="${currentTab == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                ${message(code:'workflow.plural')} <ui:bubble count="${allChecklistsCount}" />
+                ${message(code:'workflow.plural')} <ui:bubble count="${wfList.size()}${wfListCount > wfList.size() ? '+' : ''}" />
             </a>
         </g:if>
-
     </div>
+
         <div class="ui bottom attached segment tab ${currentTab == 'Due Dates' ? 'active':''}" data-tab="duedates">
-            <div>
-                <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
-            </div>
+            <g:render template="dashboardTabHelper" model="${[tmplKey: 'DUEDATES']}" />
+
+            <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
         </div>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-            <div class="ui bottom attached segment tab ${currentTab == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
-            </div>
+            <div class="ui bottom attached segment tab ${currentTab == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges"></div>
         </g:if>
-        <div class="ui bottom attached segment tab ${currentTab == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
-        </div>
-        <div class="ui bottom attached segment tab ${currentTab == 'Service Messages' ? 'active':''}" data-tab="servicemessages">
 
-            <ui:msg class="info" hideClose="true">
-                <g:message code="dashboard.tabTime.serviceMessages" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" />
-            </ui:msg>
+        <div class="ui bottom attached segment tab ${currentTab == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges"></div>
+
+        <div class="ui bottom attached segment tab ${currentTab == 'Service Messages' ? 'active':''}" data-tab="servicemessages">
+            <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES]}" />
 
             <g:if test="${serviceMessages.size() > 0 }">
                 <br />
@@ -140,6 +137,7 @@
 
         <g:if test="${taskService.hasREAD()}">
         <div class="ui bottom attached segment tab ${currentTab == 'Tasks' ? 'active':''}" data-tab="tasks">
+            <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_TASKS]}" />
 
             <div class="ui four columns cards">
                 <g:each in="${tasks}" var="tsk">
@@ -152,19 +150,10 @@
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <div class="ui bottom attached segment tab ${currentTab == 'Surveys' ? 'active' : ''}" data-tab="surveys">
-                <div class="la-float-right">
-                    <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
-                        <g:link controller="survey" action="workflowsSurveysConsortia"
-                                class="${Btn.SIMPLE}">${message(code: 'menu.my.surveys')}</g:link>
-                    </g:if>
-                    <g:else>
-                        <g:link action="currentSurveys" class="${Btn.SIMPLE}">${message(code: 'menu.my.surveys')}</g:link>
-                    </g:else>
-                </div>
 
-                <div id="surveyWrapper">
-                    <%--<laser:render template="surveys"/>--%>
-                </div>
+                <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: 'SURVEYS']}" />
+
+                <div id="surveyWrapper"><%--<laser:render template="surveys"/>--%></div>
             </div>
         </g:if>
 
@@ -173,14 +162,8 @@
 
             <div class="ui bottom attached segment tab ${currentTab == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <g:if test="${allChecklists}">
-                    <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">
-                        <ui:msg class="info" hideClose="true">
-
-                            ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), allChecklistsCount,
-                                                                                g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-                        </ui:msg>
-                    </g:if>
+                <g:if test="${wfList}">
+                    <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_WORKFLOWS]}" />
 
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
@@ -198,7 +181,7 @@
                             <tr>
                         </thead>
                         <tbody>
-                            <g:each in="${workflowService.sortByLastUpdated(allChecklists)}" var="clist">%{-- !? sorting--}%
+                            <g:each in="${workflowService.sortByLastUpdated(wfList)}" var="clist">%{-- !? sorting--}%
                                 <g:set var="clistInfo" value="${clist.getInfo()}" />
                                 <g:set var="clistLinkParamPart" value="${clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id}" />
                                 <tr>
@@ -259,7 +242,6 @@
                         </tbody>
                     </table>
                 </g:if>
-
             </div>
 
             <div id="wfModal" class="ui modal"></div>
@@ -307,12 +289,7 @@
 
             JSPC.app.dashboard.loadChanges = function() {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
-                    data: {
-                        max: ${max},
-                        pendingOffset: ${pendingOffset},
-                        acceptedOffset: ${acceptedOffset}
-                    }
+                    url: "<g:createLink controller="ajaxHtml" action="getChanges"/>"
                 }).done(function(response){
                     $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
                     $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));

@@ -1,0 +1,74 @@
+<%@ page import="de.laser.storage.RDStore; de.laser.UserSetting" %>
+
+
+<g:if test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES}">
+
+    <ui:msg class="info" hideClose="true">
+        <g:message code="dashboard.tabTime.changes" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}"  />
+    </ui:msg>
+</g:if>
+
+<g:elseif test="${tmplKey == 'DUEDATES'}">
+
+    <ui:msg class="info" hideClose="true">
+        <g:message code="dashboard.tabTime.dueDates" args="${[g.createLink(controller:'profile', action:'index')]}" />
+    </ui:msg>
+</g:elseif>
+
+<g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES}">
+
+    <ui:msg class="info" hideClose="true">
+        <g:message code="dashboard.tabTime.serviceMessages" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" />
+    </ui:msg>
+
+</g:elseif>
+
+<g:elseif test="${tmplKey == 'SURVEYS'}">
+
+    <ui:msg class="info" hideClose="true">%{-- copied from myInstitution/_surveys.gsp --}%
+        <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
+            <g:message code="dashboard.tabTime.surveys" args="${[g.createLink(controller:'survey', action:'workflowsSurveysConsortia', params:[tab:'active'])]}" />
+        </g:if>
+        <g:else>
+            <g:message code="dashboard.tabTime.surveys" args="${[g.createLink(controller:'myInstitution', action:'currentSurveys', params:[tab:'active'])]}" />
+        </g:else>
+    </ui:msg>
+
+</g:elseif>
+
+<g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_TASKS}">
+
+    <g:set var="tabTimeTasks" value="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_TASKS, 30)}" />
+    <ui:msg class="info" hideClose="true">
+        <g:if test="${tasksCount > tasks.size()}">
+            ${message(code:'task.dashboard.msg.more', args:[
+                    g.createLink(controller:'profile', action:'index'),
+                    tabTimeTasks,
+                    g.createLink(controller:'myInstitution', action:'tasks')
+            ])}
+        </g:if>
+        <g:else>
+            <g:message code="dashboard.tabTime.tasks" args="${tabTimeTasks}" />
+        </g:else>
+    </ui:msg>
+
+</g:elseif>
+
+<g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_WORKFLOWS}">
+
+    <g:set var="tabTimeWorkflows" value="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_WORKFLOWS, 20)}" />
+    <ui:msg class="info" hideClose="true">
+        <g:if test="${wfListCount > wfList.size()}">
+            ${message(code:'workflow.dashboard.msg.more', args:[
+                    g.createLink(controller:'profile', action:'index'),
+                    tabTimeWorkflows,
+                    g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filterStatus:RDStore.WF_WORKFLOW_STATUS_OPEN.id])
+            ])}
+        </g:if>
+        <g:else>
+            <g:message code="dashboard.tabTime.workflows" args="${tabTimeWorkflows}" />
+        </g:else>
+    </ui:msg>
+
+</g:elseif>
+
