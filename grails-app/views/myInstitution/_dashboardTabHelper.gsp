@@ -10,9 +10,13 @@
 
 <g:elseif test="${tmplKey == 'DUEDATES'}">
 
-    <ui:msg class="info" hideClose="true">
-        <g:message code="dashboard.tabTime.dueDates" args="${[g.createLink(controller:'profile', action:'index')]}" />
-    </ui:msg>
+    <g:if test="${! dueDates}">
+        <ui:msg class="info" hideClose="true" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}" />
+    </g:if>
+    <g:else>
+        <ui:msg class="info" hideClose="true" message="dashboard.tabTime.dueDates" args="${[g.createLink(controller:'profile', action:'index')]}" />
+    </g:else>
+
 </g:elseif>
 
 <g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES}">
