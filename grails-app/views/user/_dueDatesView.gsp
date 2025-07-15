@@ -1,9 +1,8 @@
 <%@ page import="de.laser.ui.Icon; de.laser.utils.SqlDateUtils; de.laser.utils.DateUtils; java.text.SimpleDateFormat; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.dates.DashboardDueDate" %>
 <laser:serviceInjection />
-    <g:if test="${ ! dueDates}">
-        <ui:msg class="info" message="profile.noDashboardReminderDates" args="${[createLink(controller:'profile', action:'index')]}"/>
-    </g:if>
+
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
+
     <g:if test="${dashboard_last_update != null}" >
 
             <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}">

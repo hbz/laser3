@@ -516,9 +516,25 @@
                                 <label>${message(code: 'profile.dashboard.tabTime.serviceMessages')}</label>
                                 <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)}" field="strValue" />
                             </div>
+%{--                            <div class="field">--}%
+%{--                                <label>${message(code: 'profile.dashboard.tabTime.dueDates')}</label>--}%
+%{--                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_DUEDATES, 30)}" field="strValue" />--}%
+%{--                            </div>--}%
                             <div class="field">
                                 <label>${message(code: 'profile.dashboard.tabTime.changes')}</label>
                                 <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}" field="strValue" />
+                            </div>
+%{--                            <div class="field">--}%
+%{--                                <label>${message(code: 'profile.dashboard.tabTime.surveys')}</label>--}%
+%{--                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_SURVEYS, 14)}" field="strValue" />--}%
+%{--                            </div>--}%
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboard.tabTime.tasks')}</label>
+                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_TASKS, 30)}" field="strValue" />
+                            </div>
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboard.tabTime.workflows')}</label>
+                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_WORKFLOWS, 20)}" field="strValue" />
                             </div>
                         </div><!-- .form -->
                     </div><!-- .content -->

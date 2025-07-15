@@ -16,7 +16,8 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 /**
  * This service is a mirror of the {@link MyInstitutionController} for the data manipulation operations
@@ -68,19 +69,23 @@ class MyInstitutionControllerService {
                 break
         }
 
+        // service messages
         prf.setBenchmark('service messages')
-        int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14)
-        result.serviceMessages = ServiceMessage.getPublished(periodInDays)
+        result.serviceMessages = ServiceMessage.getPublished(result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES, 14))
 
-        SimpleDateFormat sdFormat    = DateUtils.getLocalizedSDF_noTime()
-        params.taskStatus = 'not done'
-        FilterService.Result fsr = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
+        // tasks (status!=done)
         prf.setBenchmark('tasks')
-        result.tasks = taskService.getTasksByResponsibility(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
-        result.tasksCount    = result.tasks.size()
+        params.taskStatus        = 'not done'
+        FilterService.Result fsr = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], DateUtils.getLocalizedSDF_noTime())
+        List<Task> tasks         = taskService.getTasksByResponsibility(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
+        result.tasksCount        = tasks.size()
+        result.tasks             = tasks.findAll {
+            DateUtils.dateToLocalDate(it.endDate) <= LocalDate.now().plus(result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_TASKS, 30), ChronoUnit.DAYS)
+        }
 
+        // due dates
         prf.setBenchmark('due dates')
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user as User, result.max, result.dashboardDueDatesOffset)
+        result.dueDates      = dashboardDueDatesService.getDashboardDueDates( result.user as User, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user as User )
 
         prf.setBenchmark('workflows')
@@ -95,18 +100,37 @@ class MyInstitutionControllerService {
             }
         }
 
+        // workflows
         if (workflowService.hasREAD()){
             List<WfChecklist> workflows = []
+            List<WfChecklist> workflowsAll = workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) )
 
-            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) ).each { clist ->
+            workflowsAll.each { clist ->
                 Map info = clist.getInfo()
-
-                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
-                    workflows.add(clist)
-                }
+                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) { workflows.add(clist) }
             }
-            result.allChecklistsCount = workflows.size()
-            result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
+            result.wfList = workflows.take( contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_WORKFLOWS, 20) )
+            result.wfListCount = workflows.size()
+
+//            List<WfChecklist> workflows = []
+//            int workflowsCount = 0
+//
+//            println '## ' + workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) ).size()
+//            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) ).each { clist ->
+//                Map info = clist.getInfo()
+//
+//                long periodOfDays = contextService.getUser().getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_WORKFLOWS, 20) as long
+//                LocalDate limit = LocalDate.now().minus( periodOfDays, ChronoUnit.DAYS )
+//
+//                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+//                    if (DateUtils.dateToLocalDate(info.lastUpdated) >= limit) {
+//                        workflows.add(clist)
+//                    }
+//                    workflowsCount++
+//                }
+//            }
+//            result.wfList = workflows
+//            result.wfListCount = workflowsCount
         }
 
         if (dashboardService.showWekbNews()) {

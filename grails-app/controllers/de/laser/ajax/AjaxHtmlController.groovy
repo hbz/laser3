@@ -200,20 +200,13 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getChanges() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
-        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         int periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)
         Map<String, Object> pendingChangeConfigMap = [
                 contextOrg: contextService.getOrg(),
                 consortialView: contextService.getOrg().isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                acceptedOffset:result.acceptedOffset,
-                pendingOffset: result.pendingOffset
+                periodInDays: periodInDays
         ]
         Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
-        changes.max = result.max
         changes.editable = result.editable
         changes.periodInDays = periodInDays
         render template: '/myInstitution/changesWrapper', model: changes
