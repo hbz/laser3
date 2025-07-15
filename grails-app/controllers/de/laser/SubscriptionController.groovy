@@ -1301,12 +1301,28 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            String exportTab
+            switch(params.tab) {
+                case 'currentIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.current"))
+                    break
+                case 'plannedIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.planned"))
+                    break
+                case 'expiredIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.expired"))
+                    break
+                case 'deletedIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.deleted"))
+                    break
+                case 'allIEs': exportTab = escapeService.escapeString(message(code: "menu.public.all_titles"))
+                    break
+                default: exportTab = escapeService.escapeString(message(code: "package.show.nav.current"))
+                    break
+            }
+            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${exportTab}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
             Set<Package> targetPkg = targetSub.packages.pkg
             if(params.pkgFilter)
                 targetPkg = [Package.get(params.pkgFilter)]
             Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
+            configMap.putAll(FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs'))
             configMap.putAll(params)
             Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
             Map<String, Object> selectedFields = [:]
