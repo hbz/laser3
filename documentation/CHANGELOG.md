@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6728    15.07.2025  rc-3.5  3.5.4       Andreas Feature     Titelexport berücksichtigt den Status-Filter
+
 6712    14.07.2025  dev     3.6         David   Feature     Dashboard-Einstellungen für Anzeige-Zeiträume überarbeiten
 
 6493    11.07.2025  dev     3.6         David   Feature     Globale UID/LAS:eR UUID in Laser-ID umbenennen
