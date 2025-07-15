@@ -104,6 +104,7 @@
         </g:each>
     </div><!-- .grid -->
 </div>
+
 <div id="acceptedChangesWrapper">
     <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, user: contextService.getUser()]}" />
 
@@ -150,6 +151,19 @@
                     </g:if>--%>
                 </div><!-- .column -->
                 <div class="two wide column center aligned">
+                    <g:if test="${! entry._status}">
+                        ???
+                    </g:if>
+                    <g:elseif test="${RDStore.PENDING_CHANGE_ACCEPTED.id == entry._status.id}">
+                        <i class="${Icon.SYM.YES} green"></i>
+                    </g:elseif>
+                    <g:elseif test="${RDStore.PENDING_CHANGE_REJECTED.id == entry._status.id}">
+                        <i class="${Icon.SYM.NO} red"></i>
+                    </g:elseif>
+                    <g:else>
+                        ${entry._status.getI10n('value')}
+                    </g:else>
+
                     <g:formatDate date="${entry._actionDate}" format="${message(code:'default.date.format.noZ')}"/>
                 </div><!-- .column -->
             </div><!-- .row -->
