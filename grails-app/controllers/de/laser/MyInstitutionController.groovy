@@ -85,6 +85,7 @@ class MyInstitutionController  {
     FinanceService financeService
     FormService formService
     GenericOIDService genericOIDService
+    GlobalService globalService
     GokbService gokbService
     InstitutionsService institutionsService
     LinksGenerationService linksGenerationService
@@ -2373,13 +2374,27 @@ class MyInstitutionController  {
         ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processSubscriptionImport() {
-            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-            MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
-            if(tsvFile && tsvFile.size > 0) {
-                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        MultipartFile importFile = request.getFile("file")
+        if(importFile && importFile.size > 0) {
+            Map subscriptionData, tableData = null
+            if(importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                tableData = globalService.readExcelFile(importFile)
+            }
+            else {
+                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    result.filename = tsvFile.originalFilename
-                    Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
+                    result.filename = importFile.originalFilename
+                    tableData = globalService.readCsvFile(importFile, encoding)
+                }
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                    redirect(url: request.getHeader('referer'))
+                }
+            }
+            if(tableData) {
+                subscriptionData = subscriptionService.subscriptionImport(tableData.headerRow, tableData.rows)
+                if(subscriptionData) {
                     if(subscriptionData.globalErrors) {
                         flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
                         redirect(action: 'subscriptionImport')
@@ -2391,14 +2406,15 @@ class MyInstitutionController  {
                     render view: 'postProcessingSubscriptionImport', model: result
                 }
                 else {
-                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                    flash.error = message(code:'default.import.error.noFileProvided') as String
                     redirect(url: request.getHeader('referer'))
                 }
             }
-            else {
-                flash.error = message(code:'default.import.error.noFileProvided') as String
-                redirect(url: request.getHeader('referer'))
-            }
+        }
+        else {
+            flash.error = message(code:'default.import.error.noFileProvided') as String
+            redirect(url: request.getHeader('referer'))
+        }
     }
 
     /**

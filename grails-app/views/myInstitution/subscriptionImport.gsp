@@ -93,7 +93,7 @@
                     <input type="text" readonly="readonly" class="ui input"
                                placeholder="${message(code: 'myinst.subscriptionImport.uploadCSV')}">
 
-                    <input type="file" name="tsvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                    <input type="file" name="file" accept=".txt,.csv,.tsv,.xls,.xlsx,text/tab-separated-values,text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                            style="display: none;">
                     <div class="${Btn.ICON.SIMPLE}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>

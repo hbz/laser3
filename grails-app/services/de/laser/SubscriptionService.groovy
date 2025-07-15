@@ -2654,11 +2654,11 @@ class SubscriptionService {
      * @param tsvFile the import file containing the subscription data
      * @return a map containing the candidates, the parent subscription type and the errors
      */
-    Map subscriptionImport(MultipartFile tsvFile, String encoding) {
+    Map subscriptionImport(List<String> headerRow, List rows) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
-        String[] parentSubType
+        String[] parentSubType = []
         if (contextService.getOrg().isCustomerType_Consortium()) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
@@ -2666,10 +2666,7 @@ class SubscriptionService {
         Map colMap = [:]
         Map<String, Map> propMap = [:], idMap = [:]
         Map candidates = [:]
-        InputStream fileContent = tsvFile.getInputStream()
-        List<String> rows = fileContent.getText(encoding).split('\n')
         List<String> ignoredColHeads = [], multiplePropDefs = [], multipleIdentifierNamespaces = []
-        List<String> headerRow = rows.remove(0).split('\t')
         int colCount = headerRow.size()
         headerRow.eachWithIndex { String s, int c ->
             String headerCol = s.trim()
@@ -2766,9 +2763,13 @@ class SubscriptionService {
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.colHeaderIgnored',[ignoredColHeads.join('</li><li>')].toArray(),locale)
         if(multiplePropDefs)
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
-        rows.eachWithIndex { String row, int rowno ->
+        rows.eachWithIndex { row, int rowno ->
             Map mappingErrorBag = [:], candidate = [properties: [:], ids: [:]]
-            List<String> cols = row.split('\t', -1)
+            //temp, todo [ticket=6315]
+            List<String> cols
+            if(row instanceof String)
+                cols = row.split('\t', -1)
+            else cols = row
             if(cols.size() == colCount) {
                 //check if we have some mandatory properties ...
                 //status(nullable:false, blank:false) -> to status, defaults to status not set
@@ -3098,6 +3099,12 @@ class SubscriptionService {
             candidates.put(candidate,mappingErrorBag)
         }
         [candidates: candidates, globalErrors: globalErrors, parentSubType: parentSubType]
+    }
+
+    Map subscriptionImportExcel() {
+        Map<String, Object> result = [:]
+
+        result
     }
 
     /**

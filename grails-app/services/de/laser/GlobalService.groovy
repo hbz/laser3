@@ -10,8 +10,15 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFSheet
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
 
@@ -98,6 +105,45 @@ class GlobalService {
     static Sql obtainStorageSqlConnection() {
         DataSource dataSource = BeanStore.getStorageDataSource()
         new Sql(dataSource)
+    }
+
+    Map<String, Object> readCsvFile(MultipartFile tsvFile, String encoding) {
+        //TODO [ticket=6315]
+        InputStream fileContent = tsvFile.getInputStream()
+        List<String> rows = fileContent.getText(encoding).split('\n')
+        List<String> headerRow = rows.remove(0).split('\t')
+        [headerRow: headerRow, rows: rows]
+    }
+
+    Map<String, Object> readExcelFile(MultipartFile excelFile) {
+        //continue here with testing
+        List<String> headerRow = []
+        List<List<String>> rows = []
+        XSSFWorkbook workbook = new XSSFWorkbook(excelFile.getInputStream())
+        XSSFSheet sheet = workbook.getSheetAt(0)
+        for(Cell cell in sheet.getRow(0).cellIterator()) {
+            headerRow << cell.stringCellValue
+        }
+        boolean headerFlag = true
+        for(Row row in sheet.rowIterator()) {
+            if(headerFlag) {
+                headerFlag = false
+                continue
+            }
+            def value
+            List<String> readRow = []
+            for(Cell cell in row.cellIterator()) {
+                switch(cell.getCellTypeEnum()) {
+                    case CellType.NUMERIC: value = cell.numericCellValue
+                        break
+                    case CellType.STRING: value = cell.stringCellValue
+                        break
+                }
+                readRow << value
+            }
+            rows << readRow
+        }
+        [headerRow: headerRow, rows: rows]
     }
 
     /**
