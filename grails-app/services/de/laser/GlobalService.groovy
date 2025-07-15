@@ -21,6 +21,7 @@ import org.hibernate.SessionFactory
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
+import java.math.RoundingMode
 
 /**
  * A container service for methods used widespread in the system
@@ -131,12 +132,13 @@ class GlobalService {
                 continue
             }
             def value
-            List<String> readRow = []
+            List readRow = []
             for(Cell cell in row.cellIterator()) {
+                //log.debug(cell.getCellTypeEnum().toString())
                 switch(cell.getCellTypeEnum()) {
-                    case CellType.NUMERIC: value = cell.numericCellValue
+                    case CellType.NUMERIC: value = cell.numericCellValue.toDouble()
                         break
-                    case CellType.STRING: value = cell.stringCellValue
+                    default: value = cell.stringCellValue
                         break
                 }
                 readRow << value

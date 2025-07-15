@@ -43,12 +43,14 @@ import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
+import org.apache.poi.ss.usermodel.DateUtil
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
+import java.math.RoundingMode
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -2737,6 +2739,9 @@ class SubscriptionService {
                             if(propDef.isRefdataValueType()) {
                                 defPair.refCategory = propDef.refdataCategory
                             }
+                            else if(propDef.isDateType()) {
+                                defPair.isDate = true
+                            }
                             propMap[propDef.class.name+':'+propDef.id] = [definition:defPair]
                         }
                     }
@@ -2893,16 +2898,16 @@ class SubscriptionService {
                         }
                     }
                 }
-                //agency
+                //library supplier
                 if(colMap.vendor != null) {
-                    String vendorIdCandidate = cols[colMap.vendor]?.trim()
-                    if(vendorIdCandidate) {
-                        Long idCandidate = vendorIdCandidate.isLong() ? Long.parseLong(vendorIdCandidate) : null
-                        Vendor vendor = Vendor.findByIdOrLaserID(idCandidate,vendorIdCandidate)
-                        if(vendor)
-                            candidate.vendor = "${vendor.class.name}:${vendor.id}"
+                    String librarySupplierIdCandidate = cols[colMap.vendor]?.trim()
+                    if(librarySupplierIdCandidate) {
+                        Long idCandidate = librarySupplierIdCandidate.isLong() ? Long.parseLong(librarySupplierIdCandidate) : null
+                        Vendor librarySupplier = Vendor.findByIdOrLaserID(idCandidate,librarySupplierIdCandidate)
+                        if(librarySupplier)
+                            candidate.vendor = "${librarySupplier.class.name}:${librarySupplier.id}"
                         else {
-                            mappingErrorBag.noValidOrg = vendorIdCandidate
+                            mappingErrorBag.noValidOrg = librarySupplierIdCandidate
                         }
                     }
                 }
@@ -2915,7 +2920,10 @@ class SubscriptionService {
                 */
                 Date startDate
                 if(colMap.startDate != null) {
-                    startDate = DateUtils.parseDateGeneric(cols[colMap.startDate].trim())
+                    if(cols[colMap.startDate] instanceof Double)
+                        startDate = DateUtil.getJavaDate(cols[colMap.startDate])
+                    else
+                        startDate = DateUtils.parseDateGeneric(cols[colMap.startDate].trim())
                 }
                 /*
                 endDate(nullable:true, blank:false, validator: { val, obj ->
@@ -2926,7 +2934,10 @@ class SubscriptionService {
                 */
                 Date endDate
                 if(colMap.endDate != null) {
-                    endDate = DateUtils.parseDateGeneric(cols[colMap.endDate].trim())
+                    if(cols[colMap.endDate] instanceof Double)
+                        endDate = DateUtil.getJavaDate(cols[colMap.endDate])
+                    else
+                        endDate = DateUtils.parseDateGeneric(cols[colMap.endDate].trim())
                 }
                 if(startDate && endDate) {
                     if(startDate <= endDate) {
@@ -2943,18 +2954,27 @@ class SubscriptionService {
                     candidate.endDate = endDate
                 //manualCancellationDate(nullable:true, blank:false)
                 if(colMap.manualCancellationDate != null) {
-                    Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
+                    Date manualCancellationDate
+                    if(cols[colMap.manualCancellationDate] instanceof Double)
+                        manualCancellationDate = DateUtil.getJavaDate(cols[colMap.manualCancellationDate])
+                    else manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
                     if(manualCancellationDate)
                         candidate.manualCancellationDate = manualCancellationDate
                 }
                 //referenceYear(nullable:true, blank:false)
                 if(colMap.referenceYear != null) {
-                    String yearKey = cols[colMap.referenceYear].trim()
-                    if(yearKey) {
-                        Year referenceYear = Year.parse(cols[colMap.referenceYear])
-                        if(referenceYear)
-                            candidate.referenceYear = referenceYear
+                    Year referenceYear
+                    if(cols[colMap.referenceYear] instanceof Double) {
+                        referenceYear = Year.of(new BigDecimal(cols[colMap.referenceYear]).setScale(0, RoundingMode.HALF_UP).intValue())
                     }
+                    else {
+                        String yearKey = cols[colMap.referenceYear].trim()
+                        if(yearKey) {
+                            referenceYear = Year.parse(cols[colMap.referenceYear])
+                        }
+                    }
+                    if(referenceYear)
+                        candidate.referenceYear = referenceYear
                 }
                 //isAutomaticRenewAnnually
                 if(colMap.isAutomaticRenewAnnually != null) {
@@ -3062,6 +3082,11 @@ class SubscriptionService {
                             if(!v) {
                                 mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
                             }
+                        }
+                        else if(defPair.isDate) {
+                            if(cols[defPair.colNo] instanceof Double)
+                                v = DateUtil.getJavaDate(cols[defPair.colNo])
+                            else v = cols[defPair.colno]
                         }
                         else v = cols[defPair.colno]
                         propData.propValue = v
