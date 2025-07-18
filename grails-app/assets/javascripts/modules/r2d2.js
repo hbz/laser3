@@ -821,6 +821,10 @@ r2d2 = {
             $(this).data("lastClicked", e.timeStamp);
         });
 
+        $(ctxSel + ' .js-single-click').click(function(e) {
+            $(this).addClass('disabled').attr('disabled', 'disabled');
+        });
+
         // confirmation modal
         function _buildConfirmationModal(elem) {
                 var ajaxUrl = elem ? elem.getAttribute("data-confirm-messageUrl") : false;

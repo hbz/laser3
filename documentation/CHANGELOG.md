@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge
+
 6725    10.07.2025  rc-3.5  3.5.4       David   Feature     SystemProfiler -> Admin
 
 6667    09.07.2025  rc-3.5  3.5.4       Andreas Feature     Entfernen der Summenspalten von der Ausgabe der Nutzerzahlen
