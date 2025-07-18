@@ -118,16 +118,15 @@
 						</table>
 						<g:if test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
-							<g:link controller="organisation" action="createMember" class="${Btn.NEGATIVE}" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
+							<g:link controller="organisation" action="createMember" class="${Btn.NEGATIVE_SINGLECLICK}" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedOrganisation.isEmpty()}">
 							<ui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
-
 						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
-						<g:link controller="organisation" action="createMember" class="${Btn.POSITIVE}" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
+						<g:link controller="organisation" action="createMember" class="${Btn.POSITIVE_SINGLECLICK}" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
 						<ui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />
