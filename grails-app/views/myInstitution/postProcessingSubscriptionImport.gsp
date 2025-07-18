@@ -62,8 +62,11 @@
                                                 <g:if test="${prop.getValue().propValue}">
                                                     <%
                                                         String value = genericOIDService.resolveOID(prop.getValue().propValue)?.getI10n("value")
-                                                        if(!value)
-                                                            value = prop.getValue().propValue
+                                                        if(!value) {
+                                                            if(prop.getValue().propValue instanceof Date)
+                                                                value = g.formatDate(format: message(code:'default.date.format.notime'), date: prop.getValue().propValue)
+                                                            else value = prop.getValue().propValue
+                                                        }
                                                     %>
                                                     <li>${genericOIDService.resolveOID(prop.getKey()).getI10n("name")}: ${value} (${prop.getValue().propNote ?: 'Keine Anmerkung'})</li>
                                                 </g:if>

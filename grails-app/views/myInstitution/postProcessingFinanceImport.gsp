@@ -10,7 +10,7 @@
 <h2 class="ui header">${message(code:'myinst.financeImport.post.header2')}</h2>
 <g:if test="${token}">
     <div class="errorFileWrapper">
-        <g:render template="/subscription/entitlementProcessResult" model="[token: token, errMess: errMess, errorCount: errorCount]"/>
+        <g:render template="/subscription/entitlementProcessResult" model="[token: token, errMess: errMess, errorCount: errorCount, fileformat: fileformat]"/>
     </div>
 </g:if>
 <g:form name="costItemParameter" action="importCostItems" controller="finance" method="post">
@@ -59,7 +59,7 @@
                                             if(errors.containsKey('noValidStatus'))
                                                 errMess = message(code:"myinst.financeImport.post.error.noValidStatus",args:[errors.get('noValidStatus')])
                                             break
-                                        case ["rechnungssumme", "invoice total"]: tableCell = ci.costInBillingCurrency
+                                        case ["rechnungssumme", "invoice total"]: tableCell = formatNumber(number: ci.costInBillingCurrency, type: 'currency', currencySymbol: '')
                                             break
                                         case ["währung", "waehrung", "currency"]: tableCell = ci.billingCurrency?.value
                                             if(errors.containsKey('noCurrencyError')) {
@@ -91,7 +91,7 @@
                                             if(ci.taxKey != CostItem.TAX_TYPES.TAX_REVERSE_CHARGE)
                                                 tableCell = ci.taxKey?.taxRate
                                             break
-                                        case ["wert", "endpreis", "value"]: tableCell = ci.costInLocalCurrency
+                                        case ["wert", "endpreis", "value"]: tableCell = formatNumber(number: ci.costInLocalCurrency, type: 'currency', currencySymbol: '')
                                             break
                                         case ["lizenz", "subscription"]:
                                             if(ci.sub) {

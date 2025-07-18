@@ -10,111 +10,95 @@
 
 <ui:messages data="${flash}"/>
 
-<div class="ui segment la-markdown">
+        <div class="ui segment la-markdown">
             <div>
                 <g:message code="myinst.subscriptionImport.manual.p1"/>
                 <img class="ui mini spaced image la-js-questionMark" alt="Abbildung_Fragezeichen_Icon.png" src="${resource(dir: 'media', file: 'finance/Abbildung_Fragezeichen_Icon.png')}"/>
             </div>
-            <div>
-                <g:message code="myinst.subscriptionImport.manual.p2"/>
-                <ul>
-                    <li><g:message code="myinst.subscriptionImport.manual.li1"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li2"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li3"/></li>
-                </ul>
-                <img class="ui image" alt="financeupload_1.png" src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <ul>
-                    <li><g:message code="myinst.subscriptionImport.manual.li4"/></li>
-                </ul>
-                <img class="ui image" alt="financeupload_2.png" src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <ul>
-                    <li><g:message code="myinst.subscriptionImport.manual.li5"/></li>
-                </ul>
-                <ol>
-                    <li><g:message code="myinst.subscriptionImport.manual.li6"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li6b"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li7"/></li>
-                </ol>
-                <img class="ui image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_3.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <ol>
-                    <li><g:message code="myinst.subscriptionImport.manual.li8"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li9"/></li>
-                </ol>
-                <img class="ui  image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_4.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <ol>
-                    <li><g:message code="myinst.subscriptionImport.manual.li10"/></li>
-                    <li><g:message code="myinst.subscriptionImport.manual.li11"/></li>
-                </ol>
-                <img class="ui image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_5.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <g:message code="myinst.subscriptionImport.manual.p3"/>
-                <ul>
-                    <li><g:message code="myinst.subscriptionImport.manual.li12"/></li>
-                </ul>
-                <img class="ui image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/>
-            </div>
-            <hr/>
-            <div>
-                <ul>
-                    <li><g:message code="myinst.subscriptionImport.manual.li14"/></li>
-                </ul>
-                <img class="ui image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/>
-                <g:message code="myinst.subscriptionImport.manual.p4"/>
-            </div>
-</div>
-<%
-    String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
-    if(contextService.getOrg().isCustomerType_Consortium()) {
-        templatePath = 'bulk_load_subscription_records_template.csv'
-    }
-%>
-<a href="${resource(dir: 'files', file: templatePath)}" download="template_bulk_load_subscription_records.csv" class="${Btn.ICON.SIMPLE}" style="margin-bottom: 1em" >
-    <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.subscriptionImport.template"/>
-</a>
-<g:uploadForm action="processSubscriptionImport" method="post">
-    <ui:msg class="warning" header="Achtung" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
-    <div class="field">
-        <div class="two fields">
-                <div class="ui action input">
-                    <input type="text" readonly="readonly" class="ui input"
-                               placeholder="${message(code: 'myinst.subscriptionImport.uploadCSV')}">
-
-                    <input type="file" name="file" accept=".txt,.csv,.tsv,.xls,.xlsx,text/tab-separated-values,text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                           style="display: none;">
-                    <div class="${Btn.ICON.SIMPLE}">
-                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+            <div class="ui styled fluid accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <g:message code="myinst.subscriptionImport.csvManual.header"/>
+                </div>
+                <div class="content">
+                    <div>
+                        <g:message code="myinst.subscriptionImport.manual.p2"/>
+                        <ul>
+                            <li><g:message code="myinst.subscriptionImport.manual.li1"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li2"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li3"/></li>
+                        </ul>
+                        <img class="ui image" alt="financeupload_1.png" src="${resource(dir: 'media', file: 'finance/financeupload_1.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <ul>
+                            <li><g:message code="myinst.subscriptionImport.manual.li4"/></li>
+                        </ul>
+                        <img class="ui image" alt="financeupload_2.png" src="${resource(dir: 'media', file: 'finance/financeupload_2.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <ul>
+                            <li><g:message code="myinst.subscriptionImport.manual.li5"/></li>
+                        </ul>
+                        <ol>
+                            <li><g:message code="myinst.subscriptionImport.manual.li6"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li6b"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li7"/></li>
+                        </ol>
+                        <img class="ui image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_3.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <ol>
+                            <li><g:message code="myinst.subscriptionImport.manual.li8"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li9"/></li>
+                        </ol>
+                        <img class="ui  image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_4.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <ol>
+                            <li><g:message code="myinst.subscriptionImport.manual.li10"/></li>
+                            <li><g:message code="myinst.subscriptionImport.manual.li11"/></li>
+                        </ol>
+                        <img class="ui image" alt="subscription upload" src="${resource(dir: 'media', file: 'subscription/subscriptionupload_5.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <g:message code="myinst.subscriptionImport.manual.p3"/>
+                        <ul>
+                            <li><g:message code="myinst.subscriptionImport.manual.li12"/></li>
+                        </ul>
+                        <img class="ui image" alt="financeupload_6.png" src="${resource(dir: 'media', file: 'finance/financeupload_6.png')}"/>
+                    </div>
+                    <hr/>
+                    <div>
+                        <ul>
+                            <li><g:message code="myinst.subscriptionImport.manual.li14"/></li>
+                        </ul>
+                        <img class="ui image" alt="financeupload_7.png" src="${resource(dir: 'media', file: 'finance/financeupload_7.png')}"/>
+                        <g:message code="myinst.subscriptionImport.manual.p4"/>
                     </div>
                 </div>
-
-                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.upload"/></button>
+            </div>
         </div>
-    </div>
-</g:uploadForm>
 
+<%
+    String templatePathCSV = 'LizenzImportVollnutzerBeispiel.csv', templatePathXLS = 'LizenzImportVollnutzerBeispiel.xlsx'
+    if(contextService.getOrg().isCustomerType_Consortium()) {
+        templatePathCSV = 'bulk_load_subscription_records_template.csv'
+        templatePathXLS = 'bulk_load_subscription_records_template.xlsx'
+    }
+%>
+<a href="${resource(dir: 'files', file: templatePathXLS)}" download="${templatePathXLS}" class="${Btn.ICON.SIMPLE} xls" style="margin-bottom: 1em" >
+    <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.subscriptionImport.template.xls"/>
+</a>
+<a href="${resource(dir: 'files', file: templatePathCSV)}" download="${templatePathCSV}" class="${Btn.ICON.SIMPLE} csv" style="margin-bottom: 1em" >
+    <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.subscriptionImport.template.csv"/>
+</a>
+<g:render template="/templates/genericFileImportForm" model="[processAction: 'processSubscriptionImport']"/>
 
 <g:render template="/public/markdownScript" />
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.action .icon.button').click(function () {
-        $(this).parent('.action').find('input:file').click();
-    });
-
-    $('input:file', '.ui.action.input').on('change', function (e) {
-        var name = e.target.files[0].name;
-        $('input:text', $(e.target).parent()).val(name);
-    });
-</laser:script>
 <laser:htmlEnd />

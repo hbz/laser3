@@ -153,8 +153,8 @@ class ExportService {
 		sheets.entrySet().eachWithIndex { sheetData, index ->
 			try {
 				String title = sheetData.key
-				List titleRow = (List) sheetData.value.titleRow
-				List columnData = (List) sheetData.value.columnData
+				Collection titleRow = sheetData.value.titleRow
+				Collection columnData = sheetData.value.columnData
 
 				if (title.length() > 31) {
 					title = title.substring(0, 31-3);

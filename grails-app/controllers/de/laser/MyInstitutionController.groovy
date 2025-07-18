@@ -85,8 +85,8 @@ class MyInstitutionController  {
     FinanceService financeService
     FormService formService
     GenericOIDService genericOIDService
-    GlobalService globalService
     GokbService gokbService
+    ImportService importService
     InstitutionsService institutionsService
     LinksGenerationService linksGenerationService
     ManagementService managementService
@@ -2260,31 +2260,58 @@ class MyInstitutionController  {
         Subscription subscription = Subscription.get(params.id)
         Set<String> keys = ["subscription", "subscriber.sortname", "subscriber.name", "package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
                             "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"]
-        Set<List<String>> subscriptionRows = []
+        Set<List> subscriptionRows = []
         Set<String> colHeaders = []
         colHeaders.addAll(keys.collect { String entry -> message(code:"myinst.financeImport.${entry}") })
         Subscription.executeQuery('select sub from OrgRole oo join oo.sub sub join oo.org org where oo.roleType in (:roleType) and sub.instanceOf = :parent order by org.sortname', [roleType: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS], parent: subscription]).each { Subscription subChild ->
-            List<String> row = []
+            List row = []
             keys.eachWithIndex { String entry, int i ->
-                if(entry == "subscription") {
-                    row[i] = subChild.laserID
-                }else if(entry == "subscriber.sortname") {
-                    row[i] = subChild.getSubscriberRespConsortia().sortname
-                }else if(entry == "subscriber.name") {
-                    row[i] = subChild.getSubscriberRespConsortia().name
+                if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                    if(entry == "subscription") {
+                        row[i] = [field: subChild.laserID, style: null]
+                    }else if(entry == "subscriber.sortname") {
+                        row[i] = [field: subChild.getSubscriberRespConsortia().sortname, style: null]
+                    }else if(entry == "subscriber.name") {
+                        row[i] = [field: subChild.getSubscriberRespConsortia().name, style: null]
+                    }
+                    else row[i] = [field: "", style: null]
                 }
-                else row[i] = ""
+                else {
+                    if(entry == "subscription") {
+                        row[i] = subChild.laserID
+                    }else if(entry == "subscriber.sortname") {
+                        row[i] = subChild.getSubscriberRespConsortia().sortname
+                    }else if(entry == "subscriber.name") {
+                        row[i] = subChild.getSubscriberRespConsortia().name
+                    }
+                    else row[i] = ""
+                }
             }
             subscriptionRows << row
         }
-        String template = exportService.generateSeparatorTableString(colHeaders,subscriptionRows,"\t")
-        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        out.withWriter { writer ->
-            writer.write(template)
+        if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+            String template = exportService.generateSeparatorTableString(colHeaders,subscriptionRows,",")
+            response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(template)
+            }
+            out.close()
+            return
         }
-        out.close()
+        else if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+            Map sheetData = [:]
+            sheetData.put(message(code: 'financials.action.financeImport'), [titleRow: colHeaders, columnData: subscriptionRows])
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+            response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
     }
 
     /**
@@ -2297,50 +2324,85 @@ class MyInstitutionController  {
         ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
-        CostItem.withTransaction { TransactionStatus ts ->
-            Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-            MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
-            if(tsvFile && tsvFile.size > 0) {
-                String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
+        //continue here with migration to new structure, then, adapt the counter-file to the input format as well ... we do not want to bother Excel uploaders with CSV files!!!
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        MultipartFile importFile
+        Map tableData = null
+        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+            importFile = request.getFile("excelFile")
+            if(importFile && importFile.size > 0) {
+                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                    tableData = importService.readExcelFile(importFile)
+                }
+            }
+        }
+        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+            importFile = request.getFile("csvFile")
+            if(importFile && importFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    result.filename = tsvFile.originalFilename
-                    Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
-                    result.headerRow = financialData.headerRow
-                    result.candidates = financialData.candidates
-                    result.budgetCodes = financialData.budgetCodes
-                    if(financialData.errorRows) {
-                        //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                        String dir = GlobalService.obtainTmpFileLocation()
-                        File f = new File(dir+"/${result.filename}_errors")
-                        if(!f.exists()) {
-                            List headerRow = financialData.errorRows.remove(0)
-                            String returnFile = exportService.generateSeparatorTableString(headerRow, financialData.errorRows, '\t')
-                            FileOutputStream fos = new FileOutputStream(f)
-                            fos.withWriter { Writer w ->
-                                w.write(returnFile)
-                            }
-                            fos.flush()
-                            fos.close()
-                        }
-                        result.errorCount = financialData.errorRows.size()
-                        result.errMess = 'myinst.financeImport.post.error.matchingErrors'
-                        result.token = "${result.filename}_errors"
-                    }
-                    /*result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
-                                             'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
-                                             'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
-                                             'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']*/
-                    render view: 'postProcessingFinanceImport', model: result
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
                 }
                 else {
                     flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
                     redirect(url: request.getHeader('referer'))
                 }
             }
-            else {
-                flash.error = message(code:'default.import.error.noFileProvided') as String
-                redirect(url: request.getHeader('referer'))
+        }
+        if(tableData) {
+            result.filename = importFile.originalFilename
+            Map<String,Map> financialData = financeService.financeImport(tableData.headerRow, tableData.rows)
+            result.headerRow = financialData.headerRow
+            result.candidates = financialData.candidates
+            result.budgetCodes = financialData.budgetCodes
+            if(financialData.errorRows) {
+                //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                String dir = GlobalService.obtainTmpFileLocation()
+                File f = new File(dir+"/${result.filename}_errors")
+                if(!f.exists()) {
+                    List headerRow = financialData.errorRows.remove(0)
+                    FileOutputStream fos = new FileOutputStream(f)
+                    if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                        result.fileformat = "xlsx" //for error file preparing
+                        Map sheetData = [:]
+                        List errorCellRows = []
+                        financialData.errorRows.each { List errorRow ->
+                            List<Map> errorCellRow = []
+                            errorRow.each { cell ->
+                                errorCellRow << [field: cell, style: null]
+                            }
+                            errorCellRows << errorCellRow
+                        }
+                        sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: headerRow, columnData: errorCellRows])
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                        wb.write(fos)
+                        fos.flush()
+                        fos.close()
+                        wb.dispose()
+                    }
+                    else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                        result.fileformat = "csv" //for error file preparing
+                        String returnFile = exportService.generateSeparatorTableString(headerRow, financialData.errorRows, params.separator)
+                        fos.withWriter { Writer w ->
+                            w.write(returnFile)
+                        }
+                        fos.flush()
+                        fos.close()
+                    }
+                }
+                result.errorCount = financialData.errorRows.size()
+                result.errMess = 'myinst.financeImport.post.error.matchingErrors'
+                result.token = "${result.filename}_errors"
             }
+            /*result.criticalErrors = ['ownerMismatchError','noValidSubscription','multipleSubError','packageWithoutSubscription','noValidPackage','multipleSubPkgError','noCurrencyError','invalidCurrencyError',
+                                     'packageNotInSubscription','entitlementWithoutPackageOrSubscription','noValidTitle','multipleTitleError','noValidEntitlement','multipleEntitlementError',
+                                     'entitlementNotInSubscriptionPackage','multipleOrderError','multipleInvoiceError','invalidCurrencyError','invoiceTotalInvalid','valueInvalid','exchangeRateInvalid',
+                                     'invalidTaxType','invalidYearFormat','noValidStatus','noValidElement','noValidSign']*/
+            render view: 'postProcessingFinanceImport', model: result
+        }
+        else {
+            flash.error = message(code:'default.import.error.noFileProvided') as String
+            redirect(url: request.getHeader('referer'))
         }
     }
 
@@ -2375,40 +2437,38 @@ class MyInstitutionController  {
     })
     def processSubscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        MultipartFile importFile = request.getFile("file")
-        if(importFile && importFile.size > 0) {
-            Map subscriptionData, tableData = null
-            if(importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                tableData = globalService.readExcelFile(importFile)
+        Map tableData = null
+        MultipartFile importFile
+        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+            importFile = request.getFile("excelFile")
+            if(importFile && importFile.size > 0) {
+                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                    tableData = importService.readExcelFile(importFile)
+                }
             }
-            else {
+        }
+        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+            importFile = request.getFile("csvFile")
+            if(importFile && importFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    result.filename = importFile.originalFilename
-                    tableData = globalService.readCsvFile(importFile, encoding)
-                }
-                else {
-                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
-                    redirect(url: request.getHeader('referer'))
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
                 }
             }
-            if(tableData) {
-                subscriptionData = subscriptionService.subscriptionImport(tableData.headerRow, tableData.rows)
-                if(subscriptionData) {
-                    if(subscriptionData.globalErrors) {
-                        flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
-                        redirect(action: 'subscriptionImport')
-                        return
-                    }
-                    result.candidates = subscriptionData.candidates
-                    result.parentSubType = subscriptionData.parentSubType
-                    result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
-                    render view: 'postProcessingSubscriptionImport', model: result
+        }
+        if(tableData) {
+            Map subscriptionData = subscriptionService.subscriptionImport(tableData.headerRow, tableData.rows)
+            result.filename = importFile.originalFilename
+            if(subscriptionData) {
+                if(subscriptionData.globalErrors) {
+                    flash.error = "<h3>${message([code:'myinst.subscriptionImport.post.globalErrors.header'])}</h3><p>${subscriptionData.globalErrors.join('</p><p>')}</p>"
+                    redirect(action: 'subscriptionImport')
+                    return
                 }
-                else {
-                    flash.error = message(code:'default.import.error.noFileProvided') as String
-                    redirect(url: request.getHeader('referer'))
-                }
+                result.candidates = subscriptionData.candidates
+                result.parentSubType = subscriptionData.parentSubType
+                result.criticalErrors = ['multipleOrgsError','noValidOrg','noValidSubscription']
+                render view: 'postProcessingSubscriptionImport', model: result
             }
         }
         else {

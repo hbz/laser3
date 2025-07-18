@@ -32,5 +32,5 @@
 </g:if>
 <g:elseif test="${errMess}">
     <ui:msg class="error" showIcon="true" message="${errMess}" args="[errorCount]"/>
-    <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+    <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat ?: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 </g:elseif>

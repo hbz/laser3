@@ -108,46 +108,6 @@ class GlobalService {
         new Sql(dataSource)
     }
 
-    Map<String, Object> readCsvFile(MultipartFile tsvFile, String encoding) {
-        //TODO [ticket=6315]
-        InputStream fileContent = tsvFile.getInputStream()
-        List<String> rows = fileContent.getText(encoding).split('\n')
-        List<String> headerRow = rows.remove(0).split('\t')
-        [headerRow: headerRow, rows: rows]
-    }
-
-    Map<String, Object> readExcelFile(MultipartFile excelFile) {
-        //continue here with testing
-        List<String> headerRow = []
-        List<List<String>> rows = []
-        XSSFWorkbook workbook = new XSSFWorkbook(excelFile.getInputStream())
-        XSSFSheet sheet = workbook.getSheetAt(0)
-        for(Cell cell in sheet.getRow(0).cellIterator()) {
-            headerRow << cell.stringCellValue
-        }
-        boolean headerFlag = true
-        for(Row row in sheet.rowIterator()) {
-            if(headerFlag) {
-                headerFlag = false
-                continue
-            }
-            def value
-            List readRow = []
-            for(Cell cell in row.cellIterator()) {
-                //log.debug(cell.getCellTypeEnum().toString())
-                switch(cell.getCellTypeEnum()) {
-                    case CellType.NUMERIC: value = cell.numericCellValue.toDouble()
-                        break
-                    default: value = cell.stringCellValue
-                        break
-                }
-                readRow << value
-            }
-            rows << readRow
-        }
-        [headerRow: headerRow, rows: rows]
-    }
-
     /**
      * Currently disused, method and procedure flow under development
      * Notifies a user that a background process (e.g. linking of a large package to many subscriptions) has been terminated

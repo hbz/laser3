@@ -1,6 +1,5 @@
 package de.laser
 
-import com.opencsv.CSVParser
 import com.opencsv.CSVParserBuilder
 import com.opencsv.CSVReader
 import com.opencsv.CSVReaderBuilder
@@ -23,6 +22,7 @@ import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.poi.ss.usermodel.DateUtil
 import org.springframework.context.MessageSource
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
@@ -1290,14 +1290,10 @@ class FinanceService {
 
     /**
      * Processes the given TSV file with financial data and puts together a {@link Map} with the information read off the file
-     * @param tsvFile the input file
-     * @param encoding the charset in which the file is being defined
      * @return a {@link Map} with the data read off
      */
-    Map<String,Map> financeImport(MultipartFile tsvFile, String encoding) {
+    Map<String,Map> financeImport(List<String> headerRow, List<List<String>> rows) {
         Org contextOrg = contextService.getOrg()
-        List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
-        List<String> headerRow = rows.remove(0).split('\t')
         List errorRows = [headerRow]
         Map<CostItem,Map> candidates = [:]
         Map<Integer,String> budgetCodes = [:]
@@ -1306,8 +1302,6 @@ class FinanceService {
         //in order to catch dates like 1012024 where dots are missing and parsed as 1.1.1012024 ... let's consider The Long Now's work as well with five-digit years!
         Date absurdDate = new SimpleDateFormat('yyyyy').parse('10000')
         headerRow.eachWithIndex { String headerCol, int c ->
-            if(headerCol.startsWith("\uFEFF"))
-                headerCol = headerCol.substring(1)
             switch(headerCol.toLowerCase().trim()) {
                 case ["bezeichnung", "title"]: colMap.title = c
                     break
@@ -1373,10 +1367,9 @@ class FinanceService {
                 'eisbn':IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                 'title_id':IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name)
         ]
-        rows.eachWithIndex { String row, Integer r ->
+        rows.eachWithIndex { List<String> cols, Integer r ->
             //log.debug("now processing entry ${r}")
             Map mappingErrorBag = [:]
-            List<String> cols = row.split('\t', -1)
             //check if we have some mandatory properties ...
             //owner(nullable: false, blank: false) -> to institution, defaults to context org
             CostItem costItem = new CostItem(owner: contextOrg)
@@ -1525,7 +1518,9 @@ class FinanceService {
             //costInBillingCurrency(nullable: true, blank: false) -> to invoice total
             if(colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
                 try {
-                    costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
+                    if(cols[colMap.invoiceTotal] instanceof Double)
+                        costItem.costInBillingCurrency = new BigDecimal(cols[colMap.invoiceTotal]).setScale(2, RoundingMode.HALF_UP)
+                    else costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.invoiceTotalInvalid = true
@@ -1543,7 +1538,9 @@ class FinanceService {
             //costInLocalCurrency(nullable: true, blank: false) -> to value
             if(colMap.value != null && cols[colMap.value] != null) {
                 try {
-                    costItem.costInLocalCurrency = escapeService.parseFinancialValue(cols[colMap.value])
+                    if(cols[colMap.value] instanceof Double)
+                        costItem.costInLocalCurrency = new BigDecimal(cols[colMap.value]).setScale(2, RoundingMode.HALF_UP)
+                    else costItem.costInLocalCurrency = escapeService.parseFinancialValue(cols[colMap.value])
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.valueInvalid = true
@@ -1553,9 +1550,11 @@ class FinanceService {
                 }
             }
             //currencyRate(nullable: true, blank: false) -> to exchange rate
-            if(colMap.currencyRate != null && cols[colMap.currencyRate] != null && cols[colMap.currencyRate].trim().length() > 0) {
+            if(colMap.currencyRate != null && cols[colMap.currencyRate] != null) {
                 try {
-                    costItem.currencyRate = escapeService.parseFinancialValue(cols[colMap.currencyRate])
+                    if(cols[colMap.currencyRate] instanceof String)
+                        costItem.currencyRate = escapeService.parseFinancialValue(cols[colMap.currencyRate])
+                    else costItem.currencyRate = cols[colMap.currencyRate]
                 }
                 catch (NumberFormatException e) {
                     mappingErrorBag.exchangeRateInvalid = true
@@ -1567,34 +1566,34 @@ class FinanceService {
             //substitute missing values in case of
             if(costItem.costInBillingCurrency) {
                 if(!costItem.currencyRate && costItem.costInLocalCurrency) {
-                    costItem.currencyRate = costItem.costInLocalCurrency / costItem.costInBillingCurrency
+                    costItem.currencyRate = new BigDecimal(costItem.costInLocalCurrency / costItem.costInBillingCurrency).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['exchangeRateMissing','exchangeRateInvalid'])
                     mappingErrorBag.exchangeRateCalculated = true
                 }
                 else if(!costItem.costInLocalCurrency && costItem.currencyRate) {
-                    costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
+                    costItem.costInLocalCurrency = new BigDecimal(costItem.costInBillingCurrency * costItem.currencyRate).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
                 }
             }
             if(costItem.costInLocalCurrency) {
                 if(!costItem.currencyRate && costItem.costInBillingCurrency) {
-                    costItem.currencyRate = costItem.costInLocalCurrency / costItem.costInBillingCurrency
+                    costItem.currencyRate = new BigDecimal(costItem.costInLocalCurrency / costItem.costInBillingCurrency).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['exchangeRateMissing','exchangeRateInvalid'])
                     mappingErrorBag.exchangeRateCalculated = true
                 }
                 else if(!costItem.costInBillingCurrency && costItem.currencyRate) {
-                    costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
+                    costItem.costInBillingCurrency = new BigDecimal(costItem.costInLocalCurrency * costItem.currencyRate).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['invoiceTotalMissing','invoiceTotalInvalid'])
                     mappingErrorBag.invoiceTotalCalculated = true
                 }
             }
             if(costItem.currencyRate) {
                 if(!costItem.costInLocalCurrency && costItem.costInBillingCurrency) {
-                    costItem.costInLocalCurrency = costItem.costInBillingCurrency * costItem.currencyRate
+                    costItem.costInLocalCurrency = new BigDecimal(costItem.costInBillingCurrency * costItem.currencyRate).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['valueMissing','valueInvalid'])
                 }
                 else if(!costItem.costInBillingCurrency && costItem.costInLocalCurrency) {
-                    costItem.costInBillingCurrency = costItem.costInLocalCurrency * costItem.currencyRate
+                    costItem.costInBillingCurrency = new BigDecimal(costItem.costInLocalCurrency * costItem.currencyRate).setScale(2, RoundingMode.HALF_UP)
                     mappingErrorBag.keySet().removeAll(['invoiceTotalMissing','invoiceTotalInvalid'])
                     mappingErrorBag.invoiceTotalCalculated = true
                 }
@@ -1609,7 +1608,10 @@ class FinanceService {
                 int taxRate = 0
                 if(cols[colMap.taxRate]) {
                     try {
-                        taxRate = Integer.parseInt(cols[colMap.taxRate])
+                        if(cols[colMap.taxRate] instanceof Double)
+                            taxRate = new BigDecimal(cols[colMap.taxRate]).setScale(0, RoundingMode.HALF_UP).intValue()
+                        else
+                            taxRate = Integer.parseInt(cols[colMap.taxRate])
                     }
                     catch (Exception e) {
                         log.info("non-numeric tax rate parsed")
@@ -1656,7 +1658,10 @@ class FinanceService {
             }
             //invoiceDate(nullable: true, blank: false) -> to invoice date
             if(colMap.invoiceDate != null) {
-                Date invoiceDate = DateUtils.parseDateGeneric(cols[colMap.invoiceDate])
+                Date invoiceDate
+                if(cols[colMap.invoiceDate] instanceof Double)
+                    invoiceDate = DateUtil.getJavaDate(cols[colMap.invoiceDate])
+                else invoiceDate = DateUtils.parseDateGeneric(cols[colMap.invoiceDate])
                 if(invoiceDate)
                     costItem.invoiceDate = invoiceDate
             }
@@ -1664,7 +1669,12 @@ class FinanceService {
             if(colMap.financialYear != null) {
                 if(cols[colMap.financialYear])  {
                     try {
-                        Year financialYear = Year.parse(cols[colMap.financialYear])
+                        Year financialYear
+                        if(cols[colMap.financialYear] instanceof Double)
+                            financialYear = Year.of(new BigDecimal(cols[colMap.referenceYear]).setScale(0, RoundingMode.HALF_UP).intValue())
+                        else {
+                            financialYear = Year.parse(cols[colMap.financialYear])
+                        }
                         costItem.financialYear = financialYear
                     }
                     catch(Exception e) {
@@ -1726,7 +1736,10 @@ class FinanceService {
             }
             //startDate(nullable: true, blank: false) -> to date from
             if(colMap.dateFrom != null) {
-                Date startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
+                Date startDate
+                if(cols[colMap.dateFrom] instanceof Double)
+                    startDate = DateUtil.getJavaDate(cols[colMap.dateFrom])
+                else startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
                 if(startDate && startDate < absurdDate)
                     costItem.startDate = startDate
                 else if(startDate > absurdDate)
@@ -1734,7 +1747,10 @@ class FinanceService {
             }
             //endDate(nullable: true, blank: false) -> to date to
             if(colMap.dateTo != null) {
-                Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
+                Date endDate
+                if(cols[colMap.dateTo] instanceof Double)
+                    endDate = DateUtil.getJavaDate(cols[colMap.dateTo])
+                else endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
                 if(endDate && endDate < absurdDate)
                     costItem.endDate = endDate
                 else if(endDate > absurdDate)
