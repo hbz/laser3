@@ -2656,7 +2656,7 @@ class SubscriptionService {
      * @param tsvFile the import file containing the subscription data
      * @return a map containing the candidates, the parent subscription type and the errors
      */
-    Map subscriptionImport(List<String> headerRow, List rows) {
+    Map subscriptionImport(List<String> headerRow, List<List<String>> rows) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
@@ -2670,10 +2670,7 @@ class SubscriptionService {
         Map candidates = [:]
         List<String> ignoredColHeads = [], multiplePropDefs = [], multipleIdentifierNamespaces = []
         int colCount = headerRow.size()
-        headerRow.eachWithIndex { String s, int c ->
-            String headerCol = s.trim()
-            if(headerCol.startsWith("\uFEFF"))
-                headerCol = headerCol.substring(1)
+        headerRow.eachWithIndex { String headerCol, int c ->
             //important: when processing column headers, grab those which are reserved; default case: check if it is a name of a property definition; if there is no result as well, reject.
             switch(headerCol.toLowerCase()) {
                 case "name": colMap.name = c
@@ -2768,13 +2765,8 @@ class SubscriptionService {
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.colHeaderIgnored',[ignoredColHeads.join('</li><li>')].toArray(),locale)
         if(multiplePropDefs)
             globalErrors << messageSource.getMessage('myinst.subscriptionImport.post.globalErrors.multiplePropDefs',[multiplePropDefs.join('</li><li>')].toArray(),locale)
-        rows.eachWithIndex { row, int rowno ->
+        rows.eachWithIndex { List<String> cols, int rowno ->
             Map mappingErrorBag = [:], candidate = [properties: [:], ids: [:]]
-            //temp, todo [ticket=6315]
-            List<String> cols
-            if(row instanceof String)
-                cols = row.split('\t', -1)
-            else cols = row
             if(cols.size() == colCount) {
                 //check if we have some mandatory properties ...
                 //status(nullable:false, blank:false) -> to status, defaults to status not set
@@ -3075,22 +3067,24 @@ class SubscriptionService {
                 propMap.each { String k, Map propInput ->
                     Map defPair = propInput.definition
                     Map propData = [:]
-                    if(cols[defPair.colno].trim()) {
-                        def v
+                    def v
+                    if(cols[defPair.colno] != null && defPair.isDate) {
+                        if(cols[defPair.colno] instanceof Double)
+                            v = DateUtil.getJavaDate(cols[defPair.colno])
+                        else if(cols[defPair.colno].trim())
+                            v = cols[defPair.colno].trim()
+                    }
+                    else if(cols[defPair.colno].trim()) {
                         if(defPair.refCategory) {
                             v = refdataService.retrieveRefdataValueOID(cols[defPair.colno].trim(),defPair.refCategory)
                             if(!v) {
                                 mappingErrorBag.propValNotInRefdataValueSet = [cols[defPair.colno].trim(),defPair.refCategory]
                             }
                         }
-                        else if(defPair.isDate) {
-                            if(cols[defPair.colNo] instanceof Double)
-                                v = DateUtil.getJavaDate(cols[defPair.colNo])
-                            else v = cols[defPair.colno]
-                        }
                         else v = cols[defPair.colno]
-                        propData.propValue = v
                     }
+                    if(v)
+                        propData.propValue = v
                     if(propInput.notesColno)
                         propData.propNote = cols[propInput.notesColno].trim()
                     candidate.properties[k] = propData
@@ -3119,7 +3113,7 @@ class SubscriptionService {
                 }
             }
             else {
-                mappingErrorBag.rowMismatch = "Zeile Nummer ${rowno+1} enthält nicht die gleiche Anzahl Spalten (${cols.size()}), wie die Überschrift (${colCount})! Bitte überprüfen Sie die Zeile, ob nicht Zeilenumbrüche enthalten sind!"
+                mappingErrorBag.rowMismatch = [rowno+1, cols.size(), colCount]
             }
             candidates.put(candidate,mappingErrorBag)
         }
