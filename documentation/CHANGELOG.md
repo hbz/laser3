@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6685    21.07.2025  dev     3.6         David   Feature     Systemmeldungen und Ankündigungen umbenennen
+
 6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge
 
 6728    15.07.2025  rc-3.5  3.5.4       Andreas Feature     Titelexport berücksichtigt den Status-Filter
