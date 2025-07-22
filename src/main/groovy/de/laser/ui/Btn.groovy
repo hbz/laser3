@@ -74,8 +74,17 @@ class Btn {
 
     @UIDoc(usage = 'Buttons/Links/Inputs with Js: Click Control')
     public static String SIMPLE_CLICKCONTROL    = 'ui button js-click-control'
+    @UIDoc(usage = 'Buttons/Links/Inputs (green) with Js: Click Control')
+    public static String POSITIVE_CLICKCONTROL  = 'ui button positive js-click-control'
     @UIDoc(usage = 'Buttons/Links/Inputs (red) with Js: Click Control')
     public static String NEGATIVE_CLICKCONTROL  = 'ui button negative js-click-control'
+
+    @UIDoc(usage = 'Buttons/Links/Inputs with Js: Single Click only')
+    public static String SIMPLE_SINGLECLICK    = 'ui button js-single-click'
+    @UIDoc(usage = 'Buttons/Links/Inputs (green) with Js: Single Click only')
+    public static String POSITIVE_SINGLECLICK  = 'ui button positive js-single-click'
+    @UIDoc(usage = 'Buttons/Links/Inputs (red) with Js: Single Click only')
+    public static String NEGATIVE_SINGLECLICK  = 'ui button negative js-single-click'
 
     @UIDoc(usage = 'Buttons/Links/Inputs with Js: Tooltip (data-attributes needed)')
     public static String SIMPLE_TOOLTIP         = 'ui button la-popup-tooltip'
