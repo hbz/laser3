@@ -98,6 +98,7 @@ class SystemEvent {
             'SYSTEM_INSIGHT_MAILS_COMPLETE' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_ERROR'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'SYSTEM_UA_FLAG_DISABLED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_UA_WARN_EXPIRING'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_EXPIRED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_LOCKED'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_UNLOCKED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],

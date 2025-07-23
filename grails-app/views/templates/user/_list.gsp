@@ -52,12 +52,17 @@
                     <td class="center aligned">
                         <g:if test="${us.accountExpired}">
                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountExpired.label')}">
-                                <i class="${Icon.TOOLTIP.IMPORTANT} large red"></i>
+                                <i class="exclamation triangle icon red"></i>
                             </span>
                         </g:if>
+                        <g:elseif test="${us.accountExpiredWarning}">
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountExpiredWarning.label')}">
+                                <i class="circle info icon yellow"></i>
+                            </span>
+                        </g:elseif>
                         <g:if test="${us.accountLocked}">
                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountLocked.label')}">
-                                <i class="${Icon.TOOLTIP.IMPORTANT} large yellow"></i>
+                                <i class="exclamation triangle icon orange"></i>
                             </span>
                         </g:if>
                     </td>

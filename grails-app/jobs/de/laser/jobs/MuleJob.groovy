@@ -45,17 +45,18 @@ class MuleJob extends AbstractJob {
             return false
         }
         try {
-            systemService.maintainUnlockedUserAccounts()
+            systemService.unlockLockedUserAccounts()
 
 //            if (timeCheck_hourly)) {
-//                systemService.maintainUnlockedUserAccounts()
 //            }
-//            if (timeCheck_0600) {
-//                wekbNewsService.clearCache()
-//            }
+            if (timeCheck_0600) {
+                wekbNewsService.clearCache()
+            }
             if (timeCheck_0645) {
+                systemService.expireUserAccounts()
+                systemService.warnExpiringUserAccounts()
+
                 systemService.sendSystemInsightMails()
-//                systemService.maintainExpiredUserAccounts()
             }
             wekbNewsService.updateCache()
         }

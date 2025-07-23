@@ -48,6 +48,7 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
         User user = springSecurityService.getCurrentUser() as User
         user.lastLogin = new Date()
         user.invalidLoginAttempts = 0
+        user.accountExpiredWarning = null
 
         // ERMS-6706 (TMP)
         if (! user.password.startsWith('{bcrypt}')) {

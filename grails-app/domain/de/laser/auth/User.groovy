@@ -28,6 +28,8 @@ class User {
     Date lastLogin
     Integer invalidLoginAttempts = 0
 
+    Date accountExpiredWarning
+
     boolean enabled         = false     // administrative
     boolean accountExpired  = false     // inactivity
     boolean accountLocked   = false     // too many login attempts
@@ -45,6 +47,7 @@ class User {
         formalRole               nullable: true
         lastLogin                nullable: true
         invalidLoginAttempts     nullable: true
+        accountExpiredWarning    nullable: true
     }
 
     static mapping = {
@@ -72,6 +75,7 @@ class User {
 
         lastLogin               column: 'usr_last_login'
         invalidLoginAttempts    column: 'usr_invalid_login_attempts'
+        accountExpiredWarning   column: 'usr_account_expired_warning'
 
         roles           batchSize: 10
     }
