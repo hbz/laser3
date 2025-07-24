@@ -4,12 +4,14 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
+    <g:render template="/public/gasco/nav" />
+
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" type="gasco" />
 
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-gasco segment">
-                <g:form action="gasco" controller="public" method="get" class="ui small form">
+                <g:form controller="gasco" action="monitor" method="get" class="ui small form">
 
                     <div class="field">
                         <label for="search">${message(code: 'default.search.label')}</label>
@@ -151,7 +153,7 @@
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
                                 <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <g:link controller="gasco" action="monitorDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
@@ -196,7 +198,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="monitorData" data-key="${sub.id}">
                                 <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>

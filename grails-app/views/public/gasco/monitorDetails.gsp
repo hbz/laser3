@@ -2,6 +2,8 @@
 
 <laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
 
+    <g:render template="/public/gasco/nav" />
+
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 
     <ui:filter simple="true">
