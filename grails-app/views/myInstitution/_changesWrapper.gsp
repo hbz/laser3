@@ -1,17 +1,24 @@
 <%@ page import="de.laser.UserSetting; de.laser.ui.Icon; de.laser.ui.Btn; de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
-<div id="pendingChangesWrapper">
-    <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, user: contextService.getUser()]}" />
 
-    <div class="ui card">
-        <div class="ui top attached label">
-            Filter: <g:message code="profile.dashboard.changes.event"/>
-        </div>
+<g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, user: contextService.getUser()]}" />
+
+<nav id="pendingChangesSubmenu" class="ui secondary menu">
+    <a class="item active" href="#pendingChangesWrapper">${message(code:'myinst.menu.pendingChanges.label')} <ui:bubble count="${pending.size()}" /></a>
+    <a class="item" href="#acceptedChangesWrapper">${message(code:'myinst.menu.acceptedChanges.label')} <ui:bubble count="${notifications.size()}" /></a>
+</nav>
+
+<div id="pendingChangesWrapper">
+
+    <div class="ui la-filter segment" style="box-shadow:none">
+%{--        <div class="ui top attached label">--}%
+%{--            Filter: <g:message code="profile.dashboard.changes.event"/>--}%
+%{--        </div>--}%
         <div class="content">
             <div class="ui form" id="pc-tab-filter">
-                <div class="grouped fields">
+                <div class="inline fields">
                     <g:each in="${pending.event.unique()}" var="filter" status="fi">
-                        <div class="field">
+                        <div class="field" style="margin-bottom:0">
                             <div class="ui checkbox">
                                 <g:set var="fid" value="pc-tab-filter-${fi}" />
                                 <input type="checkbox" id="${fid}" name="${filter.replace('pendingChange.message_', '')}" checked="checked">
@@ -137,18 +144,17 @@
     </table>
 </div>
 
-<div id="acceptedChangesWrapper">
-    <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, user: contextService.getUser()]}" />
+<div id="acceptedChangesWrapper" style="display:none">
 
-    <div class="ui card">
-        <div class="ui top attached label">
-            Filter: <g:message code="profile.dashboard.changes.event"/>
-        </div>
+    <div class="ui la-filter segment" style="box-shadow:none">
+%{--        <div class="ui top attached label">--}%
+%{--            Filter: <g:message code="profile.dashboard.changes.event"/>--}%
+%{--        </div>--}%
         <div class="content">
             <div class="ui form" id="ac-tab-filter">
-                <div class="grouped fields">
+                <div class="inline fields">
                     <g:each in="${notifications.event.unique()}" var="filter" status="fi">
-                        <div class="field">
+                        <div class="field" style="margin-bottom:0">
                             <div class="ui checkbox">
                                 <g:set var="fid" value="ac-tab-filter-${fi}" />
                                 <input type="checkbox" id="${fid}" name="${filter.replace('pendingChange.message_', '')}" checked="checked">
@@ -222,28 +228,35 @@
 
         </tbody>
     </table>
-
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $("#pendingCount").text("${pendingCount}")
-        $("#notificationsCount").text("${notificationsCount}")
-
-        JSPC.app.dashboard.removePendingChangeEntry = function (state, id) {
-            let $e = $('#pendingChangesWrapper .row[data-id=' + id + ']')
-            $e.addClass(state).fadeOut(1000)
-            setTimeout(() => { $e.remove() }, 1200)
-        }
-
-        $('#pendingChangesWrapper #pc-tab-filter .checkbox').checkbox({
-            onChange: function() {
-                let n = $(this).attr('name')
-                $('#pendingChangesWrapper .row[data-f1=' + n + ']').toggle()
-            }
-        })
-        $('#acceptedChangesWrapper #ac-tab-filter .checkbox').checkbox({
-            onChange: function() {
-                let n = $(this).attr('name')
-                $('#acceptedChangesWrapper .row[data-f2=' + n + ']').toggle()
-            }
-        })
-    </laser:script>
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $("#changesCount").text("${pendingCount}")
+
+    $('#pendingChangesSubmenu .item').on('click', function(e) {
+        e.preventDefault()
+        $('#pendingChangesSubmenu .item').removeClass('active')
+        $(this).addClass('active')
+        $('#pendingChangesWrapper, #acceptedChangesWrapper').hide()
+        $($(this).attr('href')).show()
+    })
+
+    JSPC.app.dashboard.removePendingChangeEntry = function (state, id) {
+        let $e = $('#pendingChangesWrapper .row[data-id=' + id + ']')
+        $e.addClass(state).fadeOut(1000)
+        setTimeout(() => { $e.remove() }, 1200)
+    }
+
+    $('#pendingChangesWrapper #pc-tab-filter .checkbox').checkbox({
+        onChange: function() {
+            let n = $(this).attr('name')
+            $('#pendingChangesWrapper .row[data-f1=' + n + ']').toggle()
+        }
+    })
+    $('#acceptedChangesWrapper #ac-tab-filter .checkbox').checkbox({
+        onChange: function() {
+            let n = $(this).attr('name')
+            $('#acceptedChangesWrapper .row[data-f2=' + n + ']').toggle()
+        }
+    })
+</laser:script>

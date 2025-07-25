@@ -59,14 +59,10 @@
         </a>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-            <a class="${currentTab == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
-                ${message(code:'myinst.pendingChanges.label', args:[''])} <span id="pendingCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
+            <a class="${currentTab == 'PendingChanges' ? 'active item':'item'}" data-tab="changes">
+                ${message(code:'myinst.menu.changes.label')} <span id="changesCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
             </a>
         </g:if>
-
-        <a class="${currentTab == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
-            ${message(code:'myinst.acceptedChanges.label', args:[''])} <span id="notificationsCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
-        </a>
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <a class="${currentTab == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
@@ -94,10 +90,10 @@
         </div>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
-            <div class="ui bottom attached segment tab ${currentTab == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges"></div>
+            <div class="ui bottom attached segment tab ${currentTab == 'PendingChanges' ? 'active':''}" data-tab="changes">
+                <div id="changesWrapper"></div>
+            </div>
         </g:if>
-
-        <div class="ui bottom attached segment tab ${currentTab == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges"></div>
 
         <div class="ui bottom attached segment tab ${currentTab == 'Service Messages' ? 'active':''}" data-tab="servicemessages">
             <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES]}" />
@@ -291,9 +287,8 @@
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="getChanges"/>"
                 }).done(function(response){
-                    $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
-                    $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
-                    r2d2.initDynamicUiStuff('#pendingChanges');
+                    $("#changesWrapper").html(response);
+                    r2d2.initDynamicUiStuff('#changesWrapper');
                 })
             };
 
