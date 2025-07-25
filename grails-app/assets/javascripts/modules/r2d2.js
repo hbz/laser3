@@ -1000,30 +1000,50 @@ r2d2 = {
 
         $(ctxSel + ' .cc-toggle > .toggle').checkbox({
             onChecked : function() {
+                let $checkbox = $(this).parent('.checkbox')
                 jQuery.ajax({
                     type: 'POST', url: '/ajax/genericSetData',
                     data: { name: $(this).data('name'), value: 'de.laser.RefdataValue:1', pk: $(this).data('pk') } // TODO
+                }).always(function(data, status, err){
+                    if (status != 'success' || data.newValue == '') {
+                        $checkbox.checkbox('set unchecked')
+                    }
                 })
             },
             onUnchecked : function() {
+                let $checkbox = $(this).parent('.checkbox')
                 jQuery.ajax({
                     type: 'POST', url: '/ajax/genericSetData',
                     data: { name: $(this).data('name'), value: 'de.laser.RefdataValue:2', pk: $(this).data('pk') } // TODO
+                }).always(function(data, status, err){
+                    if (status != 'success' || data.newValue == '') {
+                        $checkbox.checkbox('set checked')
+                    }
                 })
             }
         })
 
         $(ctxSel + ' .cc-boogle > .toggle').checkbox({
             onChecked : function() {
+                let $checkbox = $(this).parent('.checkbox')
                 jQuery.ajax({
                     type: 'POST', url: '/ajax/editableSetValue',
                     data: { name: $(this).data('name'), value: 1, pk: $(this).data('pk') } // TODO
+                }).always(function(data, status, err){
+                    if (status != 'success'|| data == 'null') {
+                        $checkbox.checkbox('set unchecked')
+                    }
                 })
             },
             onUnchecked : function() {
+                let $checkbox = $(this).parent('.checkbox')
                 jQuery.ajax({
                     type: 'POST', url: '/ajax/editableSetValue',
                     data: { name: $(this).data('name'), value: 0, pk: $(this).data('pk') } // TODO
+                }).always(function(data, status, err){
+                    if (status != 'success' || data == 'null') {
+                        $checkbox.checkbox('set checked')
+                    }
                 })
             }
         })
