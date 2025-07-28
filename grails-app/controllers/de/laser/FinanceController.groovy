@@ -45,7 +45,7 @@ class FinanceController  {
     ExportService exportService
     FinanceControllerService financeControllerService
     FinanceService financeService
-    GenericOIDService genericOIDService
+    ImportService importService
     PendingChangeService pendingChangeService
     TaskService taskService
     UserService userService
@@ -94,35 +94,73 @@ class FinanceController  {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
-            if(params.containsKey('costInformation')) {
-                CostItem.withTransaction {
-                    MultipartFile inputFile = request.getFile("costInformation")
-                    if(inputFile && inputFile.size > 0) {
-                        String filename = params.costInformation.originalFilename
-                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
-                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
+            if(params.containsKey('excelFile') || params.containsKey('csvFile')) {
+                MultipartFile importFile
+                Map tableData = null
+                if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                    importFile = request.getFile("excelFile")
+                    if(importFile && importFile.size > 0) {
+                        if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                            tableData = importService.readExcelFile(importFile, true)
                         }
-                        else if(!encoding) {
+                    }
+                }
+                else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                    importFile = request.getFile("csvFile")
+                    if(importFile && importFile.size > 0) {
+                        String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                        if (encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
+                        }
+                        else if (!encoding) {
                             result.afterEnrichment = true
                             result.unknownCharsetError = true
                         }
-                        if(result.containsKey('wrongIdentifiers')) {
-                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
-                            String dir = GlobalService.obtainTmpFileLocation()
-                            File f = new File(dir+"/${filename}_matchingErrors")
-                            result.token = "${filename}_matchingErrors"
-                            String returnFile = exportService.generateSeparatorTableString(null, result.wrongIdentifiers, '\t')
-                            FileOutputStream fos = new FileOutputStream(f)
-                            fos.withWriter { Writer w ->
-                                w.write(returnFile)
-                            }
-                            fos.flush()
-                            fos.close()
-                        }
-                        params.remove("costInformation")
                     }
+                }
+                if(tableData) {
+                    String filename = importFile.originalFilename
+                    RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, subscription: result.subscription]
+                    result.putAll(financeService.financeEnrichment(configMap))
+                    if(result.containsKey('wrongIdentifiers')) {
+                        //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainTmpFileLocation()
+                        File f = new File(dir+"/${filename}_matchingErrors")
+                        result.token = "${filename}_matchingErrors"
+                        if(!f.exists()) {
+                            FileOutputStream fos = new FileOutputStream(f)
+                            if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                                result.fileformat = "xlsx" //for error file preparing
+                                Map sheetData = [:]
+                                List errorCellRows = []
+                                result.wrongIdentifiers.each { List errorRow ->
+                                    List<Map> errorCellRow = []
+                                    errorRow.each { cell ->
+                                        errorCellRow << [field: cell, style: null]
+                                    }
+                                    errorCellRows << errorCellRow
+                                }
+                                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
+                                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                                wb.write(fos)
+                                fos.flush()
+                                fos.close()
+                                wb.dispose()
+                            }
+                            else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                                result.fileformat = "csv" //for error file preparing
+                                String returnFile = exportService.generateSeparatorTableString(null, result.wrongIdentifiers, '\t')
+                                fos.withWriter { Writer w ->
+                                    w.write(returnFile)
+                                }
+                                fos.flush()
+                                fos.close()
+                            }
+                        }
+                    }
+                    params.remove("excelFile")
+                    params.remove("csvFile")
                 }
             }
             if(params.containsKey('selectedCostItemElement') && !result.containsKey('wrongSeparator')) {

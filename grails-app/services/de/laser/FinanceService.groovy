@@ -13,6 +13,7 @@ import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyOrg
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
@@ -398,7 +399,8 @@ class FinanceService {
                         costItem.billingSumRounding = billingSumRounding != costItem.billingSumRounding ? billingSumRounding : costItem.billingSumRounding
                         costItem.finalCostRounding = finalCostRounding != costItem.finalCostRounding ? finalCostRounding : costItem.finalCostRounding
 
-                        if(configMap.currencyRate) {
+                        //0 must be considered as well
+                        if(configMap.currencyRate != null) {
                             costItem.currencyRate = configMap.currencyRate
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
@@ -1852,112 +1854,116 @@ class FinanceService {
         else [result:result,status:STATUS_OK]
     }
 
-    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, Subscription subscription) {
+    Map<String, Object> financeEnrichment(Map configMap) {
         Map<String, Object> result = [:]
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
-        //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
-        //rows.remove(0).split('\t') we should consider every row
         //needed because cost item updates are not flushed immediately
         Set<Long> updatedIDs = []
         //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
         int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = 0
         Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
-        tsvFile.getInputStream().withReader(encoding) { reader ->
-            char tab = '\t'
-            ICSVParser csvp = new CSVParserBuilder().withSeparator(tab).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
-            CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
-            String[] line
-            while (line = csvr.readNext()) {
-                if (line[0]) {
-                    //wrong separator
-                    if (line.size() > 1) {
-                        totalRows++
-                        //rows.each { String row ->
-                        //List<String> cols = row.split('\t')
-                        String idStr = line[idCol].trim(), valueStr = line[valueCol].trim()
-                        //try to match the subscription
-                        if (valueStr) {
-                            //first: get the org
-                            Org match = null
-                            Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
-                            if (check.size() == 1)
-                                match = check[0]
-                            if (!match)
-                                match = Org.findByLaserID(idStr)
-                            if (!match) {
-                                check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
-                                if (check.size() == 1)
-                                    match = check[0]
+        configMap.tableData.rows.each { List line ->
+            totalRows++
+            String idStr = line[idCol].trim()
+            //try to match the subscription
+            if (line[valueCol] != null) {
+                //first: get the org
+                Org match = null
+                Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
+                if (check.size() == 1)
+                    match = check[0]
+                if (!match)
+                    match = Org.findByLaserID(idStr)
+                if (!match) {
+                    check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
+                    if (check.size() == 1)
+                        match = check[0]
+                }
+                //match success
+                if (match) {
+                    CostItem ci = null
+                    if (configMap.containsKey('subscription')) {
+                        List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: configMap.subscription, match: match])
+                        if (memberCheck.size() == 1) {
+                            Subscription memberSub = memberCheck[0]
+                            ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, configMap.pickedElement)
+                        }
+                        /*
+                        else {
+                            wrongIdentifierCounter++
+                            wrongIdentifiers << idStr
+                        }
+                        */
+                    }
+                    else if (configMap.containsKey('surveyConfig')) {
+                        SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(configMap.surveyConfig, match)
+                        if(surveyOrg) {
+                            if(configMap.pkg) {
+                                ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, configMap.pickedElement, configMap.pkg)
                             }
-                            //match success
-                            if (match) {
-                                //if-check prepares for opening for surveys
-                                if (subscription) {
-                                    List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: subscription, match: match])
-                                    if (memberCheck.size() == 1) {
-                                        Subscription memberSub = memberCheck[0]
-                                        CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
-                                        if (ci) {
-                                            //Regex to parse different sum entries
-                                            //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
-                                            Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
-                                            //step 1: strip the non-numerical part and try to parse a currency
-                                            //skipped as of comment of March 12th, '25
-                                            //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
-                                            //step 2: pass the numerical part to the value parser
-                                            Matcher costMatch = numericRegex.matcher(valueStr)
-                                            //if(costMatch.find() && billingCurrencyMatch.find()) {
-                                            if (costMatch.find()) {
-                                                String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
-                                                BigDecimal parsedCost = escapeService.parseFinancialValue(input)
-                                                ci.costInBillingCurrency = parsedCost
-                                                ci.costInLocalCurrency = parsedCost * ci.currencyRate
-                                                /*
-                                            switch(currency) {
-                                                case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
-                                                    break
-                                                case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
-                                                    break
-                                                case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
-                                                    break
-                                            }
-                                            */
-                                                if (ci.save()) {
-                                                    updatedIDs << ci.id
-                                                }
-                                                else
-                                                    log.error(ci.getErrors().getAllErrors().toListString())
-                                            }
-                                            /*
-                                        else if(!billingCurrencyMatch.find())
-                                            missingCurrencyCounter++
-                                        */
-                                        }
-                                        else {
-                                            noRecordCounter++
-                                            wrongIdentifiers << idStr
-                                        }
-                                    }
-                                    /*
-                                    else {
-                                        wrongIdentifierCounter++
-                                        wrongIdentifiers << idStr
-                                    }
-                                    */
-                                }
+                            else if(configMap.surveyConfigSubscription) {
+                                ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, configMap.pickedElement, configMap.surveyConfigSubscription)
                             }
                             else {
-                                wrongIdentifierCounter++
-                                wrongIdentifiers << idStr
+                                ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, configMap.pickedElement)
                             }
                         }
                     }
-                    else if(line.size() == 1) {
-                        result.wrongSeparator = true
-                        result.afterEnrichment = true
-                        result
+                    if (ci) {
+                        BigDecimal parsedCost = null
+                        if(line[valueCol] instanceof String) {
+                            String valueStr = line[valueCol].trim()
+                            //Regex to parse different sum entries
+                            //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
+                            Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
+                            //step 1: strip the non-numerical part and try to parse a currency
+                            //skipped as of comment of March 12th, '25
+                            //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
+                            //step 2: pass the numerical part to the value parser
+                            Matcher costMatch = numericRegex.matcher(valueStr)
+                            //if(costMatch.find() && billingCurrencyMatch.find()) {
+                            if (costMatch.find()) {
+                                String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
+                                parsedCost = escapeService.parseFinancialValue(input)
+                            }
+                            /*
+                            else if(!billingCurrencyMatch.find())
+                                missingCurrencyCounter++
+                            */
+                        }
+                        else if(line[valueCol] instanceof Double) {
+                            parsedCost = new BigDecimal(line[valueCol] as Double).setScale(2, RoundingMode.HALF_UP)
+                        }
+                        if(parsedCost) {
+                            ci.costInBillingCurrency = parsedCost
+                            if(!configMap.containsKey('surveyConfig'))
+                                ci.costInLocalCurrency = parsedCost * ci.currencyRate
+                            /*
+                                switch(currency) {
+                                   case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
+                                        break
+                                    case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
+                                        break
+                                    case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
+                                        break
+                                }
+                            */
+                            if (ci.save()) {
+                                updatedIDs << ci.id
+                            }
+                            else
+                                log.error(ci.getErrors().getAllErrors().toListString())
+                        }
                     }
+                    else {
+                        noRecordCounter++
+                        wrongIdentifiers << idStr
+                    }
+                }
+                else {
+                    wrongIdentifierCounter++
+                    wrongIdentifiers << idStr
                 }
             }
         }

@@ -57,9 +57,11 @@ class SurveyController {
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
     ExportService exportService
-    GenericOIDService genericOIDService
     FilterService filterService
     FinanceControllerService financeControllerService
+    FinanceService financeService
+    GenericOIDService genericOIDService
+    ImportService importService
     LinksGenerationService linksGenerationService
     ProviderService providerService
     SubscriptionService subscriptionService
@@ -918,36 +920,70 @@ class SurveyController {
                 return
             }
         }else {
-            if(params.containsKey('costInformation')) {
-                CostItem.withTransaction {
-                    MultipartFile inputFile = request.getFile("costInformation")
-                    if(inputFile && inputFile.size > 0) {
-                        String filename = params.costInformation.originalFilename
-                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+            if(params.containsKey('excelFile') || params.containsKey('csvFile')) {
+                MultipartFile importFile
+                Map tableData = null
+                if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                    importFile = request.getFile("excelFile")
+                    if(importFile && importFile.size > 0) {
+                        if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                            tableData = importService.readExcelFile(importFile, true)
+                        }
+                    }
+                }
+                else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                    importFile = request.getFile("csvFile")
+                    if(importFile && importFile.size > 0) {
+                        String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig))
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
                             ctrlResult.result.unknownCharsetError = true
                         }
-                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
-                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
-                            String dir = GlobalService.obtainTmpFileLocation()
-                            File f = new File(dir+"/${filename}_matchingErrors")
-                            ctrlResult.result.token = "${filename}_matchingErrors"
-                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
-                            FileOutputStream fos = new FileOutputStream(f)
-                            fos.withWriter { Writer w ->
-                                w.write(returnFile)
-                            }
-                            fos.flush()
-                            fos.close()
-                        }
-                        params.remove("costInformation")
                     }
                 }
+                if(tableData) {
+                    String filename = importFile.originalFilename
+                    RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, surveyConfig: ctrlResult.result.surveyConfig]
+                    ctrlResult.result.putAll(financeService.financeEnrichment(configMap))
+                    if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                        //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainTmpFileLocation()
+                        File f = new File(dir+"/${filename}_matchingErrors")
+                        ctrlResult.result.token = "${filename}_matchingErrors"
+                        if(!f.exists()) {
+                            FileOutputStream fos = new FileOutputStream(f)
+                            if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                                ctrlResult.result.fileformat = "xlsx" //for error file preparing
+                                Map sheetData = [:]
+                                List errorCellRows = []
+                                ctrlResult.result.wrongIdentifiers.each { String errorRow ->
+                                    errorCellRows << [[field: errorRow, style: null]]
+                                }
+                                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
+                                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                                wb.write(fos)
+                                fos.flush()
+                                fos.close()
+                                wb.dispose()
+                            }
+                            else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                                ctrlResult.result.fileformat = "csv" //for error file preparing
+                                String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                                fos.withWriter { Writer w ->
+                                    w.write(returnFile)
+                                }
+                                fos.flush()
+                                fos.close()
+                            }
+                        }
+                    }
+                }
+                params.remove("csvFile")
+                params.remove("excelFile")
             }
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
@@ -982,37 +1018,71 @@ class SurveyController {
                 return
             }
         }else {
-            if(params.containsKey('costInformation')) {
-                CostItem.withTransaction {
-                    MultipartFile inputFile = request.getFile("costInformation")
-                    if(inputFile && inputFile.size > 0) {
-                        String filename = params.costInformation.originalFilename
-                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
-                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
-                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
-                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+            if(params.containsKey('excelFile') || params.containsKey('csvFile')) {
+                MultipartFile importFile
+                Map tableData = null
+                if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                    importFile = request.getFile("excelFile")
+                    if(importFile && importFile.size > 0) {
+                        if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                            tableData = importService.readExcelFile(importFile, true)
+                        }
+                    }
+                }
+                else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                    importFile = request.getFile("csvFile")
+                    if(importFile && importFile.size > 0) {
+                        String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
                             ctrlResult.result.unknownCharsetError = true
                         }
-                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
-                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
-                            String dir = GlobalService.obtainTmpFileLocation()
-                            File f = new File(dir+"/${filename}_matchingErrors")
-                            ctrlResult.result.token = "${filename}_matchingErrors"
-                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
-                            FileOutputStream fos = new FileOutputStream(f)
-                            fos.withWriter { Writer w ->
-                                w.write(returnFile)
-                            }
-                            fos.flush()
-                            fos.close()
-                        }
-                        params.remove("costInformation")
                     }
                 }
+                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                if(tableData && pkg) {
+                    String filename = importFile.originalFilename
+                    RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, surveyConfig: ctrlResult.result.surveyConfig, pkg: pkg]
+                    ctrlResult.result.putAll(financeService.financeEnrichment(configMap))
+                    if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                        //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainTmpFileLocation()
+                        File f = new File(dir+"/${filename}_matchingErrors")
+                        ctrlResult.result.token = "${filename}_matchingErrors"
+                        if(!f.exists()) {
+                            FileOutputStream fos = new FileOutputStream(f)
+                            if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                                ctrlResult.result.fileformat = "xlsx" //for error file preparing
+                                Map sheetData = [:]
+                                List errorCellRows = []
+                                ctrlResult.result.wrongIdentifiers.each { String errorRow ->
+                                    errorCellRows << [[field: errorRow, style: null]]
+                                }
+                                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
+                                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                                wb.write(fos)
+                                fos.flush()
+                                fos.close()
+                                wb.dispose()
+                            }
+                            else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                                ctrlResult.result.fileformat = "csv" //for error file preparing
+                                String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                                fos.withWriter { Writer w ->
+                                    w.write(returnFile)
+                                }
+                                fos.flush()
+                                fos.close()
+                            }
+                        }
+                    }
+                }
+                params.remove("csvFile")
+                params.remove("excelFile")
             }
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
@@ -1139,37 +1209,71 @@ class SurveyController {
                 return
             }
         }else {
-            if(params.containsKey('costInformation')) {
-                CostItem.withTransaction {
-                    MultipartFile inputFile = request.getFile("costInformation")
-                    if(inputFile && inputFile.size > 0) {
-                        String filename = params.costInformation.originalFilename
-                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
-                        SurveyConfigSubscription surveyConfigSubscription = params.selectedSurveyConfigSubscriptionID ? SurveyConfigSubscription.get(params.long('selectedSurveyConfigSubscriptionID')) : null
-                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
-                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, null, surveyConfigSubscription))
+            if(params.containsKey('excelFile') || params.containsKey('csvFile')) {
+                MultipartFile importFile
+                Map tableData = null
+                if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                    importFile = request.getFile("excelFile")
+                    if(importFile && importFile.size > 0) {
+                        if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                            tableData = importService.readExcelFile(importFile, true)
+                        }
+                    }
+                }
+                else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                    importFile = request.getFile("csvFile")
+                    if(importFile && importFile.size > 0) {
+                        String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
                             ctrlResult.result.unknownCharsetError = true
                         }
-                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
-                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
-                            String dir = GlobalService.obtainTmpFileLocation()
-                            File f = new File(dir+"/${filename}_matchingErrors")
-                            ctrlResult.result.token = "${filename}_matchingErrors"
-                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
-                            FileOutputStream fos = new FileOutputStream(f)
-                            fos.withWriter { Writer w ->
-                                w.write(returnFile)
-                            }
-                            fos.flush()
-                            fos.close()
-                        }
-                        params.remove("costInformation")
                     }
                 }
+                SurveyConfigSubscription surveyConfigSubscription = params.selectedSurveyConfigSubscriptionID ? SurveyConfigSubscription.get(params.long('selectedSurveyConfigSubscriptionID')) : null
+                if(tableData && surveyConfigSubscription) {
+                    String filename = importFile.originalFilename
+                    RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, surveyConfig: ctrlResult.result.surveyConfig, surveyConfigSubscription: surveyConfigSubscription]
+                    ctrlResult.result.putAll(financeService.financeEnrichment(configMap))
+                    if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                        //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                        String dir = GlobalService.obtainTmpFileLocation()
+                        File f = new File(dir+"/${filename}_matchingErrors")
+                        ctrlResult.result.token = "${filename}_matchingErrors"
+                        if(!f.exists()) {
+                            FileOutputStream fos = new FileOutputStream(f)
+                            if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                                ctrlResult.result.fileformat = "xlsx" //for error file preparing
+                                Map sheetData = [:]
+                                List errorCellRows = []
+                                ctrlResult.result.wrongIdentifiers.each { String errorRow ->
+                                    errorCellRows << [[field: errorRow, style: null]]
+                                }
+                                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
+                                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                                wb.write(fos)
+                                fos.flush()
+                                fos.close()
+                                wb.dispose()
+                            }
+                            else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                                ctrlResult.result.fileformat = "csv" //for error file preparing
+                                String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                                fos.withWriter { Writer w ->
+                                    w.write(returnFile)
+                                }
+                                fos.flush()
+                                fos.close()
+                            }
+                        }
+                    }
+                }
+                params.remove("csvFile")
+                params.remove("excelFile")
             }
             if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)

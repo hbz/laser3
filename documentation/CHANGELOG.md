@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6369    28.07.2025  dev     3.6         Andreas Feature     Excel-Upload systemweit ermöglichen
+
+6315    28.07.2025  dev     3.6         Andreas Feature     Upload von Trennzeichen-getrennten Dateien konfigurierbar gemacht
+
 6728    15.07.2025  rc-3.5  3.5.4       Andreas Feature     Titelexport berücksichtigt den Status-Filter
 
 6712    14.07.2025  dev     3.6         David   Feature     Dashboard-Einstellungen für Anzeige-Zeiträume überarbeiten
