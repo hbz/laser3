@@ -35,7 +35,7 @@
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
-                        <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
+                        <%-- removed as of ERMS-6520 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>--%>
                         <g:if test="${editable}">
                             <th class="center aligned">
                                 <ui:optionsIcon />
@@ -85,9 +85,9 @@
                             <td>
                                 ${pdGroup.getPropertyDefinitions().size()}
                             </td>
-                            <td>
+                            <%-- removed as of ERMS-6520 <td>
                                 <ui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
-                            </td>
+                            </td>--%>
                             <g:if test="${editable}">
                                 <td class="x">
                                     <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="${Btn.MODERN.SIMPLE} trigger-modal"

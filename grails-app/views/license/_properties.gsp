@@ -6,6 +6,7 @@
 
 <%-- modal --%>
 
+<%-- removed as of ERMS-6520
 <ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="true">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
@@ -16,6 +17,7 @@
     ]}" />
 
 </ui:modal>
+--%>
 
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">

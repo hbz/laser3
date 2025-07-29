@@ -5,7 +5,7 @@
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Subscription.class.name)}"/>
 
 <%-- modal --%>
-
+<%-- removed as of ERMS-6520
 <ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="true">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
@@ -16,6 +16,7 @@
     ]}"/>
 
 </ui:modal>
+--%>
 
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]}">
