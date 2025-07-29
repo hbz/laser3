@@ -8,11 +8,6 @@
     <title>${message(code: 'laser')}</title>
 </head>
 <body>
-    <laser:render template="/templates/system/serverIndicator" />
-
-    <div class="landingpage">
-
-        <laser:render template="/layouts/publicMenu" />
 
         <main>
             <div class="ui stackable centered grid container la-login middle aligned">
@@ -170,9 +165,9 @@
         </main>
 
         <laser:render template="/layouts/footer" />
-    </div>
-<laser:script file="${this.getGroovyPageFileName()}">
-    document.forms['basicLoginForm'].elements['username'].focus();
-</laser:script>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        document.forms['basicLoginForm'].elements['username'].focus();
+    </laser:script>
 </body>
 </html>

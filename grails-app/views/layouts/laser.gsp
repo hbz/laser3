@@ -2,17 +2,14 @@
 <!doctype html>
 
 <laser:serviceInjection />
-<g:set var="currentServer" scope="page" />
+<g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 <g:set var="currentLang" scope="page" />
 <g:set var="currentTheme" scope="page" />
-<g:set var="contextUser" scope="page" />
+<g:set var="contextUser" scope="page" value="${contextService.getUser()}" />
 
 <%
-    currentServer   = AppUtils.getCurrentServer()
     currentLang     = 'de'
     currentTheme    = 'laser'
-
-    contextUser     = contextService.getUser()
 
     if (contextUser) {
         RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RDStore.LANGUAGE_DE)?.getValue()
@@ -91,7 +88,7 @@
             %{-- menu: devDocs --}%
 
             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
+                <g:if test="${currentServer in [AppUtils.LOCAL, AppUtils.DEV]}">
                     <laser:render template="/layouts/laser/menu_devDocs" />
                 </g:if>
             </sec:ifAnyGranted>
@@ -149,7 +146,7 @@
 
             <main id="mainContent" class="ui main container hidden">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
-                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
+                    <g:if test="${currentServer in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
                         <div id="dev-tmp-help">
                             institution               : ${institution?.getName()} <br />
                             contextOrg                : ${contextOrg?.getName()} <br />

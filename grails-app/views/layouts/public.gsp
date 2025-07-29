@@ -1,6 +1,7 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper; org.grails.web.util.GrailsApplicationAttributes" %>
 <!doctype html>
 
+<g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 <html>
 
 <head>
@@ -23,19 +24,24 @@
     <g:render template="/layouts/favicon" />
 </head>
 
-    <body class="public">
-
+    <body class="public ${controllerName}_${actionName}">
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
-        <g:layoutBody/>%{-- body here --}%
-    
-        <div id="Footer">
-            <div class="clearfix"></div>
+        <laser:render template="/templates/system/serverIndicator" />
+
+        <div class="landingpage"> <!-- TODO - check/fix css -->
+
+            <laser:render template="/layouts/publicMenu" />
+
+            <g:layoutBody/>%{-- body here --}%
+
+            <div id="Footer">
+                <div class="clearfix"></div>
+            </div>
+
+            <laser:javascript src="laser.js"/>%{-- dont move --}%
+
+            <laser:scriptBlock/>%{-- dont move --}%
         </div>
-
-        <laser:javascript src="laser.js"/>%{-- dont move --}%
-
-        <laser:scriptBlock/>%{-- dont move --}%
-
     </body>
 </html>

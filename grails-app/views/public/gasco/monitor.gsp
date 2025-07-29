@@ -4,6 +4,7 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
+<main class="ui main container">
     <g:render template="/public/gasco/nav" />
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" type="gasco" />
@@ -369,6 +370,7 @@
     </laser:script>
 
     </g:if>%{-- {subscriptions} --}%
+</main>
 
 <style>
 #gascoFlyout .filter .button {
