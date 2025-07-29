@@ -74,10 +74,10 @@
             <g:elseif test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-                <g:if test="${!(contextService.getOrg().id == subscriptionConsortia?.id && subscription.instanceOf)}">
+                <%--<g:if test="${!(contextService.getOrg().id == subscriptionConsortia?.id && subscription.instanceOf)}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
-                </g:if>
+                </g:if>--%>
 
                 <g:if test="${editable}">
                     <div class="divider"></div>

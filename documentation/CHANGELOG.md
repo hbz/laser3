@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6638    29.07.2025  dev     3.6         Andreas Feature     Ausgabe des Anbieternamens bei der Plattform beim Export von Kundennummern
+
+6520    29.07.2025  dev     3.6         Andreas Feature     Abschalten der obsoleten Funktion "Merkmalsgruppen konfigurieren"
+
 6369    28.07.2025  dev     3.6         Andreas Feature     Excel-Upload systemweit ermöglichen
 
 6315    28.07.2025  dev     3.6         Andreas Feature     Upload von Trennzeichen-getrennten Dateien konfigurierbar gemacht

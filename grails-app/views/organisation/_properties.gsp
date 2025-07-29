@@ -5,7 +5,8 @@
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Org.class.name)}" />
 
 <%-- modal --%>
-<g:if test="${false}"> %{-- erms-4798 --}%
+%{--<g:if test="${false}">  erms-4798
+
 <ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="true">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
@@ -118,7 +119,7 @@
 
 </div><!-- .card -->
 
-</g:if> %{-- erms-4798 --}%
+</g:if> erms-4798 --}%
 
 <%-- private properties --%>
 <g:if test="${authOrg && (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro())}">
