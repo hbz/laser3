@@ -9,6 +9,10 @@
 
 6520    29.07.2025  dev     3.6         Andreas Feature     Abschalten der obsoleten Funktion "Merkmalsgruppen konfigurieren"
 
+6369    28.07.2025  dev     3.6         Andreas Feature     Excel-Upload systemweit ermöglichen
+
+6315    28.07.2025  dev     3.6         Andreas Feature     Upload von Trennzeichen-getrennten Dateien konfigurierbar gemacht
+
 6685    21.07.2025  dev     3.6         David   Feature     Systemmeldungen und Ankündigungen umbenennen
 
 6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge

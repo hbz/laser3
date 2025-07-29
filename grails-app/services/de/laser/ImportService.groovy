@@ -17,7 +17,7 @@ class ImportService {
 
     static final List<Map<String, String>> CSV_CHARS = [[charKey: ',', name: 'default.import.csv.comma'], [charKey: ';', name: 'default.import.csv.semicolon'], [charKey: '\t', name: 'default.import.csv.tab'], [charKey: '|', name: 'default.import.csv.pipe']]
 
-    Map<String, Object> readCsvFile(MultipartFile csvFile, String encoding, char separator) {
+    Map<String, Object> readCsvFile(MultipartFile csvFile, String encoding, char separator, boolean ignoreHeader = false) {
         InputStream fileContent = csvFile.getInputStream()
         List<String> headerRow = []
         List<List<String>> rows = []
@@ -29,7 +29,7 @@ class ImportService {
             while (readLine = csvr.readNext()) {
                 List<String> line = []
                 if(readLine[0]) {
-                    if(l == 0) {
+                    if(l == 0 && !ignoreHeader) {
                         readLine.each { String s ->
                             String headerCol = s.trim()
                             //strip BOM
@@ -52,17 +52,21 @@ class ImportService {
         [headerRow: headerRow, rows: rows]
     }
 
-    Map<String, Object> readExcelFile(MultipartFile excelFile) {
+    Map<String, Object> readExcelFile(MultipartFile excelFile, boolean ignoreHeader = false) {
         //continue here with testing
         List<String> headerRow = []
         List<List<String>> rows = []
         XSSFWorkbook workbook = new XSSFWorkbook(excelFile.getInputStream())
         XSSFSheet sheet = workbook.getSheetAt(0)
-        int headerSize = sheet.getRow(0).getLastCellNum()
-        for(Cell cell in sheet.getRow(0).cellIterator()) {
-            headerRow << cell.stringCellValue
-        }
         boolean headerFlag = true
+        int headerSize = sheet.getRow(0).getLastCellNum()
+        if(ignoreHeader)
+            headerFlag = false
+        else {
+            for(Cell cell in sheet.getRow(0).cellIterator()) {
+                headerRow << cell.stringCellValue
+            }
+        }
         for(Row row in sheet.rowIterator()) {
             if(headerFlag) {
                 headerFlag = false

@@ -3049,6 +3049,7 @@ class SurveyService {
         }
     }
 
+    @Deprecated
     Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null, SurveyConfigSubscription surveyConfigSubscription = null) {
         Map<String, Object> result = [:]
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
