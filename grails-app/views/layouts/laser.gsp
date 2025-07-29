@@ -59,89 +59,96 @@
 
     <ui:skipLink />
 
-    %{-- main menu --}%
 
-        <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
-            <div class="ui container" role="none">
-                <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
-                    <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+<sec:ifNotGranted roles="ROLE_USER">
+    %{-- container landingpage start--}%
+    <div class="landingpage">
+    %{-- main menu landingpage --}%
+    <laser:render template="/layouts/unauthMenu/nav" />
+</sec:ifNotGranted>
+<sec:ifAnyGranted roles="ROLE_USER">
+    %{-- main menu --}%
+    <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
+        <div class="ui container" role="none">
+            <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
+                <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+            </ui:link>
+
+
+
+            %{-- menu: public, my objects, my institution --}%
+
+            <g:if test="${contextService.getOrg()}">
+                <g:if test="${contextService.getOrg().isCustomerType_Support()}">
+                    <laser:render template="/layouts/laser/menu_support" />
+                </g:if>
+                <g:else>
+                    <laser:render template="/layouts/laser/menu_user_public" />
+                    <laser:render template="/layouts/laser/menu_user_myObjects" />
+                    <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                </g:else>
+            </g:if>
+
+            %{-- menu: admin --}%
+
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <laser:render template="/layouts/laser/menu_admin" />
+            </sec:ifAnyGranted>
+
+            %{-- menu: yoda --}%
+
+            <sec:ifAnyGranted roles="ROLE_YODA">
+                <laser:render template="/layouts/laser/menu_yoda" />
+            </sec:ifAnyGranted>
+
+            %{-- menu: devDocs --}%
+
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
+                    <laser:render template="/layouts/laser/menu_devDocs" />
+                </g:if>
+            </sec:ifAnyGranted>
+
+            <div class="right menu la-right-menuPart">
+
+                %{-- menu: global search --}%
+
+                <div role="search" id="mainSearch" class="ui category search spotlight">
+                    <div class="ui icon input">
+                        <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
+                               aria-label="${message(code:'spotlight.search.placeholder')}">
+                        <i class="${Icon.SYM.SEARCH}" id="btn-search"></i>
+                    </div>
+                    <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
+                </div>
+
+                <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip" controller="search" action="index"
+                         data-content="${message(code: 'search.advancedSearch.tooltip')}">
+                    <i class="large icons">
+                        <i class="${Icon.SYM.SEARCH}"></i>
+                        <i class="top right grey corner plus icon"></i>
+                    </i>
                 </ui:link>
 
-                <sec:ifAnyGranted roles="ROLE_USER">
+                %{-- menu: user --}%
 
-                    %{-- menu: public, my objects, my institution --}%
+                <g:if test="${contextUser}">
+                    <laser:render template="/layouts/laser/menu_user" />
+                </g:if>
+            </div>
 
-                    <g:if test="${contextService.getOrg()}">
-                        <g:if test="${contextService.getOrg().isCustomerType_Support()}">
-                            <laser:render template="/layouts/laser/menu_support" />
-                        </g:if>
-                        <g:else>
-                            <laser:render template="/layouts/laser/menu_user_public" />
-                            <laser:render template="/layouts/laser/menu_user_myObjects" />
-                            <laser:render template="/layouts/laser/menu_user_myInstitution" />
-                        </g:else>
-                    </g:if>
 
-                    %{-- menu: admin --}%
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <laser:render template="/layouts/laser/menu_admin" />
-                    </sec:ifAnyGranted>
+            <sec:ifNotGranted roles="ROLE_USER">
+                <sec:ifLoggedIn>
+                    <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
+                </sec:ifLoggedIn>
+            </sec:ifNotGranted>
 
-                    %{-- menu: yoda --}%
+        </div><!-- container -->
 
-                    <sec:ifAnyGranted roles="ROLE_YODA">
-                        <laser:render template="/layouts/laser/menu_yoda" />
-                    </sec:ifAnyGranted>
-
-                    %{-- menu: devDocs --}%
-
-                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
-                            <laser:render template="/layouts/laser/menu_devDocs" />
-                        </g:if>
-                    </sec:ifAnyGranted>
-
-                    <div class="right menu la-right-menuPart">
-
-                        %{-- menu: global search --}%
-
-                        <div role="search" id="mainSearch" class="ui category search spotlight">
-                            <div class="ui icon input">
-                                <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
-                                       aria-label="${message(code:'spotlight.search.placeholder')}">
-                                <i class="${Icon.SYM.SEARCH}" id="btn-search"></i>
-                            </div>
-                            <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
-                        </div>
-
-                        <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip" controller="search" action="index"
-                                 data-content="${message(code: 'search.advancedSearch.tooltip')}">
-                            <i class="large icons">
-                                <i class="${Icon.SYM.SEARCH}"></i>
-                                <i class="top right grey corner plus icon"></i>
-                            </i>
-                        </ui:link>
-
-                        %{-- menu: user --}%
-
-                        <g:if test="${contextUser}">
-                            <laser:render template="/layouts/laser/menu_user" />
-                        </g:if>
-                    </div>
-
-                </sec:ifAnyGranted>
-
-                <sec:ifNotGranted roles="ROLE_USER">
-                    <sec:ifLoggedIn>
-                        <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
-                    </sec:ifLoggedIn>
-                </sec:ifNotGranted>
-
-            </div><!-- container -->
-
-        </nav><!-- main menu -->
-
+    </nav><!-- main menu -->
+</sec:ifAnyGranted>
         %{-- context bar --}%
 
         <sec:ifAnyGranted roles="ROLE_USER">
@@ -206,9 +213,12 @@
             </main>
         </div>
 
-        %{-- footer --}%
+
 
         <sec:ifNotGranted roles="ROLE_USER">
+            %{-- container landingpage end--}%
+            </div>
+            %{-- footer --}%
             <laser:render template="/layouts/footer" />
         </sec:ifNotGranted>
 
