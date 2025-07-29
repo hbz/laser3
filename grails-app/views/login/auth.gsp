@@ -8,10 +8,11 @@
     <title>${message(code: 'laser')}</title>
 </head>
 <body>
-<laser:render template="/templates/system/serverIndicator" />
+    <laser:render template="/templates/system/serverIndicator" />
+
     <div class="landingpage">
-    <!--Page Contents-->
-    <laser:render template="/layouts/unauthMenu/nav" />
+
+        <laser:render template="/layouts/publicMenu" />
 
         <main>
             <div class="ui stackable centered grid container la-login middle aligned">

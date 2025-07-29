@@ -1,6 +1,6 @@
-<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.storage.BeanStore; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}">
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 

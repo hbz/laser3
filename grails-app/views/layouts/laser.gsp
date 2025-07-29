@@ -53,28 +53,15 @@
 
 <body class="${controllerName}_${actionName}">
 
-
-
     %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
-
     <ui:skipLink />
 
-
-<sec:ifNotGranted roles="ROLE_USER">
-    %{-- container landingpage start--}%
-    <div class="landingpage">
-    %{-- main menu landingpage --}%
-    <laser:render template="/layouts/unauthMenu/nav" />
-</sec:ifNotGranted>
-<sec:ifAnyGranted roles="ROLE_USER">
     %{-- main menu --}%
     <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
         <div class="ui container" role="none">
             <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                 <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </ui:link>
-
-
 
             %{-- menu: public, my objects, my institution --}%
 
@@ -137,8 +124,6 @@
                 </g:if>
             </div>
 
-
-
             <sec:ifNotGranted roles="ROLE_USER">
                 <sec:ifLoggedIn>
                     <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
@@ -148,7 +133,7 @@
         </div><!-- container -->
 
     </nav><!-- main menu -->
-</sec:ifAnyGranted>
+
         %{-- context bar --}%
 
         <sec:ifAnyGranted roles="ROLE_USER">
@@ -158,9 +143,10 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            %{-- system server indicator --}%
 
+            %{-- system server indicator --}%
             <laser:render template="/templates/system/serverIndicator" />
+
             <main id="mainContent" class="ui main container hidden">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
                     <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
@@ -213,12 +199,7 @@
             </main>
         </div>
 
-
-
         <sec:ifNotGranted roles="ROLE_USER">
-            %{-- container landingpage end--}%
-            </div>
-            %{-- footer --}%
             <laser:render template="/layouts/footer" />
         </sec:ifNotGranted>
 
