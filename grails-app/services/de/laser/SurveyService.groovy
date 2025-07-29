@@ -6,17 +6,13 @@ import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
 import de.laser.addressbook.Address
 import de.laser.addressbook.Person
-import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
-import de.laser.finance.PriceItem
 import de.laser.helper.Params
-import de.laser.helper.Profiler
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
@@ -1809,16 +1805,16 @@ class SurveyService {
         Integer countPermanentTitles = PermanentTitle.executeQuery('select count(*) from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                 'tipp.status != :tippStatus AND ' +
-                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
+                "(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))",
                 [hostPlatformURL: tipp.hostPlatformURL,
                  tippStatus: RDStore.TIPP_STATUS_REMOVED,
                  tipp: tipp,
                  org: org,
                  subscriberCons: RDStore.OR_SUBSCRIBER_CONS])[0]
-        countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
+        /*countPermanentTitles += IssueEntitlement.executeQuery('select count(*) from IssueEntitlement ie where ie.tipp = :tipp and (' +
                 'ie.perpetualAccessBySub in (select oo.sub from OrgRole oo where oo.org = :context and oo.roleType = :subscriber) or ' +
                 "ie.perpetualAccessBySub in (select s from OrgRole oc join oc.sub s where oc.org = :context and oc.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))" +
-                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+                ')', [tipp: tipp, context: org, subscriber: RDStore.OR_SUBSCRIBER, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])*/
 
         if(countPermanentTitles > 0){
             return true
@@ -1837,7 +1833,7 @@ class SurveyService {
         List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
                 '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                 'tipp.status != :tippStatus AND ' +
-                '(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons))',
+                "(pt.owner = :org or pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')))",
                 [hostPlatformURL: tipp.hostPlatformURL,
                  tippStatus: RDStore.TIPP_STATUS_REMOVED,
                  tipp: tipp,
@@ -2130,39 +2126,41 @@ class SurveyService {
     @Deprecated
     Integer countPerpetualAccessTitlesBySubAndNotInIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
         Integer count = 0
-        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
-        subscriptions << subscription
+        Set<Subscription> contextSubscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        contextSubscriptions << subscription
 
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
 
-        if(subscriptions.size() > 0 && issueEntitlementGroup) {
-            List<Object> subIds = []
-            subscriptions.each { Subscription s ->
-                subIds << s.id
-                if(s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
-                    subIds << s.instanceOf.id
+        if(contextSubscriptions.size() > 0 && issueEntitlementGroup) {
+            Set<Subscription> subs = []
+            contextSubscriptions.each { Subscription s ->
+                subs << s
+                if (s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
+                    subs << s.instanceOf
             }
-            Sql sql = GlobalService.obtainSqlConnection()
-            try {
-                Connection connection = sql.dataSource.getConnection()
-                /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                        "where ie.ie_subscription_fk = any(:subs)  " +
-                        "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
-                        "and tipp.tipp_host_platform_url in " +
-                        "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
-                        " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                        " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
-
-                def titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+            Set<Subscription> otherSubscriptions = subscriptionService.getSubscriptionsWithPossiblePerpetualTitles(subscription.getSubscriber())
+            otherSubscriptions.removeAll(contextSubscriptions)
+            Set<String> subscribedHostPlatformURLs = TitleInstancePackagePlatform.executeQuery("select tipp.hostPlatformURL from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where sp.pkg = tipp.pkg and sp.subscription in (:subs)", [subs: contextSubscriptions])
+            List ieDirectCount = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :tippStatus and ie not in (select igi.ie from IssueEntitlementGroupItem igi where igi.ieGroup = :ieGroup)", [subs: subs, tippStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+            List ieIndirectCount = PermanentTitle.executeQuery("select count(*) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:subscribedHostPlatformURLs) and pt.subscription in (:otherSubs)", [subscribedHostPlatformURLs: subscribedHostPlatformURLs, otherSubs: otherSubscriptions])
+            if(ieDirectCount)
+                count += ieDirectCount[0]
+            if(ieIndirectCount)
+                count += ieIndirectCount[0]
+                /*
+                List<GroovyRowResult> titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                         " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
                         " and ie2.ie_status_rv_fk = :tippStatus " +
                         " and ie2.ie_id not in (select igi_ie_fk from issue_entitlement_group_item where igi_ie_group_fk = :ieGroup) group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id, ieGroup: issueEntitlementGroup.id])
 
-                count = titles.size()
-            }
-            finally {
-                sql.close()
-            }
+                if(titles)
+                    count += titles[0]['count']
+                List<GroovyRowResult> otherConsortia = sql.rows("select count(*) from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id join subscription s on pt_subscription_fk = sub_id where " +
+                        "tipp_host_platform_url in (select tipp.tipp_host_platform_url from title_instance_package_platform as tipp join subscription_package on sp_pkg_fk = tipp.tipp_pkg_fk where sp_sub_fk = any(:contextSubs)) and" +
+                        "(pt_owner_fk = :subscriber and sub_parent_sub_fk is null) or (sub_id in (select os.sub_id from org_role join subscription as os on or_org_fk = os.sub_id where or_org_fk = :subscriber and or_roletype_fk = :subscrCons and os.sub_parent_sub_fk in (select auc_reference_id from audit_config where auc_reference_field = 'holdingSelection') and os.sub_parent_sub_fk != any(:contextSubs)))", [subscriber: subscription.getSubscriber().id, subscrCons: RDStore.OR_SUBSCRIBER_CONS.id, contextSubs: connection.createArrayOf('bigint', subIds.toArray())])
+                if(otherConsortia)
+                    count += otherConsortia[0]['count']
+                */
         }
         return count
     }
@@ -2682,6 +2680,11 @@ class SurveyService {
                     params.remove('setEInvoiceValuesFromOrg')
                 }
 
+                if(params.setContactAndAddressFromOrg) {
+                    setDefaultPreferredConcatsForSurvey(result.surveyConfig, participant)
+                    params.remove('setContactAndAddressFromOrg')
+                }
+
                 if(params.setEInvoiceLeitkriteriumFromOrg) {
                     result.surveyOrg.eInvoiceLeitkriterium = params.setEInvoiceLeitkriteriumFromOrg
                     result.surveyOrg.save()
@@ -3002,7 +3005,7 @@ class SurveyService {
 
     void setDefaultPreferredConcatsForSurvey(SurveyConfig surveyConfig, Org org){
         SurveyOrg surOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)
-        if(surOrg) {
+        if(surOrg && surveyConfig.invoicingInformation) {
             Map parameterMap = [:]
             parameterMap.org = org
 
@@ -3010,39 +3013,39 @@ class SurveyService {
             parameterMap.preferredBillingPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             List<Person> visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
-            if(surveyConfig.invoicingInformation) {
-                visiblePersons.each { Person person ->
-                    if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
-                        new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
-                    }
+
+            visiblePersons.each { Person person ->
+                if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
+                    new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
             }
+
 
             parameterMap.remove('preferredBillingPerson')
             parameterMap.preferredSurveyPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_SURVEY_CONTACT.id]
             visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
             visiblePersons.each { Person person ->
-                if(person.preferredSurveyPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)){
+                if (person.preferredSurveyPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)) {
                     new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, surveyPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
             }
 
-            if(!surOrg.address && surveyConfig.invoicingInformation) {
-                Map parameterMap2 = [:]
-                parameterMap2.org = org
-                parameterMap2.sort = 'sortname'
-                parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
-                List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
 
-                addresses.each { Address address ->
-                    if (address.preferredForSurvey) {
-                        surOrg.address = address
-                        surOrg.save()
-                    }
+            Map parameterMap2 = [:]
+            parameterMap2.org = org
+            parameterMap2.sort = 'sortname'
+            parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
+            List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
+
+            addresses.each { Address address ->
+                if (address.preferredForSurvey) {
+                    surOrg.address = address
+                    surOrg.save()
                 }
-
             }
+
+
         }
     }
 

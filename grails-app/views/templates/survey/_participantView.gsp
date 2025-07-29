@@ -37,14 +37,6 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
-            <g:link class="item ${params.viewTab == 'surveyContacts' ? 'active' : ''}"
-                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                    params="${parame + [viewTab: 'surveyContacts']}">
-                ${message(code: 'surveyOrg.surveyContacts')}
-                <ui:bubble float="true"
-                           count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndSurveyPerson(participant, surveyConfig, true)}"/>
-            </g:link>
-
             <g:if test="${surveyConfig.invoicingInformation}">
                 <g:link class="item ${params.viewTab == 'invoicingInformation' ? 'active' : ''}"
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
@@ -54,6 +46,14 @@
                                count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndBillingPerson(participant, surveyConfig, true)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
                 </g:link>
             </g:if>
+
+            <g:link class="item ${params.viewTab == 'surveyContacts' ? 'active' : ''}"
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame + [viewTab: 'surveyContacts']}">
+                ${message(code: 'surveyOrg.surveyContacts')}
+                <ui:bubble float="true"
+                           count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndSurveyPerson(participant, surveyConfig, true)}"/>
+            </g:link>
 
             <g:if test="${surveyConfig.packageSurvey}">
                 <g:link class="item ${params.viewTab == 'packageSurvey' ? 'active' : ''}"
@@ -140,7 +140,7 @@
                 </g:if>
 
                 <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
-                    <div class="two wide column">
+                    %{--<div class="two wide column">
                         <div class="ui fluid vertical tabular la-tab-with-js menu">
                             <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
                                 ${message(code: 'surveyOrg.person.label')}
@@ -158,10 +158,20 @@
                                 <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}/${surveyOrg.peppolReceiverId ? '1' : '0'}"/>
                             </a>
                         </div>
-                    </div>
+                    </div>--}%
 
-                    <div class="fourteen wide column">
-                        <div class="ui bottom attached tab   ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
+                    <div class="sixteen wide column">
+                    <g:if test="${editable}">
+                        <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setContactAndAddressFromOrg: true,]}"
+                                class="${Btn.SIMPLE} right floated">
+                            <g:message code="surveyOrg.setContactAndAddressFromOrg"/>
+                        </g:link>
+                        <br>
+                        <br>
+                    </g:if>
+
+                        <div class="ui segment">
                            %{-- <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.person.label.heading')}</h2>--}%
                             <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: 'contacts']" target="_blank"
                                     class="${Btn.SIMPLE} right floated">
@@ -180,7 +190,7 @@
 
                         </div>
 
-                        <div class="ui bottom attached tab   ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
+                        <div class="ui segment">
                             %{--<h2 class="ui left floated aligned header">${message(code: 'surveyOrg.address.label.heading')}</h2>--}%
                             <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: 'addresses']" target="_blank"
                                     class="${Btn.SIMPLE} right floated">
@@ -200,7 +210,8 @@
 
                         </div>
 
-                        <div class="ui bottom attached tab   ${params.subTab == 'xRechnung' ? 'active' : ''}" data-tab="xRechnung">
+                    <g:if test="${participant.eInvoice}">
+                        <div class="ui segment">
 
                             <g:if test="${editable}">
                                 <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
@@ -275,40 +286,45 @@
                                             </dl>
                                         </div>
 
-                                        <table class="ui table la-js-responsive-table la-table">
-                                            <thead>
-                                            <tr>
-                                                <th>${message(code: 'sidewide.number')}</th>
-                                                <th>${message(code: 'identifier')}</th>
-                                                <th>${message(code: 'default.notes.label')}</th>
-                                                <th></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <g:each in="${surveyOrg.org.getLeitkriteriums()}" var="leitkriterium" status="i">
+                                        <g:if test="${surveyOrg.org.getLeitkriteriums().find { it.value }}">
+                                            <table class="ui table la-js-responsive-table la-table">
+                                                <thead>
                                                 <tr>
-                                                    <td>${i+1}</td>
-                                                    <td>${leitkriterium.value}</td>
-                                                    <td>${leitkriterium.note}</td>
-                                                    <td>
-                                                        <g:if test="${editable}">
-                                                            <g:link controller="${controllerName}" action="${actionName}"
-                                                                    id="${surveyInfo.id}"
-                                                                    params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceLeitkriteriumFromOrg: leitkriterium.value]}"
-                                                                    class="${Btn.SIMPLE} right floated">
-                                                                <g:message code="surveyOrg.setEInvoiceLeitkriteriumFromOrg"/>
-                                                            </g:link>
-                                                        </g:if>
-                                                    </td>
+                                                    <th>${message(code: 'sidewide.number')}</th>
+                                                    <th>${message(code: 'identifier')}</th>
+                                                    <th>${message(code: 'default.notes.label')}</th>
+                                                    <th></th>
                                                 </tr>
-                                            </g:each>
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                <g:each in="${surveyOrg.org.getLeitkriteriums()}" var="leitkriterium" status="i">
+                                                    <g:if test="${leitkriterium.value}">
+                                                        <tr>
+                                                            <td>${i + 1}</td>
+                                                            <td>${leitkriterium.value}</td>
+                                                            <td>${leitkriterium.note}</td>
+                                                            <td>
+                                                                <g:if test="${editable}">
+                                                                    <g:link controller="${controllerName}" action="${actionName}"
+                                                                            id="${surveyInfo.id}"
+                                                                            params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceLeitkriteriumFromOrg: leitkriterium.value]}"
+                                                                            class="${Btn.SIMPLE} right floated">
+                                                                        <g:message code="surveyOrg.setEInvoiceLeitkriteriumFromOrg"/>
+                                                                    </g:link>
+                                                                </g:if>
+                                                            </td>
+                                                        </tr>
+                                                    </g:if>
+                                                </g:each>
+                                                </tbody>
+                                            </table>
+                                        </g:if>
                                     </div>
                                 </div><!-- .card -->
                             </div>
                         </div>
-                    </div>
+                    </g:if>
+
 
                 </g:if>
 

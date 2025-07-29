@@ -30,6 +30,7 @@ import de.laser.SurveyService
 import de.laser.SystemService
 import de.laser.UserService
 import de.laser.VendorService
+import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.YodaService
 import de.laser.ctrl.FinanceControllerService
@@ -343,6 +344,10 @@ class BeanStore {
 
     static VendorService getVendorService() {
         Holders.grailsApplication.mainContext.getBean('vendorService') as VendorService
+    }
+
+    static WekbNewsService getWekbNewsService() {
+        Holders.grailsApplication.mainContext.getBean('wekbNewsService') as WekbNewsService
     }
 
     /**

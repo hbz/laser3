@@ -1699,8 +1699,8 @@ class FilterService {
         }
 
         if (params.pkgfilter && (params.pkgfilter != '')) {
-            base_qry += " and tipp.pkg.id = :pkgId "
-            qry_params.pkgId = params.long('pkgfilter')
+            base_qry += " and tipp.pkg.id in (:pkgId) "
+            qry_params.pkgId = Params.getLongList(params, 'pkgfilter')
         }
 
         if (params.ddcs) {

@@ -18,6 +18,18 @@
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
             </div>
         </div>
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="memory icon"></i> Profiler <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="admin" action="profilerLoadtime">${message(code:'menu.admin.profilerLoadtime')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="profilerTimeline">${message(code:'menu.admin.profilerTimeline')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="profilerActivity">${message(code:'menu.admin.profilerActivity')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="profilerCurrent">${message(code:'menu.admin.profilerCurrent')}</ui:link>
+            </div>
+        </div>
+        <div class="divider"></div>
 
         <ui:link addItemAttributes="true" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="systemAnnouncements"><i class="${Icon.ANNOUNCEMENT}"></i>${message(code:'menu.admin.announcements')}</ui:link>

@@ -16,6 +16,7 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PendingChange
+import de.laser.UserService
 import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
 import de.laser.wekb.Package
@@ -85,6 +86,7 @@ class AjaxJsonController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    UserService userService
     VendorService vendorService
 
     /**
@@ -1214,7 +1216,7 @@ class AjaxJsonController {
         Map<String, Object> result = [result: false]
 
         if (params.input) {
-            result.result = null != User.findByUsernameIlike(params.input)
+            result.result = null != userService.getUserByUsername(params.input)
         }
         render result as JSON
     }

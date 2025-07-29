@@ -7,17 +7,67 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge
+
+6728    15.07.2025  rc-3.5  3.5.4       Andreas Feature     Titelexport berücksichtigt den Status-Filter
+
+6725    10.07.2025  rc-3.5  3.5.4       David   Feature     SystemProfiler -> Admin
+
+6667    09.07.2025  rc-3.5  3.5.4       Andreas Feature     Entfernen der Summenspalten von der Ausgabe der Nutzerzahlen
+
+6724    09.07.2025  rc-3.5  3.5.4       Andreas Feature     neues Filterfeld in "Meine dauerhafte Titel" eingebaut
+
+6721    08.07.2025  rc-3.5  3.5.3       Andreas Bug         Überprüfung dauerhafter Titel schlug fehl
+
+6718    04.07.2025  rc-3.5  3.5.3       David   Feature     WekbNews asynchron aktualisieren
+
+6715    03.07.2025  rc-3.5  3.5.3       David   Bug         Aufgabenzuweisung von Einzelne auf Alle zurückgestellt
+
+6674    03.07.2025  rc-3.5  3.5.3       Andreas Feature     Referenzwert "tagesaktuell" aufgenommen
+
+6704    02.07.2025  rc-3.5  3.5.2       Moe   Bug           Rechnungsstellungsinformationen setzen wenn Vorauswahl getroffen ist
+
+6714    02.07.2025  rc-3.5  3.5.2       Moe   Bug           NM Peppol-ID wird nicht gespeichert
+
+6713    01.07.2025  rc-3.5  3.5.2       Moe   Feature       Optimierung Rechnungsstellung
+
+6711    30.06.2025  rc-3.5  3.5.2       Andreas Feature     Auswahl von Semester nach hinten erweitert
+
+6710    30.06.2025  rc-3.5  3.5.2       Andreas Bug         500er beim Export von Vertragsidentifikatoren behoben
+
+6706    30.06.2025  rc-3.5  3.5.2       David   Feature     Passwörter (alter Hash) beim Login aktualisieren
+
+--      27.06.2025  rc-3.5  3.5.2       Andreas Feature     Erweiterung des Passwort-Regex-Bereiches
+
+6699    27.06.2025  rc-3.5  3.5.2       Andreas Bug         Ausgabe der Statistik-Merkmals-Anmerkungen korrigiert
+
+6698    27.06.2025  rc-3.5  3.5.2       Andreas Bug         falsche Ausgabe der Lizenzmerkmale behoben
+
+6697    26.06.2025  rc-3.5  3.5.2       Moe   Bug           Umfrage-Übertrag doppelte Einträge
+
+6695    26.06.2025  rc-3.5  3.5.2       David   Feature     Case-insensitive Nutzererkennung für "Passwort zurücksetzen", etc.
+
+6578    26.06.2025  rc-3.5  3.5.2       Andreas Bug         verschiedene Korrekturen bei der Abfrage dauerhafter Titel
+
+6686    25.06.2025  rc-3.5  3.5.1       Moe   Bug           Pflichtfelder in Umfragen auszufüllen, wenn man nicht an Lizenz teilnimmt?
+
 6681    24.06.2025  rc-3.5  3.5.1       Andreas Bug         Titelfilter verarbeitete Status nicht
 
 6680    24.06.2025  rc-3.5  3.5.1       David   Feature     Bildergrößen in Markdown-Dateien steuern
+
+6678    24.06.2025  rc-3.5  3.5.1       Andreas Feature     Vererbungsbuttons bei Merkmalen in Lizenzverwaltung hinzugefügt
 
 6679    23.06.2025  rc-3.5  3.5.1       David   Bug         Meine Anbieter 500er
 
 6677    20.06.2025  rc-3.5  3.5.1       Andreas Bug         Umrüstung des Lizenzstatusfilters in der Finanzübersicht
 
+6669    16.06.2025  rc-3.5  3.5         Moe   Feature        Neues Vertragsmerkmal "Künstliche Intelligenz"
+
 6666    13.06.2025  rc-3.5  3.5         Andreas Bug         falsche Summierung der Nutzerzahlen behoben
 
 6665    13.06.2025  rc-3.5  3.5         Andreas Bug         fehlende Verknüpfungen nachgereicht, Haken ausgeblendet
+
+6659    13.06.2025  rc-3.5  3.5         Moe   Bug           Löschung von Kontakten nicht möglich, wenn sie in Umfragen angegeben worden sind
 
 6661    13.06.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen für den Preisupload
 
@@ -26,6 +76,12 @@
 6655    10.06.2025  rc-3.5  3.5         Andreas Bug         Reiter blieb beim Filtern nicht erhalten
 
 6554    10.06.2025  rc-3.5  3.5         Andreas Feature     Erweiterung des Kostenexports um Exportkonfigurationen
+
+6450    10.06.2025  rc-3.5  3.5         Moe   Bug           Paketverknüpfung im Verlängerungsprozess Umfrage
+
+6649    06.06.2025  rc-3.5  3.5         Moe   Bug           500er beim Filtern von Lieferanten in Umfragen
+
+6651    06.06.2025  rc-3.5  3.5         Moe   Bug           Zeilen im Export der Umfrageergebnisse verschoben
 
 6640    05.06.2025  rc-3.5  3.5         Andreas Feature     Alternativnamen bei der Suche mit berücksichtigt
 
@@ -41,7 +97,29 @@
 
 6326    04.06.2025  rc-3.5  3.5         David   Feature     NatHosting löschen
 
+6644    04.06.2025  rc-3.5  3.5         Moe   Bug           ohne Umfragekontakt auch Umfrage abschliessen
+
+6410    03.06.2025  rc-3.5  3.5         Moe   Feature       Neuer Wert für Medium: E-Learning Material
+
+6379    03.06.2025  rc-3.5  3.5         Moe   Feature       E-Rechnung: Peppol
+
+6637    02.06.2025  rc-3.5  3.5         Moe   Bug           Rechtschreibfehler Umfrage erstellen
+
+6512    02.06.2025  rc-3.5  3.5         Moe   Bug           Globale Suche + erweiterte Suche fehlerhaft
+
 6635    30.05.2025  rc-3.5  3.5         David   Bug         Insight-Mails werden nicht mehr verschickt
+
+6386    30.05.2025  rc-3.5  3.5         Moe   Bug           Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
+
+6567    30.05.2025  rc-3.5  3.5         Moe   Bug           HoldingSelection überprüfen in Umfrage
+
+6631    30.05.2025  rc-3.5  3.5         Moe   Bug           Globale Suche - Basic-Einrichtung sieht andere Basic-Einrichtung
+
+6632    28.05.2025  rc-3.5  3.5         Moe   Bug           Benachrichtigungsmail Titelumfrage: Links funktionieren nicht
+
+6625    28.05.2025  rc-3.5  3.5         Moe   Bug           QA Dashboard Jump auf Umfrage
+
+6621    28.05.2025  rc-3.5  3.5         Moe   Bug           Umfrage erstellen
 
 6598    27.05.2025  rc-3.5  3.5         Andreas Feature     verschiedene Ausbesserungen in der Lizenzverwaltung
 
@@ -51,17 +129,29 @@
 
 6610    27.05.2025  rc-3.5  3.5         Andreas Bug         entfernte Anbieter und Library Supplier wurden nicht herausgefiltert
 
+6611    22.05.2025  rc-3.5  3.5         Moe   Feature       leitkriterium (intern) mehrfach vergeben + Umfrage Umstellung
+
 6617    26.05.2025  rc-3.5  3.5         Andreas Bug         Abfragesyntaxfehler behoben
 
 6606    26.05.2025  rc-3.5  3.5         Andreas Feature     Umstellung der Ausgabe
 
 6573    26.05.2025  rc-3.5  3.5         Andreas Bug         Ausgabe der Paket- und Plattformnamen eingeschränkt
 
+6584    22.05.2025  rc-3.5  3.5         Moe   Bug           Globale Suche nach Anbietern Lieferanten
+
 6605    23.05.2025  rc-3.5  3.5         Andreas Bug         falsche Klausel bei Abfrage behoben
 
 6340    23.05.2025  rc-3.5  3.5         Andreas Feature     Bereinigung von Anbietern und Library Suppliers
 
+6607    23.05.2025  rc-3.5  3.5         Moe   Feature       Start Umfrage Screen
+
+6614    23.05.2025  rc-3.5  3.5         Moe   Feature       Meine Umfrage: neue Spalte einführen mit Anzahl von Paket, Lieferanten, Lizenzen
+
 6604    22.05.2025  rc-3.5  3.5         David   Bug         500er beim Aufrufen von neuen Anbietern über die we:kb.news
+
+6586    22.05.2025  rc-3.5  3.5         Moe   Bug           Mehrjahr Übertrag
+
+6388    22.05.2025  rc-3.5  3.5         Moe   Feature       Paket-Umfrage Verbesserungen
 
 6508    20.05.2025  rc-3.5  3.5         David   Feature     DBM Changesets aufräumen
 

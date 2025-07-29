@@ -13,7 +13,7 @@ class PasswordUtils {
 
     public static final String USER_PASSWORD_INFO =
             "Das Passwort muss zwischen 8 und 20 Zeichen lang sein. " +
-            "Es muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl sowie ein Sonderzeichen aus der Liste ( !\$%&@#^+*~=:; ) enthalten. " +
+            "Es muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl sowie ein Sonderzeichen aus der Liste ( !\$%&@#^+*~=_:;- ) enthalten. " +
             "Leerzeichen dürfen nicht vorkommen."
 
     public static final String USER_PASSWORD_REGEX =
@@ -21,7 +21,7 @@ class PasswordUtils {
             '(?=.*[A-Z])' +             // an upper case alphabet that must occur at least once
             '(?=.*[a-z])' +             // a lower case alphabet must occur at least once
             '(?=.*[0-9])' +             // a digit must occur at least once
-            '(?=.*[!$%&@#^+*~=:;])' +   // a special character that must occur at least once: !$%&@#^+*~=:;
+            '(?=.*[!$%&@#^+*~=_:;-])' + // a special character that must occur at least once: !$%&@#^+*~=_:;-
             '(?=\\S+$)' +               // white spaces are not allowed
             '.{8,20}' +                 // 8 - 20 characters
             '$'
@@ -77,13 +77,18 @@ class PasswordUtils {
                 'abcd@ABCD 123'         : false,
                 'abcd@ABCD$1230000000'  : true,
                 'abcd@ABCD$12300000000' : false,
-                'abcd-ABCD-123'         : false,
+                'abcd?ABCD?123'         : false,
                 'abcd:ABCD;123'         : true,
-                '!$%&@#^+*~======'      : false,
+                'abcd-ABCD_123'         : true,
+                '!$%&@#^+*~=_:;-'       : false,
+                '___FAIL_TEST___'       : true
         ]
 
         checks.each { it ->
-            println it.key + ' -> ' + isUserPasswordValid(it.key) + ' ? ' + it.value + ( isUserPasswordValid(it.key) == it.value ? ' -> passed' : ' ==========> FAILED' )
+            println it.key.padLeft(24) + ' ? ' +
+                    it.value.toString().padLeft(5) + ' => ' +
+                    (isUserPasswordValid(it.key) == it.value ? 'OK' : 'FAILED') +
+                    ' ( ' + isUserPasswordValid(it.key) + ' )'
         }
     }
 

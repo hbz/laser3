@@ -1916,6 +1916,8 @@ class MyInstitutionController  {
         Map query = filterService.getPermanentTitlesQuery(params, contextService.getOrg(), subsWithInheritance)
         result.filterSet = query.filterSet
         Set<Long> tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+        Set<Package> permanentTitlePackages = Package.executeQuery("select pkg from PermanentTitle pt join pt.tipp tipp join tipp.pkg pkg where pt.owner = :context or pt.subscription in (:inherited) order by pkg.name", [context: contextService.getOrg(), inherited: subsWithInheritance])
+        result.permanentTitlePackages = permanentTitlePackages
 
         result.num_tipp_rows = tipps.size()
 
@@ -2589,7 +2591,7 @@ class MyInstitutionController  {
             /*
             see ERMS-5815 - it should not be necessary to fill out answers if(f) no participation is intended - after check with Melanie, this behavior should be generalised
              */
-            boolean noParticipation = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO
+            boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO || (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2) && SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2).refValue != RDStore.YN_YES))
             List<PropertyDefinition> notProcessedMandatoryProperties = []
             boolean existsMultiYearTerm = surveyService.existsCurrentMultiYearTermBySurveyUseForTransfer(surveyConfig, contextService.getOrg())
             if(!noParticipation) {
@@ -2600,9 +2602,13 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
+                if(((SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_YES || SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION2)?.refValue == RDStore.YN_YES) || surveyConfig.surveyInfo.isMandatory) && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
-                    flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+                    if (!surveyOrg.address) {
+                        flash.error = g.message(code: 'surveyResult.finish.invoicingInformation.address')
+                    } else if (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0) {
+                        flash.error = g.message(code: 'surveyResult.finish.invoicingInformation.contact')
+                    }
                 }
                 else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     if(SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)) {
@@ -2653,10 +2659,12 @@ class MyInstitutionController  {
                 }
             }
 
-            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+            if(surveyConfig.subSurveyUseForTransfer && SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)){
                 SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
-                surveyResult.comment = params.surveyResultComment
-                surveyResult.save()
+                if(surveyResult.refValue == RDStore.YN_NO) {
+                    surveyResult.comment = params.surveyResultComment
+                    surveyResult.save()
+                }
             }
 
             if (sendSurveyFinishMail) {

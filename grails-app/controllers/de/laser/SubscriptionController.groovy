@@ -1301,12 +1301,28 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            String exportTab
+            switch(params.tab) {
+                case 'currentIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.current"))
+                    break
+                case 'plannedIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.planned"))
+                    break
+                case 'expiredIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.expired"))
+                    break
+                case 'deletedIEs': exportTab = escapeService.escapeString(message(code: "package.show.nav.deleted"))
+                    break
+                case 'allIEs': exportTab = escapeService.escapeString(message(code: "menu.public.all_titles"))
+                    break
+                default: exportTab = escapeService.escapeString(message(code: "package.show.nav.current"))
+                    break
+            }
+            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${exportTab}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
             Set<Package> targetPkg = targetSub.packages.pkg
             if(params.pkgFilter)
                 targetPkg = [Package.get(params.pkgFilter)]
             Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
+            configMap.putAll(FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs'))
             configMap.putAll(params)
             Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
             Map<String, Object> selectedFields = [:]
@@ -1531,7 +1547,8 @@ class SubscriptionController {
                 Map<TitleInstancePackagePlatform, Set<PermanentTitle>> permanentTitles = [:]
                 TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: 'sortname', order: 'asc']).each { TitleInstancePackagePlatform tipp ->
                     result.tipps << tipp
-                    permanentTitles.put(tipp, PermanentTitle.executeQuery('select pt from PermanentTitle pt where pt.owner = :org and (pt.tipp = :tipp or pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL = :hostPlatformURL and tipp.status != :tippStatus))', [tipp: tipp, hostPlatformURL: tipp.hostPlatformURL, tippStatus: RDStore.TIPP_STATUS_DELETED, org: contextService.getOrg()]))
+                    permanentTitles.put(tipp, PermanentTitle.executeQuery('select pt from PermanentTitle pt where pt.owner = :org and (pt.tipp = :tipp or pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL = :hostPlatformURL and tipp.status != :tippStatus))', [tipp: tipp, hostPlatformURL: tipp.hostPlatformURL, tippStatus: RDStore.TIPP_STATUS_DELETED, org: result.subscription.getSubscriber()]))
+                    permanentTitles.put(tipp, PermanentTitle.executeQuery("select pt from PermanentTitle pt where pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :org and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')) and (pt.tipp = :tipp or pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL = :hostPlatformURL and tipp.status != :tippStatus))", [tipp: tipp, hostPlatformURL: tipp.hostPlatformURL, tippStatus: RDStore.TIPP_STATUS_DELETED, org: result.subscription.getSubscriber(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS]))
                 }
                 result.permanentTitles = permanentTitles
             }

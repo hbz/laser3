@@ -49,6 +49,8 @@ class TitleController  {
         Profiler prf = new Profiler()
         prf.setBenchmark('init')
         Map<String, Object> result = [:], configMap = [:]
+        if(!params.containsKey('filterSet'))
+            params.status = [RDStore.TIPP_STATUS_CURRENT.id]
         /*
         Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
         if (ttParams.status) { params.status = ttParams.status }
