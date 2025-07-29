@@ -2324,7 +2324,6 @@ class MyInstitutionController  {
         ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
-        //continue here with migration to new structure, then, adapt the counter-file to the input format as well ... we do not want to bother Excel uploaders with CSV files!!!
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         MultipartFile importFile
         Map tableData = null

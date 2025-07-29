@@ -49,6 +49,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
@@ -91,9 +92,9 @@ class SubscriptionControllerService {
     FinanceService financeService
     FormService formService
     GenericOIDService genericOIDService
-    GlobalService globalService
     GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
+    ImportService importService
     IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     ManagementService managementService
@@ -1413,22 +1414,41 @@ class SubscriptionControllerService {
                     List<Org> members = []
                     Map startEndDates = [:]
 
-                    if(params.selectSubMembersWithImport?.filename){
-
-                        MultipartFile importFile = params.selectSubMembersWithImport
-                        InputStream stream = importFile.getInputStream()
-
-                        result.selectSubMembersWithImport = subscriptionService.selectSubMembersWithImport(stream)
-
-                        if(result.selectSubMembersWithImport.orgList){
-                            result.selectSubMembersWithImport.orgList.each { it ->
-                                members << Org.findById(Long.valueOf(it.orgId))
-                                startEndDates.put("${it.orgId}", [startDate: it.startDate, endDate: it.endDate])
+                    if(params.containsKey('format')){
+                        Map tableData = [:]
+                        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                            MultipartFile importFile = params.excelFile
+                            if(importFile && importFile.size > 0) {
+                                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                                    tableData = importService.readExcelFile(importFile)
+                                }
                             }
                         }
+                        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                            MultipartFile importFile = params.csvFile
+                            if(importFile && importFile.size > 0) {
+                                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                                }
+                                else {
+                                    result.wrongCharset = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                                    [result: result, status: STATUS_ERROR]
+                                }
+                            }
+                        }
+                        if(tableData) {
+                            result.selectSubMembersWithImport = subscriptionService.selectSubMembersWithImport(tableData)
 
-
-                    }else {
+                            if(result.selectSubMembersWithImport.orgList){
+                                result.selectSubMembersWithImport.orgList.each { it ->
+                                    members << Org.findById(Long.valueOf(it.orgId))
+                                    startEndDates.put("${it.orgId}", [startDate: it.startDate, endDate: it.endDate])
+                                }
+                            }
+                        }
+                    }
+                    else {
                         params.list('selectedOrgs').each { it ->
                             members << Org.findById(Long.valueOf(it))
                         }

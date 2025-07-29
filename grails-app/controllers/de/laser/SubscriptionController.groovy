@@ -56,8 +56,8 @@ class SubscriptionController {
     ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
-    GlobalService globalService
     GokbService gokbService
+    ImportService importService
     IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     SubscriptionControllerService subscriptionControllerService
@@ -300,15 +300,37 @@ class SubscriptionController {
             response.sendError(401)
             return
         }
-        MultipartFile importFile = params.requestorIDFile
-        InputStream stream = importFile.getInputStream()
-        result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), stream))
-        if(result.truncatedRows){
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
-        }else if(result.wrongOrgs){
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
-        }else {
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+        Map<String, Object> tableData = [:]
+        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+            MultipartFile importFile = request.getFile("excelFile")
+            if(importFile && importFile.size > 0) {
+                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                    tableData = importService.readExcelFile(importFile)
+                }
+            }
+        }
+        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+            MultipartFile importFile = request.getFile("csvFile")
+            if(importFile && importFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                }
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                    redirect(url: request.getHeader('referer'))
+                }
+            }
+        }
+        if(tableData) {
+            result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), tableData))
+            if(result.truncatedRows){
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
+            }else if(result.wrongOrgs){
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
+            }else {
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+            }
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -690,18 +712,12 @@ class SubscriptionController {
         log.debug("templateForMembersBulkWithUpload :: ${params}")
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
 
-        String filename = "template_sub_members_import"
-
+        String filename = "template_sub_members_import", format = ExportService.EXCEL
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
 
         List<Org> consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
-
-
-        ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
-
-        ArrayList rowData = []
-        ArrayList row
+        List titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')], columnData = [], row
         consortiaMembers.each { Org org ->
             row = []
             String wibid = org.getIdentifierByType('wibid')?.value
@@ -710,31 +726,31 @@ class SubscriptionController {
             String gnd = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
 
-            row.add(org.laserID)
-            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
-            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
-            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
-            row.add((gnd != IdentifierNamespace.UNKNOWN && gnd != null) ? gnd : '')
-            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
+            row.add(exportService.createCell(format, org.laserID))
+            row.add(exportService.createCell(format, (wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : ''))
+            row.add(exportService.createCell(format, (isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : ''))
+            row.add(exportService.createCell(format, (ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : ''))
+            row.add(exportService.createCell(format, (gnd != IdentifierNamespace.UNKNOWN && gnd != null) ? gnd : ''))
+            row.add(exportService.createCell(format, (deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : ''))
 
-            row.add(org.sortname)
-            row.add(org.name)
-            row.add(org.libraryType?.getI10n('value'))
+            row.add(exportService.createCell(format, org.sortname))
+            row.add(exportService.createCell(format, org.name))
+            row.add(exportService.createCell(format, org.libraryType?.getI10n('value')))
             Subscription subscription = result.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
             if(subscription){
-                row.add(subscription.getLabel())
+                row.add(exportService.createCell(format, subscription.getLabel()))
             }
 
-            rowData.add(row)
+            columnData.add(row)
         }
-
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
-        }
-        out.close()
+        Map sheet = [(message(code: 'org.institution.plural')): [titleRow: titles, columnData: columnData]]
+        SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        wb.write(response.outputStream)
+        response.outputStream.flush()
+        response.outputStream.close()
+        wb.dispose()
         return
 
     }
@@ -752,28 +768,28 @@ class SubscriptionController {
 
         ArrayList titles = ['Laser-ID', message(code: 'default.sortname.label'), 'Customer ID', 'Requestor ID']
 
-        ArrayList rowData = [], row
+        ArrayList columnData = [], row
+        String format = ExportService.EXCEL
         consortiaMembers.each { Org org ->
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
-            row = [org.laserID, org.sortname]
+            row = [exportService.createCell(format, org.laserID), exportService.createCell(format, org.sortname)]
             if(ci?.value)
-                row << ci.value
-            else row << ''
+                row << exportService.createCell(format, ci.value)
+            else row << exportService.createCell(format, '')
             if(ci?.requestorKey)
-                row << ci.requestorKey
-            else row << ''
-            rowData.add(row)
+                row << exportService.createCell(format, ci.requestorKey)
+            else row << exportService.createCell(format, '')
+            columnData.add(row)
         }
-
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
-        }
-        out.close()
+        Map sheet = ['Requestor-IDs': [titleRow: titles, columnData: columnData]]
+        SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        wb.write(response.outputStream)
+        response.outputStream.flush()
+        response.outputStream.close()
+        wb.dispose()
         return
-
     }
 
     /**

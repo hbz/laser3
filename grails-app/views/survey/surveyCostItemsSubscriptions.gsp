@@ -56,7 +56,7 @@
                     </g:if>
                     <g:if test="${wrongIdentifiers}">
                         <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/><br>
-                        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                     </g:if>
                 </ui:msg>
             </g:if>
