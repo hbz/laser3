@@ -55,7 +55,7 @@
                 <p>${message(code:'myinst.financeImport.template')}</p>
             </g:link>
             <div class="ui radio checkbox">
-                <input id="formatXLS" name="format" type="radio" value="${ExportClickMeService.FORMAT.XLS.toString()}" class="hidden formatSelection" checked="checked">
+                <input id="formatXLS" name="format" type="radio" value="${ExportClickMeService.FORMAT.XLS.toString()}" class="hidden formatSelection">
                 <label for="formatXLS"><g:message code="default.import.upload.xls"/></label>
             </div>
             <div class="ui radio checkbox">
@@ -442,7 +442,7 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('.csv').hide();
+    $('.csv, .xls').hide();
 
     $('.action .icon.button').click(function () {
          $(this).parent('.action').find('input:file').click();

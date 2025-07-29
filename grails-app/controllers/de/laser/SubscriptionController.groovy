@@ -56,8 +56,8 @@ class SubscriptionController {
     ExportService exportService
     FilterService filterService
     GenericOIDService genericOIDService
-    GlobalService globalService
     GokbService gokbService
+    ImportService importService
     IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     SubscriptionControllerService subscriptionControllerService
@@ -300,15 +300,37 @@ class SubscriptionController {
             response.sendError(401)
             return
         }
-        MultipartFile importFile = params.requestorIDFile
-        InputStream stream = importFile.getInputStream()
-        result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), stream))
-        if(result.truncatedRows){
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
-        }else if(result.wrongOrgs){
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
-        }else {
-            flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+        Map<String, Object> tableData = [:]
+        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+            MultipartFile importFile = request.getFile("excelFile")
+            if(importFile && importFile.size > 0) {
+                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                    tableData = importService.readExcelFile(importFile)
+                }
+            }
+        }
+        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+            MultipartFile importFile = request.getFile("csvFile")
+            if(importFile && importFile.size > 0) {
+                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                }
+                else {
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                    redirect(url: request.getHeader('referer'))
+                }
+            }
+        }
+        if(tableData) {
+            result.putAll(subscriptionService.uploadRequestorIDs(Platform.get(params.platform), tableData))
+            if(result.truncatedRows){
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.truncatedRows', args: [result.processCount, result.processRow, result.wrongOrgs, result.truncatedRows])
+            }else if(result.wrongOrgs){
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess.wrongOrgs', args: [result.processCount, result.processRow, result.wrongOrgs])
+            }else {
+                flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [result.processCount, result.processRow])
+            }
         }
         redirect(url: request.getHeader('referer'))
     }

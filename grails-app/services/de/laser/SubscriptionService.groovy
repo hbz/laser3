@@ -4353,7 +4353,7 @@ class SubscriptionService {
         return SubscriptionProperty.executeQuery('select count(*) from SubscriptionProperty as sp where sp.owner.instanceOf = :sub AND sp.type = :type AND (sp.type.tenant = :contextOrg AND sp.tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription, type: propertyDefinition])[0]
     }
 
-    Map selectSubMembersWithImport(InputStream stream) {
+    Map selectSubMembersWithImport(Map tableData) {
 
         Integer processCount = 0
         Integer processRow = 0
@@ -4367,12 +4367,10 @@ class SubscriptionService {
                                                        wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
                                                        dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
 
-        ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1, dealCol: -1,
                                        startDateCol: -1, endDateCol: -1, ]
 
-        //read off first line of KBART file
-        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        List titleRow = tableData.headerRow, rows = tableData.rows, wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
                 case ["laser-id", "laser-id (einrichtung)", "laser-id (institution)", "laser-id (einrichtungslizenz)", "laser-id (institution subscription)"]: colMap.uuidCol = c
@@ -4398,10 +4396,9 @@ class SubscriptionService {
                 case "runtime (end)": colMap.endDateCol = c
             }
         }
-        rows.eachWithIndex { row, int i ->
+        rows.eachWithIndex { List cols, int i ->
             processRow++
             log.debug("now processing rows ${i}")
-            ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 Org match = null
                 if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
@@ -4462,14 +4459,13 @@ class SubscriptionService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
-    Map uploadRequestorIDs(Platform platform, InputStream stream) {
+    Map uploadRequestorIDs(Platform platform, Map tableData) {
         Integer processCount = 0
         Integer processRow = 0
         List orgList = []
-        ArrayList<String> rows = stream.getText().split('\n')
+        List<List> rows = tableData.rows
         Map<String, Integer> colMap = [laserIDCol: -1, customerIdCol: -1, requestorIdCol: -1]
-        //read off first line of KBART file
-        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        List titleRow = tableData.headerRow, wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
                 case "laser-id": colMap.laserIDCol = c
@@ -4480,10 +4476,9 @@ class SubscriptionService {
                     break
             }
         }
-        rows.eachWithIndex { String row, int i ->
+        rows.eachWithIndex { List cols, int i ->
             processRow++
             log.debug("now processing row ${i}")
-            ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 CustomerIdentifier match = null
                 if (colMap.laserIDCol >= 0 && cols[colMap.laserIDCol] != null && !cols[colMap.laserIDCol].trim().isEmpty()) {
