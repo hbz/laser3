@@ -54,15 +54,42 @@
             <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
                 <p>${message(code:'myinst.financeImport.template')}</p>
             </g:link>
+            <div class="ui radio checkbox">
+                <input id="formatXLS" name="format" type="radio" value="${ExportClickMeService.FORMAT.XLS.toString()}" class="hidden formatSelection" checked="checked">
+                <label for="formatXLS"><g:message code="default.import.upload.xls"/></label>
+            </div>
+            <div class="ui radio checkbox">
+                <input id="formatCSV" name="format" type="radio" value="${ExportClickMeService.FORMAT.CSV.toString()}" class="hidden formatSelection">
+                <label for="formatCSV"><g:message code="default.import.upload.csv"/></label>
+            </div>
+            <br>
+            <div class="ui action input xls">
+                <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorXLS')}">
 
-            <div class="ui action input">
-                <input type="text" readonly="readonly"
-                       placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" name="selectSubMembersWithImport" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                <input type="file" name="excelFile" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                        style="display: none;">
                 <div class="${Btn.ICON.SIMPLE}">
                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                 </div>
+
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadXLS"/></button>
+            </div>
+            <div class="ui action input csv">
+                <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorCSV')}">
+
+                <input type="file" name="csvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                       style="display: none;">
+                <div class="${Btn.ICON.SIMPLE}">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
+                </div>
+
+                <select class="ui dropdown" name="separator">
+                    <g:each in="${ImportService.CSV_CHARS}" var="setting">
+                        <option value="${setting.charKey}"><g:message code="${setting.name}"/></option>
+                    </g:each>
+                </select>
+
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadCSV"/></button>
             </div>
             <g:if test="${members}">
                 <div class="field la-field-right-aligned">
@@ -415,6 +442,8 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
+    $('.csv').hide();
+
     $('.action .icon.button').click(function () {
          $(this).parent('.action').find('input:file').click();
      });
@@ -423,6 +452,16 @@
          var name = e.target.files[0].name;
          $('input:text', $(e.target).parent()).val(name);
      });
+     $('.formatSelection').on('change', function() {
+        if($(this).val() === '${ExportClickMeService.FORMAT.XLS}') {
+            $('.xls').show();
+            $('.csv').hide();
+        }
+        else if($(this).val() === '${ExportClickMeService.FORMAT.CSV}') {
+            $('.csv').show();
+            $('.xls').hide();
+        }
+    });
 
  $.fn.form.settings.rules.memberAssignal = function() {
      let isUnique = false;
