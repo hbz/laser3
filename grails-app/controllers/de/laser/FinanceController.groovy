@@ -652,7 +652,12 @@ class FinanceController  {
         PendingChange changeAccepted = PendingChange.get(params.id)
         if(changeAccepted)
             pendingChangeService.acknowledgeChange(changeAccepted)
-        redirect(uri:request.getHeader('referer'))
+
+        if (params.xhr) {
+            render([ack: true] as JSON)
+        } else {
+            redirect(uri: request.getHeader('referer'))
+        }
     }
 
     /**

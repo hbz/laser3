@@ -4,6 +4,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.cache.SessionCacheWrapper
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -25,8 +26,12 @@ class PendingChangeController  {
     def accept() {
         log.debug("Accept")
         PendingChange pc = PendingChange.get(params.long('id'))
-        pendingChangeService.accept(pc)
-        redirect(url: request.getHeader('referer'))
+        boolean b = pendingChangeService.accept(pc)
+        if (params.xhr) {
+            render([ack: b] as JSON)
+        } else {
+            redirect(url: request.getHeader('referer'))
+        }
     }
 
     /**
@@ -53,8 +58,12 @@ class PendingChangeController  {
     def reject() {
         log.debug("Reject")
         PendingChange pc = PendingChange.get(params.long('id'))
-        pendingChangeService.reject(pc)
-        redirect(url: request.getHeader('referer'))
+        boolean b = pendingChangeService.reject(pc)
+        if (params.xhr) {
+            render([ack: b] as JSON)
+        } else {
+            redirect(url: request.getHeader('referer'))
+        }
     }
 
     /**
