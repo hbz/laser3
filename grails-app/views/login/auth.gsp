@@ -13,7 +13,6 @@
     <!--Page Contents-->
     <laser:render template="/layouts/unauthMenu/nav" />
 
-
         <main>
             <div class="ui stackable centered grid container la-login middle aligned">
                 <div class="row">
@@ -26,17 +25,16 @@
 
                             <div class="column" style="padding:4rem;">
                                 <h1 class="ui header" style="font-size: 2.8rem; padding-bottom: 1rem">
-                                    <div class="content">
+                                    <span class="content">
                                         ${message(code: 'landingpage.hero.h1')}
-                                    </div>
+                                    </span>
                                 </h1>
                                 <div id="login">
                                         <ui:messages data="${flash}"/>
                                         <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form"
                                               autocomplete="off" style="display:block !important;">
                                             <div class="field">
-                                                <label for="username"><g:message
-                                                    code="springSecurity.login.username.label"/>:</label>
+                                                <label for="username"><g:message code="springSecurity.login.username.label"/>:</label>
 
                                                 <div class="ui left icon input">
                                                     <i class="${Icon.ATTR.TASK_CREATOR}"></i>
@@ -47,8 +45,7 @@
                                             </div>
 
                                             <div class="field">
-                                                <label for="password"><g:message
-                                                    code="springSecurity.login.password.label"/>:</label>
+                                                <label for="password"><g:message code="springSecurity.login.password.label"/>:</label>
 
                                                 <div class="ui left icon input">
                                                     <i class="${Icon.ATTR.DOCUMENT_CONFIDENTIALITY}"></i>
@@ -59,28 +56,24 @@
                                             </div>
 
                                             <div class="field">
-                                                <label for="remember_me"><g:message
-                                                    code="springSecurity.login.remember.me.label"/></label>
+                                                <label for="remember_me"><g:message code="springSecurity.login.remember.me.label"/></label>
                                                 <input type="checkbox" class="chk"
                                                        name="${SpringSecurityUtils.securityConfig.rememberMe.parameter}"
                                                        id="remember_me" <g:if test="${hasCookie}">checked="checked"</g:if>/>
                                             </div>
 
                                             <div class="field">
-                                                <input type="submit" class="${Btn.SIMPLE} fluid large"
-                                                       value="${message(code: "menu.user.login")}"/>
+                                                <input type="submit" class="${Btn.SIMPLE} fluid large" value="${message(code: "menu.user.login")}"/>
                                             </div>
                                         </form>
 
                                         <div class="field">
-                                            <a data-ui="modal"
-                                               href="#forgottenPassword">${message(code: "menu.user.forgottenPassword")}</a>
+                                            <a href="#forgottenPassword" data-ui="modal">${message(code: "menu.user.forgottenPassword")}</a>
                                         </div>
                                         <br>
 
                                         <div class="field">
-                                            <a data-ui="modal"
-                                               href="#forgottenUsername">${message(code: "menu.user.forgottenUsername")}</a>
+                                            <a href="#forgottenUsername" data-ui="modal">${message(code: "menu.user.forgottenUsername")}</a>
                                         </div>
 
                                         <ui:modal id="forgottenPassword" message="menu.user.forgottenPassword"
@@ -88,13 +81,11 @@
                                             <g:form class="ui form" controller="login" action="resetForgottenPassword"
                                                     method="post">
                                                 <div class="field required">
-                                                    <label for="forgotten_username"><g:message
-                                                        code="menu.user.forgottenPassword.username"/>:</label>
+                                                    <label for="forgotten_username"><g:message code="menu.user.forgottenPassword.username"/>:</label>
 
                                                     <div class="ui left icon input">
                                                         <i class="${Icon.ATTR.TASK_CREATOR}"></i>
-                                                        <input type="text" class="text_" name="forgotten_username"
-                                                               id="forgotten_username"/>
+                                                        <input type="text" class="text_" name="forgotten_username" id="forgotten_username"/>
                                                     </div>
                                                 </div>
                                             </g:form>
@@ -102,16 +93,13 @@
 
                                         <ui:modal id="forgottenUsername" message="menu.user.forgottenUsername"
                                                   msgSave="${message(code: 'default.button.submit.label')}">
-                                            <g:form class="ui form" controller="login" action="getForgottenUsername"
-                                                    method="post">
+                                            <g:form class="ui form" controller="login" action="getForgottenUsername" method="post">
                                                 <div class="field required">
-                                                    <label for="forgotten_username_mail"><g:message
-                                                        code="menu.user.forgottenUsername.email"/>:</label>
+                                                    <label for="forgotten_username_mail"><g:message code="menu.user.forgottenUsername.email"/>:</label>
 
                                                     <div class="ui left icon input">
                                                         <i class="envelope icon"></i>
-                                                        <input type="text" class="text_" name="forgotten_username_mail"
-                                                               id="forgotten_username_mail"/>
+                                                        <input type="text" class="text_" name="forgotten_username_mail" id="forgotten_username_mail"/>
                                                     </div>
                                                 </div>
                                             </g:form>
