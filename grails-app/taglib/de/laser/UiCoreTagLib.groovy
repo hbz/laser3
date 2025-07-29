@@ -10,8 +10,6 @@ class UiCoreTagLib {
 
     static namespace = 'cc'
 
-    // TODO: handle session timeouts
-
     /**
      *  @param owner MUST
      *  @param field MUST
@@ -44,8 +42,6 @@ class UiCoreTagLib {
             out << '</span>'
         }
     }
-
-    // TODO: handle session timeouts
 
     /**
      *  @param owner MUST
