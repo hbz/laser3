@@ -16,10 +16,10 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <ui:msg class="info" message="org.delete.info2" />
+                <ui:msg class="info" message="vendor.delete.info2" />
             </g:if>
             <g:else>
-                <ui:msg class="info" message="org.delete.info" />
+                <ui:msg class="info" message="vendor.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
@@ -69,9 +69,6 @@
                             <span class="ui circular label la-popup-tooltip ${info[2]}"
                                 <g:if test="${info[2] == 'red'}">
                                     data-content="${message(code:'subscription.delete.blocker')}"
-                                </g:if>
-                                <g:if test="${info[2] == 'blue'}">
-                                    data-content="${message(code:'org.delete.moveToNewOrg')}"
                                 </g:if>
                                 <g:if test="${info[2] == 'yellow'}">
                                     data-content="${message(code:'subscription.existingCostItems.warning')}"
