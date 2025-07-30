@@ -32,6 +32,7 @@ class UserAccountService {
         // not expired and not warned - but inactivity since INACTIVITY_WARNING_AFTER_MONTHS
         User.executeQuery("select u from User u where u.accountExpired = false and u.inactivityWarning is null and u.username != 'anonymous' order by u.username").each{ User usr ->
             LocalDate lastLogin = usr.lastLogin ? DateUtils.dateToLocalDate(usr.lastLogin) : DateUtils.dateToLocalDate(usr.dateCreated)
+            // TODO: ignore INST_ADM ?
             if (lastLogin.isBefore(now.minusMonths(INACTIVITY_WARNING_AFTER_MONTHS))) {
                 usr.inactivityWarning = new Date()
                 usr.save()
@@ -65,6 +66,7 @@ class UserAccountService {
         // not expired, but warned since FLAG_EXPIRED_AFTER_ANOTHER_MONTHS
         User.executeQuery("select u from User u where u.accountExpired = false and u.inactivityWarning != null and u.username != 'anonymous' order by u.username").each{ User usr ->
             LocalDate lastWarning = DateUtils.dateToLocalDate(usr.inactivityWarning)
+            // TODO: ignore INST_ADM ?
             if (lastWarning.isBefore(now.minusMonths(FLAG_EXPIRED_AFTER_ANOTHER_MONTHS))) {
                 usr.accountExpired = true
                 usr.save()

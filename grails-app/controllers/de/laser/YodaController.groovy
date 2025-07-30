@@ -106,9 +106,6 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-        // TODO - remove - test only
-        //BeanStore.getUserAccountService().expireUserAccounts()
-        //BeanStore.getUserAccountService().warnInactiveUserAccounts()
         result
     }
 

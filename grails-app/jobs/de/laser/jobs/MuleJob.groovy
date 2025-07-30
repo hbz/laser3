@@ -55,8 +55,9 @@ class MuleJob extends AbstractJob {
                 wekbNewsService.clearCache()
             }
             if (timeCheck_0645) {
-                userAccountService.expireUserAccounts()
-                userAccountService.warnInactiveUserAccounts()
+                // TODO:
+//                userAccountService.expireUserAccounts()
+//                userAccountService.warnInactiveUserAccounts()
 
                 systemService.sendSystemInsightMails()
             }
