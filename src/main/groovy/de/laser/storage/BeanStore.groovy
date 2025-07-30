@@ -28,6 +28,7 @@ import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.SystemService
+import de.laser.UserAccountService
 import de.laser.UserService
 import de.laser.VendorService
 import de.laser.WekbNewsService
@@ -335,6 +336,9 @@ class BeanStore {
         Holders.grailsApplication.mainContext.getBean('systemService') as SystemService
     }
 
+    static UserAccountService getUserAccountService() {
+        Holders.grailsApplication.mainContext.getBean('userAccountService') as UserAccountService
+    }
     /**
      * @return the currently holding {@link UserService}
      */

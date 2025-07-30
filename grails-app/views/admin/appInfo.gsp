@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.FutureHelper; java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.CSS; de.laser.helper.FutureHelper; java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -12,7 +12,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr><th class="seven wide">Application</th><th class="nine wide"></th></tr>
         </thead>
@@ -28,7 +28,7 @@
         </tbody>
     </table>
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr><th class="seven wide">Build</th><th class="nine wide"></th></tr>
         </thead>
@@ -45,7 +45,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th class="four wide">Database</th>
@@ -106,7 +106,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
         </thead>
@@ -125,7 +125,7 @@
 
     <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th class="seven wide">FTControl / ES Index</th>
@@ -195,7 +195,7 @@
     <div class="ui fluid card">
         <div class="content">
 
-        <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
             <thead>
             <tr><th class="seven wide">Reporting</th><th class="nine wide"></th></tr>
             </thead>
@@ -232,7 +232,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
             <thead>
             <tr><th class="seven wide">We:kb-News</th><th class="nine wide"></th></tr>
             </thead>
@@ -248,7 +248,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr><th class="seven wide">STATS Sync Service</th><th class="nine wide"></th></tr>
         </thead>

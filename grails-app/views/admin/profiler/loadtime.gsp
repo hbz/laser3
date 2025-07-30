@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemProfiler; de.laser.Org" %>
+<%@ page import="de.laser.ui.CSS; de.laser.system.SystemProfiler; de.laser.Org" %>
 <laser:htmlStart message="menu.admin.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -34,7 +34,7 @@
 
 <div data-tab="first" class="ui bottom attached tab fluid card active">
     <div class="content">
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="heatTable">
             <thead>
             <tr>
                 <th>Url</th>
@@ -114,7 +114,7 @@
 
 <div data-tab="second" class="ui bottom attached tab fluid card">
     <div class="content">
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="globalTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -198,7 +198,7 @@
                 </div>
             </div>
         </div>
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>

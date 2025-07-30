@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
 <laser:htmlStart message="menu.yoda.systemThreads" />
 
     <ui:breadcrumbs>
@@ -26,7 +26,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
+    <table class="${CSS.ADMIN_HOVER_TABLE}" id="contextTable">
         <tbody>
             <g:each in="${threads}" var="thread">
                 <g:set var="thClass" value="${thread.getName().startsWith('I/O ') ? 'warning' : ''}" />

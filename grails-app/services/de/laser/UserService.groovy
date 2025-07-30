@@ -86,6 +86,10 @@ class UserService {
             if (params.status == 'expired') {
                 whereQuery.add( 'u.accountExpired = true' )
             }
+            else if (params.status == 'inactivityWarning') {
+                whereQuery.add( 'u.inactivityWarning != null' )
+//                whereQuery.add( 'u.inactivityWarning != null and u.accountExpired = false' )
+            }
             else if (params.status == 'locked') {
                 whereQuery.add( 'u.accountLocked = true' )
             }
