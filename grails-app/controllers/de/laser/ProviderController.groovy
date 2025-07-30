@@ -24,6 +24,7 @@ import de.laser.wekb.ProviderLink
 import de.laser.wekb.ProviderRole
 import de.laser.wekb.VendorLink
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
@@ -35,6 +36,7 @@ class ProviderController {
 
     AddressbookService addressbookService
     ContextService contextService
+    DeletionService deletionService
     ExportClickMeService exportClickMeService
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -336,6 +338,26 @@ class ProviderController {
                     [searchName: params.proposedProvider])
         }
         result
+    }
+
+    /**
+     * Call to delete the given provider
+     * @return the deletion view
+     */
+    @Secured(['ROLE_ADMIN'])
+    def delete() {
+        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
+
+        if (result.provider) {
+            if (params.process  && result.editable) {
+                result.delResult = deletionService.deleteProvider(result.provider, false)
+            }
+            else {
+                result.delResult = deletionService.deleteProvider(result.provider, DeletionService.DRY_RUN)
+            }
+        }
+
+        render view: 'delete', model: result
     }
 
     /**

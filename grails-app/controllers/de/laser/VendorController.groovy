@@ -37,6 +37,7 @@ class VendorController {
 
     AddressbookService addressbookService
     ContextService contextService
+    DeletionService deletionService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
     GenericOIDService genericOIDService
@@ -325,6 +326,26 @@ class VendorController {
                     [searchName: params.proposedVendor])
         }
         result
+    }
+
+    /**
+     * Call to delete the given library supplier
+     * @return the deletion view
+     */
+    @Secured(['ROLE_ADMIN'])
+    def delete() {
+        Map<String, Object> result = vendorService.getResultGenerics(params)
+
+        if (result.vendor) {
+            if (params.process  && result.editable) {
+                result.delResult = deletionService.deleteVendor(result.vendor, false)
+            }
+            else {
+                result.delResult = deletionService.deleteVendor(result.vendor, DeletionService.DRY_RUN)
+            }
+        }
+
+        render view: 'delete', model: result
     }
 
     /**

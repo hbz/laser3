@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6421    30.07.2025  dev     3.6         Andreas Feature     Anbieter / Library Supplier sind in LAS:eR löschbar, wenn sie nicht aus der we:kb stammen
+
 6638    29.07.2025  dev     3.6         Andreas Feature     Ausgabe des Anbieternamens bei der Plattform beim Export von Kundennummern
 
 6520    29.07.2025  dev     3.6         Andreas Feature     Abschalten der obsoleten Funktion "Merkmalsgruppen konfigurieren"

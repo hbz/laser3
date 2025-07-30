@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.dates.DashboardDueDate
@@ -29,10 +30,15 @@ import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
 import de.laser.convenience.Marker
 import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.Language
 import de.laser.wekb.Package
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
 import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import groovy.util.logging.Slf4j
@@ -805,6 +811,284 @@ class DeletionService {
                 }
                 catch (Exception e) {
                     log.error 'error while deleting org ' + org.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
+                    status.setRollbackOnly()
+                    result.status = RESULT_ERROR
+                }
+            }
+        }
+
+        result
+    }
+
+    /**
+     * Deletes the given provider; displays eventual attached objects which may cause conflicts
+     * @param provider the provider to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the provider
+     */
+    Map<String, Object> deleteProvider(Provider provider, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        // gathering references
+
+        List ids            = new ArrayList(provider.ids)
+
+        List provLinks      = new ArrayList(provider.links)
+
+        List altnames       = new ArrayList(provider.altnames)
+        List addresses      = new ArrayList(provider.addresses)
+        List prsLinks       = new ArrayList(provider.prsLinks)
+        List platforms      = new ArrayList(provider.platforms)
+        List docContexts    = new ArrayList(provider.documents)
+
+        List customProperties       = new ArrayList(provider.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(provider.propertySet.findAll { it.type.tenant != null })
+
+        List tasks              = Task.findAllByProvider(provider)
+        List workflows          = WfChecklist.findAllByProvider(provider)
+        List markers            = Marker.findAllByProv(provider)
+
+        List surveyInfos        = SurveyInfo.findAllByProvider(provider)
+
+        // collecting information
+
+        result.info = []
+
+        result.info << ['Identifikatoren', ids]
+
+        result.info << ['Lizenzen', provLinks.findAll { ProviderRole pr -> pr.subscription != null }.collect { ProviderRole pr -> pr.subscription }, FLAG_BLOCKER]
+        result.info << ['Verträge', provLinks.findAll { ProviderRole pr -> pr.license != null }.collect { ProviderRole pr -> pr.license }, FLAG_BLOCKER]
+
+        result.info << ['Alternativnamen', altnames]
+        result.info << ['Adressen', addresses]
+        result.info << ['Personen', prsLinks.collect { PersonRole pr -> pr.prs }, FLAG_BLOCKER]
+        result.info << ['Plattformen', platforms, FLAG_BLOCKER]
+        result.info << ['Dokumente (dc)', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
+
+        result.info << ['Allgemeine Merkmale', customProperties]
+        result.info << ['Private Merkmale', privateProperties]
+
+        result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
+        result.info << ['Workflows', workflows]
+        result.info << ['Marker', markers]
+
+        result.info << ['SurveyInfos', surveyInfos, FLAG_BLOCKER]
+
+        // checking constraints and/or processing
+
+        result.deletable = true
+
+        //int count = 0
+        //int constraint = 0
+
+        result.info.each { it ->
+            //count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result.status = RESULT_SUBSTITUTE_NEEDED
+            }
+
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                result.deletable = false
+            }
+        }
+
+        if (dryRun || ! result.deletable) {
+            return result
+        }
+        else {
+            Provider.withTransaction { status ->
+
+                try {
+                    // TODO delete routine
+                    // TODO delete routine
+                    // TODO delete routine
+
+                    // identifiers
+                    provider.ids.clear()
+                    ids.each{ tmp -> tmp.delete() }
+
+                    // alternative names
+                    provider.altnames.clear()
+                    altnames.each{ tmp -> tmp.delete() }
+
+                    // addresses
+                    provider.addresses.clear()
+                    addresses.each{ tmp -> tmp.delete() }
+
+                    // private properties
+                    provider.propertySet.clear()
+                    privateProperties.each { tmp ->
+                        tmp.delete()
+                    }
+
+                    // custom properties
+                    customProperties.each { tmp -> // incomprehensible fix // ??
+                        tmp.owner = null
+                        tmp.save()
+                    }
+                    customProperties.each { tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
+
+                    provider.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(provider)
+                    }
+                    status.flush()
+
+                    result.status = RESULT_SUCCESS
+                }
+                catch (Exception e) {
+                    log.error 'error while deleting provider ' + provider.id + ' .. rollback: ' + e.message
+                    e.printStackTrace()
+                    status.setRollbackOnly()
+                    result.status = RESULT_ERROR
+                }
+            }
+        }
+
+        result
+    }
+
+    /**
+     * Deletes the given library supplier; displays eventual attached objects which may cause conflicts
+     * @param vendor the library supplier to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the library supplier
+     */
+    Map<String, Object> deleteVendor(Vendor vendor, boolean dryRun) {
+
+        Map<String, Object> result = [:]
+
+        // gathering references
+
+        List ids            = new ArrayList(vendor.ids)
+
+        List venLinks       = new ArrayList(vendor.links)
+
+        List altnames       = new ArrayList(vendor.altnames)
+        List addresses      = new ArrayList(vendor.addresses)
+        List prsLinks       = new ArrayList(vendor.prsLinks)
+        List docContexts    = new ArrayList(vendor.documents)
+
+        List customProperties       = new ArrayList(vendor.propertySet.findAll { it.type.tenant == null })
+        List privateProperties      = new ArrayList(vendor.propertySet.findAll { it.type.tenant != null })
+
+        List tasks              = Task.findAllByVendor(vendor)
+        List workflows          = WfChecklist.findAllByVendor(vendor)
+        List markers            = Marker.findAllByVen(vendor)
+
+        List invoicingVendors           = InvoicingVendor.findAllByVendor(vendor)
+        List surveyVendorResults        = SurveyVendorResult.findAllByVendor(vendor)
+        List surveyConfigVendors        = SurveyConfigVendor.findAllByVendor(vendor)
+
+        // collecting information
+
+        result.info = []
+
+        result.info << ['Identifikatoren', ids]
+
+        result.info << ['Lizenzen', venLinks.findAll { VendorRole vr -> vr.subscription != null }.collect { VendorRole vr -> vr.subscription }, FLAG_BLOCKER]
+        result.info << ['Verträge', venLinks.findAll { VendorRole vr -> vr.license != null }.collect { VendorRole vr -> vr.license }, FLAG_BLOCKER]
+
+        result.info << ['Alternativnamen', altnames]
+        result.info << ['Adressen', addresses]
+        result.info << ['Personen', prsLinks.collect { PersonRole pr -> pr.prs }, FLAG_BLOCKER]
+        result.info << ['Dokumente (dc)', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
+
+        result.info << ['Allgemeine Merkmale', customProperties]
+        result.info << ['Private Merkmale', privateProperties]
+
+        result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
+        result.info << ['Workflows', workflows]
+        result.info << ['Marker', markers]
+
+        result.info << ['InvoicingVendors', invoicingVendors, FLAG_BLOCKER]
+        result.info << ['Umfrage (Ergebnis)', surveyVendorResults, FLAG_BLOCKER]
+        result.info << ['Umfrage (Library Supplier)', surveyConfigVendors, FLAG_BLOCKER]
+
+        // checking constraints and/or processing
+
+        result.deletable = true
+
+        //int count = 0
+        //int constraint = 0
+
+        result.info.each { it ->
+            //count += it.get(1).size()
+
+            if (it.size() > 2 && ! it.get(1).isEmpty() && it.get(2) == FLAG_SUBSTITUTE) {
+                result.status = RESULT_SUBSTITUTE_NEEDED
+            }
+
+            if (! it.get(1).isEmpty() && it.size() == 3 && it.get(2) == FLAG_BLOCKER) {
+                result.status = RESULT_BLOCKED
+                result.deletable = false
+            }
+        }
+
+        if (dryRun || ! result.deletable) {
+            return result
+        }
+        else {
+            Vendor.withTransaction { status ->
+
+                try {
+                    // TODO delete routine
+                    // TODO delete routine
+                    // TODO delete routine
+
+                    // identifiers
+                    vendor.ids.clear()
+                    ids.each{ tmp -> tmp.delete() }
+
+                    // alternative names
+                    vendor.altnames.clear()
+                    altnames.each{ tmp -> tmp.delete() }
+
+                    // addresses
+                    vendor.addresses.clear()
+                    addresses.each{ tmp -> tmp.delete() }
+
+                    // private properties
+                    vendor.propertySet.clear()
+                    privateProperties.each { tmp ->
+                        tmp.delete()
+                    }
+
+                    // custom properties
+                    customProperties.each { tmp -> // incomprehensible fix // ??
+                        tmp.owner = null
+                        tmp.save()
+                    }
+                    customProperties.each { tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
+
+                    vendor.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(vendor)
+                    }
+                    status.flush()
+
+                    result.status = RESULT_SUCCESS
+                }
+                catch (Exception e) {
+                    log.error 'error while deleting provider ' + vendor.id + ' .. rollback: ' + e.message
                     e.printStackTrace()
                     status.setRollbackOnly()
                     result.status = RESULT_ERROR
