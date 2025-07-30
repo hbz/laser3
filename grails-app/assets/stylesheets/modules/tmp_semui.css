@@ -187,6 +187,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
 /* la-hover-table */
 
 .ui.table.la-hover-table tr.la-active {
+    background-color: #fffaf3;
     outline: 1px solid #175784;
     outline-offset: -1px;
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
@@ -37,7 +37,7 @@
                 </div>
                 <div class="content">
 
-                    <table class="ui celled la-js-responsive-table la-table compact table">
+                    <table class="${CSS.ADMIN_TABLE}">
                         <thead>
                         <tr>
                             <th>Kategorie (Schlüssel)</th>
