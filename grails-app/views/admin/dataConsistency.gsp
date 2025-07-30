@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
 <ui:breadcrumbs>
@@ -18,7 +18,7 @@
 
                 <h3 class="ui header" id="jumpMark_2_${obj.key}">${obj.key}</h3>
 
-                <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
+                <table class="${CSS.ADMIN_HOVER_TABLE}">
                     <thead>
                     <tr>
                         <th>Attribut</th>

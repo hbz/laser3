@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 <g:set var="entityName" value="${message(code: 'menu.yoda.mailAysnc.list')}" />
 <laser:htmlStart text="${message(code:"default.list.label", args:[entityName])}" />
 <ui:breadcrumbs>
@@ -53,7 +53,7 @@
                 <g:sortableColumn property="to" title="To"  params="${params}" />
                 <g:sortableColumn property="createDate" title="Create Date"  params="${params}" />
                 <g:sortableColumn property="status" title="Status"  params="${params}" />
-                <th>Actions</th>
+                <th class="center aligned"><i class="${Icon.SYM.OPTIONS}"></i></th>
             </tr>
             </thead>
             <tbody>
@@ -64,16 +64,12 @@
                     <td><g:render template="listAddr" bean="${message.to}"/></td>
                     <td><g:formatDate date="${message.createDate}" format="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>${fieldValue(bean: message, field: 'status')}</td>
-                    <td>
-                        <a class="${Btn.SIMPLE}" href="mailto:?body=${message.text?.encodeAsHTML()}"><g:message code="default.show.label" args="['Mail']"/></a>
+                    <td class="center aligned">
+                        <a class="${Btn.ICON.SIMPLE}" href="mailto:?body=${message.text?.encodeAsHTML()}"><i class="${Icon.CMD.READ}"></i></a>
                         <g:if test="${message.abortable}">
-                            <g:link class="${Btn.SIMPLE}" action="abort" id="${message.id}"
-                                    onclick="return confirm('Are you sure?');">abort</g:link>
+                            <g:link class="${Btn.ICON.SECONDARY}" action="abort" id="${message.id}" onclick="return confirm('Abort?');"><i class="${Icon.SYM.NO}"></i></g:link>
                         </g:if>
-                        <br>
-                        <br>
-                        <g:link class="${Btn.SIMPLE}" action="delete" id="${message.id}"
-                                onclick="return confirm('Are you sure?');">Delete</g:link>
+                        <g:link class="${Btn.ICON.NEGATIVE}" action="delete" id="${message.id}" onclick="return confirm('Delete Mail?');"><i class="${Icon.CMD.DELETE}"></i></g:link>
                     </td>
                 </tr>
             </g:each>

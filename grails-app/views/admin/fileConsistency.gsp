@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.fileConsistency" />
 
@@ -15,7 +15,7 @@
         <div class="header"><i class="hdd icon"></i> Dateien </div>
     </div>
     <div class="content">
-        <table class="ui table compact la-table">
+        <table class="${CSS.ADMIN_TABLE}">
             <thead>
                 <tr>
                     <th>${message(code:'default.description.label')}</th>
@@ -49,7 +49,7 @@
         <div class="header"><icon:database /> Objekte: Doc </div>
     </div>
     <div class="content">
-        <table class="ui table compact la-table">
+        <table class="${CSS.ADMIN_TABLE}">
             <thead>
                 <tr>
                     <th>${message(code:'default.description.label')}</th>
@@ -105,7 +105,7 @@
         <div class="header"><icon:database /> Objekte: DocContext </div>
     </div>
     <div class="content">
-        <table class="ui table compact la-table">
+        <table class="${CSS.ADMIN_TABLE}">
             <thead>
             <tr>
                 <th>${message(code:'default.description.label')}</th>

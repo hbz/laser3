@@ -97,17 +97,18 @@ class UserController {
         result.filterConfig = [
                 filterableRoles: Role.findAllByRoleTypeInList(['user']),
                 filterableStatus: [
-                    locked:   "${message(code:'user.accountLocked.label')}",
-                    expired:  "${message(code:'user.accountExpired.label')}",
-                    disabled: "${message(code:'user.accountDisabled.label')}",
-                    enabled:  "${message(code:'user.accountEnabled.label')}"
+                        enabled:        "${message(code:'user.accountEnabled.label')}",
+                        disabled:       "${message(code:'user.accountDisabled.label')}",
+                        locked:         "${message(code:'user.accountLocked.label')}",
+                        expired:        "${message(code:'user.accountExpired.label')}",
+                        inactivityWarning: "${message(code:'user.inactivityWarning.label')}"
                 ],
                 orgField: true,
                 availableComboOrgs: availableComboOrgs
         ]
 
         result.tmplConfig = [
-                editable:result.editable,
+                editable: result.editable,
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,

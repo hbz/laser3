@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
@@ -89,7 +89,7 @@
 
             <div class="ui fluid card">
                 <div class="content">
-                    <table class="ui striped very compact table">
+                    <table class="${CSS.ADMIN_HOVER_TABLE}">
                         <thead>
                             <tr>
                                 <th><g:message code="identifierNamespace.detailsStats" args="${[identifierNamespaceInstance.ns]}" /></th>
@@ -116,7 +116,7 @@
 
                     <div class="ui fluid card">
                         <div class="content">
-                            <table class="ui striped very compact table">
+                            <table class="${CSS.ADMIN_HOVER_TABLE}">
                                 <thead>
                                     <tr>
                                         <th colspan="6"><icon:arrow /> ${list.key}</th>
@@ -149,7 +149,7 @@
 
         </g:if>
         <g:else>
-                <table class="ui celled la-js-responsive-table la-table compact table">
+                <table class="${CSS.ADMIN_TABLE}">
                     <thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>

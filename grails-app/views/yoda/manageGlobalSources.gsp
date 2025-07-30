@@ -1,4 +1,4 @@
-<%@page import="de.laser.GlobalSourceSyncService; de.laser.config.ConfigMapper" %>
+<%@page import="de.laser.ui.CSS; de.laser.GlobalSourceSyncService; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.yoda.manageGlobalSources" />
 
@@ -14,7 +14,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-      <table class="ui celled la-js-responsive-table la-table table">
+      <table class="${CSS.ADMIN_TABLE}">
         <thead>
           <tr>
             <th>${message(code:'sidewide.number')}</th>

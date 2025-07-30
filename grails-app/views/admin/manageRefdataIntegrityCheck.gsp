@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.CSS" %>
 <laser:htmlStart message="default.integrityCheck.label" />
 
     <ui:breadcrumbs>
@@ -10,7 +11,7 @@
 
     <ui:messages data="${flash}" />
 
-    <table class="ui table la-js-responsive-table la-table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
         <tr>
             <th>Class.Field</th>
