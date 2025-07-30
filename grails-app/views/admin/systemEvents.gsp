@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemEvent;" %>
+<%@ page import="de.laser.ui.CSS; de.laser.system.SystemEvent;" %>
 
 <laser:htmlStart message="menu.admin.systemEvents" />
 
@@ -81,7 +81,7 @@
         </laser:script>
     </ui:filter>
 
-    <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
         <tr>
             <th scope="col" class="two wide">${message(code:'default.date.label')}</th>

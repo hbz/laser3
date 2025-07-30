@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; de.laser.ui.Btn; de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
 
 <laser:htmlStart message="menu.admin.databaseIndices" />
 
@@ -125,7 +125,7 @@
     $('table').removeClass('hidden')
 </laser:script>
 
-<table class="ui la-hover-table very compact table hidden" id="table">
+<table class="${CSS.ADMIN_HOVER_TABLE} hidden" id="table">
         <thead>
             <tr>
                 <th class="center aligned">#</th>

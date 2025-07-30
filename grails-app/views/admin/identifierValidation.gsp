@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.IdentifierNamespace" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; de.laser.IdentifierNamespace" %>
 <laser:htmlStart message="menu.admin.identifierValidation" />
 
 <ui:breadcrumbs>
@@ -11,7 +11,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-        <table class="ui la-table compact table">
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
             <thead>
             <tr>
                 <th><g:message code="identifierNamespace.ns.label"/></th>

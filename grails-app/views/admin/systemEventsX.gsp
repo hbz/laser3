@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.system.SystemEvent;" %>
+<%@ page import="de.laser.ui.CSS; de.laser.utils.DateUtils; de.laser.system.SystemEvent;" %>
 
 <laser:htmlStart message="menu.admin.systemEvents">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -23,7 +23,7 @@
 <br />
 <br />
 
-<table class="ui celled la-js-responsive-table la-table table very compact">
+<table class="${CSS.ADMIN_HOVER_TABLE}">
     <thead>
         <tr>
             <th class="one wide">Datum</th>

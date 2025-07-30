@@ -1,4 +1,4 @@
-<%@page import="grails.converters.JSON; de.laser.RefdataValue; de.laser.storage.RDConstants" %>
+<%@page import="de.laser.ui.CSS; grails.converters.JSON; de.laser.RefdataValue; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="Manage Stats Sources" />
 
@@ -11,7 +11,7 @@
 
         <ui:messages data="${flash}" />
 
-        <table class="ui celled la-js-responsive-table la-table table">
+        <table class="${CSS.ADMIN_TABLE}">
             <thead>
                 <tr>
                     <th>#</th>

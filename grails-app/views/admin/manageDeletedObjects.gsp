@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.CSS" %>
 <laser:htmlStart message="menu.admin.deletedObjects" />
 
 <ui:breadcrumbs>
@@ -10,7 +11,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-        <table class="ui la-table compact table">
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
             <thead>
                 <tr>
                     <th>Objekt</th>

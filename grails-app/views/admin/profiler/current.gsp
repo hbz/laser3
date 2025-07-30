@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
+<%@ page import="de.laser.ui.CSS; de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
 <laser:htmlStart message="menu.admin.profilerCurrent">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -14,7 +14,7 @@
 
     <div class="ui fluid card">
         <div class="content">
-            <table class="ui table compact simple">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <tbody>
                 <g:each in="${users}" var="u">
                     <tr>
