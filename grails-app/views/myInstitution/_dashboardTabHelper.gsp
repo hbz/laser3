@@ -27,14 +27,27 @@
 
 </g:elseif>
 
-<g:elseif test="${tmplKey == 'SURVEYS'}">
+<g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY}">
 
     <ui:msg class="info" hideClose="true">%{-- copied from myInstitution/_surveys.gsp --}%
+        <g:set var="proLink"   value="${ g.createLink(controller:'survey', action:'workflowsSurveysConsortia', params:[tab:'active']) }" />
+        <g:set var="basicLink" value="${ g.createLink(controller:'myInstitution', action:'currentSurveys', params:[tab:'active']) }" />
+
         <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
-            <g:message code="dashboard.tabTime.surveys" args="${[g.createLink(controller:'survey', action:'workflowsSurveysConsortia', params:[tab:'active'])]}" />
+            <g:if test="${surveysCount > surveys.size()}">
+                ${message(code:'survey.dashboard.msg.more', args:[g.createLink(controller:'profile', action:'index'), proLink])}
+            </g:if>
+            <g:else>
+                <g:message code="dashboard.tabTime.surveys" args="${[proLink]}" />
+            </g:else>
         </g:if>
         <g:else>
-            <g:message code="dashboard.tabTime.surveys" args="${[g.createLink(controller:'myInstitution', action:'currentSurveys', params:[tab:'active'])]}" />
+            <g:if test="${surveysCount > surveys.size()}">
+                ${message(code:'survey.dashboard.msg.more', args:[g.createLink(controller:'profile', action:'index'), basicLink])}
+            </g:if>
+            <g:else>
+                <g:message code="dashboard.tabTime.surveys" args="${[basicLink]}" />
+            </g:else>
         </g:else>
     </ui:msg>
 

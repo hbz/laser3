@@ -1,9 +1,9 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
+<%@ page import="de.laser.UserSetting; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
 
-<div>
-    <g:each in="${surveys}" var="survey" status="i">
+    <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY]}" />
 
+    <g:each in="${surveys}" var="survey" status="i">
         <g:set var="surveyConfig" value="${SurveyConfig.get(survey.key)}"/>
         <g:set var="surveyInfo" value="${surveyConfig.surveyInfo}"/>
 
@@ -13,19 +13,19 @@
                 <div class="header">
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <g:link controller="survey" action="show" params="[surveyConfigID: surveyConfig.id]"
-                                id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}
+                                id="${surveyInfo.id}">${i+1}: ${surveyConfig.getSurveyName()}
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="myInstitution" action="surveyInfos" params="[surveyConfigID: surveyConfig.id]"
-                                              id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}</g:link>
+                                              id="${surveyInfo.id}">${i+1}: ${surveyConfig.getSurveyName()}</g:link>
                     </g:else>
 
                     <g:if test="${surveyInfo.isMandatory}">
                         &nbsp;
                         <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} orange"></i>
                         </span>
                     </g:if>
                 </div>
@@ -92,10 +92,9 @@
 
     </g:each>
 
-    <ui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getPageSizeOrDefault()}" params="${[view:'Surveys']}" total="${countSurvey}"/>
+%{--    <ui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getPageSizeOrDefault()}" params="${[view:'Surveys']}" total="${surveysCount}"/>--}%
 
-</div>
 <laser:script file="${this.getGroovyPageFileName()}">
-%{--    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [countSurvey])}")--}%
-    $("#surveyCount").text("${countSurvey}")
+%{--    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [surveysCount])}")--}%
+    $("#surveyCount").text("${surveys.size()}${surveysCount > surveys.size() ? '+' : ''}")
 </laser:script>

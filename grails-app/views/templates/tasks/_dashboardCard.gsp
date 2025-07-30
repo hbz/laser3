@@ -12,7 +12,7 @@
     <div class="content">
         <div class="meta">
             <div class="">
-                Fällig:
+                Fällig am
                 <g:if test="${SqlDateUtils.isBeforeToday(tsk.endDate)}">
                     <strong style="color:#bb1600"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
                 </g:if>

@@ -32,9 +32,10 @@ class UserSetting {
         DASHBOARD_TAB_TIME_CHANGES                  (Integer),
 //        DASHBOARD_TAB_TIME_DUEDATES                 (Integer),
         DASHBOARD_TAB_TIME_SERVICE_MESSAGES         (Integer),
-//        DASHBOARD_TAB_TIME_SURVEYS                  (Integer),
+        DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY   (RefdataValue, RDConstants.Y_N),
         DASHBOARD_TAB_TIME_TASKS                    (Integer),
         DASHBOARD_TAB_TIME_WORKFLOWS                (Integer),
+
         DASHBOARD_SHOW_TOPMENU                      (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CHARTS                       (RefdataValue, RDConstants.Y_N),
         DASHBOARD_SHOW_CURRENT_TEST_SUBSCRIPTIONS   (RefdataValue, RDConstants.Y_N),
