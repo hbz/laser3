@@ -1,6 +1,7 @@
 package de.laser.jobs
 
 import de.laser.SystemService
+import de.laser.UserAccountService
 import de.laser.WekbNewsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
@@ -16,6 +17,7 @@ import java.time.LocalTime
 class MuleJob extends AbstractJob {
 
     SystemService systemService
+    UserAccountService userAccountService
     WekbNewsService wekbNewsService
 
     static triggers = {
@@ -45,7 +47,7 @@ class MuleJob extends AbstractJob {
             return false
         }
         try {
-            systemService.unlockLockedUserAccounts()
+            userAccountService.unlockLockedUserAccounts()
 
 //            if (timeCheck_hourly)) {
 //            }
@@ -53,8 +55,8 @@ class MuleJob extends AbstractJob {
                 wekbNewsService.clearCache()
             }
             if (timeCheck_0645) {
-                systemService.expireUserAccounts()
-                systemService.warnExpiringUserAccounts()
+                userAccountService.expireUserAccounts()
+                userAccountService.warnInactiveUserAccounts()
 
                 systemService.sendSystemInsightMails()
             }

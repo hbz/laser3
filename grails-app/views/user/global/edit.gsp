@@ -126,8 +126,8 @@
                                     <ui:xEditableBoolean owner="${user}" field="accountExpired" overwriteEditable="false"/>
                                 </div>
                                 <div class="ui field">
-                                    <label>${message(code:'user.accountExpiredWarning.label')}</label>
-                                    <p>${user.accountExpiredWarning ? DateUtils.getLocalizedSDF_noZ().format(user.accountExpiredWarning) : '-'}</p>
+                                    <label>${message(code:'user.inactivityWarning.label')}</label>
+                                    <p>${user.inactivityWarning ? DateUtils.getLocalizedSDF_noZ().format(user.inactivityWarning) : '-'}</p>
                                 </div>
                                 <div class="ui field">
                                     <label>${message(code:'user.lastLogin.label')}</label>

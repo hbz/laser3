@@ -55,8 +55,8 @@
                                 <i class="exclamation triangle icon red"></i>
                             </span>
                         </g:if>
-                        <g:elseif test="${us.accountExpiredWarning}">
-                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.accountExpiredWarning.label')}">
+                        <g:elseif test="${us.inactivityWarning}">
+                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.inactivityWarning.label')}">
                                 <i class="circle info icon yellow"></i>
                             </span>
                         </g:elseif>

@@ -1392,7 +1392,7 @@ class OrganisationController  {
                 usr.save()
                 disabledAccounts.add([usr.id, usr.username])
             }
-            SystemEvent.createEvent('SYSTEM_UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
+            SystemEvent.createEvent('UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
         }
         redirect action:'users', id:params.id, params:[disabledAccounts: disabledAccounts]
     }

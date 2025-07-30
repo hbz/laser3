@@ -101,7 +101,7 @@ class UserController {
                         disabled:       "${message(code:'user.accountDisabled.label')}",
                         locked:         "${message(code:'user.accountLocked.label')}",
                         expired:        "${message(code:'user.accountExpired.label')}",
-                        expiredWarning: "${message(code:'user.accountExpiredWarning.label')}"
+                        inactivityWarning: "${message(code:'user.inactivityWarning.label')}"
                 ],
                 orgField: true,
                 availableComboOrgs: availableComboOrgs
