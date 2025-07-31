@@ -3,7 +3,7 @@
 
     <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY]}" />
 
-<div class="ui two cards">
+<div class="">
 
     <g:each in="${surveys}" var="survey" status="i">
         <g:set var="surveyConfig" value="${SurveyConfig.get(survey.key)}"/>
