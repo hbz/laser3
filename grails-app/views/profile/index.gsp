@@ -524,10 +524,11 @@
                                 <label>${message(code: 'profile.dashboard.tabTime.changes')}</label>
                                 <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}" field="strValue" />
                             </div>
-%{--                            <div class="field">--}%
-%{--                                <label>${message(code: 'profile.dashboard.tabTime.surveys')}</label>--}%
-%{--                                <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_SURVEYS, 14)}" field="strValue" />--}%
-%{--                            </div>--}%
+                            <div class="field">
+                                <label>${message(code: 'profile.dashboard.tabTime.surveys')}</label>
+                                <g:set var="DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY" value="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY, RDStore.YN_NO)}" />
+                                <ui:xEditableRefData owner="${DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY}" field="rdValue" config="${DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY.key.rdc}" validation="notEmpty"/>
+                            </div>
                             <div class="field">
                                 <label>${message(code: 'profile.dashboard.tabTime.tasks')}</label>
                                 <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_TAB_TIME_TASKS, 30)}" field="strValue" />

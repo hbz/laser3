@@ -146,9 +146,6 @@
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <div class="ui bottom attached segment tab ${currentTab == 'Surveys' ? 'active' : ''}" data-tab="surveys">
-
-                <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: 'SURVEYS']}" />
-
                 <div id="surveyWrapper"><%--<laser:render template="surveys"/>--%></div>
             </div>
         </g:if>

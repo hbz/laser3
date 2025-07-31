@@ -94,24 +94,6 @@
                             <ui:cardLabelAdminOnly />
 
                             <div class="ui form">
-%{--                                <div class="ui field">--}%
-%{--                                    <label>--}%
-%{--                                        ${message(code:'user.enabled.label')}--}%
-%{--                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.disabled')}">--}%
-%{--                                            <i class="${Icon.TOOLTIP.HELP}"></i>--}%
-%{--                                        </span>--}%
-%{--                                    </label>--}%
-%{--                                    <ui:xEditableBoolean owner="${user}" field="enabled" overwriteEditable="true"/>--}%
-%{--                                </div>--}%
-                                <div class="ui field">
-                                    <label>
-                                        ${message(code:'user.accountExpired.label')}
-                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'user.loginBlocked.label')}: ${message(code:'springSecurity.errors.login.expired')}">
-                                            <i class="${Icon.TOOLTIP.HELP}"></i>
-                                        </span>
-                                    </label>
-                                    <cc:boogle owner="${user}" field="accountExpired" overwriteEditable="true"/>
-                                </div>
                                 <div class="ui field">
                                     <label>
                                         ${message(code:'user.accountLocked.label')}

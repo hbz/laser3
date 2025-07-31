@@ -219,24 +219,31 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
+//        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        List activeSurveyConfigs = SurveyConfig.executeQuery(
+                "from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig" +
+                " AND surOrg.org = :org and surOrg.finishDate is null" +
+                " AND surConfig.surveyInfo.status = :status) " +
                 " order by surConfig.surveyInfo.endDate",
-                [org: contextService.getOrg(),
-                 status: RDStore.SURVEY_SURVEY_STARTED])
+                [org: contextService.getOrg(), status: RDStore.SURVEY_SURVEY_STARTED])
 
         if (contextService.getOrg().isCustomerType_Consortium_Pro()){
-            activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
+            activeSurveyConfigs = SurveyConfig.executeQuery(
+                    "from SurveyConfig surConfig where surConfig.surveyInfo.status = :status and surConfig.surveyInfo.owner = :org" +
                     " order by surConfig.surveyInfo.endDate",
-                    [org: contextService.getOrg(),
-                     status: RDStore.SURVEY_SURVEY_STARTED])
+                    [org: contextService.getOrg(), status: RDStore.SURVEY_SURVEY_STARTED])
         }
 
-        result.surveys = activeSurveyConfigs.groupBy {it?.id}
-        result.countSurvey = result.surveys.size()
-        result.surveys = result.surveys.drop((int) result.offset).take((int) result.max)
-
-        result.surveysOffset = result.offset
+        if (result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY, RDStore.YN_NO) == RDStore.YN_YES) {
+            result.surveysCount = activeSurveyConfigs.groupBy{ it?.id }.size()
+            result.surveys      = activeSurveyConfigs.findAll{ it?.surveyInfo?.isMandatory == true }.groupBy{ it?.id }
+        }
+        else {
+            result.surveys      = activeSurveyConfigs.groupBy{ it?.id }
+            result.surveysCount = result.surveys.size()
+        }
+//        result.surveys = result.surveys.drop((int) result.offset).take((int) result.max)
+//        result.surveysOffset = result.offset
 
         render template: '/myInstitution/surveys', model: result
     }
