@@ -3,9 +3,19 @@
 
 <g:if test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES}">
 
+    <g:set var="tabTimeChanges" value="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}" />
     <ui:msg class="info" hideClose="true">
-        <g:message code="dashboard.tabTime.changes" args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, 14)}"  />
+        <g:if test="${pendingCount > pending.size()}">
+            ${message(code:'changes.dashboard.msg.more', args:[
+                    g.createLink(controller:'profile', action:'index'),
+                    tabTimeChanges
+            ])}
+        </g:if>
+        <g:else>
+            <g:message code="dashboard.tabTime.changes" args="${tabTimeChanges}" />
+        </g:else>
     </ui:msg>
+
 </g:if>
 
 <g:elseif test="${tmplKey == 'DUEDATES'}">
@@ -29,10 +39,10 @@
 
 <g:elseif test="${tmplKey == UserSetting.KEYS.DASHBOARD_TAB_TIME_SURVEYS_MANDATORY_ONLY}">
 
-    <ui:msg class="info" hideClose="true">%{-- copied from myInstitution/_surveys.gsp --}%
-        <g:set var="proLink"   value="${ g.createLink(controller:'survey', action:'workflowsSurveysConsortia', params:[tab:'active']) }" />
-        <g:set var="basicLink" value="${ g.createLink(controller:'myInstitution', action:'currentSurveys', params:[tab:'active']) }" />
+    <g:set var="proLink"   value="${ g.createLink(controller:'survey', action:'workflowsSurveysConsortia', params:[tab:'active']) }" />
+    <g:set var="basicLink" value="${ g.createLink(controller:'myInstitution', action:'currentSurveys', params:[tab:'active']) }" />
 
+    <ui:msg class="info" hideClose="true">%{-- copied from myInstitution/_surveys.gsp --}%
         <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
             <g:if test="${surveysCount > surveys.size()}">
                 ${message(code:'survey.dashboard.msg.more', args:[g.createLink(controller:'profile', action:'index'), proLink])}

@@ -89,7 +89,11 @@ class PendingChangeService extends AbstractLockableService {
             packagesWithNotification.put(sp, values)
         }
         */
-        Set<Map> pending = [], notifications = []
+        Set<Map> pending = []
+        Set<Map> notifications = []
+        int pendingCount = 0
+        int notificationsCount = 0
+
         /*Map<Subscription, Set<Map>> pending = [:], notifications = [:]
         Set<RefdataValue> processed = [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED]
         packagesWithPending.each { SubscriptionPackage sp, Set<String> keys ->
@@ -262,12 +266,14 @@ class PendingChangeService extends AbstractLockableService {
                             //notifications.put(pc.costItem.sub, changes)
                             notifications << change
                         }
+                        notificationsCount++
                     }
                     else if(pc.status == RDStore.PENDING_CHANGE_PENDING) {
                         if(pc.actionDate >= time || pc.ts >= time) {
                             //pending.put(pc.costItem.sub, changes)
                             pending << change
                         }
+                        pendingCount++
                     }
                 //}
             }
@@ -294,12 +300,14 @@ class PendingChangeService extends AbstractLockableService {
                                 //notifications.put(previous, changes)
                                 notifications << change
                             }
+                            notificationsCount++
                         }
                         else if(pc.status == RDStore.PENDING_CHANGE_PENDING) {
                             if(pc.actionDate >= time || pc.ts >= time) {
                                 //pending.put(previous, changes)
                                 pending << change
                             }
+                            pendingCount++
                         }
                     //}
                 }
@@ -343,10 +351,10 @@ class PendingChangeService extends AbstractLockableService {
         */
         //log.debug(pending.toMapString())
         //log.debug(notifications.toMapString())
-        result.notifications = notifications.sort{ it._actionDate }.reverse() //.drop(configMap.acceptedOffset).take(configMap.max)
-        result.notificationsCount = notifications.size()
-        result.pending = pending.sort{ it._ts }.reverse() //.drop(configMap.pendingOffset).take(configMap.max)
-        result.pendingCount = pending.size()
+        result.notifications      = notifications.sort{ it._actionDate }.reverse() //.drop(configMap.acceptedOffset).take(configMap.max)
+        result.notificationsCount = notificationsCount
+        result.pending      = pending.sort{ it._ts }.reverse() //.drop(configMap.pendingOffset).take(configMap.max)
+        result.pendingCount = pendingCount
         result
     }
 
@@ -550,30 +558,6 @@ class PendingChangeService extends AbstractLockableService {
             additionalInfo = " - ${messageSource.getMessage('gasco.filter.consortialLicence', null, locale)}"
         }
         "${entry.get('sub_name')} - ${status.get(entry.get('sub_status_rv_fk'))} (${startDate} - ${endDate})${additionalInfo}"
-    }
-
-    /**
-     * Converts the given value according to the field type
-     * @param change the change whose property should be output
-     * @param key the string value
-     * @return the value as {@link Date} or {@link String}
-     * @deprecated not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
-     */
-    @Deprecated
-    def output(PendingChange change,String key) {
-        Locale locale = LocaleUtils.getCurrentLocale()
-        def ret
-        if(change.targetProperty in PendingChange.DATE_FIELDS) {
-            Date date = DateUtils.parseDateGeneric(change[key])
-            if(date)
-                ret = DateUtils.getLocalizedSDF_noTime().format(date)
-            else ret = null
-        }
-        else if(change.targetProperty in PendingChange.REFDATA_FIELDS) {
-            ret = RefdataValue.get(change[key])
-        }
-        else ret = change[key]
-        ret
     }
 
     /**

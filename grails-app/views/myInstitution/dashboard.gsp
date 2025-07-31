@@ -135,7 +135,7 @@
         <div class="ui bottom attached segment tab ${currentTab == 'Tasks' ? 'active':''}" data-tab="tasks">
             <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_TASKS]}" />
 
-            <div class="ui four columns cards">
+            <div class="ui four cards">
                 <g:each in="${tasks}" var="tsk">
                     <g:render template="/templates/tasks/dashboardCard" model="${[tsk: tsk]}" />
                 </g:each>

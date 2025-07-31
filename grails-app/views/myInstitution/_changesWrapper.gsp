@@ -4,8 +4,12 @@
 <g:render template="/myInstitution/dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_CHANGES, user: contextService.getUser()]}" />
 
 <nav id="pendingChangesSubmenu" class="ui secondary menu">
-    <a class="item active" href="#pendingChangesWrapper">${message(code:'myinst.menu.pendingChanges.label')} <ui:bubble count="${pending.size()}" /></a>
-    <a class="item" href="#acceptedChangesWrapper">${message(code:'myinst.menu.acceptedChanges.label')} <ui:bubble count="${notifications.size()}" /></a>
+    <a class="item active" href="#pendingChangesWrapper">
+        ${message(code:'myinst.menu.pendingChanges.label')} <ui:bubble count="${pending.size()}${pendingCount > pending.size() ? '+' : ''}" />
+    </a>
+    <a class="item" href="#acceptedChangesWrapper">
+        ${message(code:'myinst.menu.acceptedChanges.label')} <ui:bubble count="${notifications.size()}${notificationsCount > notifications.size() ? '+' : ''}" />
+    </a>
 </nav>
 
 <div id="pendingChangesWrapper">
@@ -231,7 +235,7 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $("#changesCount").text("${pendingCount}")
+    $("#changesCount").text("${pending.size()}${pendingCount > pending.size() ? '+' : ''}")
 
     $('#pendingChangesSubmenu .item').on('click', function(e) {
         e.preventDefault()
