@@ -96,7 +96,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     sort sortname: 'asc'
                       id column:'pkg_id'
                  version column:'pkg_version'
-               laserID   column:'pkg_laser_id'
+                 laserID column:'pkg_laser_id'
                     name column:'pkg_name'
                 sortname column:'pkg_sort_name'
                   gokbId column:'pkg_gokb_id'
