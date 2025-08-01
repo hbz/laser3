@@ -102,11 +102,11 @@
                         </td>
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
-                            <g:each in="${s.providers}" var="prov">
-                                <g:link controller="provider" action="show" id="${prov.id}" target="_blank">
-                                    ${fieldValue(bean: prov, field: "name")}
-                                    <g:if test="${prov.abbreviatedName}">
-                                        <br/> (${fieldValue(bean: prov, field: "abbreviatedName")})
+                            <g:each in="${s.providers}" var="provider">
+                                <g:link controller="provider" action="show" id="${provider.id}" target="_blank">
+                                    ${fieldValue(bean: provider, field: "name")}
+                                    <g:if test="${provider.abbreviatedName}">
+                                        <br/> (${fieldValue(bean: provider, field: "abbreviatedName")})
                                     </g:if>
                                 </g:link>
                                 <br/>

@@ -4,20 +4,19 @@
 
 <div class="ui card">
     <div class="ui label">
+        <g:if test="${SqlDateUtils.isBeforeToday(tsk.endDate)}">
+            <span class="sc_red"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></span>
+        </g:if>
+        <g:else>
+            <span class="sc_grey"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></span>
+        </g:else>
+
         <div class="right floated author">
             Status: <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" overwriteEditable="${overwriteEditable}" />
         </div>
     </div>
 
     <div class="content">
-        <div class="meta">
-            <g:if test="${SqlDateUtils.isBeforeToday(tsk.endDate)}">
-                <strong class="sc_red">Fällig am <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
-            </g:if>
-            <g:else>
-                <strong class="sc_grey">Fällig am <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
-            </g:else>
-        </div>
         <g:if test="${overwriteEditable}">
             <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk.id});">${tsk.title}</a>
         </g:if>
@@ -27,7 +26,7 @@
 
         <div class="description">
             <g:if test="${tsk.description}">
-                <span><em>${tsk.description}</em></span> <br />
+                <em>${tsk.description}</em>
             </g:if>
         </div>
     </div>

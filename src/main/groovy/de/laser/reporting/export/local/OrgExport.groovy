@@ -29,7 +29,7 @@ class OrgExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+                                    'laserID'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'customerType'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'libraryType'       : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -45,20 +45,20 @@ class OrgExport extends BaseDetailsExport {
                                     '@-org-readerNumber': [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'subjectGroup'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
-                            provider: [
-                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
-                            ],
-                            agency: [
-                                    'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
-                            ]
+//                            provider: [
+//                                    'laserID'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+//                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+//                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+//                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+//                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
+//                            ],
+//                            agency: [
+//                                    'laserID'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
+//                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+//                                    'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+//                                    '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+//                                    'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
+//                            ]
                     ]
             ]
     ]

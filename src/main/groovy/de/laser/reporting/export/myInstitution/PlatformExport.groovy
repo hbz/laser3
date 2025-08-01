@@ -32,7 +32,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'provider+sortname+name'        : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/provider+sortname+name' // todo, sortname => abbreviatedName
+                                    'provider+abbreviatedName+name'        : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/provider+abbreviatedName+name' // todo, sortname => abbreviatedName
                                     'primaryUrl'                    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'serviceProvider'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'softwareProvider'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -215,7 +215,7 @@ class PlatformExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO
-            else if (key in ['provider+sortname', 'provider+name']) {
+            else if (key in ['provider+abbreviatedName', 'provider+name']) {
                 String prop = key.split('\\+')[1]
                 content.add( plt.provider?.getProperty(prop) ?: '' )
             }

@@ -41,8 +41,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-subscription-member+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     '@-subscription-prevNext'             : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-provider+sortname+name'            : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'x-vendor+sortname+name'              : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-provider+abbreviatedName+name'            : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+abbreviatedName+name'              : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'hasPerpetualAccess'    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -70,8 +70,8 @@ class SubscriptionExport extends BaseDetailsExport {
                                     'form'                  : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'resource'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-subscription-prevNext'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                                    'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-provider+abbreviatedName+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+abbreviatedName+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'hasPerpetualAccess'    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'hasPublishComponent'   : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'isPublicForApi'        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
@@ -213,7 +213,7 @@ class SubscriptionExport extends BaseDetailsExport {
                 content.add( members.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) )
             }
             // --> combined properties : TODO
-            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+            else if (key in ['x-provider+abbreviatedName', 'x-provider+name']) {
                 // todo: SubscriptionPackage -> Package -> Provider ?
                 // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
                 List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.name', [id: sub.id])
@@ -221,7 +221,7 @@ class SubscriptionExport extends BaseDetailsExport {
                 content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }
             // --> combined properties : TODO
-            else if (key in ['x-vendor+sortname', 'x-vendor+name']) {
+            else if (key in ['x-vendor+abbreviatedName', 'x-vendor+name']) {
                 // todo: SubscriptionPackage -> Package -> PackageVendor -> Vendor ?
                 List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription.id = :id order by vr.vendor.name', [id: sub.id])
                 String prop = key.split('\\+')[1]
