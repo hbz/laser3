@@ -712,7 +712,8 @@ class SubscriptionController {
         log.debug("templateForMembersBulkWithUpload :: ${params}")
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
 
-        String filename = "template_sub_members_import", format = ExportService.EXCEL
+        String filename = "template_sub_members_import"
+        ExportClickMeService.FORMAT format = ExportClickMeService.FORMAT.valueOf(params.format)
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         FilterService.Result fsr = filterService.getOrgComboQuery(params, result.institution as Org)
 
@@ -726,33 +727,44 @@ class SubscriptionController {
             String gnd = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
 
-            row.add(exportService.createCell(format, org.laserID))
-            row.add(exportService.createCell(format, (wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : ''))
-            row.add(exportService.createCell(format, (isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : ''))
-            row.add(exportService.createCell(format, (ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : ''))
-            row.add(exportService.createCell(format, (gnd != IdentifierNamespace.UNKNOWN && gnd != null) ? gnd : ''))
-            row.add(exportService.createCell(format, (deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : ''))
+            row.add(exportClickMeService.createTableCell(format, org.laserID))
+            row.add(exportClickMeService.createTableCell(format, (wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : ''))
+            row.add(exportClickMeService.createTableCell(format, (isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : ''))
+            row.add(exportClickMeService.createTableCell(format, (ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : ''))
+            row.add(exportClickMeService.createTableCell(format, (gnd != IdentifierNamespace.UNKNOWN && gnd != null) ? gnd : ''))
+            row.add(exportClickMeService.createTableCell(format, (deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : ''))
 
-            row.add(exportService.createCell(format, org.sortname))
-            row.add(exportService.createCell(format, org.name))
-            row.add(exportService.createCell(format, org.libraryType?.getI10n('value')))
+            row.add(exportClickMeService.createTableCell(format, org.sortname))
+            row.add(exportClickMeService.createTableCell(format, org.name))
+            row.add(exportClickMeService.createTableCell(format, org.libraryType?.getI10n('value')))
             Subscription subscription = result.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
             if(subscription){
-                row.add(exportService.createCell(format, subscription.getLabel()))
+                row.add(exportClickMeService.createTableCell(format, subscription.getLabel()))
             }
 
             columnData.add(row)
         }
-        Map sheet = [(message(code: 'org.institution.plural')): [titleRow: titles, columnData: columnData]]
-        SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        wb.write(response.outputStream)
-        response.outputStream.flush()
-        response.outputStream.close()
-        wb.dispose()
-        return
-
+        if(format == ExportClickMeService.FORMAT.XLS) {
+            Map sheet = [(message(code: 'org.institution.plural')): [titleRow: titles, columnData: columnData]]
+            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(format == ExportClickMeService.FORMAT.CSV) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(titles, columnData, '\t'))
+            }
+            out.close()
+            return
+        }
     }
 
     @DebugInfo(isInstUser = [], ctrlService = 1)
@@ -769,27 +781,39 @@ class SubscriptionController {
         ArrayList titles = ['Laser-ID', message(code: 'default.sortname.label'), 'Customer ID', 'Requestor ID']
 
         ArrayList columnData = [], row
-        String format = ExportService.EXCEL
+        ExportClickMeService.FORMAT format = ExportClickMeService.FORMAT.valueOf(params.format)
         consortiaMembers.each { Org org ->
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
-            row = [exportService.createCell(format, org.laserID), exportService.createCell(format, org.sortname)]
+            row = [exportClickMeService.createTableCell(format, org.laserID), exportClickMeService.createTableCell(format, org.sortname)]
             if(ci?.value)
-                row << exportService.createCell(format, ci.value)
-            else row << exportService.createCell(format, '')
+                row << exportClickMeService.createTableCell(format, ci.value)
+            else row << exportClickMeService.createTableCell(format, '')
             if(ci?.requestorKey)
-                row << exportService.createCell(format, ci.requestorKey)
-            else row << exportService.createCell(format, '')
+                row << exportClickMeService.createTableCell(format, ci.requestorKey)
+            else row << exportClickMeService.createTableCell(format, '')
             columnData.add(row)
         }
-        Map sheet = ['Requestor-IDs': [titleRow: titles, columnData: columnData]]
-        SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        wb.write(response.outputStream)
-        response.outputStream.flush()
-        response.outputStream.close()
-        wb.dispose()
-        return
+        if(format == ExportClickMeService.FORMAT.XLS) {
+            Map sheet = ['Requestor-IDs': [titleRow: titles, columnData: columnData]]
+            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(format == ExportClickMeService.FORMAT.CSV) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { Writer writer ->
+                writer.write(exportService.generateSeparatorTableString(titles, columnData, '\t'))
+            }
+            out.close()
+            return
+        }
     }
 
     /**

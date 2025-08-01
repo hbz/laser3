@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6739    01.08.2025  dev     3.6         Andreas Feature     Matching bei der Preisanreicherung umgestellt
+
 6452    31.07.2025  dev     3.6         Andreas Feature     Variablenname an we:kb-Ausgabe angeglichen
 
 6421    30.07.2025  dev     3.6         Andreas Feature     Anbieter / Library Supplier sind in LAS:eR löschbar, wenn sie nicht aus der we:kb stammen
