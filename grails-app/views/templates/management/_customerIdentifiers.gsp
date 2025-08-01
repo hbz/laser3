@@ -27,7 +27,10 @@
                     <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                     <br>
 
-                    <g:link controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id]">
+                    <g:link class="xls" controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id, format: ExportClickMeService.FORMAT.XLS]">
+                        <p>${message(code:'myinst.financeImport.template')}</p>
+                    </g:link>
+                    <g:link class="csv" controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id, format: ExportClickMeService.FORMAT.CSV]">
                         <p>${message(code:'myinst.financeImport.template')}</p>
                     </g:link>
                     <div class="ui radio checkbox">
