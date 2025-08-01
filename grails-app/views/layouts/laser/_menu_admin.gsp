@@ -26,7 +26,9 @@
                 <ui:link addItemAttributes="true" controller="admin" action="profilerLoadtime">${message(code:'menu.admin.profilerLoadtime')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="profilerTimeline">${message(code:'menu.admin.profilerTimeline')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="profilerActivity">${message(code:'menu.admin.profilerActivity')}</ui:link>
-                <ui:link addItemAttributes="true" controller="admin" action="profilerCurrent">${message(code:'menu.admin.profilerCurrent')}</ui:link>
+                <sec:ifAnyGranted roles="ROLE_YODA">
+                    <ui:link addItemAttributes="true" controller="admin" action="profilerLive">${message(code:'menu.admin.profilerLive')}</ui:link>
+                </sec:ifAnyGranted>
             </div>
         </div>
         <div class="divider"></div>
