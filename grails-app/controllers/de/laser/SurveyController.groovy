@@ -1471,24 +1471,24 @@ class SurveyController {
         Map<String, Object> ctrlResult = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         String filename = "template_cost_import"
-
-        ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
+        ExportClickMeService.FORMAT format = ExportClickMeService.FORMAT.valueOf(params.format)
+        Set<String> titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
                        message(code: 'default.status.label'),
                        message(code: 'myinst.financeImport.elementSign'),
-                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
+                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
-        if(ctrlResult.surveyConfig.packageSurvey && params.costItemsForSurveyPackage == 'true'){
+        if(ctrlResult.surveyConfig.packageSurvey && Boolean.valueOf(params.costItemsForSurveyPackage)){
             titles.add('Anbieter-Produkt-ID')
         }
-        if(ctrlResult.surveyConfig.subscriptionSurvey && params.costItemsForSurveySubscriptions == 'true'){
+        if(ctrlResult.surveyConfig.subscriptionSurvey && Boolean.valueOf(params.costItemsForSurveySubscriptions)){
             titles.add(message(code: 'subscription.label')+'-LASER-ID')
         }
-        ArrayList rowData = []
-        ArrayList row
+        List columnData = []
+        List row
         SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
             row = []
             Org org = surveyOrg.org
@@ -1497,44 +1497,55 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-            row.add(org.laserID)
-            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
-            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
-            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
-            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
-            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
+            row.add(exportClickMeService.createTableCell(format, org.laserID))
+            row.add(exportClickMeService.createTableCell(format, (wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : ''))
+            row.add(exportClickMeService.createTableCell(format, (isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : ''))
+            row.add(exportClickMeService.createTableCell(format, (ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : ''))
+            row.add(exportClickMeService.createTableCell(format, (gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : ''))
+            row.add(exportClickMeService.createTableCell(format, (deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : ''))
 
             if(ctrlResult.surveyConfig.subscription){
-                row.add(Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', '))
+                row.add(exportClickMeService.createTableCell(format, Platform.executeQuery('select ci.value from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer = (:customer) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription.instanceOf = :subscription)', [customer: surveyOrg.org, subscription: ctrlResult.surveyConfig.subscription]).join(', ')))
             }else{
-                row.add('')
+                row.add(exportClickMeService.createTableCell(format, ''))
             }
-            row.add(org.sortname)
-            row.add(org.name)
-            row.add(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.getI10n('value'))
-            row.add(RDStore.COST_ITEM_ACTUAL.getI10n('value'))
-            row.add(RDStore.CIEC_POSITIVE.getI10n('value'))
-            row.add('')
-            row.add('EUR')
-            row.add('')
-            row.add('')
-            row.add('')
-            row.add('')
-            row.add('')
-            row.add('')
-            row.add('')
-            rowData.add(row)
+            row.add(exportClickMeService.createTableCell(format, org.sortname))
+            row.add(exportClickMeService.createTableCell(format, org.name))
+            row.add(exportClickMeService.createTableCell(format, RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.getI10n('value')))
+            row.add(exportClickMeService.createTableCell(format, RDStore.COST_ITEM_ACTUAL.getI10n('value')))
+            row.add(exportClickMeService.createTableCell(format, RDStore.CIEC_POSITIVE.getI10n('value')))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, 'EUR'))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            row.add(exportClickMeService.createTableCell(format, ''))
+            columnData.add(row)
         }
-
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        if(format == ExportClickMeService.FORMAT.XLS) {
+            Map sheet = [(message(code: 'org.institution.plural')): [titleRow: titles, columnData: columnData]]
+            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
         }
-        out.close()
-        return
-
+        else if(format == ExportClickMeService.FORMAT.CSV) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(titles, columnData, '\t'))
+            }
+            out.close()
+            return
+        }
     }
 
 

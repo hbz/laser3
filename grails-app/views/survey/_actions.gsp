@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigSubscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.survey.SurveyConfigSubscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -359,7 +359,17 @@
         <ui:modal id="bulkCostItemsUpload" message="menu.institutions.financeImport"
                   refreshModal="true"
                   msgSave="${g.message(code: 'menu.institutions.financeImport')}">
+            <p>
+                <g:link class="item" controller="public" action="manual" id="fileImport"
+                        target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
+            </p>
 
+            <p>
+                <g:link class="csv" controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, format: ExportClickMeService.FORMAT.CSV, surveyConfigID: surveyConfig.id, costItemsForSurveySubscriptions: actionName == 'surveyCostItemsSubscriptions' ? 'true' : 'false', costItemsForSurveyPackage: actionName == 'surveyCostItemsPackages' ? 'true' : 'false']">${message(code: 'myinst.financeImport.template')}</g:link>
+                <g:link class="xls" controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, format: ExportClickMeService.FORMAT.XLS, surveyConfigID: surveyConfig.id, costItemsForSurveySubscriptions: actionName == 'surveyCostItemsSubscriptions' ? 'true' : 'false', costItemsForSurveyPackage: actionName == 'surveyCostItemsPackages' ? 'true' : 'false']">${message(code: 'myinst.financeImport.template')}</g:link>
+            </p>
+            <g:render template="/templates/genericFileImportForm" model="[processAction: 'processSurveyCostItemsBulkWithUpload', id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyPackage: (actionName == 'surveyCostItemsPackages'), surveySubscriptions: (actionName == 'surveyCostItemsSubscriptions')]"/>
+            %{--
             <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
                 <g:if test="${actionName == 'surveyCostItemsPackages'}">
@@ -368,14 +378,6 @@
                 <g:if test="${actionName == 'surveyCostItemsSubscriptions'}">
                     <g:hiddenField name="costItemsForSurveySubscriptions" value="true"/>
                 </g:if>
-                <br>
-                <g:link class="item" controller="public" action="manual" id="fileImport"
-                        target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
-                <br>
-
-                <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, costItemsForSurveySubscriptions: actionName == 'surveyCostItemsSubscriptions' ? 'true' : 'false', costItemsForSurveyPackage: actionName == 'surveyCostItemsPackages' ? 'true' : 'false']">
-                    <p>${message(code: 'myinst.financeImport.template')}</p>
-                </g:link>
 
                 <br>
 
@@ -392,6 +394,7 @@
                     </div>
                 </div>
             </g:form>
+            --}%
         </ui:modal>
 
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -444,15 +447,8 @@
                             }, 800);
                         }
                     };
-        $('.action .icon.button').click(function () {
-             $(this).parent('.action').find('input:file').click();
-         });
-
-         $('input:file', '.ui.action.input').on('change', function (e) {
-             var name = e.target.files[0].name;
-             $('input:text', $(e.target).parent()).val(name);
-         });
 
         </laser:script>
+        <g:render template="/templates/genericFileImportJS"/>
     </g:if>
 </g:if>
