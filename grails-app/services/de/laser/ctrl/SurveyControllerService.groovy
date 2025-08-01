@@ -21,6 +21,7 @@ import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.ImportService
 import de.laser.IssueEntitlementGroup
 import de.laser.License
 import de.laser.Links
@@ -85,12 +86,14 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.time.TimeCategory
+import org.apache.poi.ss.usermodel.DateUtil
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.web.multipart.MultipartFile
 
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -103,31 +106,23 @@ class SurveyControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessService accessService
-    AddressbookService addressbookService
     AuditService auditService
-    CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
-    CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
     DocstoreService docstoreService
     EscapeService escapeService
     ExecutorService executorService
-    ExportClickMeService exportClickMeService
     GenericOIDService genericOIDService
     GlobalService globalService
-    GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
     FilterService filterService
     FinanceControllerService financeControllerService
-    FinanceService financeService
+    ImportService importService
     LinksGenerationService linksGenerationService
     PackageService packageService
     PropertyService propertyService
     ProviderService providerService
     SubscriptionService subscriptionService
-    SubscriptionControllerService subscriptionControllerService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyControllerService surveyControllerService
     SurveyService surveyService
@@ -1281,26 +1276,40 @@ class SurveyControllerService {
         if (!result) {
             [result: null, status: STATUS_ERROR]
         } else {
-            if(params.costItemsFile?.filename) {
-
-                MultipartFile importFile = params.costItemsFile
-
-                Map<String, IdentifierNamespace> namespaces = [gnd : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
-                                                               isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
-                                                               ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
-                                                               wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
-                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name),
-                                                               anbieterProduktID:  IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, Package.class.name)]
-                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
-
-                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    List<String> rows = importFile.getInputStream().getText(encoding).split('\n')
-                    List<String> headerRow = rows.remove(0).split('\t')
+            Map<String, IdentifierNamespace> namespaces = [gnd : IdentifierNamespace.findByNsAndNsType('gnd_org_nr', Org.class.name),
+                                                           isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
+                                                           ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
+                                                           wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
+                                                           dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name),
+                                                           anbieterProduktID:  IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, Package.class.name)]
+            if(params.containsKey('format')) {
+                Map tableData = [:]
+                if(ExportClickMeService.FORMAT.valueOf(params.format) == ExportClickMeService.FORMAT.XLS) {
+                    MultipartFile importFile = params.excelFile
+                    if(importFile && importFile.size > 0) {
+                        if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                            tableData = importService.readExcelFile(importFile)
+                        }
+                    }
+                }
+                else if(ExportClickMeService.FORMAT.valueOf(params.format) == ExportClickMeService.FORMAT.CSV) {
+                    MultipartFile importFile = params.csvFile
+                    if(importFile && importFile.size > 0) {
+                        String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                        }
+                        else {
+                            result.wrongCharset = messageSource.getMessage('default.import.error.wrongCharset',[encoding],LocaleUtils.currentLocale) as String
+                            [result: result, status: STATUS_ERROR]
+                        }
+                    }
+                }
+                if(tableData) {
+                    List<String> headerRow = tableData.headerRow
+                    List rows = tableData.rows
                     Map<String, Integer> colMap = [:]
-
                     headerRow.eachWithIndex { String headerCol, int c ->
-                        if (headerCol.startsWith("\uFEFF"))
-                            headerCol = headerCol.substring(1)
                         switch (headerCol.toLowerCase().trim()) {
                             case ["laser-id", "laser-id (einrichtung)", "laser-id (institution)", "laser-id (einrichtungslizenz)", "laser-id (institution subscription)"]: colMap.uuidCol = c
                                 break
@@ -1350,9 +1359,8 @@ class SurveyControllerService {
                     int processCount = 0
                     int matchCount = 0
                     int costItemsCreatedCount = 0
-                    rows.eachWithIndex { String row, Integer r ->
+                    rows.eachWithIndex { List<String> cols, Integer r ->
                         log.debug("now processing entry ${r}")
-                        List<String> cols = row.split('\t', -1)
                         Org match = null
                         if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
                             match = Org.findByLaserIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
@@ -1390,10 +1398,10 @@ class SurveyControllerService {
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
-                         if (!match && colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
+                        if (!match && colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
                             List matchList = Org.executeQuery('select org from Org org where org.sortname = :sortname and org.archiveDate is null', [sortname: cols[colMap.sortname].trim()])
                             if (matchList.size() == 1)
-                                 match = matchList[0] as Org
+                                match = matchList[0] as Org
                         }
 
 
@@ -1475,7 +1483,9 @@ class SurveyControllerService {
                                     }
                                     if (colMap.invoiceTotal != null && cols[colMap.invoiceTotal] != null) {
                                         try {
-                                            costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
+                                            if(cols[colMap.invoiceTotal] instanceof Double)
+                                                costItem.costInBillingCurrency = new BigDecimal(cols[colMap.invoiceTotal]).setScale(2, RoundingMode.HALF_UP)
+                                            else costItem.costInBillingCurrency = escapeService.parseFinancialValue(cols[colMap.invoiceTotal])
                                         }
                                         catch (NumberFormatException e) {
                                             log.error("costInBillingCurrency NumberFormatException: " + e.printStackTrace())
@@ -1489,7 +1499,10 @@ class SurveyControllerService {
                                         int taxRate = 0
                                         if (cols[colMap.taxRate]) {
                                             try {
-                                                taxRate = Integer.parseInt(cols[colMap.taxRate])
+                                                if(cols[colMap.taxRate] instanceof Double)
+                                                    taxRate = new BigDecimal(cols[colMap.taxRate]).setScale(0, RoundingMode.HALF_UP).intValue()
+                                                else
+                                                    taxRate = Integer.parseInt(cols[colMap.taxRate])
                                             }
                                             catch (Exception e) {
                                                 log.error("non-numeric tax rate parsed")
@@ -1552,14 +1565,20 @@ class SurveyControllerService {
                                     }
 
                                     if (colMap.dateFrom != null) {
-                                        Date startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
-                                        if (startDate)
+                                        Date startDate
+                                        if(cols[colMap.dateFrom] instanceof Double)
+                                            startDate = DateUtil.getJavaDate(cols[colMap.dateFrom])
+                                        else startDate = DateUtils.parseDateGeneric(cols[colMap.dateFrom])
+                                        if(startDate)
                                             costItem.startDate = startDate
                                     }
 
                                     if (colMap.dateTo != null) {
-                                        Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
-                                        if (endDate)
+                                        Date endDate
+                                        if(cols[colMap.dateTo] instanceof Double)
+                                            endDate = DateUtil.getJavaDate(cols[colMap.dateTo])
+                                        else endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
+                                        if(endDate)
                                             costItem.endDate = endDate
                                     }
 
@@ -1581,11 +1600,6 @@ class SurveyControllerService {
                     result.processCount = processCount
                     result.matchCount = matchCount
                     result.costItemsCreatedCount = costItemsCreatedCount
-                }
-                else
-                {
-                    Object[] args = [encoding]
-                    result.error = messageSource.getMessage('default.import.error.wrongCharset', args, result.locale)
                 }
             }
 

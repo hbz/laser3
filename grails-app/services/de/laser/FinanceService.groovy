@@ -1533,8 +1533,11 @@ class FinanceService {
             }
             //datePaid(nullable: true, blank: false) -> to date paid
             if(colMap.datePaid != null) {
-                Date datePaid = DateUtils.parseDateGeneric(cols[colMap.datePaid])
-                if(datePaid)
+                Date datePaid
+                if(cols[colMap.datePaid] instanceof Double)
+                    datePaid = DateUtil.getJavaDate(cols[colMap.datePaid])
+                else datePaid = DateUtils.parseDateGeneric(cols[colMap.datePaid])
+                if(datePaid && datePaid < absurdDate)
                     costItem.datePaid = datePaid
             }
             //costInLocalCurrency(nullable: true, blank: false) -> to value
@@ -1869,36 +1872,30 @@ class FinanceService {
             //try to match the subscription
             if (line[valueCol] != null) {
                 //first: get the org
-                Org match = null
                 Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
-                if (check.size() == 1)
-                    match = check[0]
-                if (!match)
-                    match = Org.findByLaserID(idStr)
-                if (!match) {
+                if (!check)
+                    check << Org.findByLaserID(idStr)
+                if (!check) {
                     check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
-                    if (check.size() == 1)
-                        match = check[0]
                 }
-                //match success
-                if (match) {
+                //match success, uniqueness determined by subscription context (or will we ever assign two orgs with the same keys to the same subscription?)
+                if (check) {
                     CostItem ci = null
                     if (configMap.containsKey('subscription')) {
-                        List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: configMap.subscription, match: match])
+                        List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org in (:matches)', [parent: configMap.subscription, matches: check])
                         if (memberCheck.size() == 1) {
                             Subscription memberSub = memberCheck[0]
                             ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, configMap.pickedElement)
                         }
-                        /*
                         else {
-                            wrongIdentifierCounter++
+                            wrongIdentifierCounter++ //no unique identifier
                             wrongIdentifiers << idStr
                         }
-                        */
                     }
                     else if (configMap.containsKey('surveyConfig')) {
-                        SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(configMap.surveyConfig, match)
-                        if(surveyOrg) {
+                        List<SurveyOrg> surveyOrgCheck = SurveyOrg.findAllBySurveyConfigAndOrgInList(configMap.surveyConfig, check)
+                        if(surveyOrgCheck.size() == 1) {
+                            SurveyOrg surveyOrg = surveyOrgCheck[0]
                             if(configMap.pkg) {
                                 ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, configMap.pickedElement, configMap.pkg)
                             }
@@ -1908,6 +1905,10 @@ class FinanceService {
                             else {
                                 ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, configMap.pickedElement)
                             }
+                        }
+                        else {
+                            wrongIdentifierCounter++ //no unique identifier
+                            wrongIdentifiers << idStr
                         }
                     }
                     if (ci) {

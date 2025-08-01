@@ -51,7 +51,10 @@
             <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
             <br>
 
-            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
+            <g:link class="csv" controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id, format: ExportClickMeService.FORMAT.CSV]">
+                <p>${message(code:'myinst.financeImport.template')}</p>
+            </g:link>
+            <g:link class="xls" controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id, format: ExportClickMeService.FORMAT.XLS]">
                 <p>${message(code:'myinst.financeImport.template')}</p>
             </g:link>
             <div class="ui radio checkbox">
