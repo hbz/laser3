@@ -191,14 +191,14 @@ class LicenseExport extends BaseDetailsExport {
             else if (key in ['x-provider+sortname', 'x-provider+name']) {
                 // todo: SubscriptionPackage -> Package -> Provider ?
                 // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
-                List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.license.id = :id order by pr.provider.sortname, pr.provider.name', [id: lic.id])
+                List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.license.id = :id order by pr.provider.name', [id: lic.id])
                 String prop = key.split('\\+')[1]
                 content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }
             // --> combined properties : TODO
             else if (key in ['x-vendor+sortname', 'x-vendor+name']) {
                 // todo: SubscriptionPackage -> Package -> PackageVendor -> Vendor ?
-                List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.license.id = :id order by vr.vendor.sortname, vr.vendor.name', [id: lic.id])
+                List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.license.id = :id order by vr.vendor.name', [id: lic.id])
                 String prop = key.split('\\+')[1]
                 content.add( vendors.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }

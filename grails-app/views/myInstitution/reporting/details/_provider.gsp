@@ -8,7 +8,7 @@
         <thead>
         <tr>
             <th></th>
-            <th>${message(code:'org.sortname.label')}</th>
+            <th>${message(code:'provider.abbreviatedName.label')}</th>
             <th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
             <g:if test="${query == 'provider-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
@@ -23,7 +23,7 @@
             <g:each in="${list}" var="provider" status="i">
                 <tr>
                     <td>${i + 1}.</td>
-                    <td>${provider.sortname}</td>
+                    <td>${provider.abbreviatedName}</td>
                     <td>
                         <g:link controller="provider" action="show" id="${provider.id}" target="_blank">${provider.name}</g:link>
                     </td>

@@ -62,7 +62,7 @@ class AddressbookService {
         }
         String sort
         if(!params.sort || params.sort == "sortname")
-            sort = 'coalesce(org.sortname, vendor.sortname, provider.sortname) as sortname'
+            sort = 'coalesce(org.sortname, vendor.abbreviatedName, provider.abbreviatedName) as sortname'
         else sort = params.sort
 
         if (params.preferredSurveyPerson) {
@@ -85,8 +85,8 @@ class AddressbookService {
             else if(params.org instanceof String) {
                 // ERMS-5868
                 qParts <<   "(( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true ) OR " +
-                            " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true ) OR " +
-                            " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true ))"
+                            " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.abbreviatedName, :name) = true ) OR " +
+                            " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.abbreviatedName, :name) = true ))"
                 qParams << [name: "${params.org}"]
             }
         }
@@ -96,7 +96,7 @@ class AddressbookService {
                 qParams << [vendor: params.vendor]
             }
             else if(params.vendor instanceof String) {
-                qParts << "( genfunc_filter_matcher(pr.vendor.name, :name) = true or genfunc_filter_matcher(pr.vendor.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(pr.vendor.name, :name) = true or genfunc_filter_matcher(pr.vendor.abbreviatedName, :name) = true )"
                 qParams << [name: "${params.vendor}"]
             }
         }
@@ -106,7 +106,7 @@ class AddressbookService {
                 qParams << [provider: params.provider]
             }
             else if(params.provider instanceof String) {
-                qParts << "( genfunc_filter_matcher(pr.provider.name, :name) = true or genfunc_filter_matcher(pr.provider.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(pr.provider.name, :name) = true or genfunc_filter_matcher(pr.provider.abbreviatedName, :name) = true )"
                 qParams << [name: "${params.provider}"]
             }
         }
@@ -170,7 +170,7 @@ class AddressbookService {
         String sortquery = params.sort
         String sort = params.sort
         if(!params.containsKey('sort') || params.sort == 'sortname') {
-            sortquery = 'coalesce(org.sortname, provider.sortname, vendor.sortname) as sortname'
+            sortquery = 'coalesce(org.sortname, provider.abbreviatedName, vendor.abbreviatedName) as sortname'
             sort = 'sortname'
         }
         else if(params.sort.contains('_name')) {
@@ -194,8 +194,8 @@ class AddressbookService {
         else if(params.org && params.org instanceof String) {
             // ERMS-5868
             qParts <<   "(( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true ) OR " +
-                        " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true ) OR " +
-                        " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true ))"
+                        " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.abbreviatedName, :name) = true ) OR " +
+                        " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.abbreviatedName, :name) = true ))"
             qParams << [name: "${params.org}"]
         }
         else if(params.vendor) {
@@ -204,7 +204,7 @@ class AddressbookService {
                 qParams << [vendor: params.vendor]
             }
             else if(params.vendor instanceof String) {
-                qParts << "( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.abbreviatedName, :name) = true )"
                 qParams << [name: "${params.vendor}"]
             }
         }
@@ -214,7 +214,7 @@ class AddressbookService {
                 qParams << [provider: params.provider]
             }
             else if(params.provider instanceof String) {
-                qParts << "( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true )"
+                qParts << "( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.abbreviatedName, :name) = true )"
                 qParams << [name: "${params.provider}"]
             }
         }

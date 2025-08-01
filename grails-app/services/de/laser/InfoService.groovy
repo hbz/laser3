@@ -25,7 +25,7 @@ class InfoService {
                                     join pr.subscription sub
                                     join pr.provider pro
                                     where sub.id in (:subIdList)
-                                    order by pro.sortname, pro.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
+                                    order by pro.name, sub.name, sub.startDate, sub.endDate, sub.referenceYear asc '''
 
     static final String PROVIDER_QUERY_2 = '''select pro.id, sub.id, sub.startDate, sub.endDate, sub.referenceYear, sub.name, sub.status.id from SubscriptionPackage subPkg 
                                     join subPkg.subscription sub 
@@ -154,7 +154,7 @@ class InfoService {
 //        Map providerMap = Helper.listToMap(providerStruct)
         List<List> providerStruct = (providerStruct1 + providerStruct2 + providerStruct3).unique()
 
-        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
+        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).abbreviatedName ?: Provider.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 
@@ -312,7 +312,7 @@ class InfoService {
         List<List> providerStruct = (providerStruct1 + providerStruct2 + providerStruct3).unique()
 
 //        Map providerMap = Helper.listToMap(providerStruct)
-        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).sortname ?: Provider.get(it.key).name }
+        Map providerMap = providerStruct.groupBy{ it[0] }.sort{ it -> Provider.get(it.key).abbreviatedName ?: Provider.get(it.key).name }
 
 //        println '\nproviderStruct: ' + providerStruct; println '\nproviderMap: ' + providerMap
 

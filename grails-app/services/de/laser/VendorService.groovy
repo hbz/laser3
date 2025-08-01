@@ -442,7 +442,7 @@ class VendorService {
         ]
         List<String> queryArgs = []
         if (params.containsKey('nameContains')) {
-            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.sortname, :name) = true)"
+            queryArgs << "(genfunc_filter_matcher(v.name, :name) = true or genfunc_filter_matcher(v.abbreviatedName, :name) = true)"
             queryParams.name = params.nameContains
         }
         if (params.containsKey('venStatus')) {

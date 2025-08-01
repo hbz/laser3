@@ -115,9 +115,9 @@
                 if(it.org)
                     it.org.sortname
                 else if(it.provider)
-                    it.provider.sortname
+                    it.provider.name
                 else if(it.vendor)
-                    it.vendor.sortname
+                    it.vendor.name
             }
 
             List<PersonRole> pRolesSorted = [], pProvRolesSorted = [], pVenRolesSorted = []
@@ -180,7 +180,7 @@
                                 <div class="la-flexbox">
                                     <i class="${Icon.PROVIDER} la-list-icon"></i>
                                     <g:link controller="provider" action="addressbook"
-                                            id="${provider.id}">${provider.name} (${provider.sortname})</g:link>
+                                            id="${provider.id}">${provider.name}</g:link>
                                 </div>
                         </div>
                     </g:each>
@@ -190,7 +190,7 @@
                                 <div class="la-flexbox">
                                     <i class="${Icon.VENDOR} la-list-icon"></i>
                                     <g:link controller="vendor" action="addressbook"
-                                            id="${vendor.id}">${vendor.name} (${vendor.sortname})</g:link>
+                                            id="${vendor.id}">${vendor.name}</g:link>
                                 </div>
                         </div>
                     </g:each>

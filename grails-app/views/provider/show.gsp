@@ -51,7 +51,7 @@
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable"
-                                    owner="${provider}" field="sortname" overwriteEditable="${editable && !provider.gokbId}"/>
+                                    owner="${provider}" field="abbreviatedName" overwriteEditable="${editable && !provider.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
@@ -255,7 +255,7 @@
                             <dd>
                                 <ul>
                                     <%
-                                        List<Vendor> invoicingVendors = Vendor.findAll([sort: 'sortname'])
+                                        List<Vendor> invoicingVendors = Vendor.findAll([sort: 'name'])
                                     %>
                                     <laser:render template="/templates/attributesList"
                                                   model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoicingVendors, field: 'vendor', availableAttributeIds: invoicingVendors.collect { Vendor v -> v.id }, editable: editable && !provider.gokbId]}"/>

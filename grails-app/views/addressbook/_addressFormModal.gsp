@@ -51,7 +51,7 @@
                               from="${providerList}"
                               value=""
                               optionKey="id"
-                              optionValue="${{ it.sortname ?: it.name }}"
+                              optionValue="${{ it.name }}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </g:elseif>
@@ -74,7 +74,7 @@
                               from="${vendorList}"
                               value=""
                               optionKey="id"
-                              optionValue="${{ it.sortname ?: it.name }}"
+                              optionValue="${{ it.name }}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                 </div>
             </g:elseif>

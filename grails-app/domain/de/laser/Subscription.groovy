@@ -519,7 +519,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link de.laser.wekb.Provider}s
      */
     List<Provider> getProviders() {
-        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname ',
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.name ',
             [sub: this])
     }
 
@@ -528,7 +528,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a sorted {@link List} of {@link Provider}s
      */
     List<Provider> getSortedProviders(String order) {
-        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by pr.provider.sortname '+order,
+        Provider.executeQuery('select pr.provider from ProviderRole pr where pr.subscription =:sub order by '+order+', pr.provider.name',
             [sub: this])
     }
 
@@ -537,7 +537,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
-        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname',
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.name',
                 [sub: this])
     }
 
@@ -546,7 +546,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return a sorted {@link List} of linked {@link Vendor}s
      */
     List<Vendor> getSortedVendors(String order) {
-        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname '+order,
+        Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by '+order+', vr.vendor.name',
                 [sub: this])
     }
 

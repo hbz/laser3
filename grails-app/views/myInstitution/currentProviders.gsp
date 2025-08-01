@@ -38,7 +38,7 @@
             <laser:render template="/templates/filter/providerFilterTable"
                       model="[provList: providerList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'currentSubscriptions', 'marker', 'isWekbCurated']
+                              tmplConfigShow: ['lineNumber', 'abbreviatedName', 'name', 'altname', 'currentSubscriptions', 'marker', 'isWekbCurated']
                       ]"/>
         </g:if>
         <g:else>

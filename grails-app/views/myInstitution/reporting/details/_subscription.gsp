@@ -82,7 +82,7 @@
                             // todo: SubscriptionPackage -> Package -> Provider ?
                             // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
                             Provider.executeQuery(
-                                    'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.sortname, pr.provider.name',
+                                    'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.name',
                                     [id: sub.id]
                             ).each { p ->
                                 println g.link( p.name, controller: 'provider', action: 'show', id: p.id, target: '_blank') + '<br />'
@@ -104,7 +104,7 @@
                                 // todo: SubscriptionPackage -> Package -> Provider ?
                                 // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
                                 Provider.executeQuery(
-                                        'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.sortname, pr.provider.name',
+                                        'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.name',
                                         [id: sub.id]
                                 ).each { p ->
                                     println g.link( p.name, controller: 'provider', action: 'show', id: p.id, target: '_blank') + '<br />'

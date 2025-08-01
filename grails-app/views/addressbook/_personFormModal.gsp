@@ -56,7 +56,7 @@
                                               from="${provList}"
                                               value="${provider?.id}"
                                               optionKey="id"
-                                              optionValue="${{ it.sortname ?: it.name }}"
+                                              optionValue="${{ it.name }}"
                                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                                 </div>
                             </g:if>
@@ -70,7 +70,7 @@
                                               from="${venList}"
                                               value="${ven?.id}"
                                               optionKey="id"
-                                              optionValue="${{ it.sortname ?: it.name }}"
+                                              optionValue="${{ it.name }}"
                                               noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                                 </div>
                             </g:if>

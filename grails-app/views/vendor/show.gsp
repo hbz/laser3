@@ -42,7 +42,7 @@
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable"
-                                    owner="${vendor}" field="sortname" overwriteEditable="${editable && !vendor.gokbId}"/>
+                                    owner="${vendor}" field="abbreviatedName" overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>

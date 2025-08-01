@@ -38,7 +38,7 @@
                 <laser:render template="/templates/filter/vendorFilterTable"
                       model="[orgList: vendorList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'platform', 'marker', 'isWekbCurated']
+                              tmplConfigShow: ['lineNumber', 'abbreviatedName', 'name', 'platform', 'marker', 'isWekbCurated']
                       ]"/>
             </g:if>
             <g:else>

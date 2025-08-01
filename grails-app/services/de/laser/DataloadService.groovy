@@ -248,7 +248,7 @@ class DataloadService {
                 result.status_en = vendor.status.value_en
                 result.rectype = vendor.getClass().getSimpleName()
 
-                result.sortname = vendor.sortname
+                result.abbreviatedName = vendor.abbreviatedName
 
                 result.packages = []
                 vendor.packages.each { PackageVendor pv ->
@@ -292,7 +292,7 @@ class DataloadService {
                 result.status_en = provider.status.value_en
                 result.rectype = provider.getClass().getSimpleName()
 
-                result.sortname = provider.sortname
+                result.abbreviatedName = provider.abbreviatedName
 
                 result.packages = []
                 provider.invoicingVendors.each { InvoicingVendor iv ->

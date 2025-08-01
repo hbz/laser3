@@ -15,7 +15,7 @@
             <label for="addCIPlatform">${message(code:'provider.label')} : ${message(code:'platform.label')}</label>
             <g:if test="${customeridentifier}">
                 <% Platform p = customeridentifier.platform%>
-                <input type="text" id="addCIPlatform" name="addCIPlatform" value="${ p.provider.name + (p.provider.sortname ? " (${p.provider.sortname})" : '') + ' : ' + p.name}" disabled/>
+                <input type="text" id="addCIPlatform" name="addCIPlatform" value="${ p.provider.name + (p.provider.abbreviatedName ? " (${p.provider.abbreviatedName})" : '') + ' : ' + p.name}" disabled/>
             </g:if>
             <g:else>
                 <g:select id="addCIPlatform" name="addCIPlatform"
@@ -23,7 +23,7 @@
                           required=""
                           class="ui search dropdown"
                           optionKey="id"
-                          optionValue="${{ it.provider.name + (it.provider.sortname ? " (${it.provider.sortname})" : '') + ' : ' + it.name}}"
+                          optionValue="${{ it.provider.name + (it.provider.abbreviatedName ? " (${it.provider.abbreviatedName})" : '') + ' : ' + it.name}}"
                 />
             </g:else>
         </div>

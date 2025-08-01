@@ -259,7 +259,7 @@ class PackageExport extends BaseDetailsExport {
             // --> combined properties : TODO
             else if (key in ['x-provider+sortname', 'x-provider+name']) {
                 List<Provider> providers = Provider.executeQuery(
-                        'select pro from Package pkg join pkg.provider pro where pkg.id = :id order by pro.sortname, pro.name', [id: pkg.id]
+                        'select pro from Package pkg join pkg.provider pro where pkg.id = :id order by pro.name', [id: pkg.id]
                 )
                 String prop = key.split('\\+')[1]
                 content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))

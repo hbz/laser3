@@ -348,7 +348,7 @@ class ExportClickMeService {
                         label  : 'Provider',
                         message: 'provider.label',
                         fields : [
-                                'provider.sortname': [field: 'sub.providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.abbreviatedName': [field: 'sub.providers.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.provider.abbreviatedName'],
                                 'provider.name'    : [field: 'sub.providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true'],
                                 'provider.altnames': [field: 'sub.providers.altnames.name', label: 'Alternative Name', message: 'exportClickMe.provider.altnames'],
                                 'provider.url'     : [field: 'sub.providers.homepage', label: 'Homepage', message: 'exportClickMe.provider.url']
@@ -359,7 +359,7 @@ class ExportClickMeService {
                         label  : 'Agency',
                         message: 'vendor.label',
                         fields : [
-                                'vendor.sortname': [field: 'sub.vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.abbreviatedName': [field: 'sub.vendors.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.vendor.abbreviatedName'],
                                 'vendor.name'    : [field: 'sub.vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true'],
                                 'vendor.altnames': [field: 'sub.vendors.altnames.name', label: 'Alternative Name', message: 'exportClickMe.vendor.altnames'],
                                 'vendor.url'     : [field: 'sub.vendors.homepage', label: 'Homepage', message: 'exportClickMe.vendor.url'],
@@ -440,7 +440,7 @@ class ExportClickMeService {
                         label: 'Provider',
                         message: 'provider.label',
                         fields: [
-                                'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.abbreviatedName'          : [field: 'providers.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.provider.abbreviatedName'],
                                 'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                                 'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
                                 'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
@@ -451,7 +451,7 @@ class ExportClickMeService {
                         label: 'Vendor',
                         message: 'vendor.label',
                         fields: [
-                                'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.abbreviatedName'   : [field: 'vendors.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.vendor.abbreviatedName'],
                                 'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
                                 'vendor.altnames'          : [field: 'vendors.altnames.name', label: 'Alt Name', message: 'exportClickMe.vendor.altnames'],
                                 'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
@@ -728,7 +728,7 @@ class ExportClickMeService {
                         label: 'Provider',
                         message: 'provider.label',
                         fields: [
-                                'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.abbreviatedName'   : [field: 'providers.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.provider.abbreviatedName'],
                                 'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                                 'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
                                 'provider.url'               : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
@@ -739,7 +739,7 @@ class ExportClickMeService {
                         label: 'Vendor',
                         message: 'vendor.label',
                         fields: [
-                                'vendor.sortname'          : [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.abbreviatedName'   : [field: 'vendors.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.vendor.abbreviatedName'],
                                 'vendor.name'              : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true' ],
                                 'vendor.url'               : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url'],
                         ]
@@ -976,7 +976,7 @@ class ExportClickMeService {
                         label  : 'Provider',
                         message: 'provider.label',
                         fields : [
-                                'provider.sortname': [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                                'provider.abbreviatedName': [field: 'providers.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.provider.abbreviatedName'],
                                 'provider.name'    : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true'],
                                 'provider.altnames': [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
                                 'provider.url'     : [field: 'providers.homepage', label: 'Url', message: 'exportClickMe.provider.url']
@@ -987,7 +987,7 @@ class ExportClickMeService {
                         label  : 'Agency',
                         message: 'vendor.label',
                         fields : [
-                                'vendor.sortname': [field: 'vendors.sortname', label: 'Sortname', message: 'exportClickMe.vendor.sortname'],
+                                'vendor.abbreviatedName': [field: 'vendors.abbreviatedName', label: 'Abbreviated Name', message: 'exportClickMe.vendor.abbreviatedName'],
                                 'vendor.name'    : [field: 'vendors.name', label: 'Name', message: 'exportClickMe.vendor.name', defaultChecked: 'true'],
                                 'vendor.url'     : [field: 'vendors.homepage', label: 'Url', message: 'exportClickMe.vendor.url']
                         ]
@@ -1452,7 +1452,7 @@ class ExportClickMeService {
                         message: 'provider.label',
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
+                                'provider.abbreviatedName'       : [field: 'abbreviatedName', label: 'Abbreviated Name', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
@@ -1512,7 +1512,7 @@ class ExportClickMeService {
                         message: 'vendor.label',
                         fields: [
                                 'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
+                                'vendor.abbreviatedName'       : [field: 'abbreviatedName', label: 'Abbreviated Name', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],

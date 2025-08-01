@@ -1327,11 +1327,11 @@ class ControlledListService {
         Map<String, Object> queryParams = [pkg: pkg]
         String nameFilter = ""
         if (query) {
-            nameFilter += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.sortname, :query) = true) "
+            nameFilter += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.abbreviatedName, :query) = true) "
             queryParams.query = query
         }
 
-        providers.addAll(Provider.executeQuery("select new map(prov.id as value, prov.name as name) from Package pkg join pkg.provider prov where pkg = :pkg "+nameFilter+" order by prov.sortname, prov.name", queryParams))
+        providers.addAll(Provider.executeQuery("select new map(prov.id as value, prov.name as name) from Package pkg join pkg.provider prov where pkg = :pkg "+nameFilter+" order by prov.name", queryParams))
 
         providers
     }
@@ -1352,14 +1352,14 @@ class ControlledListService {
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
             String nameFilter = "", statusFilter = " and tipp.status = :status "
             if (query) {
-                nameFilter += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.sortname, :query) = true) "
+                nameFilter += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.abbreviatedName, :query) = true) "
                 queryParams.query = query
             }
             if(forTitles && forTitles == 'allIEs') {
                 statusFilter = " and tipp.status != :status "
                 queryParams.status = RDStore.TIPP_STATUS_REMOVED
             }
-            providers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(prov.id as value, prov.name as name) from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.provider prov where pkg in (:pkg) "+statusFilter+nameFilter+" order by prov.sortname, prov.name", queryParams))
+            providers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(prov.id as value, prov.name as name) from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.provider prov where pkg in (:pkg) "+statusFilter+nameFilter+" order by prov.name", queryParams))
         }
 
         providers
@@ -1385,7 +1385,7 @@ class ControlledListService {
                 query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where (pt.owner = :inst or pt.subscription in (select oo.sub from OrgRole oo where oo.sub = :inst and oo.roleType = :subscrCons)))"
             }
             if (params.query) {
-                query += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.sortname, :query) = true) "
+                query += " and (genfunc_filter_matcher(prov.name, :query) = true or genfunc_filter_matcher(prov.abbreviatedName, :query) = true) "
                 queryMap.query = params.query
             }
             query += " order by prov.name"
@@ -1444,7 +1444,7 @@ class ControlledListService {
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
         if (params.query) {
-            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select a from p.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
+            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.abbreviatedName, :query) = true or exists (select a from p.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
@@ -1476,16 +1476,14 @@ class ControlledListService {
                 if(providerNameFilter)
                     providerNameFilter = "and ${providerNameFilter}"
                 qryParams.context = institution
-                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.name",
-                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.name",
-                qryString3 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from ProviderRole pvr join pvr.provider p where pvr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.name"
+                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.name",
+                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.name",
+                qryString3 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name) from ProviderRole pvr join pvr.provider p where pvr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.name"
                 results.addAll(Provider.executeQuery(qryString1, qryParams))
                 results.addAll(Provider.executeQuery(qryString2, qryParams))
                 results.addAll(Provider.executeQuery(qryString3, qryParams))
                 results.sort { Map rowA, Map rowB ->
-                    int cmp = rowA.sortname <=> rowB.sortname
-                    if(!cmp)
-                        cmp = rowA.name <=> rowB.name
+                    int cmp = rowA.name <=> rowB.name
                     cmp
                 }
             }
@@ -1509,7 +1507,7 @@ class ControlledListService {
             consortiumFilter = "and sub.instanceOf is null"
         */
         if (params.query) {
-            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.sortname, :query) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
+            vendorNameFilter = "(genfunc_filter_matcher(v.name, :query) = true or genfunc_filter_matcher(v.abbreviatedName, :query) = true or exists(select a from v.altnames a where genfunc_filter_matcher(a.name, :query) = true)) "
             qryParams.query = params.query
         }
         if(params.forFinanceView) {
@@ -1523,14 +1521,14 @@ class ControlledListService {
             }
         }
         else if(params.tableView) {
-            String qryString = "select v from Vendor v where ${vendorNameFilter} order by v.sortname, v.name"
+            String qryString = "select v from Vendor v where ${vendorNameFilter} order by v.name"
             results.addAll(Vendor.executeQuery(qryString, qryParams))
         }
         else {
             if(params.displayWekbFlag) {
                 if(vendorNameFilter)
                     vendorNameFilter = "where ${vendorNameFilter}"
-                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value,case when v.gokbId != null then concat(v.name,' (we:kb)') else v.name end as name) from Vendor v ${vendorNameFilter} order by v.sortname, v.name"
+                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value,case when v.gokbId != null then concat(v.name,' (we:kb)') else v.name end as name) from Vendor v ${vendorNameFilter} order by v.name"
                 results.addAll(Vendor.executeQuery(qryString, qryParams))
             }
             else if(params.adminLinking) {
@@ -1541,16 +1539,15 @@ class ControlledListService {
                 if(vendorNameFilter)
                     vendorNameFilter = "and ${vendorNameFilter}"
                 qryParams.context = institution
-                String qryString1 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from PackageVendor pv join pv.vendor v, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.sortname asc",
-                qryString2 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from Vendor v where v.createdBy = :context ${vendorNameFilter} order by v.sortname asc",
-                qryString3 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from VendorRole vr join vr.vendor v where vr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.name"
+                String qryString1 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name) from PackageVendor pv join pv.vendor v, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.name asc",
+                qryString2 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name) from Vendor v where v.createdBy = :context ${vendorNameFilter} order by v.name asc",
+                qryString3 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name) from VendorRole vr join vr.vendor v where vr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.name"
                 results.addAll(Vendor.executeQuery(qryString1, qryParams))
                 results.addAll(Vendor.executeQuery(qryString2, qryParams))
                 results.addAll(Vendor.executeQuery(qryString3, qryParams))
                 results.sort { Map rowA, Map rowB ->
-                    int cmp = rowA.sortname <=> rowB.sortname
-                    if(!cmp)
-                        rowA.name <=> rowB.name
+                    int cmp = rowA.name <=> rowB.name
+                    cmp
                 }
             }
         }
