@@ -11,15 +11,12 @@
 
     <div class="content">
         <div class="meta">
-            <div class="">
-                Fällig am
-                <g:if test="${SqlDateUtils.isBeforeToday(tsk.endDate)}">
-                    <strong style="color:#bb1600"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
-                </g:if>
-                <g:else>
-                    <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
-                </g:else>
-            </div>
+            <g:if test="${SqlDateUtils.isBeforeToday(tsk.endDate)}">
+                <strong class="sc_red">Fällig am <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
+            </g:if>
+            <g:else>
+                <strong class="sc_grey">Fällig am <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/></strong>
+            </g:else>
         </div>
         <g:if test="${overwriteEditable}">
             <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk.id});">${tsk.title}</a>

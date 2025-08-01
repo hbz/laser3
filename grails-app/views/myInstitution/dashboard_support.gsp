@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemMessage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="java.time.LocalDate; de.laser.system.SystemMessage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 
 <laser:htmlStart message="menu.institutions.dash" />
 
@@ -36,11 +36,13 @@
             ${message(code:'myinst.dash.due_dates.label')} <ui:bubble count="${dueDatesCount}" />
         </a>
 
-        <a class="${currentTab == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-            ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasks.size()}${tasksCount > tasks.size() ? '+' : ''}" />
-        </a>
+        <g:if test="${taskService.hasREAD()}">
+            <a class="${currentTab == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
+                ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasks.size()}${tasksCount > tasks.size() ? '+' : ''}" />
+            </a>
+        </g:if>
 
-        <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasREAD()}">
             <a class="${currentTab == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 ${message(code:'workflow.plural')} <ui:bubble count="${wfList.size()}${wfListCount > wfList.size() ? '+' : ''}" />
             </a>
@@ -57,34 +59,25 @@
             <g:render template="dashboardTabHelper" model="${[tmplKey: UserSetting.KEYS.DASHBOARD_TAB_TIME_SERVICE_MESSAGES]}" />
 
             <g:if test="${serviceMessages.size() > 0 }">
-                <br />
-                <div class="ui segment la-timeLineSegment-announcement">
-                    <div class="la-timeLineGrid">
-                        <div class="ui grid stackable">
-                            <g:each in="${serviceMessages}" var="msg">
-                                <div class="row">
-                                    <div class="one wide column">
-                                        <i class="arrow alternate circle right outline large icon la-timeLineIcon la-timeLineIcon-announcement"></i>
-                                    </div><!-- .column -->
-                                    <div class="two wide column">
-                                        <h2 class="ui header">
-                                            <g:formatDate date="${msg.lastPublishingDate}" formatName="default.date.format.notime"/>
-                                        </h2>
-                                        ${DateUtils.getSDF_onlyTime().format(msg.lastPublishingDate)}
-                                    </div><!-- .column -->
-                                    <div class="one wide column">
-                                        <i class="arrow right small icon"></i>
-                                    </div><!-- .column -->
-                                    <div class="twelve wide column">
-                                        <h2 class="ui header">
-                                            <% print msg.title; /* avoid auto encodeAsHTML() */ %>
-                                        </h2>
-                                        <% print msg.content; /* avoid auto encodeAsHTML() */ %>
-                                    </div><!-- .column -->
-                                </div><!-- .row -->
-                            </g:each>
-                        </div><!-- .grid -->
-                    </div>
+                <div class="">
+                    <g:each in="${serviceMessages}" var="msg">
+
+                        <div class="ui icon message" style="line-height:1.5em">
+                            <i class="${Icon.SERVICE_MESSAGE} ${(DateUtils.dateToLocalDate(msg.lastPublishingDate) >= LocalDate.now().minusDays(14)) ? 'blue':'grey'}"></i>
+                            <div class="content">
+                                <div class="header">
+                                    <% print msg.title; /* avoid auto encodeAsHTML() */ %>
+                                </div>
+                                <div style="margin:0.5em 0">
+                                    <% print msg.content; /* avoid auto encodeAsHTML() */ %>
+                                </div>
+                                <div style="text-align:right">
+                                    <g:formatDate date="${msg.lastPublishingDate}" formatName="default.date.format.notime"/>
+                                    ${DateUtils.getSDF_onlyTime().format(msg.lastPublishingDate)}
+                                </div>
+                            </div>
+                        </div>
+                    </g:each>
                 </div>
             </g:if>
         </div>
