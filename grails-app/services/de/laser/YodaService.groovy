@@ -354,7 +354,7 @@ class YodaService {
                 Provider targetProv = Provider.findByLaserID(targetGUID)
                 if(!targetProv) {
                     log.debug("*** provider not found by target Laser-ID ${targetGUID}, creating new")
-                    targetProv = new Provider(guid: targetGUID, sortname: sourceVen.sortname, name: sourceVen.name)
+                    targetProv = new Provider(guid: targetGUID, abbreviatedName: sourceVen.abbreviatedName, name: sourceVen.name)
                     targetProv.status = RefdataValue.getByValueAndCategory(sourceVen.status.value, RDConstants.PROVIDER_STATUS)
                     targetProv.save()
                 }

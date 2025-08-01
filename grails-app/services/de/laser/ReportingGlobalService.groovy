@@ -413,7 +413,7 @@ class ReportingGlobalService {
                         result.list = Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_PROVIDER) {
-                        result.list = Provider.executeQuery('select pro from Provider pro where pro.id in (:idList) order by pro.sortname, pro.name', [idList: idList])
+                        result.list = Provider.executeQuery('select pro from Provider pro where pro.id in (:idList) order by pro.name', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_SUBSCRIPTION) {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
@@ -445,7 +445,7 @@ class ReportingGlobalService {
                         result.list = idList ? Platform.executeQuery('select plt from Platform plt where plt.id in (:idList) order by plt.name', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_PROVIDER ]) {
-                        result.list = idList ? Provider.executeQuery('select pro from Provider pro where pro.id in (:idList) order by pro.sortname, pro.name', [idList: idList]) : []
+                        result.list = idList ? Provider.executeQuery('select pro from Provider pro where pro.id in (:idList) order by pro.name', [idList: idList]) : []
                     }
                     else if (prefix in [ BaseConfig.KEY_SUBSCRIPTION, 'memberSubscription' ]) {
                         result.list = idList ? Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList]) : []

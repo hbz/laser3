@@ -32,7 +32,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'provider+sortname+name'        : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/provider+sortname+name' // todo
+                                    'provider+sortname+name'        : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/provider+sortname+name' // todo, sortname => abbreviatedName
                                     'primaryUrl'                    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'serviceProvider'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'softwareProvider'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],

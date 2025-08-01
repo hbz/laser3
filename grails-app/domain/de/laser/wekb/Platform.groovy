@@ -175,7 +175,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   }
 
     /**
-     * Compares the current platform to the given one, based on the sortname of the provider (if exists), if not or equal, then by the name of the platform
+     * Compares the current platform to the given one, based on the name of the provider, if equal, then by the name of the platform
      * @param that the object to be compared
      * @return the comparison result (-1, 0 or 1)
      */

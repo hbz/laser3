@@ -170,7 +170,7 @@ class SubscriptionsQueryService {
             }
             catch (NumberFormatException ignored) {
                 //deprecated part for backwards-compatibility
-                base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.sortname, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.sortname, :provider) = true) ) )")
+                base_qry += (" and ( exists ( select pr from ProviderRole as pr join pr.provider p where pr.subscription = s and (genfunc_filter_matcher(p.name, :provider) = true or genfunc_filter_matcher(p.abbreviatedName, :provider) = true) ) or exists ( select vr from VendorRole as vr join vr.vendor v where vr.subscription = s and (genfunc_filter_matcher(v.name, :provider) = true or genfunc_filter_matcher(v.abbreviatedName, :provider) = true) ) )")
                 qry_params.put('provider', params.provider)
             }
             filterSet = true
@@ -200,11 +200,11 @@ class SubscriptionsQueryService {
                             //" or exists ( select altname.license from AlternativeName altname, Links li where altname.license = li.sourceLicense and li.destinationSubscription = s and li.linkType = :linkType and genfunc_filter_matcher(altname.name, :name_filter) = true ) " + // filter by license altname
                             " or exists ( select pr from ProviderRole as pr where pr.subscription = s and ( " +
                                 " genfunc_filter_matcher(pr.provider.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(pr.provider.sortname, :name_filter) = true " +
+                                " or genfunc_filter_matcher(pr.provider.abbreviatedName, :name_filter) = true " +
                             " ) )" + // filter by Anbieter (Provider)
                             " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
                                 " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
+                                " or genfunc_filter_matcher(vr.vendor.abbreviatedName, :name_filter) = true " +
                             " ) )" + // filter by Library Supplier (Vendor ex Agency)
                          " ) "
             )

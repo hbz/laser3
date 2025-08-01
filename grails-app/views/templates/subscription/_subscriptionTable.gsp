@@ -183,8 +183,8 @@
                             <td>
                                 <g:each in="${s.providers}" var="provider">
                                     <g:link controller="provider" action="show" id="${provider.id}">${fieldValue(bean: provider, field: "name")}
-                                        <g:if test="${provider.sortname}">
-                                            <br /> (${fieldValue(bean: provider, field: "sortname")})
+                                        <g:if test="${provider.abbreviatedName}">
+                                            <br /> (${fieldValue(bean: provider, field: "abbreviatedName")})
                                         </g:if>
                                     </g:link><br />
                                 </g:each>
@@ -195,8 +195,8 @@
                                 <g:each in="${s.vendors}" var="vendor">
                                     <g:link controller="vendor" action="show" id="${vendor.id}">
                                         ${fieldValue(bean: vendor, field: "name")}
-                                        <g:if test="${vendor.sortname}">
-                                            <br /> (${fieldValue(bean: vendor, field: "sortname")})
+                                        <g:if test="${vendor.abbreviatedName}">
+                                            <br /> (${fieldValue(bean: vendor, field: "abbreviatedName")})
                                         </g:if>
                                     </g:link><br />
                                 </g:each>

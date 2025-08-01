@@ -79,7 +79,7 @@
                     <g:each in="${providerMap}" var="prov,subList" status="i">
                         <g:set var="provider" value="${Provider.get(prov)}" />
                         <a href="#" class="item ${i == 0 ? 'active' : ''}" data-tab="provider-${provider.id}">
-                            ${provider.sortname ?: provider.name} <span class="ui blue circular tiny label">${subList.size()}</span>
+                            ${provider.name} <span class="ui blue circular tiny label">${subList.size()}</span>
                         </a>
                     </g:each>
                 </div>
@@ -675,7 +675,7 @@
             provider: {
                 tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
-                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
+                <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).name }}" var="provider">
                     {
                         name    : '<% print Provider.get(provider).name.replaceAll("'", "\\\\'") %>',
                         id      : ${provider},

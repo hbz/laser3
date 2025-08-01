@@ -319,7 +319,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link de.laser.wekb.Provider}s linked as provider
      */
     List<Provider> getProviders() {
-        Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.sortname",
+        Provider.executeQuery("select pvr.provider from ProviderRole pvr where pvr.license = :lic order by pvr.provider.name",
                 [lic: this])
     }
 
@@ -328,7 +328,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of linked {@link de.laser.wekb.Vendor}s
      */
     List<Vendor> getVendors() {
-        Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.sortname",
+        Vendor.executeQuery("select vr.vendor from VendorRole vr where vr.license = :lic order by vr.vendor.name",
                 [lic: this])
     }
 

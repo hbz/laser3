@@ -116,8 +116,8 @@
                             <g:each in="${s.vendors}" var="vendor">
                                 <g:link controller="vendor" action="show" id="${vendor.id}" target="_blank">
                                     ${fieldValue(bean: vendor, field: "name")}
-                                    <g:if test="${vendor.sortname}">
-                                        <br/> (${fieldValue(bean: vendor, field: "sortname")})
+                                    <g:if test="${vendor.abbreviatedName}">
+                                        <br/> (${fieldValue(bean: vendor, field: "abbreviatedName")})
                                     </g:if>
                                 </g:link>
                                 <br/>

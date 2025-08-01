@@ -3325,21 +3325,21 @@ class SurveyService {
         //impossible to sort in nothing ...
         if(params.sort == "provider") {
             subscriptions.sort { Subscription s1, Subscription s2 ->
-                String sortname1 = s1.getSortedProviders(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedProviders(params.order)[0]?.sortname?.toLowerCase()
+                String name1 = s1.getSortedProviders(params.order)[0]?.name.toLowerCase(), name2 = s2.getSortedProviders(params.order)[0]?.name.toLowerCase()
                 int cmp
                 if(params.order == "asc") {
-                    if(!sortname1) {
-                        if(!sortname2)
+                    if(!name1) {
+                        if(!name2)
                             cmp = 0
                         else cmp = 1
                     }
                     else {
-                        if(!sortname2)
+                        if(!name2)
                             cmp = -1
-                        else cmp = sortname1 <=> sortname2
+                        else cmp = name1 <=> name2
                     }
                 }
-                else cmp = sortname2 <=> sortname1
+                else cmp = name2 <=> name1
                 if(!cmp)
                     cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
                 if(!cmp)
@@ -3349,21 +3349,21 @@ class SurveyService {
         }
         else if(params.sort == "vendor") {
             subscriptions.sort { Subscription s1, Subscription s2 ->
-                String sortname1 = s1.getSortedVendors(params.order)[0]?.sortname?.toLowerCase(), sortname2 = s2.getSortedVendors(params.order)[0]?.sortname?.toLowerCase()
+                String name1 = s1.getSortedVendors(params.order)[0]?.name.toLowerCase(), name2 = s2.getSortedVendors(params.order)[0]?.name.toLowerCase()
                 int cmp
                 if(params.order == "asc") {
-                    if(!sortname1) {
-                        if(!sortname2)
+                    if(!name1) {
+                        if(!name2)
                             cmp = 0
                         else cmp = 1
                     }
                     else {
-                        if(!sortname2)
+                        if(!name2)
                             cmp = -1
-                        else cmp = sortname1 <=> sortname2
+                        else cmp = name1 <=> name2
                     }
                 }
-                else cmp = sortname2 <=> sortname1
+                else cmp = name2 <=> name1
                 if(!cmp) {
                     cmp = params.order == 'asc' ? s1.name <=> s2.name : s2.name <=> s1.name
                 }

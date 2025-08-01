@@ -164,14 +164,14 @@
                         <div class="ui card">
                             <div class="content">
                                 <laser:render template="/templates/links/providerLinksAsList"
-                                          model="${[providerRoles: ProviderRole.findAllBySubscription(sub, [sort: 'provider.sortname']),
+                                          model="${[providerRoles: ProviderRole.findAllBySubscription(sub, [sort: 'provider.name']),
                                                     roleObject   : sub,
                                                     roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : false
                                           ]}"/>
                                 <laser:render template="/templates/links/vendorLinksAsList"
-                                              model="${[vendorRoles  : VendorRole.findAllBySubscription(sub, [sort: 'vendor.sortname']),
+                                              model="${[vendorRoles  : VendorRole.findAllBySubscription(sub, [sort: 'vendor.name']),
                                                         roleObject   : sub,
                                                         roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                         editmode     : editable,

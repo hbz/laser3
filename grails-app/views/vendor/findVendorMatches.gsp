@@ -35,7 +35,7 @@
 							<tr>
 								<th>${message(code:'default.name.label')}</th>
 								<th>${message(code:'identifier.plural')}</th>
-								<th>${message(code:'org.sortname.label')}</th>
+								<th>${message(code:'default.shortname.label')}</th>
 								<th>${message(code:'altname.plural')}</th>
 							</tr>
 							</thead>
@@ -54,7 +54,7 @@
 											</g:if>
 										</ul>
 									</td>
-									<td>${vendorInstance.sortname}</td>
+									<td>${vendorInstance.abbreviatedName}</td>
 									<td>
 										<ul>
 											<g:each in="${vendorInstance.altnames}" var="altname">

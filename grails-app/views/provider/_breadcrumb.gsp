@@ -8,5 +8,5 @@
     <g:else>
         <ui:crumb message="menu.public.all_providers" controller="provider" action="list"/>
     </g:else>
-    <ui:crumb text="${provider.sortname}" class="active"/>
+    <ui:crumb text="${provider.name}" class="active"/>
 </ui:breadcrumbs>

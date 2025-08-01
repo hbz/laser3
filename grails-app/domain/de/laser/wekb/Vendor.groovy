@@ -32,7 +32,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag, MarkerSupport, Comparable<Vendor> {
 
     String name
-    String sortname //maps abbreviatedName
+    String abbreviatedName
     String gokbId //maps uuid
 
     @RefdataInfo(cat = RDConstants.VENDOR_STATUS)
@@ -111,7 +111,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         gokbId column: 'ven_gokb_id', index: 'ven_gokb_idx'
         laserID column: 'ven_laser_id'
         name column: 'ven_name'
-        sortname column: 'ven_sortname'
+        abbreviatedName column: 'ven_abbreviated_name', index: 'ven_abbreviated_name_idx'
         status column: 'ven_status_rv_fk'
         createdBy column:'ven_created_by_fk'
         legallyObligedBy column: 'ven_legally_obliged_by_fk'
@@ -140,7 +140,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     static constraints = {
         gokbId                      (unique: true, nullable: true)
         laserID                     (unique: true)
-        sortname                    (nullable: true)
+        abbreviatedName             (nullable: true)
         homepage                    (nullable: true, maxSize: 512)
         retirementDate              (nullable: true)
         researchPlatformForEbooks   (nullable: true)
@@ -266,17 +266,14 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         if(!v)
             v = new Vendor(laserID: agency.laserID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
         v.name = agency.name
-        v.sortname = agency.sortname
+        v.abbreviatedName = agency.sortname
         v.gokbId = agency.gokbId //for the case vendors have already recorded as orgs by sync
         if(!agency.gokbId && agency.createdBy)
             v.createdBy = agency.createdBy
         if(!agency.gokbId && agency.legallyObligedBy)
             v.legallyObligedBy = agency.legallyObligedBy
         v.homepage = agency.url
-        switch(agency.status) { // ERMS-6224 - removed org.status
-            default: v.status = RDStore.VENDOR_STATUS_CURRENT
-                break
-        }
+        v.status = RDStore.VENDOR_STATUS_CURRENT
         v.dateCreated = agency.dateCreated
         if(!v.save()) {
             log.error(v.getErrors().getAllErrors().toListString())
@@ -396,9 +393,6 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 result += name
             }
         } else {
-            if (sortname) {
-                result += sortname
-            }
             if (name) {
                 result += ' (' + name + ')'
             }

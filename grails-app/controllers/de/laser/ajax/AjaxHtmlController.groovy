@@ -424,7 +424,7 @@ class AjaxHtmlController {
             model.currProvSharedLinks = [:]
         }
         model.tmplShowCheckbox = true
-        model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
+        model.tmplConfigShow = ['abbreviatedName', 'name', 'altname', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/providerFilterTable", model: model
     }
@@ -463,7 +463,7 @@ class AjaxHtmlController {
             model.currVenSharedLinks = [:]
         }
         model.tmplShowCheckbox = true
-        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
+        model.tmplConfigShow = ['abbreviatedName', 'name', 'isWekbCurated', 'linkVendors']
         model.fixedHeader = 'la-ignore-fixed'
         render template: "/templates/filter/vendorFilterTable", model: model
     }
@@ -693,11 +693,11 @@ class AjaxHtmlController {
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.provider) {
-                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label") + ' (' + result.provider.sortname + ')'
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label") + ' (' + result.provider.name + ')'
                 }
                 else {
                     result.modalText = message(code: "person.create_new.contactPersonForProvider.label")
-                    result.provList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                    result.provList = Provider.executeQuery("from Provider p order by LOWER(p.name)")
                 }
                 break
             case 'contactPersonForVendor':
@@ -709,11 +709,11 @@ class AjaxHtmlController {
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.vendor) {
-                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label") + ' (' + result.vendor.sortname + ')'
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label") + ' (' + result.vendor.name + ')'
                 }
                 else {
                     result.modalText = message(code: "person.create_new.contactPersonForVendor.label")
-                    result.venList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
+                    result.venList = Vendor.executeQuery("from Vendor v order by LOWER(v.name)")
                 }
                 break
             case 'contactPersonForPublic':

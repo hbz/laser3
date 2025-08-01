@@ -17,7 +17,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <th>${message(code: 'sidewide.number')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('abbreviatedName')}">
                 <th>${message(code: 'default.shortname.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
@@ -78,9 +78,9 @@
                 </td>
             </g:if>
 
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('abbreviatedName')}">
                 <td>
-                    ${provider.sortname}
+                    ${provider.abbreviatedName}
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">

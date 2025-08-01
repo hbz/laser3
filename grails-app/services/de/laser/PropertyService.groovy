@@ -448,13 +448,11 @@ class PropertyService {
         else if(obj instanceof Provider) {
             Provider p = (Provider) obj
             objMap.name = p.name
-            objMap.sortname = p.sortname
             objMap.displayController = "provider"
         }
         else if(obj instanceof Vendor) {
             Vendor v = (Vendor) obj
             objMap.name = v.name
-            objMap.sortname = v.sortname
             objMap.displayController = "vendor"
         }
         objMap
@@ -826,10 +824,10 @@ class PropertyService {
 
                  if(providerFilter != ''){
                      objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status  ' + providerFilter + ' order by p.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
-                     filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status ' + providerFilter2 + ' order by pp.owner.sortname asc, pp.owner.name asc', parameterMap + providerFilterMap ))
+                     filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status ' + providerFilter2 + ' order by pp.owner.name asc', parameterMap + providerFilterMap ))
                  }else {
                      objectsWithoutProp.addAll(Provider.executeQuery('select p from Provider p where p.status != :deleted and not exists (select pp from ProviderProperty pp where pp.owner = p and pp.tenant = :ctx and pp.type = :type) and p.status = :status order by p.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
-                     filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status order by pp.owner.sortname asc, pp.owner.name asc', parameterMap))
+                     filteredObjs.addAll(ProviderProperty.executeQuery('select pp.owner from ProviderProperty pp where pp.type = :type and pp.tenant = :ctx and pp.owner.status = :status order by pp.owner.name asc', parameterMap))
                  }
                  break
              case PropertyDefinition.PLA_PROP:
@@ -857,10 +855,10 @@ class PropertyService {
 
                  if(vendorFilter != ''){
                      objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status  ' + vendorFilter + ' order by v.name asc', parameterMap + providerFilterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
-                     filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status ' + vendorFilter2 + ' order by vp.owner.sortname asc, vp.owner.name asc', parameterMap + providerFilterMap ))
+                     filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status ' + vendorFilter2 + ' order by vp.owner.name asc', parameterMap + providerFilterMap ))
                  }else {
                      objectsWithoutProp.addAll(Provider.executeQuery('select v from Vendor v where v.status != :deleted and not exists (select vp from VendorProperty vp where vp.owner = v and vp.tenant = :ctx and vp.type = :type) and v.status = :status order by v.name asc', parameterMap + [deleted: RDStore.PROVIDER_STATUS_REMOVED]))
-                     filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status order by vp.owner.sortname asc, vp.owner.name asc', parameterMap))
+                     filteredObjs.addAll(ProviderProperty.executeQuery('select vp.owner from VendorProperty vp where vp.type = :type and vp.tenant = :ctx and vp.owner.status = :status order by vp.owner.name asc', parameterMap))
                  }
                  break
          }

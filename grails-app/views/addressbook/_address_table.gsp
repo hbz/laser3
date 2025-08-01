@@ -59,12 +59,12 @@
                     <g:if test="${address.provider}">
                         <i class="${Icon.PROVIDER} la-list-icon"></i>
                         <g:link controller="provider" action="addressbook"
-                                id="${address.provider.id}">${address.provider.name} (${address.provider.sortname})</g:link>
+                                id="${address.provider.id}">${address.provider.name} (${address.provider.abbreviatedName})</g:link>
                     </g:if>
                     <g:if test="${address.vendor}">
                         <i class="${Icon.VENDOR} la-list-icon"></i>
                         <g:link controller="vendor" action="addressbook"
-                                id="${address.vendor.id}">${address.vendor.name} (${address.vendor.sortname})</g:link>
+                                id="${address.vendor.id}">${address.vendor.name} (${address.vendor.abbreviatedName})</g:link>
                     </g:if>
                 </td>
             </g:if>

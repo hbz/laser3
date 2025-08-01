@@ -1524,7 +1524,7 @@ class LicenseService {
                                     }
                                     AgentName {
                                         AgentNameType('onixPL:CommonName')
-                                        Name(pvr.provider.sortname)
+                                        Name(pvr.provider.abbreviatedName)
                                     }
                                     AgentName {
                                         AgentNameType('onixPL:RegisteredName')
@@ -1545,7 +1545,7 @@ class LicenseService {
                                     }
                                     AgentName {
                                         AgentNameType('onixPL:CommonName')
-                                        Name(vr.vendor.sortname)
+                                        Name(vr.vendor.abbreviatedName)
                                     }
                                     AgentName {
                                         AgentNameType('onixPL:RegisteredName')

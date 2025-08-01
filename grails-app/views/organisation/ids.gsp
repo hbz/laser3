@@ -104,7 +104,7 @@
                                       value="${params.ciPlatform}"
                                       class="ui search dropdown"
                                       optionKey="id"
-                                      optionValue="${{ it.provider.name + (it.provider.sortname ? " (${it.provider.sortname})" : '') + ' : ' + it.name}}"
+                                      optionValue="${{ it.provider.name + (it.provider.abbreviatedName ? " (${it.provider.abbreviatedName})" : '') + ' : ' + it.name}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                             />
                         </div>

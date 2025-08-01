@@ -485,7 +485,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                             }
                                                         }
                                                         break
-                                                    case "abbreviatedName": provider.sortname = wekbRecords.get(provider.gokbId).abbreviatedName
+                                                    case "abbreviatedName": provider.abbreviatedName = wekbRecords.get(provider.gokbId).abbreviatedName
                                                         provider.save()
                                                         break
                                                 }
@@ -576,7 +576,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 log.debug("now processing vendor ${idx} with uuid ${vendor.gokbId}, total entry: ${offset+idx}")
                                                 //switch kept for possible extension
                                                 switch(dataToLoad) {
-                                                    case "abbreviatedName": vendor.sortname = wekbRecords.get(vendor.gokbId).abbreviatedName
+                                                    case "abbreviatedName": vendor.abbreviatedName = wekbRecords.get(vendor.gokbId).abbreviatedName
                                                         vendor.save()
                                                         break
                                                 }
@@ -1298,7 +1298,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //avoid creating new deleted entries
         if(provider) {
             provider.status = RefdataValue.getByValueAndCategory(providerRecord.status, RDConstants.PROVIDER_STATUS)
-            provider.sortname = providerRecord.abbreviatedName
+            provider.abbreviatedName = providerRecord.abbreviatedName
             provider.homepage = providerRecord.homepage
             provider.metadataDownloaderURL = providerRecord.metadataDownloaderURL
             provider.kbartDownloaderURL = providerRecord.kbartDownloaderURL
@@ -1465,7 +1465,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             //avoid creating new deleted entries
             if(vendor) {
-                vendor.sortname = vendorRecord.abbreviatedName
+                vendor.abbreviatedName = vendorRecord.abbreviatedName
                 /*
                 if((vendor.status == RDStore.ORG_STATUS_CURRENT || !vendor.status) && vendorRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
                     //value is not implemented in we:kb yet

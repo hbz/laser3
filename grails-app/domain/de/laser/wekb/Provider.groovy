@@ -27,7 +27,7 @@ import de.laser.workflow.WfChecklist
 class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFlag, MarkerSupport, Comparable<Provider> {
 
     String name
-    String sortname //maps to abbreviatedName
+    String abbreviatedName
     String gokbId
 
     String kbartDownloaderURL
@@ -95,7 +95,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         id column: 'prov_id'
         version column: 'prov_version'
         name column: 'prov_name', index: 'prov_name_idx'
-        sortname column: 'prov_sortname', index: 'prov_sortname_idx'
+        abbreviatedName column: 'prov_abbreviated_name', index: 'prov_abbreviated_name_idx'
         gokbId column: 'prov_gokb_id', type: 'text', index: 'prov_gokb_idx'
         laserID column: 'prov_laser_id'
         status column: 'prov_status_rv_fk'
@@ -120,7 +120,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
     static constraints = {
         gokbId                      (unique: true, nullable: true)
         laserID                     (unique: true)
-        sortname                    (nullable: true)
+        abbreviatedName             (nullable: true)
         kbartDownloaderURL          (nullable: true)
         metadataDownloaderURL       (nullable: true)
         homepage                    (nullable: true, maxSize: 512)
@@ -241,18 +241,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         if(!p)
             p = new Provider(laserID: provider.laserID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
         p.name = provider.name
-        p.sortname = provider.sortname
+        p.abbreviatedName = provider.abbreviatedName
         p.gokbId = provider.gokbId //for the case providers have already recorded as orgs by sync
         if(!provider.gokbId && provider.createdBy)
             p.createdBy = provider.createdBy
         if(!provider.gokbId && provider.legallyObligedBy)
             p.legallyObligedBy = provider.legallyObligedBy
         p.homepage = provider.url
-        switch(provider.status) { // ERMS-6224 - removed org.status
-            default: p.status = RDStore.PROVIDER_STATUS_CURRENT
-                break
-        }
-        p.retirementDate = provider.retirementDate
+        p.status = RDStore.PROVIDER_STATUS_CURRENT
         p.dateCreated = provider.dateCreated
         if(!p.save()) {
             log.error(p.getErrors().getAllErrors().toListString())

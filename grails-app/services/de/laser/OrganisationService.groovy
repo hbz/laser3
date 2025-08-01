@@ -229,18 +229,7 @@ class OrganisationService {
     }
 
     /**
-     * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name
-     * @return the ordered {@link List} of {@link de.laser.wekb.Platform}s
-     */
-    List<Platform> getAllPlatforms() {
-        Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: Wekb.getURL()], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
-        uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
-        Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
-    }
-
-    /**
-     * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name, to which the context org is subscribed
+     * Gets all platforms where a provider {@link Org} is assigned to, ordered by name and platform name, to which the context org is subscribed
      * @return the ordered {@link List} of {@link Platform}s
      */
     List<Platform> getAllPlatformsForContextOrg(Org targetOrg = null) {

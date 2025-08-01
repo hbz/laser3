@@ -488,7 +488,7 @@ class CopyElementsService {
                     VendorRole newVendorRole = new VendorRole(vendor: vr.vendor)
                     newVendorRole.subscription = newSubscription
                     newVendorRole.save()
-                    log.debug("new vendor role set: ${newVendorRole.subscription} for ${newVendorRole.vendor.sortname}")
+                    log.debug("new vendor role set: ${newVendorRole.subscription} for ${newVendorRole.vendor.name}")
                 }
 
                 //ProviderRole
@@ -496,7 +496,7 @@ class CopyElementsService {
                     ProviderRole newProviderRole = new ProviderRole(provider: pvr.provider)
                     newProviderRole.subscription = newSubscription
                     newProviderRole.save()
-                    log.debug("new provider role set: ${newProviderRole.subscription} for ${newProviderRole.provider.sortname}")
+                    log.debug("new provider role set: ${newProviderRole.subscription} for ${newProviderRole.provider.name}")
                 }
 
                 if (subMember.prsLinks && targetObject.prsLinks) {

@@ -192,7 +192,7 @@ class WekbNewsService {
         Closure process = { Map map, String key ->
             if (map.result) {
 //                map.result.sort { it.lastUpdatedDisplay }.each {
-                map.result.sort { it.sortname }.each { it ->
+                map.result.sort { it.name }.each { it ->
                     it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
                     it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
 
@@ -209,7 +209,7 @@ class WekbNewsService {
 
                     it.remove('componentType')
                     it.remove('dateCreatedDisplay')
-                    it.remove('sortname')
+                    it.remove('name')
                     it.remove('status')
 
                     List match = []

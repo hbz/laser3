@@ -321,21 +321,21 @@ class TaskService {
         boolean isConsortium  = contextService.getOrg().isCustomerType_Consortium()
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
-            params.sort      = " LOWER(p.sortname), LOWER(p.name)"
+            params.sort      = " LOWER(p.name)"
 
             if (isConsortium) {
-                String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo join oo.sub s where pvr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
+                String query = 'select new map(p.id as id, p.name as name, p.abbreviatedName as abbreviatedName) from ProviderRole pvr join pvr.provider p, OrgRole oo join oo.sub s where pvr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
                 validProviders = Provider.executeQuery(query, [context: contextService.getOrg()])
             }
             else if (isInstitution) {
-                String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo where oo.sub = pvr.subscription and oo.org = :context order by '+params.sort
+                String query = 'select new map(p.id as id, p.name as name, p.abbreviatedName as abbreviatedName) from ProviderRole pvr join pvr.provider p, OrgRole oo where oo.sub = pvr.subscription and oo.org = :context order by '+params.sort
                 validProviders.addAll(Provider.executeQuery(query, [context: contextService.getOrg()]))
             }
             validProviders.each { row ->
                 Long optionKey = row.id
                 String optionValue
-                if(row.sortname)
-                    optionValue = "${row.name} (${row.sortname})"
+                if(row.abbreviatedName)
+                    optionValue = "${row.name} (${row.abbreviatedName})"
                 else optionValue = "${row.name}"
                 validProvidersDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
@@ -354,21 +354,21 @@ class TaskService {
         boolean isConsortium  = contextService.getOrg().isCustomerType_Consortium()
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
-            params.sort      = " LOWER(v.sortname), LOWER(v.name)"
+            params.sort      = " LOWER(v.name)"
 
             if (isConsortium) {
-                String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
+                String query = 'select new map(v.id as id, v.name as name, v.abbreviatedName as abbreviatedName) from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
                 validVendors = Combo.executeQuery(query, [context: contextService.getOrg()])
             }
             else if (isInstitution) {
-                String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo where vr.subscription = oo.sub and oo.org = :context order by '+params.sort
+                String query = 'select new map(v.id as id, v.name as name, v.abbreviatedName as abbreviatedName) from VendorRole vr join vr.vendor v, OrgRole oo where vr.subscription = oo.sub and oo.org = :context order by '+params.sort
                 validVendors.addAll(Org.executeQuery(query, [context: contextService.getOrg()]))
             }
             validVendors.each { row ->
                 Long optionKey = row.id
                 String optionValue
-                if(row.sortname)
-                    optionValue = "${row.name} (${row.sortname})"
+                if(row.abbreviatedName)
+                    optionValue = "${row.name} (${row.abbreviatedName})"
                 else optionValue = "${row.name}"
                 validVendorsDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
