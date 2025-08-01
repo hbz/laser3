@@ -41,7 +41,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     '@-entitlement-tippDeweyDecimalClassification' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippLanguage'          : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippSubjectReference'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-//                                    '@-entitlement-tippProvider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],  -> tipp.publisherName
+//                                    '@-entitlement-tippProvider+abbreviatedName+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],  -> tipp.publisherName
                                     '@-entitlement-tippPackage'           : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippPlatform'          : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippHostPlatformURL'   : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -207,7 +207,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO -> tipp.publisherName
-//            else if (key in ['@-entitlement-tippProvider+sortname', '@-entitlement-tippProvider+name']) {
+//            else if (key in ['@-entitlement-tippProvider+abbreviatedName', '@-entitlement-tippProvider+name']) {
 //                String prop = key.split('\\+')[1]
 //                List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
 //                    p.getProperty(prop) as String

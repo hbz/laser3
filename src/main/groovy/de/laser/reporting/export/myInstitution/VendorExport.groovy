@@ -28,7 +28,7 @@ class VendorExport extends BaseDetailsExport {
                     fields : [
                             default: [
                                     'laserID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
-                                    '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    '+abbreviatedName+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'homepage'          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-vendor-contact'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -174,7 +174,7 @@ class VendorExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO
-            else if (key in ['sortname', 'name']) {
+            else if (key in ['abbreviatedName', 'name']) {
                 content.add( getPropertyContent(ven, key, Vendor.getDeclaredField(key).getType()) )
             }
             else {

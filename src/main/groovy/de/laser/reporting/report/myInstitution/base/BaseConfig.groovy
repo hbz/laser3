@@ -359,8 +359,8 @@ class BaseConfig {
                     label: messageSource.getMessage('reporting.cfg.provider', null, locale),
                     from: Provider.executeQuery('select distinct pro from Package pkg join pkg.provider pro').collect{[
                             id: it.id,
-                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_de: it.name,
+                            value_en: it.name,
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
@@ -369,8 +369,8 @@ class BaseConfig {
                     label: messageSource.getMessage('vendor', null, locale),
                     from: PackageVendor.executeQuery('select distinct pv.vendor from PackageVendor pv').collect{[
                             id: it.id,
-                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_de: it.name,
+                            value_en: it.name,
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
@@ -380,8 +380,8 @@ class BaseConfig {
                     label: messageSource.getMessage('reporting.cfg.platformProvider', null, locale),
                     from: Provider.executeQuery('select distinct pro from Platform plt join plt.provider pro').collect{[
                             id: it.id,
-                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_de: it.name,
+                            value_en: it.name,
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
