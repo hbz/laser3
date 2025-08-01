@@ -40,7 +40,7 @@ class PackageExport extends BaseDetailsExport {
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'x-id'                          : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'x-provider+sortname+name'      : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-provider+abbreviatedName+name'      : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'x-platform+name+primaryUrl'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'contentType'                   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'file'                          : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -257,7 +257,7 @@ class PackageExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO
-            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+            else if (key in ['x-provider+abbreviatedName', 'x-provider+name']) {
                 List<Provider> providers = Provider.executeQuery(
                         'select pro from Package pkg join pkg.provider pro where pkg.id = :id order by pro.name', [id: pkg.id]
                 )

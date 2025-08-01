@@ -3,11 +3,12 @@
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
     <tr>
-        <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
-        <th>${message(code:'default.date.label')}</th>
-        <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-        <th style="width:8em; text-align: center">${message(code:'myinst.dash.due_dates.visibility.label')}</th>
-        <th style="width:8em; text-align: center">${message(code:'default.status.label')}</th>
+        <th class="three wide">${message(code:'myinst.dash.due_dates.attribute.label')}</th>
+        <th class="three wide">${message(code:'default.date.label')}</th>
+        <th class="eight wide">${message(code:'myinst.dash.due_dates.name.label')}</th>
+%{--        <th class="center aligned">${message(code:'myinst.dash.due_dates.visibility.label')}</th>--}%
+%{--        <th class="center aligned">${message(code:'default.status.label')}</th>--}%
+        <th class="two wide center aligned"><ui:optionsIcon /></th>
     </tr>
     </thead>
     <tbody>
@@ -22,14 +23,15 @@
                     ${dashDueDate.dueDateObject[LocaleUtils.getLocalizedAttributeName('attribute_value')]}
                 </td>
                 <td>
-                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
                         <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
-                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} orange"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                        <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                        <span class="sc_red la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                             <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>
                         </span>
                     </g:elseif>
@@ -114,9 +116,25 @@
                         </g:else>
                     </div>
                 </td>
+%{--                <td class="center aligned">--}%
+%{--                    <g:if test="${dashDueDate?.isHidden}">--}%
+%{--                        <i class="${Icon.SIG.VISIBLE_OFF} red"></i>--}%
+%{--                    </g:if>--}%
+%{--                    <g:else>--}%
+%{--                        <i class="${Icon.SIG.VISIBLE_ON} green"></i>--}%
+%{--                    </g:else>--}%
+%{--                </td>--}%
+%{--                <td class="center aligned">--}%
+%{--                    <g:if test="${dashDueDate?.dueDateObject?.isDone}">--}%
+%{--                        <i class="${Icon.SYM.YES} green"></i>--}%
+%{--                    </g:if>--}%
+%{--                    <g:else>--}%
+%{--                        <i class="${Icon.SYM.NO} red"></i>--}%
+%{--                    </g:else>--}%
+%{--                </td>--}%
                 <td class="center aligned">
                     <g:if test="${dashDueDate?.isHidden}">
-                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="setDashboardDueDateVisibility"
@@ -129,11 +147,11 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="${Icon.DUE_DATE} slash"></i>
+                            <i class="${Icon.SIG.VISIBLE_ON}"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
-                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
+                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="setDashboardDueDateVisibility"
@@ -144,13 +162,12 @@
                                           role="button"
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="${Icon.DUE_DATE}"></i>
+                            <i class="${Icon.SIG.VISIBLE_OFF}"></i>
                         </ui:remoteLink>
                     </g:else>
-                </td>
-                <td class="center aligned">
+
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
+                    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="setDueDateObjectStatus"
@@ -167,7 +184,7 @@
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
-                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="setDueDateObjectStatus"

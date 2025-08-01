@@ -37,8 +37,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'licenseCategory'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-provider+abbreviatedName+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+abbreviatedName+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     '@-license-subscriptionCount'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberCount'             : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-license-memberSubscriptionCount' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -63,8 +63,8 @@ class LicenseExport extends BaseDetailsExport {
                                     'endDate'           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'status'            : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'licenseCategory'   : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'x-provider+sortname+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'x-vendor+sortname+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-provider+abbreviatedName+name' : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
+                                    'x-vendor+abbreviatedName+name'   : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'x-property'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL_QDP ]
                             ]
@@ -188,7 +188,7 @@ class LicenseExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO
-            else if (key in ['x-provider+sortname', 'x-provider+name']) {
+            else if (key in ['x-provider+abbreviatedName', 'x-provider+name']) {
                 // todo: SubscriptionPackage -> Package -> Provider ?
                 // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
                 List<Provider> providers = Provider.executeQuery('select pr.provider from ProviderRole pr where pr.license.id = :id order by pr.provider.name', [id: lic.id])
@@ -196,7 +196,7 @@ class LicenseExport extends BaseDetailsExport {
                 content.add( providers.collect{ it.getProperty(prop) ?: '' }.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ))
             }
             // --> combined properties : TODO
-            else if (key in ['x-vendor+sortname', 'x-vendor+name']) {
+            else if (key in ['x-vendor+abbreviatedName', 'x-vendor+name']) {
                 // todo: SubscriptionPackage -> Package -> PackageVendor -> Vendor ?
                 List<Vendor> vendors = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.license.id = :id order by vr.vendor.name', [id: lic.id])
                 String prop = key.split('\\+')[1]

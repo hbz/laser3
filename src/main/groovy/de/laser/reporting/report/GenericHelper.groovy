@@ -152,12 +152,18 @@ class GenericHelper {
             else if (fieldName == 'sortname' || fieldName.endsWith('+sortname')) {
                 label = messageSource.getMessage('default.sortname.label', null, locale)
             }
+            else if (fieldName.endsWith('+abbreviatedName+name')) {
+                label = messageSource.getMessage('default.abbreviatedName.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale)
+            }
+            else if (fieldName == 'abbreviatedName' || fieldName.endsWith('+abbreviatedName')) {
+                label = messageSource.getMessage('default.abbreviatedName.label', null, locale)
+            }
             else if (fieldName == 'name' || fieldName.endsWith('+name')) {
                 label = messageSource.getMessage('default.name.label', null, locale)
             }
 
             //
-            if (fieldName.startsWith('provider+')) { // 'platform/provider+sortname+name' // todo
+            if (fieldName.startsWith('provider+')) { // 'platform/provider+abbreviatedName+name' // todo
                 base = messageSource.getMessage('platform.provider', null, locale)
             }
             //
