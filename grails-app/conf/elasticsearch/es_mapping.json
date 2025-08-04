@@ -42,19 +42,6 @@
         }
       },
       {
-        "publisher": {
-          "match": "publisher*",
-          "match_mapping_type": "string",
-          "mapping": {
-            "type": "nested",
-            "properties": {
-              "id": { "type": "long" },
-              "name": { "type": "keyword" }
-            }
-          }
-        }
-      },
-      {
         "objectIDs": {
           "match": "*id",
           "unmatch": "g*",

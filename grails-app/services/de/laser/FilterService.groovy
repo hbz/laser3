@@ -2047,12 +2047,40 @@ class FilterService {
             queryArgs << 'tipp.status != :tippStatus'
             queryParams.tippStatus = RDStore.TIPP_STATUS_REMOVED
         }
+        if(params.containsKey('tippSubset')) {
+            queryArgs << 'tipp.id in (:tippSubset)'
+            queryParams.tippSubset = params.tippSubset
+        }
+        /*
+        to ES
         if(params.filter) {
             //deactivated because of performance reasons; query would take 11 seconds instead of millis
             //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
             queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
             queryParams.filter = "%${params.filter.trim().toLowerCase()}%"
         }
+
+        if (params.first_author && params.first_author != "" && listReaderWrapper(params, 'first_author')) {
+            queryArgs << " lower(tipp.firstAuthor) like :first_author "
+            queryParams.first_author = "${params.first_author.toLowerCase()}"
+        }
+
+        if (params.first_editor && params.first_editor != "" && listReaderWrapper(params, 'first_editor')) {
+            queryArgs << " lower(tipp.firstEditor) like :first_editor "
+            queryParams.first_editor = "${params.first_editor.toLowerCase()}"
+        }
+
+        if(params.summaryOfContent) {
+            queryArgs << " lower(tipp.summaryOfContent) like :summaryOfContent "
+            queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+        }
+
+        if(params.ebookFirstAutorOrFirstEditor) {
+            queryArgs << " (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        }
+        */
+
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         //ERMS-5972
         if (params.asAt) {
@@ -2078,29 +2106,20 @@ class FilterService {
             q += ' ) '
             queryArgs << q
         }
+
+        if (params.publishers) {
+            queryArgs << " lower(tipp.publisherName) in (:publishers) "
+            queryParams.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
+        }
+
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
+            queryArgs << " lower(tipp.titleType) in (:title_types) "
+            queryParams.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
+        }
+
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             queryArgs << " tipp.seriesName in (:series_names) "
             queryParams.series_names = listReaderWrapper(params, 'series_names').collect { ""+it+"" }
-        }
-
-        if (params.first_author && params.first_author != "" && listReaderWrapper(params, 'first_author')) {
-            queryArgs << " lower(tipp.firstAuthor) like :first_author "
-            queryParams.first_author = "${params.first_author.toLowerCase()}"
-        }
-
-        if (params.first_editor && params.first_editor != "" && listReaderWrapper(params, 'first_editor')) {
-            queryArgs << " lower(tipp.firstEditor) like :first_editor "
-            queryParams.first_editor = "${params.first_editor.toLowerCase()}"
-        }
-
-        if(params.summaryOfContent) {
-            queryArgs << " lower(tipp.summaryOfContent) like :summaryOfContent "
-            queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-        }
-
-        if(params.ebookFirstAutorOrFirstEditor) {
-            queryArgs << " (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-            queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
         }
 
         if(params.dateFirstOnlineFrom) {
@@ -2135,19 +2154,9 @@ class FilterService {
             queryParams.provider = Params.getLongList_forCommaSeparatedString(params, 'provider')
         }
 
-        if (params.publishers) {
-            queryArgs << " lower(tipp.publisherName) in (:publishers) "
-            queryParams.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }
-        }
-
         if (params.coverageDepth) {
             queryArgs << " exists (select tc.id from tipp.coverages tc where lower(tc.coverageDepth) in (:coverageDepth)) "
             queryParams.coverageDepth = listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() }
-        }
-
-        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
-            queryArgs << " lower(tipp.titleType) in (:title_types) "
-            queryParams.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
         }
 
         if (params.medium) {

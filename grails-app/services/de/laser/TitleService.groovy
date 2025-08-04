@@ -8,7 +8,10 @@ import grails.gorm.transactions.Transactional
 class TitleService {
 
     ContextService contextService
+    ESSearchService ESSearchService
     FilterService filterService
+
+    static final Map<String, String> TIPP_FUZZY_TEXT_FILTERS = [filter: 'name', first_author: 'firstAuthor', first_editor: 'firstEditor', summaryOfContent: 'summaryOfContent', ebookFirstAutorOrFirstEditor: null, identifier: 'identifier']
 
     Map<String, Object> getCounts(Set<Long> tippIDs) {
         int currentTippCounts = 0, plannedTippCounts = 0, expiredTippCounts = 0, deletedTippCounts = 0, allTippCounts = 0
@@ -33,8 +36,7 @@ class TitleService {
 
     Set<Long> getKeys(Map configMap) {
         Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
-        Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
-                            identifierConfigMap = parameterGenerics.identifierConfigMap
+        Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap
         if(configMap.filter) {
             titleConfigMap.filter = configMap.filter
         }
@@ -45,11 +47,36 @@ class TitleService {
             titleConfigMap.tippStatus = configMap.status
         }
         //process here the title-related parameters
-        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-        Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
+        Set<Long> tippIDs, titleFilterResults = []
+        /*
         if(configMap.identifier) {
             tippIDs = tippIDs.intersect(getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
+        */
+        if(TIPP_FUZZY_TEXT_FILTERS.keySet().any { String fuzzyFilter -> configMap.containsKey(fuzzyFilter) }) {
+            Map<String, Object> esSearchParams = [max: 10000, offset: 0, rectype: 'TitleInstancePackagePlatform']
+            TIPP_FUZZY_TEXT_FILTERS.each { String fuzzyFilter, String esField ->
+                if(configMap.get(fuzzyFilter)) {
+                    switch(fuzzyFilter) {
+                        case 'ebookFirstAutorOrFirstEditor': esSearchParams.put('firstAuthor', configMap.get(fuzzyFilter))
+                            esSearchParams.put('firstEditor', configMap.get(fuzzyFilter))
+                            break
+                        default: esSearchParams.put(esField, configMap.get(fuzzyFilter))
+                            break
+                    }
+                }
+            }
+            Map<String, Object> result = ESSearchService.search(esSearchParams)
+            if(result) {
+                result.hits.each { hit ->
+                    //log.debug(hit.getSourceAsMap().toMapString())
+                    titleFilterResults.add(hit.getSourceAsMap().dbId.longValue())
+                }
+                titleConfigMap.tippSubset = titleFilterResults
+            }
+        }
+        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
+        tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
         if(configMap.hasPerpetualAccess) {
             Set<Long> currentPTs = PermanentTitle.executeQuery('select pt.tipp.id from PermanentTitle pt where pt.owner = :ctx', [ctx: contextService.getOrg()])
             currentPTs.addAll(PermanentTitle.executeQuery("select pt.tipp.id from PermanentTitle pt where pt.subscription in (select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscriberCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection'))", [subscriber: contextService.getOrg(), subscriberCons: RDStore.OR_SUBSCRIBER_CONS]))

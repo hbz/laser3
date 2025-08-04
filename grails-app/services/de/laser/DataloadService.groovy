@@ -294,7 +294,7 @@ class DataloadService {
 
                 result.abbreviatedName = provider.abbreviatedName
 
-                result.packages = []
+                result.vendors = []
                 provider.invoicingVendors.each { InvoicingVendor iv ->
                     try {
                         result.vendors.add([dbId: iv.vendor.id, name: iv.vendor.name])
@@ -339,6 +339,10 @@ class DataloadService {
                     tipp.altnames.each { AlternativeName altname ->
                         result.altnames << altname.name
                     }
+                    result.firstAuthor = tipp.firstAuthor
+                    result.firstEditor = tipp.firstEditor
+                    result.publisherName = tipp.publisherName
+                    result.summaryOfContent = tipp.summaryOfContent
                     result.status = tipp.status.getMapForES()
                     result.status_en = tipp.status.value_en
                     result.visible = 'Public'
@@ -351,12 +355,6 @@ class DataloadService {
                                    'value':    tipp.titleType,
                                    'value_de': tipp.titleType,
                                    'value_en': tipp.titleType]
-
-                    List<Org> publishers = tipp.getPublishers()
-                    result.publishers = []
-                    publishers.each { publisher ->
-                        result.publishers.add([id: publisher.id, name: publisher.name])
-                    }
 
                     result.identifiers = []
                     tipp.ids.each { Identifier ident ->

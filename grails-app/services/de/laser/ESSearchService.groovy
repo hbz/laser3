@@ -2,10 +2,13 @@ package de.laser
 
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.lucene.search.join.ScoreMode
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
+import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder
@@ -30,11 +33,13 @@ class ESSearchService{
                     'startYear':'startYear',
                     'consortiaName':'consortiaName',
                     'providerName':'providerName',
+                    'publisherName':'publisherName',
                     'availableToOrgs':'availableToOrgs',
                     'isPublic':'isPublic',
-                    'publisher':'publisher',
-                    'publishers':'publishers.name',
                     'name':'name',
+                    'firstAuthor':'firstAuthor',
+                    'firstEditor':'firstEditor',
+                    'summaryOfContent':'summaryOfContent',
                     'altnames':'altnames']
 
   /**
@@ -67,10 +72,16 @@ class ESSearchService{
       try {
         if ((params.q && params.q.length() > 0) || params.rectype) {
 
-          params.max = Math.min(params.max ? params.int('max') : 15, 10000)
-          params.offset = params.offset ? params.int('offset') : 0
+          if(!params.containsKey('max') && !params.containsKey('offset')) {
+            params.max = Math.min(params.max ? params.int('max') : 15, 10000)
+            params.offset = params.offset ? params.int('offset') : 0
+          }
 
           String query_str = buildQuery(params, field_map)
+          Map<String, Map<String, String>> nested_query = [:]
+          if(params.containsKey('identifier')) {
+            nested_query.identifiers = [field: 'identifiers.value', value: params.identifier]
+          }
           if (params.tempFQ) //add filtered query
           {
             query_str = query_str + " AND ( " + params.tempFQ + " ) "
@@ -120,8 +131,13 @@ class ESSearchService{
               searchSourceBuilder.size(params.max)
               searchRequest.source(searchSourceBuilder)
             } else {
-
-              searchSourceBuilder.query(QueryBuilders.queryStringQuery(query_str))
+              BoolQueryBuilder esQryObj = QueryBuilders.boolQuery()
+              esQryObj.must(QueryBuilders.queryStringQuery(query_str))
+              nested_query.each { String path, Map<String, String> query ->
+                esQryObj.must(QueryBuilders.nestedQuery(path, QueryBuilders.matchQuery(query.field, query.value), ScoreMode.Max))
+              }
+              searchSourceBuilder.query(esQryObj)
+              log.debug(esQryObj.toString())
               searchSourceBuilder.from(params.offset)
               searchSourceBuilder.size(params.max)
               searchRequest.source(searchSourceBuilder)
