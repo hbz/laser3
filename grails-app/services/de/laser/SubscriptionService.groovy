@@ -4470,9 +4470,9 @@ class SubscriptionService {
             switch (headerCol.toLowerCase().trim()) {
                 case "laser-id": colMap.laserIDCol = c
                     break
-                case "customer id": colMap.customerIdCol = c
+                case ["customer id", "customer-id"]: colMap.customerIdCol = c
                     break
-                case ["requestor id", "api-key"]: colMap.requestorIdCol = c
+                case ["requestor id", "requestor-id", "api-key"]: colMap.requestorIdCol = c
                     break
             }
         }

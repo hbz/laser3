@@ -1461,7 +1461,7 @@ class SurveyControllerService {
                                 if (createCostItem) {
                                     CostItem costItem = new CostItem(owner: contextService.getOrg(), surveyOrg: surveyOrg, costItemElement: cost_item_element)
 
-                                    if (cost_item_element && (cols[colMap.costItemSign] == null || cols[colMap.costItemSign] == "")) {
+                                    if (cost_item_element && (!colMap.costItemSign || cols[colMap.costItemSign] == null || cols[colMap.costItemSign] == "")) {
                                         costItem.costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cost_item_element, contextService.getOrg()).elementSign
                                     }
 
@@ -1553,6 +1553,7 @@ class SurveyControllerService {
                                         }
                                         costItem.costItemStatus = status
                                     }
+                                    else costItem.costItemStatus = RDStore.GENERIC_NULL_VALUE
                                     if (colMap.costItemSign != null && cols[colMap.costItemSign] != null) {
                                         String elementSign = cols[colMap.costItemSign]
                                         if (elementSign) {
@@ -3050,21 +3051,40 @@ class SurveyControllerService {
                     List<Org> members = []
 
 
-                    if(params.selectMembersWithImport?.filename){
-
-                        MultipartFile importFile = params.selectMembersWithImport
-                        InputStream stream = importFile.getInputStream()
-
-                        result.selectMembersWithImport = surveyService.selectSurveyMembersWithImport(stream)
-
-                        if(result.selectMembersWithImport.orgList){
-                            result.selectMembersWithImport.orgList.each { it ->
-                                members << Org.findById(Long.valueOf(it.orgId))
+                    if(params.containsKey('format')){
+                        Map tableData = [:]
+                        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                            MultipartFile importFile = params.excelFile
+                            if(importFile && importFile.size > 0) {
+                                if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
+                                    tableData = importService.readExcelFile(importFile)
+                                }
                             }
                         }
+                        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                            MultipartFile importFile = params.csvFile
+                            if(importFile && importFile.size > 0) {
+                                String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
+                                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                                }
+                                else {
+                                    result.wrongCharset = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
+                                    [result: result, status: STATUS_ERROR]
+                                }
+                            }
+                        }
+                        if(tableData) {
+                            result.selectMembersWithImport = surveyService.selectSurveyMembersWithImport(tableData)
 
-
-                    }else {
+                            if(result.selectMembersWithImport.orgList){
+                                result.selectMembersWithImport.orgList.each { it ->
+                                    members << Org.findById(Long.valueOf(it.orgId))
+                                }
+                            }
+                        }
+                    }
+                    else {
                         params.list('selectedOrgs').each { it ->
                             members << Org.findById(Long.valueOf(it))
                         }
