@@ -133,8 +133,9 @@ class ESSearchService{
             } else {
               BoolQueryBuilder esQryObj = QueryBuilders.boolQuery()
               esQryObj.must(QueryBuilders.queryStringQuery(query_str))
+              esQryObj.must(QueryBuilders.nestedQuery('status', QueryBuilders.boolQuery().mustNot(QueryBuilders.termQuery('status.value', "Removed")), ScoreMode.Max))
               nested_query.each { String path, Map<String, String> query ->
-                esQryObj.must(QueryBuilders.nestedQuery(path, QueryBuilders.matchQuery(query.field, query.value), ScoreMode.Max))
+                esQryObj.must(QueryBuilders.nestedQuery(path, QueryBuilders.boolQuery().must(QueryBuilders.wildcardQuery(query.field, "*${query.value}*")), ScoreMode.Max))
               }
               searchSourceBuilder.query(esQryObj)
               log.debug(esQryObj.toString())
@@ -355,10 +356,12 @@ class ESSearchService{
       sw.write(" status_en:\"${params.status_en}\" ")
     }
 
+      /* no function because status is nested
     if(!params.showDeleted)
     {
-      sw.write(  " AND ( NOT status:\"Deleted\" )")
+      sw.write(  " AND ( NOT status:\"Removed\" )")
     }
+      */
 
     if(params.showAllTitles) {
       sw.write(  " AND (rectype: \"TitleInstancePackagePlatform\") ")

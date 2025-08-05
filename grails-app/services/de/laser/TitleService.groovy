@@ -67,9 +67,9 @@ class TitleService {
                 }
             }
             Map<String, Object> result = ESSearchService.search(esSearchParams)
-            if(result) {
+            if(result?.resultsTotal > 0) {
                 result.hits.each { hit ->
-                    //log.debug(hit.getSourceAsMap().toMapString())
+                    log.debug(hit.getSourceAsMap().toMapString())
                     titleFilterResults.add(hit.getSourceAsMap().dbId.longValue())
                 }
                 titleConfigMap.tippSubset = titleFilterResults

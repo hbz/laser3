@@ -316,14 +316,14 @@ class DataloadService {
                 Map result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
-                    if (!tipp.sortname) {
+                    /*if (!tipp.sortname) {
                         tipp.generateNormTitle()
                         tipp.generateSortTitle()
                         tipp.save()
                         //
                         // This alone should trigger before update to do the necessary...
                         //
-                    }
+                    }*/
 
                     result._id = tipp.laserID
                     if (!result._id) {
@@ -1088,7 +1088,15 @@ class DataloadService {
                                     "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from or d.lastUpdatedCascading > :from) order by d.dateCreated asc, d.id",
                                     [from: from], [readonly: true]
                             )
-                        } else {
+                        }
+                        else if (domainClass in [TitleInstancePackagePlatform, Package, Platform, Provider, Vendor]) {
+                            idList = domainClass.executeQuery(
+                                    // "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) and d.status.value != 'Removed' order by d.dateCreated asc, d.id",
+                                    [from: from], [readonly: true]
+                            )
+                        }
+                        else {
                             idList = domainClass.executeQuery(
                                     // "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
                                     "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) order by d.dateCreated asc, d.id",
