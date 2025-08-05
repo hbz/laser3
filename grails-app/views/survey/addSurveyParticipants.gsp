@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ImportService; de.laser.ExportClickMeService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" />
 
 <ui:breadcrumbs>
@@ -73,24 +73,50 @@
                             ${message(code: 'surveyParticipants.addParticipants.option.selectMembersWithFile.text')}
 
                             <br>
-                            <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
+                                <g:link class="item" controller="public" action="manual" id="fileImport" target="_blank">${message(code: 'help.technicalHelp.fileImport')}</g:link>
                             <br>
 
-                            <g:link controller="survey" action="templateForSurveyParticipantsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                            <g:link class="csv" controller="survey" action="templateForSurveyParticipantsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, format: ExportClickMeService.FORMAT.CSV]">
+                                <p>${message(code:'myinst.financeImport.template')}</p>
+                            </g:link>
+                            <g:link class="xls" controller="survey" action="templateForSurveyParticipantsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, format: ExportClickMeService.FORMAT.XLS]">
                                 <p>${message(code:'myinst.financeImport.template')}</p>
                             </g:link>
 
-                            <div class="ui action input">
-                                <input type="text" readonly="readonly"
-                                       placeholder="${message(code: 'template.addDocument.selectFile')}">
-                                <input type="file" name="selectMembersWithImport" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                            <div class="ui radio checkbox">
+                                <input id="formatXLS" name="format" type="radio" value="${ExportClickMeService.FORMAT.XLS.toString()}" class="hidden formatSelection">
+                                <label for="formatXLS"><g:message code="default.import.upload.xls"/></label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input id="formatCSV" name="format" type="radio" value="${ExportClickMeService.FORMAT.CSV.toString()}" class="hidden formatSelection">
+                                <label for="formatCSV"><g:message code="default.import.upload.csv"/></label>
+                            </div>
+                            <br>
+                            <div class="ui action input xls">
+                                <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorXLS')}">
+
+                                <input type="file" name="excelFile" accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                                        style="display: none;">
                                 <div class="${Btn.ICON.SIMPLE}">
                                     <i class="${Icon.CMD.ATTACHMENT}"></i>
                                 </div>
                             </div>
-                        </div><!-- .message -->
+                            <div class="ui action input csv">
+                                <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorCSV')}">
 
+                                <input type="file" name="csvFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                                       style="display: none;">
+                                <div class="${Btn.ICON.SIMPLE}">
+                                    <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                </div>
+
+                                <select class="ui dropdown" name="separator">
+                                    <g:each in="${ImportService.CSV_CHARS}" var="setting">
+                                        <option value="${setting.charKey}"><g:message code="${setting.name}"/></option>
+                                    </g:each>
+                                </select>
+                            </div>
+                        </div><!-- .message -->
 
                         <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'default.button.add.label')}"/>
                     </g:if>
@@ -98,6 +124,8 @@
                 </g:form>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
+                    $('.csv, .xls').hide();
+
                     $('.action .icon.button').click(function () {
                          $(this).parent('.action').find('input:file').click();
                      });
@@ -106,6 +134,16 @@
                          var name = e.target.files[0].name;
                          $('input:text', $(e.target).parent()).val(name);
                      });
+                     $('.formatSelection').on('change', function() {
+                        if($(this).val() === '${ExportClickMeService.FORMAT.XLS}') {
+                            $('.xls').show();
+                            $('.csv').hide();
+                        }
+                        else if($(this).val() === '${ExportClickMeService.FORMAT.CSV}') {
+                            $('.csv').show();
+                            $('.xls').hide();
+                        }
+                    });
                 </laser:script>
 
             </g:else>

@@ -39,7 +39,7 @@ class ImportService {
                         }
                     }
                     else {
-                        line.addAll(readLine)
+                        line.addAll(readLine.collect { String col -> col.trim() })
                         rows << line
                     }
                 }
