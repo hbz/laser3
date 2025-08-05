@@ -21,8 +21,9 @@
             <div class="${Btn.ICON.SIMPLE}">
                 <i class="${Icon.CMD.ATTACHMENT}"></i>
             </div>
-
-            <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadXLS"/></button>
+            <g:if test="${!hideSubmitButtons}">
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadXLS"/></button>
+            </g:if>
         </div>
         <div class="ui action input csv">
             <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorCSV')}">
@@ -38,8 +39,9 @@
                     <option value="${setting.charKey}"><g:message code="${setting.name}"/></option>
                 </g:each>
             </select>
-
-            <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadCSV"/></button>
+            <g:if test="${!hideSubmitButtons}">
+                <button class="${Btn.SIMPLE}" name="load" type="submit" value="Go"><g:message code="myinst.subscriptionImport.uploadCSV"/></button>
+            </g:if>
         </div>
     </div>
 </div>

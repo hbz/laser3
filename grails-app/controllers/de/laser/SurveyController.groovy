@@ -1558,6 +1558,7 @@ class SurveyController {
         Map<String, Object> ctrlResult = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         String filename = "template_survey_participants_import"
+        ExportClickMeService.FORMAT format = ExportClickMeService.FORMAT.valueOf(params.format)
 
         //params.orgType = RDStore.OT_INSTITUTION.id
         params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
@@ -1570,8 +1571,7 @@ class SurveyController {
 
         ArrayList titles = ["Laser-ID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
-        ArrayList rowData = []
-        ArrayList row
+        ArrayList columnData = [], row
         members.each { Org org ->
             row = []
 
@@ -1580,33 +1580,45 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-            row.add(org.laserID)
-            row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
-            row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
-            row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
-            row.add((gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : '')
-            row.add((deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : '')
-            row.add(org.sortname)
-            row.add(org.name)
-            row.add(org.libraryType?.getI10n('value'))
+            row.add(exportClickMeService.createTableCell(format, org.laserID))
+            row.add(exportClickMeService.createTableCell(format, (wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : ''))
+            row.add(exportClickMeService.createTableCell(format, (isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : ''))
+            row.add(exportClickMeService.createTableCell(format, (ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : ''))
+            row.add(exportClickMeService.createTableCell(format, (gng != IdentifierNamespace.UNKNOWN && gng != null) ? gng : ''))
+            row.add(exportClickMeService.createTableCell(format, (deal != IdentifierNamespace.UNKNOWN && deal != null) ? deal : ''))
+            row.add(exportClickMeService.createTableCell(format, org.sortname))
+            row.add(exportClickMeService.createTableCell(format, org.name))
+            row.add(exportClickMeService.createTableCell(format, org.libraryType?.getI10n('value')))
 
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, ctrlResult.surveyConfig)
             if(surveyOrg){
-                row.add(RDStore.YN_YES.getI10n('value'))
+                row.add(exportClickMeService.createTableCell(format, RDStore.YN_YES.getI10n('value')))
             }
 
-            rowData.add(row)
+            columnData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        ServletOutputStream out = response.outputStream
-        out.withWriter { writer ->
-            writer.write(exportService.generateSeparatorTableString(titles, rowData, '\t'))
+        if(format == ExportClickMeService.FORMAT.XLS) {
+            Map sheet = [(message(code: 'org.institution.plural')): [titleRow: titles, columnData: columnData]]
+            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheet)
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
         }
-        out.close()
-        return
-
+        else if(format == ExportClickMeService.FORMAT.CSV) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(exportService.generateSeparatorTableString(titles, columnData, '\t'))
+            }
+            out.close()
+            return
+        }
     }
 
     /**

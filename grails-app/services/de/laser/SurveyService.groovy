@@ -2297,7 +2297,7 @@ class SurveyService {
                 'OR dateValue is not null)', [surveyConfig: surveyConfig, type: propertyDefinition, orgs: orgs])[0]
     }
 
-    Map selectSurveyMembersWithImport(InputStream stream) {
+    Map selectSurveyMembersWithImport(Map tableData) {
 
         Integer processCount = 0
         Integer processRow = 0
@@ -2311,12 +2311,10 @@ class SurveyService {
                                                        wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
                                                        dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
 
-        ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [gndCol: -1, isilCol: -1, rorCol: -1, wibCol: -1, dealCol: -1,
                                        startDateCol: -1, endDateCol: -1, ]
 
-        //read off first line of KBART file
-        List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
+        List titleRow = tableData.headerRow, wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
                 case ["laser-id", "laser-id (einrichtung)", "laser-id (institution)", "laser-id (einrichtungslizenz)", "laser-id (institution subscription)"]: colMap.uuidCol = c
@@ -2333,10 +2331,9 @@ class SurveyService {
                     break
             }
         }
-        rows.eachWithIndex { row, int i ->
+        tableData.rows.eachWithIndex { cols, int i ->
             processRow++
             log.debug("now processing rows ${i}")
-            ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 Org match = null
                 if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
