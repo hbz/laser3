@@ -30,14 +30,15 @@
         <laser:render template="/templates/system/serverIndicator" />
 
         <div class="landingpage"> <!-- TODO - check/fix css -->
-
-            <laser:render template="/layouts/publicMenu" />
+            <g:if test="${!(controllerName == 'gasco')}">
+                    <laser:render template="/layouts/publicMenu" />
+            </g:if>
 
             <g:layoutBody/>%{-- body here --}%
 
-            <div id="Footer">
-                <div class="clearfix"></div>
-            </div>
+            <g:if test="${!(controllerName == 'gasco')}">
+                <laser:render template="/layouts/footer" />
+            </g:if>
 
             <laser:javascript src="laser.js"/>%{-- dont move --}%
 

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
-<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}">
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.storage.BeanStore" %>
+<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}" >
     <style>
         .ui.table thead tr:first-child > th {
             top: 48px !important;
@@ -89,8 +89,8 @@
     </style>
 
 </laser:htmlStart>
-
-<div class="ui stackable grid">
+<main class="ui main container">
+    <div class="ui stackable grid">
     <div class="eleven wide column">
         <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="${Icon.LASER} blue la-object"></i> Das LAS:eR Lizenzmodell</h1>
         <table class="ui large structured la-table table">
@@ -257,6 +257,7 @@
 
         </g:if>
     </g:each>
+</main>
 <sec:ifAnyGranted roles="ROLE_USER">
     <style>
     .ui.table thead tr:first-child>th {
