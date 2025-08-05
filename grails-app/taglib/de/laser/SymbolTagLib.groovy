@@ -52,6 +52,20 @@ class SymbolTagLib {
         out << '<i class="bug icon"></i>'
     }
 
+    @UIDoc(usage = 'Generic symbol for: Startdate')
+    def startDate = { attrs, body ->
+        out << '<i class="icons">'
+        out << '  <i class="calendar alternate outline icon"></i>'
+        out << '  <i class="corner play circle outline icon green"></i>'
+        out << '</i>'
+    }
+    @UIDoc(usage = 'Generic symbol for: Enddate')
+    def endDate = { attrs, body ->
+        out << '<i class="icons">'
+        out << '  <i class="calendar alternate outline icon"></i>'
+        out << '  <i class="corner stop circle outline icon red"></i>'
+        out << '</i>'
+    }
 
     @UIDoc(usage = 'Generic symbol for: Universal access')
     def universalAccess = { attrs, body ->

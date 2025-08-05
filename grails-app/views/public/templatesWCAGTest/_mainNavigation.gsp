@@ -55,12 +55,8 @@
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
-                    <a href="#" class="la-search-advanced la-popup-tooltip"
-                       data-content="Erweiterte Suche">
-                        <i class="large icons">
-                            <i class="${Icon.SYM.SEARCH}"></i>
-                            <i class="top right grey corner plus icon"></i>
-                        </i>
+                    <a href="#" class="icon la-search-advanced la-popup-tooltip" data-content="Erweiterte Suche">
+                        <i class="${Icon.SYM.SEARCH_ADVANCED} large"></i>
                     </a>
                     <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                         Ingrid Bluoss

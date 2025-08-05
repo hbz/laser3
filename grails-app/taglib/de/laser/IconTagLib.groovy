@@ -80,6 +80,9 @@ class IconTagLib {
             case 'search':
                 icon = Icon.SYM.SEARCH
                 break
+            case 'search_advanced':
+                icon = Icon.SYM.SEARCH_ADVANCED
+                break
             case 'reporting':
                 icon = Icon.REPORTING + ' bordered inverted teal la-object-extended'
                 break
