@@ -33,9 +33,9 @@
             <g:if test="${!(controllerName == 'gasco')}">
                     <laser:render template="/layouts/publicMenu" />
             </g:if>
-
-            <g:layoutBody/>%{-- body here --}%
-
+            <main class="ui main container">
+                <g:layoutBody/>%{-- body here --}%
+            </main>
             <g:if test="${!(controllerName == 'gasco')}">
                 <laser:render template="/layouts/footer" />
             </g:if>
@@ -44,5 +44,6 @@
 
             <laser:scriptBlock/>%{-- dont move --}%
         </div>
+
     </body>
 </html>
