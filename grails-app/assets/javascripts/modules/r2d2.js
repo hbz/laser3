@@ -419,14 +419,11 @@ r2d2 = {
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
             '		<div class="ui calendar xEditable-datepicker">' +
-            '			<div class="ui input right icon editable-input">' +
-            '			</div>' +
-            '			<div class="editable-buttons">' +
-            '			</div>' +
+            '			<div class="editable-input"></div>' +
+            '			<div class="editable-buttons"></div>' +
             '		</div>' +
-            '        <div id="characters-count"></div>' +
-            '		<div class="editable-error-block">' +
-            '		</div>' +
+            '       <div id="characters-count"></div>' +
+            '		<div class="editable-error-block"></div>' +
             '	</div>' +
             '</form>'
         $.fn.editableform.loading =
@@ -560,7 +557,7 @@ r2d2 = {
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
-            tpl: '<select class="ui search selection dropdown clearable "></select>',
+            tpl: '<select class="ui search selection dropdown fluid clearable"></select>',
             validate: function(value) {
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
@@ -579,9 +576,9 @@ r2d2 = {
         });
 
         // boolean values are only allowed to be 0 or 1, so clearable is not suitable
-        // role values are not allowed to be null, so clearable is not suitable
+        // role values are not allowed to be null, so clearable is not suitable !!!
         $(ctxSel + ' .xEditableBoolean, ' + ctxSel + ' .xEditableRole').editable({
-            tpl: '<select class="ui search selection dropdown clearable"></select>',
+            tpl: '<select class="ui search selection dropdown fluid"></select>',
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
