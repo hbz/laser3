@@ -380,7 +380,7 @@
                             <input type="checkbox" name="showPasswords" id="password_show_toggler">
                         </div>
                         <div class="field">
-                            <label></label>
+%{--                            <label></label>--}%
                             <button type="submit" class="${Btn.SIMPLE}" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
                     </ui:form><!-- updatePassword -->
@@ -453,14 +453,17 @@
                                 <label>${message(code: 'profile.language')}</label>
                                 <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
                                 <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" validation="notEmpty"/>
-                                &nbsp;
-                                <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>
+%{--                                <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>--}%
                             </div>
                             <div class="field">
                                 <label>${message(code: 'profile.emailLanguage')}</label>
                                 <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
                                 <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" validation="notEmpty"/>
                             </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="ui form">
                             <div class="field">
                                 <label>${message(code: 'profile.extendedFilter')}</label>
                                 <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
@@ -507,6 +510,10 @@
                                 <cc:toggle owner="${US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" />
 %{--                                <ui:xEditableRefData owner="${US_DASHBOARD_SHOW_WEKBNEWS}" field="rdValue" config="${US_DASHBOARD_SHOW_WEKBNEWS.key.rdc}" validation="notEmpty"/>--}%
                             </div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="ui form">
                             <div class="field">
                                 <label>${message(code: 'profile.dashboard.tab')}</label>
                                 <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />

@@ -13,7 +13,7 @@
     <ui:crumb message="search.advancedSearch" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="search.advancedSearch" type="Search" />
+<ui:h1HeaderWithIcon message="search.advancedSearch" type="search_advanced" />
 
 <%
     def addFacet = { params, facet, val ->

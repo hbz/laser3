@@ -231,6 +231,12 @@
             <div class="item">
                 <icon:help_ie/> <span class="content"> &lt;icon:help_ie/> </span>
             </div>
+            <div class="item">
+                <icon:startDate/> <span class="content"> &lt;icon:startDate/> </span>
+            </div>
+            <div class="item">
+                <icon:endDate/> <span class="content"> &lt;icon:endDate/> </span>
+            </div>
         </div>
     </div>
 </div>

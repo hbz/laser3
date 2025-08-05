@@ -115,12 +115,9 @@
                             <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                         </div>
 
-                        <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip" controller="search" action="index"
+                        <ui:link addItemAttributes="true" class="icon la-search-advanced la-popup-tooltip" controller="search" action="index"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
-                            <i class="large icons">
-                                <i class="${Icon.SYM.SEARCH}"></i>
-                                <i class="top right grey corner plus icon"></i>
-                            </i>
+                            <i class="${Icon.SYM.SEARCH_ADVANCED} large"></i>
                         </ui:link>
 
                         %{-- menu: user --}%

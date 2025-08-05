@@ -11,7 +11,6 @@
 
         <div class="ui fluid card">
             <div class="content">
-
                 <div class="ui compact grid">
                     <div class="two column row">
                         <div class="column">
@@ -25,14 +24,6 @@
                                     <strong>${i+1}. ${surveyConfig.getSurveyName()}</strong>
                                 </g:link>
                             </g:else>
-
-                            <g:if test="${surveyInfo.isMandatory}">
-                                &nbsp;
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="bottom left"
-                                      data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                    <i class="${Icon.TOOLTIP.IMPORTANT} orange"></i>
-                                </span>
-                            </g:if>
                         </div>
                         <div class="column">
                             <span class="ui label right floated survey-${surveyInfo.type.value}">
@@ -40,7 +31,33 @@
                             </span>
                         </div>
                     </div>
-                    <div class="two column row">
+
+                    <div class="one column row">
+                        <div class="column">
+                            <g:if test="${surveyInfo.startDate}">
+                                <p class="sc_grey">
+%{--                                    <strong><g:message code="surveyInfo.startDate.label"/>:</strong>--}%
+                                    <icon:startDate/>
+                                    <g:formatDate date="${surveyInfo.startDate}" formatName="default.date.format.notime"/>
+                                </p>
+                            </g:if>
+                            <g:if test="${surveyInfo.endDate}">
+                                <p class="sc_grey">
+%{--                                    <strong><g:message code="surveyInfo.endDate.label"/>:</strong>--}%
+                                    <icon:endDate/>
+                                    <g:formatDate date="${surveyInfo.endDate}" formatName="default.date.format.notime"/>
+                                </p>
+                            </g:if>
+                            <g:if test="${surveyInfo.comment}">
+                                <p class="sc_grey">
+                                    <strong><g:message code="surveyInfo.comment.label"/>:</strong>
+                                    ${surveyInfo.comment}
+                                </p>
+                            </g:if>
+                        </div>
+                    </div>
+
+                    <div class="three column row">
                         <div class="column">
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
@@ -62,26 +79,12 @@
                                 </g:link>
                             </g:if>
                         </div>
-                    </div>
-                    <div class="one column row">
                         <div class="column">
-                            <g:if test="${surveyInfo.startDate}">
-                                <p class="sc_grey">
-                                    <strong><g:message code="surveyInfo.startDate.label"/>:</strong>
-                                    <g:formatDate date="${surveyInfo.startDate}" formatName="default.date.format.notime"/>
-                                </p>
-                            </g:if>
-                            <g:if test="${surveyInfo.endDate}">
-                                <p class="sc_grey">
-                                    <strong><g:message code="surveyInfo.endDate.label"/>:</strong>
-                                    <g:formatDate date="${surveyInfo.endDate}" formatName="default.date.format.notime"/>
-                                </p>
-                            </g:if>
-                            <g:if test="${surveyInfo.comment}">
-                                <p class="sc_grey">
-                                    <strong><g:message code="surveyInfo.comment.label"/>:</strong>
-                                    ${surveyInfo.comment}
-                                </p>
+                            <g:if test="${surveyInfo.isMandatory}">
+                                <span class="la-long-tooltip la-popup-tooltip right floated" data-position="top right"
+                                      data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
+                                    <i class="${Icon.TOOLTIP.IMPORTANT} red large"></i>
+                                </span>
                             </g:if>
                         </div>
                     </div>

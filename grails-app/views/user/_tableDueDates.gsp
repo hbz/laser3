@@ -26,14 +26,14 @@
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
                         <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
-                            <i class="${Icon.TOOLTIP.IMPORTANT} orange"></i>
+%{--                            <i class="${Icon.TOOLTIP.IMPORTANT} orange"></i>--}%
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                        <span class="sc_red la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                        <strong class="sc_red la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
-                            <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>
-                        </span>
+%{--                            <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>--}%
+                        </strong>
                     </g:elseif>
                 </td>
                 <td>
