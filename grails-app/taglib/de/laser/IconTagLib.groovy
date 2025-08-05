@@ -78,10 +78,10 @@ class IconTagLib {
                 icon = 'icon bordered la-package la-object-extended'
                 break
             case 'search':
-                icon = Icon.SYM.SEARCH
+                icon = Icon.SYM.SEARCH + ' bordered inverted grey la-object-extended'
                 break
             case 'search_advanced':
-                icon = Icon.SYM.SEARCH_ADVANCED
+                icon = Icon.SYM.SEARCH_ADVANCED + ' bordered inverted grey la-object-extended'
                 break
             case 'reporting':
                 icon = Icon.REPORTING + ' bordered inverted teal la-object-extended'
