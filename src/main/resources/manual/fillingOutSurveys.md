@@ -1,6 +1,6 @@
 ### Umfragen und Kontakte ausfüllen
 
-Umfragen sind die **primäre Kommunikationsmethode** in LAS:eR, über den Konsortialstellen Informationen über Einrichtungen und Lizensierungswünsche einsammeln und den Teilnehmenden zugleich Lizenzkonditionen mitteilen können. Es gibt verschiedene Umfragetypen, die in Ihrem Aufbau jedoch grundsätzlich gleich sind.  
+Umfragen sind die primäre Kommunikationsmethode in LAS:eR. Über sie können die Konsortialstellen Informationen über Einrichtungen und Lizensierungswünsche einsammeln und den Teilnehmenden zugleich Lizenzkonditionen mitteilen. Es gibt verschiedene Umfragetypen, die in Ihrem Aufbau jedoch grundsätzlich gleich sind.  
 
 Sie starten immer in der **Übersicht**, in der Sie grundlegende Informationen zu der Lizenz erhalten. 
 Dort können die Konsortialstellen einen Erklärungstext hinterlegen, die Lizenzkosten aufführen oder Dokumente zur Sichtung hochladen. Auch besitzt jede Umfrage *Merkmale*, die einrichtungsseitig ausgefüllt werden müssen/können. 
@@ -38,3 +38,7 @@ Seit dem Release 3.5 können Sie nun Umfrage-Kontakte in jeder Umfrage hinterleg
 In der Umfrage können Sie unter dem Reiter **Umfrage-Kontakte** den entsprechenden Kontakt auswählen oder, falls noch nicht vorhanden, neue Umfrage-Kontakte erstellen. Dazu klicken Sie auf den Knopf *Umfragekontakt ergänzen*, der Sie zu Ihren öffentlichen Kontakten in Ihrem Einrichtungsprofil führt, wo Sie Ihren Kontakten die Funktion **Umfragekontakt** vergeben können.
 
 #### Kontakte im Einrichtungsprofil vorauswählen
+
+Sollten Sie nur einen Umfragekontakt/Rechnungskontakt für alle Ihre Umfragen benötigen, können Sie in Ihrem **Einrichtungsprofil > Öffentliche Kontakte** unter der Spalte **vorausgewählter Umfragekontakt/vorausgewählter Rechnungskontakt** diesen auswählen. Dies sorgt dafür, dass der Kontakt in allen Umfragen angekreuzt bleibt. Dasselbe gilt auch für die Rechnungsadressen
+
+![Kontakte vorauswählen]({{url_laser_static}}/media/organisation/06_vorausgewählteKontakte.png "Kontakte vorauswählen" medium+)
