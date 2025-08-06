@@ -28,15 +28,17 @@
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
         <laser:render template="/templates/system/serverIndicator" />
-
-        <div class="landingpage"> <!-- TODO - check/fix css -->
-            <g:if test="${!(controllerName == 'gasco')}">
+        <g:if test="${(controllerName == 'gasco')}">
+            <g:set var="gasco" value="true"/>
+        </g:if>
+        <div class="landingpage" >
+            <g:if test="${!gasco}">
                     <laser:render template="/layouts/publicMenu" />
             </g:if>
             <main class="ui main container">
                 <g:layoutBody/>%{-- body here --}%
             </main>
-            <g:if test="${!(controllerName == 'gasco')}">
+            <g:if test="${!gasco}">
                 <laser:render template="/layouts/footer" />
             </g:if>
 

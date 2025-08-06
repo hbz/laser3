@@ -1799,6 +1799,35 @@ i.icon.la-list-icon:before {
 .la-display-none {
   display: none;
 }
+
+/****************************************
+        GASCO
+*****************************************/
+
+body[class*="gasco_"] {
+  background: #f5ede9;
+}
+
+.gasco .ui.secondary.menu {
+  font-size: 1.786rem;
+  background-color: white;
+}
+
+.gasco:not(.secondary):not(.text):not(.tabular):not(.borderless) > .container > .item:not(.right):not(.borderless):first-child {
+  border-left: none;
+}
+
+.gasco:not(.secondary):not(.text):not(.tabular):not(.borderless) > .container > .right.menu > .item:not(.borderless):last-child {
+  border-right: none;
+}
+
+.gasco .ui.mobile.only.grid .ui.menu .ui.vertical.menu {
+  display: none;
+}
+
+.gasco main.ui.container.main {
+  margin-top: 135px;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Button
  * https://github.com/fomantic/Fomantic-UI/

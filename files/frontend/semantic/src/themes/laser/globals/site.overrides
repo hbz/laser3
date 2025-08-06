@@ -514,3 +514,30 @@ i.icon.la-list-icon{
 .la-display-none {
     display: none;
 }
+/****************************************
+        GASCO
+*****************************************/
+
+body[class*="gasco_"]{
+    background:@gascoPink;
+}
+
+.gasco {
+    .ui.secondary.menu {
+        font-size: 1.786rem;
+        background-color: white;
+    }
+
+    &:not(.secondary):not(.text):not(.tabular):not(.borderless)>.container>.item:not(.right):not(.borderless):first-child {
+        border-left: none;
+    }
+    &:not(.secondary):not(.text):not(.tabular):not(.borderless)>.container>.right.menu>.item:not(.borderless):last-child {
+            border-right: none;
+    }
+    .ui.mobile.only.grid .ui.menu .ui.vertical.menu {
+        display: none;
+    }
+    main.ui.container.main {
+        margin-top: 135px;
+    }
+}
