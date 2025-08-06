@@ -1,4 +1,4 @@
-### Umfragen und Kontakte ausfüllen
+## Umfragen und Kontakte ausfüllen
 
 Umfragen sind die primäre Kommunikationsmethode in LAS:eR. Über sie können die Konsortialstellen Informationen über Einrichtungen und Lizensierungswünsche einsammeln und den Teilnehmenden zugleich Lizenzkonditionen mitteilen. Es gibt verschiedene Umfragetypen, die in Ihrem Aufbau jedoch grundsätzlich gleich sind.  
 
