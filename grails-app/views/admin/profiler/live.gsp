@@ -1,11 +1,11 @@
 <%@ page import="de.laser.ui.CSS; de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
-<laser:htmlStart message="menu.admin.profilerCurrent">
+<laser:htmlStart message="menu.admin.profilerLive">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
-    <ui:crumb message="menu.admin.profilerCurrent" class="active"/>
+    <ui:crumb message="menu.admin.profilerLive" class="active"/>
 </ui:breadcrumbs>
 
     <ui:h1HeaderWithIcon message="menu.admin.profiler" type="admin" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />

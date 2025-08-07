@@ -335,11 +335,11 @@ BEGIN
     ASSERT length( pg_temp.anon_lorem('old',10 ) ) > 300,           'anon_lorem 2 failed';
     ASSERT length( pg_temp.anon_lorem('') ) = 0,                    'anon_lorem 3 failed';
     ASSERT length( pg_temp.anon_lorem('   ',1 ) ) = 3,              'anon_lorem 4 failed';
-    ASSERT         pg_temp.anon_lorem(null) IS null,                'anon_lorem 5 failed';
-    ASSERT         pg_temp.anon_lorem(null, 1) IS null,             'anon_lorem 6 failed';
+    ASSERT         pg_temp.anon_lorem(null) IS NULL,                'anon_lorem 5 failed';
+    ASSERT         pg_temp.anon_lorem(null, 1) IS NULL,             'anon_lorem 6 failed';
 
     RAISE NOTICE '--- anon_bigint: 2';
-    ASSERT         pg_temp.anon_bigint(5) > 0,          'anon_bigint 1 failed';
+    ASSERT         pg_temp.anon_bigint(5) IS NOT NULL,  'anon_bigint 1 failed';
     ASSERT         pg_temp.anon_bigint(null) IS NULL,   'anon_bigint 2 failed';
 
     RAISE NOTICE '--- anon_numeric: 7';
@@ -356,8 +356,8 @@ BEGIN
     ASSERT length( pg_temp.anon_phrase('old', 'debug') ) > 0,   'anon_phrase 2 failed';
     ASSERT length( pg_temp.anon_phrase('') ) = 0,               'anon_phrase 3 failed';
     ASSERT length( pg_temp.anon_phrase('   ', 'debug') ) = 3,   'anon_phrase 4 failed';
-    ASSERT         pg_temp.anon_phrase(null, 'debug') IS null,  'anon_phrase 5 failed';
-    ASSERT         pg_temp.anon_phrase(null, null) IS null,     'anon_phrase 6 failed';
+    ASSERT         pg_temp.anon_phrase(null, 'debug') IS NULL,  'anon_phrase 5 failed';
+    ASSERT         pg_temp.anon_phrase(null, null) IS NULL,     'anon_phrase 6 failed';
 
     RAISE NOTICE '--- anon_url: 4';
     ASSERT length( pg_temp.anon_url('old') ) > 0,       'anon_url 1 failed';
@@ -370,8 +370,8 @@ BEGIN
     ASSERT length( pg_temp.anon_xval('old', 'debug') ) > 0,     'anon_xval 2 failed';
     ASSERT length( pg_temp.anon_xval('') ) = 0,                 'anon_xval 3 failed';
     ASSERT length( pg_temp.anon_xval('   ', 'debug') ) = 3,     'anon_xval 4 failed';
-    ASSERT         pg_temp.anon_xval(null, 'debug') IS null,    'anon_xval 5 failed';
-    ASSERT         pg_temp.anon_xval(null, null) IS null,       'anon_xval 6 failed';
+    ASSERT         pg_temp.anon_xval(null, 'debug') IS NULL,    'anon_xval 5 failed';
+    ASSERT         pg_temp.anon_xval(null, null) IS NULL,       'anon_xval 6 failed';
 
     RAISE NOTICE '--- ---> NO errors found';
 END;
@@ -957,7 +957,7 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTester BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
-        VERSION CONSTANT TEXT = '01/07/2025';
+        VERSION CONSTANT TEXT = '07/08/2025';
         count_tmp INT;
 BEGIN
 

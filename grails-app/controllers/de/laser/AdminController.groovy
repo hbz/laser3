@@ -1406,14 +1406,14 @@ SELECT * FROM (
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
-    def profilerCurrent() {
+    @Secured(['ROLE_YODA'])
+    def profilerLive() {
         Map result = [:]
 
         EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( SystemActivityProfiler.CACHE_KEY_ACTIVE_USER )
         result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> ttl1800.get(u) }.sort { it[1] }.reverse()
 
-        render view: '/admin/profiler/current', model: result
+        render view: '/admin/profiler/live', model: result
     }
 
     /**
