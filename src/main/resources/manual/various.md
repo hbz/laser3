@@ -6,8 +6,9 @@ Die in LAS:eR agierenden Akteure sind dabei primär Konsortialstellen, die regio
 LAS:eR verfügt dabei über ein strenges Rechtesystem, das gewährleistet, dass nur die Inhalte gesehen werden, auf die man berechtigterweise Zugriff haben darf. 
 Gekoppelt mit einem gemeinsamen Datenpool und der hinterlegten Knowledgebase we:kb, führt dies zu einer vierschichtigen Informationshierarchie, die im Aufbau des Systems deutlich wird:
 
-![Menuepunkte]({{url_laser_static}}/media/organisation/menu_laser.png "Menuepunkte" small)
-![Benutzerprofil]({{url_laser_static}}/media/organisation/userprofil_laser.png "Benutzerprofil" tiny)
+![Menüpunkte]({{url_laser_static}}/media/organisation/menu_laser.png "Menüpunkte" medium)
+
+![Benutzerprofil]({{url_laser_static}}/media/organisation/userprofil_laser.png "Benutzerprofil" small)
 
 #### Alle
 
