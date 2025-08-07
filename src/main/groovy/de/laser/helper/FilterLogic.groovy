@@ -33,21 +33,21 @@ class FilterLogic {
         if (params.tab) {
             switch (params.tab) {
                 case 'current' + entites:
-                    result.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                    result.status = [RDStore.TIPP_STATUS_CURRENT.id] as List
                     break
                 case 'planned' + entites:
                     if (!ignorePlannedIEs) {
-                        result.status = [RDStore.TIPP_STATUS_EXPECTED.id]
+                        result.status = [RDStore.TIPP_STATUS_EXPECTED.id] as List
                     }
                     break
                 case 'expired' + entites:
-                    result.status = [RDStore.TIPP_STATUS_RETIRED.id]
+                    result.status = [RDStore.TIPP_STATUS_RETIRED.id] as List
                     break
                 case 'deleted' + entites:
-                    result.status = [RDStore.TIPP_STATUS_DELETED.id]
+                    result.status = [RDStore.TIPP_STATUS_DELETED.id] as List
                     break
                 case 'all' + entites:
-                    result.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+                    result.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id] as List
                     break
             }
         }
