@@ -27,12 +27,12 @@
     </nav>
 
     <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
-        <a data-tab="first" class="item active">Heat</a>
-        <a data-tab="second" class="item">Alle</a>
-        <a data-tab="third" class="item">URL/Kontext</a>
+        <a data-tab="first" class="item active">Alle</a>
+        <a data-tab="second" class="item">URL/Kontext</a>
+        <a data-tab="third" class="item">Heat</a>
     </div>
 
-<div data-tab="first" class="ui bottom attached tab fluid card active">
+<div data-tab="third" class="ui bottom attached tab fluid card active">
     <div class="content">
         <table class="${CSS.ADMIN_HOVER_TABLE}" id="heatTable">
             <thead>
@@ -112,7 +112,7 @@
     </div>
 </div>
 
-<div data-tab="second" class="ui bottom attached tab fluid card">
+<div data-tab="first" class="ui bottom attached tab fluid card">
     <div class="content">
         <table class="${CSS.ADMIN_HOVER_TABLE}" id="globalTable">
             <thead>
@@ -178,7 +178,7 @@
     </div>
 </div>
 
-<div data-tab="third" class="ui bottom attached tab fluid card">
+<div data-tab="second" class="ui bottom attached tab fluid card">
     <div class="content">
         <div class="ui form">
             <div class="three fields">
