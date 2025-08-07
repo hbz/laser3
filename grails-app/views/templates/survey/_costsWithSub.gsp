@@ -164,10 +164,17 @@
                                                     number="${(newCostItem - oldCostItem)}"
                                                     minFractionDigits="2" maxFractionDigits="2" type="number"/>
                                                 <br/>
-                                                (<g:formatNumber
+                                                %{-- @Moe: ERMS-6744, division through zero --}%
+                                                <g:if test="${oldCostItem}">
+                                                    (<g:formatNumber
                                                         number="${((newCostItem - oldCostItem) / oldCostItem) * 100}"
                                                         minFractionDigits="2"
-                                                        maxFractionDigits="2" type="number"/>%)</strong>
+                                                        maxFractionDigits="2" type="number"/>%)
+                                                </g:if>
+                                                <g:else>
+                                                    (0%)
+                                                </g:else>
+                                            </strong>
                                         </td>
                                     </g:each>
                                 </g:if>
