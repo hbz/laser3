@@ -1580,7 +1580,7 @@ class FilterService {
             queryParams.asAt = sdf.parse(params.asAt)
         }
 
-        if(params.get('ieStatus') instanceof List || params.get('ieStatus') instanceof String[]) {
+        if(params.get('ieStatus') instanceof List) {
             queryArgs << 'ie.status in (:ieStatus)'
             queryParams.ieStatus = Params.getRefdataList(params, 'ieStatus')
         }
@@ -2035,7 +2035,7 @@ class FilterService {
             queryArgs << 'tipp.platform in (:platforms)'
             queryParams.platforms = params.platforms
         }
-        if(params.get('tippStatus') instanceof List || params.get('tippStatus') instanceof String[]) {
+        if(params.get('tippStatus') instanceof List) {
             queryArgs << 'tipp.status in (:tippStatus)'
             queryParams.tippStatus = Params.getRefdataList(params, 'tippStatus')
         }
