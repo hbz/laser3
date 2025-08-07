@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; grails.util.Holders; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; grails.util.Holders; de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="menu.yoda.systemQuartz" />
 
 <ui:breadcrumbs>
@@ -18,7 +18,7 @@
     <div class="ui fluid card">
         <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th class="three wide">Job</th>

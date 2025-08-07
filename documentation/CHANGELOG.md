@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6744    07.08.2025  rc-3.5  3.5.4       Andreas Bug         500er wegen Teilung durch Null
+
+6740    05.08.2025  rc-3.5  3.5.4       Andreas Bug         Umfrage-Kosten konnten ohne Element angelegt werden
+
+6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge
+
+6728    15.07.2025  rc-3.5  3.5.4       Andreas Feature     Titelexport berücksichtigt den Status-Filter
+
+6725    10.07.2025  rc-3.5  3.5.4       David   Feature     SystemProfiler -> Admin
+
 6667    09.07.2025  rc-3.5  3.5.4       Andreas Feature     Entfernen der Summenspalten von der Ausgabe der Nutzerzahlen
 
 6724    09.07.2025  rc-3.5  3.5.4       Andreas Feature     neues Filterfeld in "Meine dauerhafte Titel" eingebaut

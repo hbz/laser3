@@ -1,14 +1,14 @@
-<%@ page import="de.laser.system.SystemProfiler; de.laser.Org" %>
-<laser:htmlStart message="menu.yoda.profilerLoadtime">
+<%@ page import="de.laser.ui.CSS; de.laser.system.SystemProfiler; de.laser.Org" %>
+<laser:htmlStart message="menu.admin.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <ui:crumb message="menu.yoda.profiler" class="active"/>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
+    <ui:h1HeaderWithIcon message="menu.admin.profiler" type="admin" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
     <nav class="ui secondary stackable menu">
         <g:render template="profiler/menu" model="${[hideWrapper: true]}"/>
@@ -19,7 +19,7 @@
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
                     let selection = $(this).val()
-                    let link = "${g.createLink(absolute: true, controller: 'yoda', action: 'profilerLoadtime')}?archive=" + selection
+                    let link = "${g.createLink(absolute: true, controller: 'admin', action: 'profilerLoadtime')}?archive=" + selection
                     window.location.href = link
                 })
             </laser:script>
@@ -27,14 +27,14 @@
     </nav>
 
     <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
-        <a data-tab="first" class="item active">Heat</a>
-        <a data-tab="second" class="item">Alle</a>
-        <a data-tab="third" class="item">URL/Kontext</a>
+        <a data-tab="first" class="item active">Alle</a>
+        <a data-tab="second" class="item">URL/Kontext</a>
+        <a data-tab="third" class="item">Heat</a>
     </div>
 
-<div data-tab="first" class="ui bottom attached tab fluid card active">
+<div data-tab="third" class="ui bottom attached tab fluid card active">
     <div class="content">
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="heatTable">
             <thead>
             <tr>
                 <th>Url</th>
@@ -112,9 +112,9 @@
     </div>
 </div>
 
-<div data-tab="second" class="ui bottom attached tab fluid card">
+<div data-tab="first" class="ui bottom attached tab fluid card">
     <div class="content">
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="globalTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -178,7 +178,7 @@
     </div>
 </div>
 
-<div data-tab="third" class="ui bottom attached tab fluid card">
+<div data-tab="second" class="ui bottom attached tab fluid card">
     <div class="content">
         <div class="ui form">
             <div class="three fields">
@@ -198,7 +198,7 @@
                 </div>
             </div>
         </div>
-        <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
+        <table class="${CSS.ADMIN_HOVER_TABLE}" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>

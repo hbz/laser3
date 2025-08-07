@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
 
 <laser:htmlStart text="${message(code:'menu.admin')} ${message(code:'default.dashboard')}" />
 
@@ -50,8 +50,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th class="four wide">${AppUtils.getMeta('info.app.name')}</th>
@@ -88,20 +87,32 @@
             </tr>
         </tbody>
     </table>
-
     </div>
 </div>
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="ui labels">
-            <g:each in="${systemService.serviceCheck()}" var="systemCheck">
-                <div class="ui label" style="margin:0.3em 0.2em">
-                    <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('yes') ? 'green' : 'red'}"></i>
-                    ${systemCheck.key}
-                </div>
-            </g:each>
-        </div>
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
+            <thead>
+            <tr>
+                <th>Jobs & Settings</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <div class="ui labels">
+                        <g:each in="${systemService.serviceCheck()}" var="systemCheck">
+                            <div class="ui label" style="margin:0.3em 0.2em">
+                                <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('yes') ? 'green' : 'red'}"></i>
+                                ${systemCheck.key}
+                            </div>
+                        </g:each>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -109,7 +120,7 @@
     <div class="ui fluid card">
         <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
         <tr>
             <th scope="col" class="two wide">${message(code:'default.date.label')}</th>

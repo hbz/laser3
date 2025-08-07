@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn" %>
 <laser:htmlStart message="menu.admin.mergeVendors" />
 
     <ui:breadcrumbs>
@@ -24,7 +24,7 @@
 
         <%-- --%>
     <g:form controller="admin" action="mergeVendors">
-        <table class="ui celled la-js-responsive-table la-table compact table">
+        <table class="${CSS.ADMIN_TABLE}">
             <thead>
                 <tr>
                     <th colspan="3">

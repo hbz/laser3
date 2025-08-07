@@ -1,14 +1,14 @@
 <%@ page import="de.laser.system.SystemProfiler" %>
-<laser:htmlStart message="menu.yoda.profilerTimeline">
+<laser:htmlStart message="menu.admin.profilerTimeline">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <ui:crumb message="menu.yoda.profiler" class="active"/>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
+    <ui:h1HeaderWithIcon message="menu.admin.profiler" type="admin" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
     <g:render template="profiler/menu" />
 
@@ -30,9 +30,9 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.yoda = {}
+        JSPC.app.profiler = {}
 
-        JSPC.app.yoda.chart_config= {
+        JSPC.app.profiler.chart_config= {
             xAxis: {
                type: 'category',
                data: []
@@ -73,25 +73,27 @@
             series: []
         }
 
-        JSPC.app.yoda.chart_config.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
+        JSPC.app.profiler.chart_config.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
 
         <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
             <g:set var="itemValue" value="${globalTimeline[ik]}" />
 
-            JSPC.app.yoda.chart_config.series.push( {
+            JSPC.app.profiler.chart_config.series.push( {
                 name: '${ik}',
                         type: 'bar',
                         stack: 'total',
-                        animation: false,
+                        animation: true,
+                        animationDuration: 150,
+                        emphasis: { focus: 'series' },
                         data: [<% print itemValue.join(', ') %>]
                     });
 
         </g:each>
 
-        JSPC.app.yoda.chart = echarts.init( $('#echart-timeline')[0] );
-        JSPC.app.yoda.chart.setOption( JSPC.app.yoda.chart_config);
+        JSPC.app.profiler.chart = echarts.init( $('#echart-timeline')[0] );
+        JSPC.app.profiler.chart.setOption( JSPC.app.profiler.chart_config);
         $(window).resize(function () {
-            JSPC.app.yoda.chart.resize();
+            JSPC.app.profiler.chart.resize();
         });
     </laser:script>
 

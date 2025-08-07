@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn" %>
 <laser:htmlStart message="menu.yoda.manageFTControl" />
 
     <ui:breadcrumbs>
@@ -20,7 +20,7 @@
     </div>
     <div class="content">
 
-      <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+      <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
           <tr>
             <th>${message(code:'default.number')}</th>
@@ -73,7 +73,7 @@
     </div>
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th>${message(code:'default.number')}</th>

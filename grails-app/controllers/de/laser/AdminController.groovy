@@ -1,9 +1,13 @@
 package de.laser
 
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.finance.CostInformationDefinition
 import de.laser.mail.MailTemplate
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
+import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemProfiler
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.CodeUtils
@@ -34,6 +38,7 @@ import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.sql.Timestamp
 import java.time.LocalDate
 
 /**
@@ -1385,5 +1390,192 @@ SELECT * FROM (
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         result.putAll(packageService.getWekbPackages(configMap))
         result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def profilerLive() {
+        Map result = [:]
+
+        EhcacheWrapper ttl1800 = BeanStore.getCacheService().getTTL1800Cache( SystemActivityProfiler.CACHE_KEY_ACTIVE_USER )
+        result.users = SystemActivityProfiler.getActiveUsers(1000 * 60 * 10).collect { u -> ttl1800.get(u) }.sort { it[1] }.reverse()
+
+        render view: '/admin/profiler/live', model: result
+    }
+
+    /**
+     * Dumps the registered counts of users over time
+     * @return a list of graphs showing when how many users were recorded
+     */
+    @Secured(['ROLE_ADMIN'])
+    def profilerActivity() {
+        Map result = [:]
+
+        Map<String, Object> activity = [:]
+
+        // gathering data
+
+        List<Timestamp> dayDates = SystemActivityProfiler.executeQuery(
+                "select date_trunc('day', dateCreated) as day from SystemActivityProfiler group by date_trunc('day', dateCreated), dateCreated order by dateCreated desc"
+        )
+        dayDates.unique().take(30).each { it ->
+//            List<Timestamp, Timestamp, Timestamp, Integer, Integer, Double> slots = SystemActivityProfiler.executeQuery(
+            List slots = SystemActivityProfiler.executeQuery(
+                    "select date_trunc('hour', dateCreated), min(dateCreated), max(dateCreated), min(userCount), max(userCount), avg(userCount) " +
+                            "  from SystemActivityProfiler where date_trunc('day', dateCreated) = :day " +
+                            " group by date_trunc('hour', dateCreated) order by min(dateCreated), max(dateCreated)",
+                    [day: it])
+
+            String dayKey = (DateUtils.getLocalizedSDF_noTime()).format(new Date(it.getTime()))
+            activity.put(dayKey, [])
+
+            slots.each { hour ->
+                activity[dayKey].add([
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        hour[3],    // user.min
+                        hour[4],    // user.max
+                        hour[5]     // user.avg
+                ])
+            }
+        }
+
+        // precalc
+
+        Map<String, Object> activityMatrix = [:]
+        activityMatrix.put('Ø', null)
+
+        List averages = (0..23).collect{ 0 }
+        List labels   = (0..23).collect{ "${it < 10 ? '0' + it : it}:00:00" }
+
+        activity.each{ dayKey, values ->
+            List series1 = (0..23).collect{ 0 }
+            List series2 = (0..23).collect{ 0 }
+
+            values.each { val ->
+                int indexOf = labels.findIndexOf{it == val[0]}
+                if (indexOf >= 0) {
+                    series1.putAt(indexOf, val[3])          // [0] = min
+                    //series2.putAt(indexOf, val[4])          // [1] = max
+                    series2.putAt(indexOf, val[4]- val[3])  // stackBars: true - max-min -> [1] = diff
+                    averages[indexOf] = averages[indexOf] + val[5]
+                }
+            }
+            activityMatrix.put(dayKey, [series1, series2])
+        }
+
+        // averages
+
+        for(int i=0; i<averages.size(); i++) {
+            averages[i] = (averages[i]/activity.size())
+        }
+
+        activityMatrix.putAt('Ø', [averages, averages])
+
+        result.labels = labels
+        result.activity = activityMatrix
+
+        render view: '/admin/profiler/activity', model: result
+    }
+
+    /**
+     * Dumps the average loading times for the app's routes during certain time points
+     * @return a table showing when which call needed how much time in average
+     * @see SystemActivityProfiler
+     */
+    @Secured(['ROLE_ADMIN'])
+    def profilerLoadtime() {
+        Map<String, Object> result = [:]
+
+        result.globalMatrix = [:]
+        result.globalMatrixSteps = [0, 2000, 4000, 8000, 12000, 20000, 30000, 45000, 60000]
+
+        result.archive = params.archive ?: SystemProfiler.getCurrentArchive()
+        result.allArchives = SystemProfiler.executeQuery('select distinct(archive) from SystemProfiler').collect{ it ->
+            [it,  SystemProfiler.executeQuery('select count(*) from SystemProfiler where archive =: archive', [archive: it])[0]]
+        }
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        allUri.each { uri ->
+            result.globalMatrix["${uri}"] = [:]
+            result.globalMatrixSteps.eachWithIndex { step, i ->
+                String sql = 'select count(sp.uri) from SystemProfiler sp where sp.archive = :arc and sp.uri =:uri and sp.ms > :currStep'
+                Map sqlParams = [uri: uri, currStep: step, arc: result.archive]
+
+                if (i < result.globalMatrixSteps.size() - 1) {
+                    sql += ' and sp.ms < :nextStep'
+                    sqlParams = [uri: uri, currStep: step, nextStep: result.globalMatrixSteps[i+1], arc: result.archive]
+                }
+                result.globalMatrix["${uri}"]["${step}"] = SystemProfiler.executeQuery(sql, sqlParams).get(0)
+            }
+        }
+
+        result.globalStats = SystemProfiler.executeQuery(
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, count(sp.ms) as counter from SystemProfiler sp where sp.archive = :arc group by sp.uri order by counter desc",
+                [arc: result.archive]
+        )
+
+        result.contextStats = SystemProfiler.executeQuery(
+                "select sp.uri, max(sp.ms) as max, avg(sp.ms) as avg, ctx.id, count(ctx.id) as counter from SystemProfiler sp join sp.context as ctx where sp.archive = :arc and ctx is not null group by sp.uri, ctx.id order by counter desc",
+                [arc: result.archive]
+        )
+        
+        List<BigDecimal> hmw = [ -0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0 ]
+        Map<String, List> heatMap = [:]
+
+        result.globalStats.each{ gs ->
+            String uri = gs[0]
+            Map<String, Long> counts = result.globalMatrix[uri]
+            BigDecimal heat = 0.0
+
+            result.globalMatrixSteps.eachWithIndex { c, idx ->
+                heat += (counts.get(c.toString()) * hmw[idx])
+            }
+            heatMap.putAt(uri, [ heat.doubleValue() * (Math.sqrt(gs[3]) / gs[3]), gs[1], gs[2], gs[3] ]) // max, avg, count
+        }
+        result.globalHeatMap = heatMap.findAll {it.value[0] > 0 }.sort {e, f -> f.value[0] <=> e.value[0] }.take(20)
+
+        render view: '/admin/profiler/loadtime', model: result
+    }
+
+    /**
+     * Dumps the call counts on the app's different routes over time
+     * @return a listing of graphs when which page has been called how many times
+     */
+    @Secured(['ROLE_ADMIN'])
+    def profilerTimeline() {
+        Map<String, Object> result = [:]
+
+        List<String> allUri = SystemProfiler.executeQuery('select distinct(uri) from SystemProfiler')
+
+        result.globalTimeline           = [:]
+        result.globalTimelineStartDate  = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(30) )
+        result.globalTimelineDates      = (25..0).collect{ (DateUtils.getLocalizedSDF_noTime()).format( DateUtils.localDateToSqlDate( LocalDate.now().minusDays(it) ) )}
+
+        Map<String, Integer> ordered = [:]
+
+        allUri.each { uri ->
+            result.globalTimeline[uri] = (25..0).collect { 0 }
+
+            String sql = "select to_char(sp.dateCreated, 'dd.mm.yyyy'), count(*) from SystemProfiler sp where sp.uri = :uri and sp.dateCreated >= :dCheck group by to_char(sp.dateCreated, 'dd.mm.yyyy')"
+            List hits = SystemProfiler.executeQuery(sql, [uri: uri, dCheck: result.globalTimelineStartDate])
+
+            int count = 0
+            hits.each { hit ->
+                int indexOf = result.globalTimelineDates.findIndexOf { it == hit[0] }
+                if (indexOf >= 0) {
+                    result.globalTimeline[uri][indexOf] = hit[1]
+                    count = count + hit[1]
+                }
+            }
+
+            if (count > 0) {
+                ordered[uri] = count
+            }
+        }
+        result.globalTimelineOrder = ordered.sort{ it.key }
+
+        render view: '/admin/profiler/timeline', model: result
     }
 }
