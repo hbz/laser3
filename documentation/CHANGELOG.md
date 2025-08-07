@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6744    07.08.2025  rc-3.5  3.5.4       Andreas Bug         500er wegen Teilung durch Null
+
 6740    05.08.2025  rc-3.5  3.5.4       Andreas Bug         Umfrage-Kosten konnten ohne Element angelegt werden
 
 6732    18.07.2025  rc-3.5  3.5.4       David   Bug         Doppelklick bei Anlegen von Library Supplier erzeugt dublette Einträge
