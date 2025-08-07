@@ -526,17 +526,53 @@ body[class*="gasco_"]{
     .ui.secondary.menu {
         font-size: 1.786rem;
         background-color: white;
+        .item {
+            font-weight: 700;
+            &.active{
+                color: @gascoRed;
+                background: none;
+            }
+        }
+    }
+    h1.ui.header {
+        font-size: 3.063rem;
+        color: @gascoTurquoise;
+    }
+    h2.ui.header {
+        font-size: 2.438rem;
+        color: @gascoTeal;
+    }
+    .ui.table {
+      border-collapse: collapse;
+      width: 100%;
+      border-spacing: 5rem 2rem;
+      tbody {
+        &>tr {
+          margin-top: 10px;
+          th:not(.la-th-column):not(.la-no-uppercase) {
+              font-size: 1rem;
+          }
+          &>td,&>th{
+            border-top: none;
+            padding: 8px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+          }
+        }
+      }
+
+      td:first-child,
+      th:first-child {
+        border-radius: 20px 0 0 20px;
+      }
+      td:last-child,
+      th:last-child {
+        border-radius: 0 20px 20px 0;
+      }
     }
 
-    &:not(.secondary):not(.text):not(.tabular):not(.borderless)>.container>.item:not(.right):not(.borderless):first-child {
-        border-left: none;
-    }
-    &:not(.secondary):not(.text):not(.tabular):not(.borderless)>.container>.right.menu>.item:not(.borderless):last-child {
-            border-right: none;
-    }
-    .ui.mobile.only.grid .ui.menu .ui.vertical.menu {
-        display: none;
-    }
+
+
     main.ui.container.main {
         margin-top: 135px;
     }

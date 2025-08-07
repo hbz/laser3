@@ -3,7 +3,10 @@
 
 <div class="gasco">
     <g:render template="/public/gasco/nav" />
-    <table class="listing" summary="Liste der GASCO-Mitglieder">
+    <h1 class="ui header">
+        Liste der GASCO-Mitglieder
+    </h1>
+    <table class="ui striped table">
         <tbody>
         <tr><th>Mitglieder</th><th>Ansprechpartner</th><th>Institution</th></tr>
         <tr>

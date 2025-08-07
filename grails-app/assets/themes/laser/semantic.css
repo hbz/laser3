@@ -1813,16 +1813,55 @@ body[class*="gasco_"] {
   background-color: white;
 }
 
-.gasco:not(.secondary):not(.text):not(.tabular):not(.borderless) > .container > .item:not(.right):not(.borderless):first-child {
-  border-left: none;
+.gasco .ui.secondary.menu .item {
+  font-weight: 700;
 }
 
-.gasco:not(.secondary):not(.text):not(.tabular):not(.borderless) > .container > .right.menu > .item:not(.borderless):last-child {
-  border-right: none;
+.gasco .ui.secondary.menu .item.active {
+  color: #b50018;
+  background: none;
 }
 
-.gasco .ui.mobile.only.grid .ui.menu .ui.vertical.menu {
-  display: none;
+.gasco h1.ui.header {
+  font-size: 3.063rem;
+  color: #33a5d9;
+}
+
+.gasco h2.ui.header {
+  font-size: 2.438rem;
+  color: #425259;
+}
+
+.gasco .ui.table {
+  border-collapse: collapse;
+  width: 100%;
+  border-spacing: 5rem 2rem;
+}
+
+.gasco .ui.table tbody > tr {
+  margin-top: 10px;
+}
+
+.gasco .ui.table tbody > tr th:not(.la-th-column):not(.la-no-uppercase) {
+  font-size: 1rem;
+}
+
+.gasco .ui.table tbody > tr > td,
+.gasco .ui.table tbody > tr > th {
+  border-top: none;
+  padding: 8px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.gasco .ui.table td:first-child,
+.gasco .ui.table th:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+.gasco .ui.table td:last-child,
+.gasco .ui.table th:last-child {
+  border-radius: 0 20px 20px 0;
 }
 
 .gasco main.ui.container.main {

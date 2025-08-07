@@ -7,10 +7,14 @@
 <div class="gasco">
     <g:render template="/public/gasco/nav" />
 
-    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" type="gasco" />
+    <h1 class="ui header">
+        <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+    </h1>
+
+
 
     <div class="ui grid">
-        <div class="eleven wide column">
+        <div class="sixteen wide column">
             <div class="ui la-gasco segment">
                 <g:form controller="gasco" action="monitor" method="get" class="ui small form">
 
@@ -76,9 +80,6 @@
 
                 </g:form>
             </div>
-        </div>
-        <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco-logo.jpg')}"/>
         </div>
     </div>
 </div>
