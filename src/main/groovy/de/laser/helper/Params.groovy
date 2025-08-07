@@ -39,7 +39,7 @@ class Params {
         List result = []
 
         if (map.containsKey(key)) {
-            if (map.get(key) instanceof List) {
+            if (map.get(key) instanceof List || map.get(key) instanceof String[]) {
                 result = map.get(key).findAll().collect{
                     if (it != 'FETCH_ALL') { // workaround until FETCH_ALL is removed // TODO: erms-5511
                         Long.valueOf(it)
