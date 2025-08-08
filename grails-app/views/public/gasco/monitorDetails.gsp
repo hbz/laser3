@@ -1,6 +1,9 @@
-<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.storage.BeanStore; de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}"/>
+
+<div class="gasco">
+    <g:render template="/public/gasco/nav" />
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 
@@ -52,8 +55,8 @@
         </div>
     </div>
 
-<g:if test="${issueEntitlements}">
-    <ui:paginate action="gascoDetails" controller="public" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
-</g:if>
-
+    <g:if test="${issueEntitlements}">
+        <ui:paginate action="gascoDetails" controller="public" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
+    </g:if>
+</div>
 <laser:htmlEnd />

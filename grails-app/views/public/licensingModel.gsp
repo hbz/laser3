@@ -1,5 +1,5 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
-<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}">
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.storage.BeanStore" %>
+<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}" >
     <style>
         .ui.table thead tr:first-child > th {
             top: 48px !important;
@@ -91,172 +91,173 @@
 </laser:htmlStart>
 
 <div class="ui stackable grid">
-    <div class="eleven wide column">
-        <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="${Icon.LASER} blue la-object"></i> Das LAS:eR Lizenzmodell</h1>
-        <table class="ui large structured la-table table">
-            <thead>
-            <tr>
-                <th class="two wide" rowspan="2">Leistungsmerkmale</th>
-                <th class="center aligned"><h2 class="ui heading">Basic</h2></th>
-                <th class="center aligned"><h2 class="ui heading">Pro</h2></th>
-                <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
-            </tr>
+<div class="eleven wide column">
+    <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="${Icon.LASER} blue la-object"></i> Das LAS:eR Lizenzmodell</h1>
+    <table class="ui large structured la-table table">
+        <thead>
+        <tr>
+            <th class="two wide" rowspan="2">Leistungsmerkmale</th>
+            <th class="center aligned"><h2 class="ui heading">Basic</h2></th>
+            <th class="center aligned"><h2 class="ui heading">Pro</h2></th>
+            <th class="center aligned"  rowspan="2">${message(code:'licensingModel.table.demo')}</th>
+        </tr>
 
+        <tr>
+            <th class="two wide center aligned" colspan="2">
+                <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
+                    Beratung vereinbaren <icon:arrow />
+                </a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <g:each in="${mappingColsBasic}" var="mpg1">
             <tr>
-                <th class="two wide center aligned" colspan="2">
-                    <a href="mailto:laser@hbz-nrw.de" class="ui huge first button" style="color: white">
-                        Beratung vereinbaren <icon:arrow />
-                    </a>
-                </th>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${mappingColsBasic}" var="mpg1">
-                <tr>
-                    <td class="tenwide">
-                        <div class="ui list">
-                            <div class="item">
-                                <i class="icon la-list-icon mk-${mpg1}"></i>
-                                <div class="content">
-                                    <div class="header">${message(code:"marketing.featureList.major.${mpg1}")}</div>
-                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-1")} </div>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-2") != "marketing.featureList.minor.${mpg1}-2"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-2")} </div>
-                                    </g:if>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-3") != "marketing.featureList.minor.${mpg1}-3"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-3")} </div>
-                                    </g:if>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-4") != "marketing.featureList.minor.${mpg1}-4"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-4")} </div>
-                                    </g:if>
-                                </div>
+                <td class="tenwide">
+                    <div class="ui list">
+                        <div class="item">
+                            <i class="icon la-list-icon mk-${mpg1}"></i>
+                            <div class="content">
+                                <div class="header">${message(code:"marketing.featureList.major.${mpg1}")}</div>
+                                <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-1")} </div>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-2") != "marketing.featureList.minor.${mpg1}-2"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-2")} </div>
+                                </g:if>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-3") != "marketing.featureList.minor.${mpg1}-3"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-3")} </div>
+                                </g:if>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg1}-4") != "marketing.featureList.minor.${mpg1}-4"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg1}-4")} </div>
+                                </g:if>
                             </div>
                         </div>
-                    </td>
-                    <td class="four wide center aligned">
-                        <i class="${Icon.SYM.YES} green large"></i>
-                    </td>
-                    <td class="four wide center aligned warning">
-                        <i class="${Icon.SYM.YES} green large"></i>
-                    </td>
-                    <td class="center aligned">
-                        <g:if test="${mpg1 == 'asService' }">
-                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <icon:video />
-                            </button>
-                        </g:if>
-                        <g:if test="${mpg1 == 'community' }">
-                            <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <icon:video />
-                            </button>
-                        </g:if>
-                    </td>
-                </tr>
-            </g:each>
-            <g:each in="${mappingColsPro}" var="mpg2">
-                <tr>
-                    <td class="ten wide">
-                        <div class="ui list">
-                            <div class="item">
-                                <i class="icon la-list-icon mk-${mpg2}"></i>
-                                <div class="content">
-                                    <div class="header">${message(code:"marketing.featureList.major.${mpg2}")}</div>
-                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-1")} </div>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-2") != "marketing.featureList.minor.${mpg2}-2"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-2")} </div>
-                                    </g:if>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-3") != "marketing.featureList.minor.${mpg2}-3"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-3")} </div>
-                                    </g:if>
-                                    <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-4") != "marketing.featureList.minor.${mpg2}-4"}">
-                                        <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-4")} </div>
-                                    </g:if>
-                                </div>
+                    </div>
+                </td>
+                <td class="four wide center aligned">
+                    <i class="${Icon.SYM.YES} green large"></i>
+                </td>
+                <td class="four wide center aligned warning">
+                    <i class="${Icon.SYM.YES} green large"></i>
+                </td>
+                <td class="center aligned">
+                    <g:if test="${mpg1 == 'asService' }">
+                        <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
+                            ${message(code:'licensingModel.button.watch')} <icon:video />
+                        </button>
+                    </g:if>
+                    <g:if test="${mpg1 == 'community' }">
+                        <button id="${mpg1}" class="${Btn.SIMPLE} la-modal">
+                            ${message(code:'licensingModel.button.watch')} <icon:video />
+                        </button>
+                    </g:if>
+                </td>
+            </tr>
+        </g:each>
+        <g:each in="${mappingColsPro}" var="mpg2">
+            <tr>
+                <td class="ten wide">
+                    <div class="ui list">
+                        <div class="item">
+                            <i class="icon la-list-icon mk-${mpg2}"></i>
+                            <div class="content">
+                                <div class="header">${message(code:"marketing.featureList.major.${mpg2}")}</div>
+                                <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-1")} </div>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-2") != "marketing.featureList.minor.${mpg2}-2"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-2")} </div>
+                                </g:if>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-3") != "marketing.featureList.minor.${mpg2}-3"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-3")} </div>
+                                </g:if>
+                                <g:if test="${message(code:"marketing.featureList.minor.${mpg2}-4") != "marketing.featureList.minor.${mpg2}-4"}">
+                                    <div class="description">${message(code:"marketing.featureList.minor.${mpg2}-4")} </div>
+                                </g:if>
                             </div>
                         </div>
-                    </td>
+                    </div>
+                </td>
 
-                     <td class="four wide center aligned">
+                 <td class="four wide center aligned">
 
-                     </td>
-                    <td class="four wide center aligned warning">
-                        <i class="${Icon.SYM.YES} green large"></i>
-                    </td>
-                    <td class="center aligned">
-                        <g:if test="${mpg2 === 'management'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <icon:video />
-                            </button>
-                        </g:if>
-                        <g:if test="${mpg2 === 'organisation'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <icon:video />
-                            </button>
-                        </g:if>
-                        <g:if test="${mpg2 === 'reporting'}">
-                            <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
-                                ${message(code:'licensingModel.button.watch')} <icon:video />
-                            </button>
-                        </g:if>
-                    </td>
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
+                 </td>
+                <td class="four wide center aligned warning">
+                    <i class="${Icon.SYM.YES} green large"></i>
+                </td>
+                <td class="center aligned">
+                    <g:if test="${mpg2 === 'management'}">
+                        <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                            ${message(code:'licensingModel.button.watch')} <icon:video />
+                        </button>
+                    </g:if>
+                    <g:if test="${mpg2 === 'organisation'}">
+                        <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                            ${message(code:'licensingModel.button.watch')} <icon:video />
+                        </button>
+                    </g:if>
+                    <g:if test="${mpg2 === 'reporting'}">
+                        <button id="${mpg2}" class="${Btn.SIMPLE} la-modal">
+                            ${message(code:'licensingModel.button.watch')} <icon:video />
+                        </button>
+                    </g:if>
+                </td>
+            </tr>
+        </g:each>
+        </tbody>
+    </table>
 
-    </div>
-    <aside class="five wide column la-sidekick">
+</div>
+<aside class="five wide column la-sidekick">
 
-            <img  class="ui fluid image previewImage"  data-src="${resource(dir: 'images', file: 'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png')}" style="margin-top: 14rem; cursor: zoom-in;" src="${resource(dir:'images', file:'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png', absolute:true)}" alt="E-Ressourcen intelligent in LAS:eR verwalten" />
+        <img  class="ui fluid image previewImage"  data-src="${resource(dir: 'images', file: 'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png')}" style="margin-top: 14rem; cursor: zoom-in;" src="${resource(dir:'images', file:'landingpage/anbieter-wekb-laser-konsortialstelle_cd_laser.png', absolute:true)}" alt="E-Ressourcen intelligent in LAS:eR verwalten" />
 
 
-    </aside>
-    <ui:modal modalSize="large" id="fullsizeImage" hideSubmitButton="true">
-        <img class="ui image" src="#" alt="fullsize image"/>
-    </ui:modal>
+</aside>
+<ui:modal modalSize="large" id="fullsizeImage" hideSubmitButton="true">
+    <img class="ui image" src="#" alt="fullsize image"/>
+</ui:modal>
 </div>
 
-    <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
-        <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management','organisation', 'reporting']}">
+<g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
+    <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management','organisation', 'reporting']}">
 
-            <laser:script file="${this.getGroovyPageFileName()}">
-                $('#${mpg5}').click(function(){
-                    $.modal({
-                        title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo">Animation wiederholen</button>',
-                        class: 'large',
-                        closeIcon: true,
-                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'media', file: "showcase/${mpg5}.gif")}"/>',
-                        actions: [{
-                            text: '${message(code:"default.button.close.label")}',
-                            class: 'green'
-                        }]
-                    }).modal('show');
-                        if ($('.la-animatedGif-img').length) {
-                            var gifSrc, srcGif;
-                            $('.la-animatedGif-img').each(function () {
-                                gifSrc = $(this).attr("src");
-                                $(this).attr("data-gif", gifSrc);
-                            });
-                        }
-
-                        $('.la-animatedGif-redo').on("click", function () {
-                            let $img = $(this).parent().next().find('.la-animatedGif-img');
-                            let srcGif = $img.attr("data-gif");
-
-                            if (srcGif) {
-                                $img.attr("src", srcGif + "?t=" + new Date().getTime());
-                            }
+        <laser:script file="${this.getGroovyPageFileName()}">
+            $('#${mpg5}').click(function(){
+                $.modal({
+                    title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo">Animation wiederholen</button>',
+                    class: 'large',
+                    closeIcon: true,
+                    content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'media', file: "showcase/${mpg5}.gif")}"/>',
+                    actions: [{
+                        text: '${message(code:"default.button.close.label")}',
+                        class: 'green'
+                    }]
+                }).modal('show');
+                    if ($('.la-animatedGif-img').length) {
+                        var gifSrc, srcGif;
+                        $('.la-animatedGif-img').each(function () {
+                            gifSrc = $(this).attr("src");
+                            $(this).attr("data-gif", gifSrc);
                         });
-                    });
+                    }
 
-                    $('.previewImage').off('click').on('click', function () {
-                        $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
-                        $('#fullsizeImage').modal('show');
-                    });
-            </laser:script>
+                    $('.la-animatedGif-redo').on("click", function () {
+                        let $img = $(this).parent().next().find('.la-animatedGif-img');
+                        let srcGif = $img.attr("data-gif");
 
-        </g:if>
-    </g:each>
+                        if (srcGif) {
+                            $img.attr("src", srcGif + "?t=" + new Date().getTime());
+                        }
+                    });
+                });
+
+                $('.previewImage').off('click').on('click', function () {
+                    $('#fullsizeImage img').attr('src', $(this).attr('data-src'));
+                    $('#fullsizeImage').modal('show');
+                });
+        </laser:script>
+
+    </g:if>
+</g:each>
+
 <sec:ifAnyGranted roles="ROLE_USER">
     <style>
     .ui.table thead tr:first-child>th {

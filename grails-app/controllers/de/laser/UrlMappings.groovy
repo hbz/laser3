@@ -13,9 +13,12 @@ class UrlMappings {
 
         // gasco
 
-        "/gasco"                (controller: 'public', action: 'gasco')
-        "/gasco/details/$id"    (controller: 'public', action: 'gascoDetails')
-        "/gasco/json"           (controller: 'public', action: 'gascoJson')
+        "/gasco"                (controller: 'gasco', action: 'index')
+        "/gasco/monitor"        (controller: 'gasco', action: 'monitor')
+        "/gasco/details/$id"    (controller: 'gasco', action: 'monitorDetails')
+        "/gasco/data"           (controller: 'gasco', action: 'monitorData')
+        "/gasco/mitglieder"     (controller: 'gasco', action: 'members')
+        "/gasco/ueber-uns"      (controller: 'gasco', action: 'about')
 
         // ajax
 
