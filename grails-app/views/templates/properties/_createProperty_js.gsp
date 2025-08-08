@@ -36,8 +36,8 @@
                         });
                         $(".propDefFilter").on('input', function() {
                             let table = $(this).attr('data-forTable');
-                            $("#"+table+" td.pdName:containsInsensitive('"+$(this).val()+"')").parent("tr").show();
-                            $("#"+table+" td.pdName:not(:containsInsensitive('"+$(this).val()+"'))").parent("tr").hide();
+                            $("#"+table+" td.pdName:containsInsensitive_laser('"+$(this).val()+"')").parent("tr").show();
+                            $("#"+table+" td.pdName:not(:containsInsensitive_laser('"+$(this).val()+"'))").parent("tr").hide();
                         });
                     }
                 }).modal('show');
@@ -46,7 +46,7 @@
         });
 
         //own selector for case-insensitive :contains
-        jQuery.expr[':'].containsInsensitive = function(a, i, m) {
+        jQuery.expr[':'].containsInsensitive_laser = function(a, i, m) {
             return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
         };
     }
