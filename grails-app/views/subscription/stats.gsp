@@ -39,6 +39,7 @@
                     </ui:msg>
                     <laser:render template="/info/flyoutWrapper"/>
                     <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
+                        <div class="counterCheckWrapper"></div>
                         <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
                             <div class="ui message">
                                 <div class="header">${message(code: 'default.usage.addRequestorIDs.info', args: [platform.name])}</div>
@@ -91,20 +92,17 @@
                                 </div>
                             </div><!-- .message -->
                             <div class="field la-field-right-aligned">
+                                <input type="button" class="counterApiConnectionCheck ${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.usage.sushiCallCheck.trigger')}"/>
                                 <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.add.label')}"/>
                             </div>
                             <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
                         </g:form>
-                        <%
-                            Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
-                        %>
                         <table class="ui celled table">
                             <tr>
                                 <th><g:message code="default.number"/></th>
                                 <th><g:message code="default.institution"/></th>
                                 <th>Customer ID</th>
                                 <th>Requestor ID/API-Key</th>
-                                <th><g:message code="default.usage.sushiCallCheck.header"/></th>
                                 <th class="center aligned">
                                     <ui:optionsIcon />
                                 </th>
@@ -120,9 +118,6 @@
                                     </td>
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
-                                    </td>
-                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="counterApiConnectionCheck" data-platform="${platform.uuid}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
-
                                     </td>
                                     <td>
                                         <g:link class="${Btn.ICON.SIMPLE}" action="stats" id="${row.memberSubId}" role="button" aria-label="${message(code: 'default.usage.consortiaTableHeader')}"><i class="${Icon.STATS}"></i></g:link>
@@ -160,21 +155,11 @@
         }
     });
 
-    $(".counterApiConnectionCheck").each(function(i) {
-        let cell = $(this);
-        let data = {
-            platform: cell.attr("data-platform"),
-            customerId: cell.attr("data-customerId"),
-            requestorId: cell.attr("data-requestorId")
-        };
+    $(".counterApiConnectionCheck").on('click', function() {
         $.ajax({
-            url: "<g:createLink controller="ajaxJson" action="checkCounterAPIConnection"/>",
-            data: data
+            url: "<g:createLink controller="ajaxHtml" action="checkCounterAPIConnection" params="[id: subscription.id]"/>"
         }).done(function(response) {
-            if(response.error === true) {
-               cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
-               r2d2.initDynamicUiStuff('#'+cell.attr('id'));
-            }
+            $(".counterCheckWrapper").html(response);
         });
     });
     </laser:script>
