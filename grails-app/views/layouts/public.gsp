@@ -1,6 +1,7 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper; org.grails.web.util.GrailsApplicationAttributes" %>
 <!doctype html>
 
+<g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 <html>
 
 <head>
@@ -23,19 +24,33 @@
     <g:render template="/layouts/favicon" />
 </head>
 
-    <body class="public">
-
+    <body class="public ${controllerName}_${actionName}">
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
-        <g:layoutBody/>%{-- body here --}%
-    
-        <div id="Footer">
-            <div class="clearfix"></div>
+        <laser:render template="/templates/system/serverIndicator" />
+        <g:if test="${(controllerName == 'gasco')}">
+            <g:set var="gasco" value="true"/>
+        </g:if>
+        <div class="landingpage" >
+            <g:if test="${!gasco}">
+                    <laser:render template="/layouts/publicMenu" />
+            </g:if>
+            <main class="ui main container">
+                <g:layoutBody/>%{-- body here --}%
+            </main>
+            <g:if test="${!gasco}">
+                <laser:render template="/layouts/footer" />
+            </g:if>
+            <g:else>
+                <laser:render template="/public/gasco/footer" />
+            </g:else>
+
+
+            <laser:javascript src="laser.js"/>%{-- dont move --}%
+
+            <laser:scriptBlock/>%{-- dont move --}%
+
         </div>
-
-        <laser:javascript src="laser.js"/>%{-- dont move --}%
-
-        <laser:scriptBlock/>%{-- dont move --}%
 
     </body>
 </html>

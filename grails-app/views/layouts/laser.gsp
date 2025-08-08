@@ -2,17 +2,14 @@
 <!doctype html>
 
 <laser:serviceInjection />
-<g:set var="currentServer" scope="page" />
+<g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 <g:set var="currentLang" scope="page" />
 <g:set var="currentTheme" scope="page" />
-<g:set var="contextUser" scope="page" />
+<g:set var="contextUser" scope="page" value="${contextService.getUser()}" />
 
 <%
-    currentServer   = AppUtils.getCurrentServer()
     currentLang     = 'de'
     currentTheme    = 'laser'
-
-    contextUser     = contextService.getUser()
 
     if (contextUser) {
         RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RDStore.LANGUAGE_DE)?.getValue()
@@ -53,91 +50,83 @@
 
 <body class="${controllerName}_${actionName}">
 
-
-
     %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
-
     <ui:skipLink />
 
     %{-- main menu --}%
+    <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
+        <div class="ui container" role="none">
+            <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
+                <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
+            </ui:link>
 
-        <nav id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
-            <div class="ui container" role="none">
-                <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
-                    <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                </ui:link>
+            %{-- menu: public, my objects, my institution --}%
 
-                <sec:ifAnyGranted roles="ROLE_USER">
+            <g:if test="${contextService.getOrg()}">
+                <g:if test="${contextService.getOrg().isCustomerType_Support()}">
+                    <laser:render template="/layouts/laser/menu_support" />
+                </g:if>
+                <g:else>
+                    <laser:render template="/layouts/laser/menu_user_public" />
+                    <laser:render template="/layouts/laser/menu_user_myObjects" />
+                    <laser:render template="/layouts/laser/menu_user_myInstitution" />
+                </g:else>
+            </g:if>
 
-                    %{-- menu: public, my objects, my institution --}%
+            %{-- menu: admin --}%
 
-                    <g:if test="${contextService.getOrg()}">
-                        <g:if test="${contextService.getOrg().isCustomerType_Support()}">
-                            <laser:render template="/layouts/laser/menu_support" />
-                        </g:if>
-                        <g:else>
-                            <laser:render template="/layouts/laser/menu_user_public" />
-                            <laser:render template="/layouts/laser/menu_user_myObjects" />
-                            <laser:render template="/layouts/laser/menu_user_myInstitution" />
-                        </g:else>
-                    </g:if>
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <laser:render template="/layouts/laser/menu_admin" />
+            </sec:ifAnyGranted>
 
-                    %{-- menu: admin --}%
+            %{-- menu: yoda --}%
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <laser:render template="/layouts/laser/menu_admin" />
-                    </sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_YODA">
+                <laser:render template="/layouts/laser/menu_yoda" />
+            </sec:ifAnyGranted>
 
-                    %{-- menu: yoda --}%
+            %{-- menu: devDocs --}%
 
-                    <sec:ifAnyGranted roles="ROLE_YODA">
-                        <laser:render template="/layouts/laser/menu_yoda" />
-                    </sec:ifAnyGranted>
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                <g:if test="${currentServer in [AppUtils.LOCAL, AppUtils.DEV]}">
+                    <laser:render template="/layouts/laser/menu_devDocs" />
+                </g:if>
+            </sec:ifAnyGranted>
 
-                    %{-- menu: devDocs --}%
+            <div class="right menu la-right-menuPart">
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
-                            <laser:render template="/layouts/laser/menu_devDocs" />
-                        </g:if>
-                    </sec:ifAnyGranted>
+                %{-- menu: global search --}%
 
-                    <div class="right menu la-right-menuPart">
-
-                        %{-- menu: global search --}%
-
-                        <div role="search" id="mainSearch" class="ui category search spotlight">
-                            <div class="ui icon input">
-                                <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
-                                       aria-label="${message(code:'spotlight.search.placeholder')}">
-                                <i class="${Icon.SYM.SEARCH}" id="btn-search"></i>
-                            </div>
-                            <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
-                        </div>
+                <div role="search" id="mainSearch" class="ui category search spotlight">
+                    <div class="ui icon input">
+                        <input id="spotlightSearch" class="prompt" type="search" placeholder="${message(code:'spotlight.search.placeholder')}"
+                               aria-label="${message(code:'spotlight.search.placeholder')}">
+                        <i class="${Icon.SYM.SEARCH}" id="btn-search"></i>
+                    </div>
+                    <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
+                </div>
 
                         <ui:link addItemAttributes="true" class="icon la-search-advanced la-popup-tooltip" controller="search" action="index"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="${Icon.SYM.SEARCH_ADVANCED} large"></i>
                         </ui:link>
 
-                        %{-- menu: user --}%
+                %{-- menu: user --}%
 
-                        <g:if test="${contextUser}">
-                            <laser:render template="/layouts/laser/menu_user" />
-                        </g:if>
-                    </div>
+                <g:if test="${contextUser}">
+                    <laser:render template="/layouts/laser/menu_user" />
+                </g:if>
+            </div>
 
-                </sec:ifAnyGranted>
+            <sec:ifNotGranted roles="ROLE_USER">
+                <sec:ifLoggedIn>
+                    <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
+                </sec:ifLoggedIn>
+            </sec:ifNotGranted>
 
-                <sec:ifNotGranted roles="ROLE_USER">
-                    <sec:ifLoggedIn>
-                        <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
-                    </sec:ifLoggedIn>
-                </sec:ifNotGranted>
+        </div><!-- container -->
 
-            </div><!-- container -->
-
-        </nav><!-- main menu -->
+    </nav><!-- main menu -->
 
         %{-- context bar --}%
 
@@ -148,12 +137,13 @@
         %{-- global content container --}%
 
         <div class="pusher">
-            %{-- system server indicator --}%
 
+            %{-- system server indicator --}%
             <laser:render template="/templates/system/serverIndicator" />
+
             <main id="mainContent" class="ui main container hidden">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
-                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
+                    <g:if test="${currentServer in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
                         <div id="dev-tmp-help">
                             institution               : ${institution?.getName()} <br />
                             contextOrg                : ${contextOrg?.getName()} <br />
@@ -208,7 +198,11 @@
         <sec:ifNotGranted roles="ROLE_USER">
             <laser:render template="/layouts/footer" />
         </sec:ifNotGranted>
-
+        <sec:ifAnyGranted roles="ROLE_USER">
+            <g:if test="${(controllerName == 'gasco')}">
+                <laser:render template="/public/gasco/footer" />
+            </g:if>
+        </sec:ifAnyGranted>
         %{-- global container for modals and ajax --}%
 
         <div id="dynamicModalContainer"></div>

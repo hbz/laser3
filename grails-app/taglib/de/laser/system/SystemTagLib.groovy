@@ -61,7 +61,8 @@ class SystemTagLib {
 
     def htmlStart = { attrs, body ->
 
-        String title = message(code: 'laser')
+        String layout   = attrs.layout != 'public' ? 'laser' : 'public'
+        String title    = message(code: 'laser')
 
         if (attrs.text) {
             title = title + ' : ' + attrs.text
@@ -74,7 +75,7 @@ class SystemTagLib {
         laser.serviceInjection()
 
         out << '<!doctype html><html><head>'
-        out << '<meta name="layout" content="laser">'
+        out << '<meta name="layout" content="' + layout + '">'
 
         if (attrs.description) {
             out << '<meta name="description" content="' + attrs.description + '">'

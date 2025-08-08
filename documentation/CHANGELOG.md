@@ -9,6 +9,8 @@
 
 6533    08.08.2025  dev     3.6         Andreas Feature     Suche innerhalb der Merkmalstabelle ermöglicht
 
+6744    07.08.2025  rc-3.5  3.5.4       Andreas Bug         500er wegen Teilung durch Null
+
 6740    05.08.2025  rc-3.5  3.5.4       Andreas Bug         Umfrage-Kosten konnten ohne Element angelegt werden
 
 6739    01.08.2025  dev     3.6         Andreas Feature     Matching bei der Preisanreicherung umgestellt
