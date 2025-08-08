@@ -52,6 +52,7 @@ class StatsSyncService {
 
     static final int THREAD_POOL_SIZE = 4
     static final String SYNC_STATS_FROM = '2012-01-01'
+    static final String UNKNOWN_ERROR = "exception in call, maybe an invalid character (whitespace, quotes, ampersand)?"
     static final int WEEK_INTERVAL = 7
     static final int MONTH_INTERVAL = 28 //default is 28, do not commit other days!
     static final int YEAR_INTERVAL = 365
@@ -1111,7 +1112,7 @@ class StatsSyncService {
      * @return the JSON response map
      */
     Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
-        Map<String, Object> result = [:], checkParams = [org: ci.customer, platform: ci.platform]
+        Map<String, Object> result = [:]//, checkParams = [org: ci.customer, platform: ci.platform]
         try {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
@@ -1126,12 +1127,14 @@ class StatsSyncService {
                     }
                     else if(json != null && !requestList) {
                         if(json["Report_Items"].size() == 0) {
-                            result.error = json["Report_Header"]["Exceptions"][0]["Code"]
+                            if(json["Report_Header"]["Exceptions"].size() > 0)
+                                result.error = json["Report_Header"]["Exceptions"][0]["Code"]
+                            else result.error = 3030 //empty list, raise 3030
                         }
                         else {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
-                            CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
+                            //CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                         }
                     }
                     else if(json != null) {
@@ -1159,8 +1162,9 @@ class StatsSyncService {
                     log.error("server response: ${resp?.status()} - ${reader}")
                     if(reader?.containsKey('Code'))
                         result.error = reader["Code"]
-                    else
+                    else if(resp)
                         result.error = resp?.status()
+                    else result.error = UNKNOWN_ERROR
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
@@ -1175,9 +1179,9 @@ class StatsSyncService {
             log.error("stack trace: ", e)
         }
         if(result.containsKey('error')) {
-            if(result.error && result.error in ([2000 ,2010, 2020])) {
+            /*if(result.error && result.error in ([2000 ,2010, 2020])) {
                 CounterCheck.construct([platform: ci.platform, url: url, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: result.error, errToken: "default.stats.error.${result.error}"])
-            }
+            }*/
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
@@ -1209,18 +1213,18 @@ class StatsSyncService {
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
                     if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
                         log.warn("wrong key pair")
-                        CounterCheck.construct([platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), errToken: '401'])
+                        //CounterCheck.construct([platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), errToken: '401'])
                         result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: 401]
                     }
                     else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
                         log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'Exception'.'Message'.text())
                         log.debug(requestBody.toString())
-                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
+                        result = [error: Integer.parseInt(xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text()), code: resp.code()]
                     }
                     else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '3030') {
                         log.info("no data for given period")
                         //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
-                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
+                        result = [error: Integer.parseInt(xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text()), code: resp.code()]
                     }
                     else {
                         GPathResult reportData = xml.'SOAP-ENV:Body'.'ns3:ReportResponse'.'ns3:Report'
@@ -1229,7 +1233,7 @@ class StatsSyncService {
                         //lsc.missingPeriods.remove(wasMissing)
                         GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                         result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text(), code: resp.code()]
-                        CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
+                        //CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                     }
                 }
                 else {

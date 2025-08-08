@@ -2561,22 +2561,6 @@ class SubscriptionService {
         result
     }
 
-    Map<String, Object> checkCounterAPIConnection(String platformUuid, String customerId, String requestorId) {
-        Map<String, Object> result = [:]
-        Set<CounterCheck> platformCallErrors = CounterCheck.executeQuery('select cc from CounterCheck cc where cc.platform.gokbId = :platformUuid and cc.callError = true', [platformUuid: platformUuid]),
-        customerCallErrors = CounterCheck.findAllByCustomerIdAndRequestorId(customerId, requestorId)
-        Set<String> errMess = []
-        platformCallErrors.each { CounterCheck cc ->
-            errMess << cc.errMess
-        }
-        customerCallErrors.each { CounterCheck cc ->
-            errMess << messageSource.getMessage(cc.errToken, null, LocaleUtils.getCurrentLocale())
-        }
-        result.error = errMess.size() > 0
-        result.message = errMess.join(', ')
-        result
-    }
-
     /**
      * Unsets the given customer number
      * @param id the customer number ID to unser
