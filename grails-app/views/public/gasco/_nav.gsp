@@ -1,7 +1,7 @@
-
+<%@ page import="de.laser.storage.BeanStore" %>
 
 <div class="ui tablet computer only padded grid ">
-    <div class="ui secondary top fixed fluid menu">
+    <div class="ui secondary top ${BeanStore.getSpringSecurityService().isLoggedIn() ? '':'fixed'}  fluid menu">
         <div class="ui container" role="none">
             <a class="header item">
                 <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'media', file: 'gasco/gasco-small.png')}"/>

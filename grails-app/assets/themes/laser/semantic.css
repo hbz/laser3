@@ -1808,6 +1808,15 @@ body[class*="gasco_"] {
   background: #f5ede9;
 }
 
+.gasco {
+  display: flex;
+  flex-direction: column;
+}
+
+.gasco a {
+  color: #b50018;
+}
+
 .gasco .ui.secondary.menu {
   font-size: 1.786rem;
   background-color: white;
@@ -1815,6 +1824,10 @@ body[class*="gasco_"] {
 
 .gasco .ui.secondary.menu .item {
   font-weight: 700;
+}
+
+.gasco .ui.secondary.menu .item:first-child {
+  margin: 0;
 }
 
 .gasco .ui.secondary.menu .item.active {
@@ -1832,35 +1845,39 @@ body[class*="gasco_"] {
   color: #425259;
 }
 
-.gasco .ui.table {
+.gasco .ui.striped.table {
   border-collapse: collapse;
   width: 100%;
   border-spacing: 5rem 2rem;
 }
 
-.gasco .ui.table tbody > tr {
+.gasco .ui.striped.table tbody > tr {
   margin-top: 10px;
 }
 
-.gasco .ui.table tbody > tr th:not(.la-th-column):not(.la-no-uppercase) {
+.gasco .ui.striped.table tbody > tr:nth-child(2n) {
+  background-color: #e4dfdc;
+}
+
+.gasco .ui.striped.table tbody > tr th:not(.la-th-column):not(.la-no-uppercase) {
   font-size: 1rem;
 }
 
-.gasco .ui.table tbody > tr > td,
-.gasco .ui.table tbody > tr > th {
+.gasco .ui.striped.table tbody > tr > td,
+.gasco .ui.striped.table tbody > tr > th {
   border-top: none;
   padding: 8px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.gasco .ui.table td:first-child,
-.gasco .ui.table th:first-child {
+.gasco .ui.striped.table td:first-child,
+.gasco .ui.striped.table th:first-child {
   border-radius: 20px 0 0 20px;
 }
 
-.gasco .ui.table td:last-child,
-.gasco .ui.table th:last-child {
+.gasco .ui.striped.table td:last-child,
+.gasco .ui.striped.table th:last-child {
   border-radius: 0 20px 20px 0;
 }
 

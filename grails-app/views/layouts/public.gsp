@@ -41,10 +41,15 @@
             <g:if test="${!gasco}">
                 <laser:render template="/layouts/footer" />
             </g:if>
+            <g:else>
+                <laser:render template="/public/gasco/footer" />
+            </g:else>
+
 
             <laser:javascript src="laser.js"/>%{-- dont move --}%
 
             <laser:scriptBlock/>%{-- dont move --}%
+
         </div>
 
     </body>

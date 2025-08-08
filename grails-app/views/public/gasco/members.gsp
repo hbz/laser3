@@ -6,7 +6,7 @@
     <h1 class="ui header">
         Liste der GASCO-Mitglieder
     </h1>
-    <table class="ui striped table">
+    <table class="ui striped fixed table">
         <tbody>
         <tr><th>Mitglieder</th><th>Ansprechpartner</th><th>Institution</th></tr>
         <tr>
@@ -24,9 +24,16 @@
             <td><a href="mailto:susanne.aerni@slsp.ch">Susanne Aerni</a></td>
             <td><span class="la-popup-tooltip" data-content="care of">c/o</span> <span class="la-popup-tooltip" data-content="Bibliothek der eidgenössischen technischen Hochschule">B ETH</span>Zürich</td>
         </tr>
-        <tr>
-            <td colspan="3">Deutschland / Länder</td>
-        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="ui header">
+        Deutschland / Länder
+    </h2>
+
+    <table class="ui striped fixed table">
+        <tbody>
+        <tr><th>Mitglieder</th><th>Ansprechpartner</th><th>Institution</th></tr>
         <tr>
             <td>Baden-Württemberg <br> <a href="http://www.konsortium-bw.de/" target=" _blank">Konsortium Baden-Württemberg</a></td>
             <td><a class="email-link" href="mailto:viktor.kempf@ub.uni-freiburg.de" target="_self" data-content="">Viktor Kempf</a></td>
@@ -105,8 +112,14 @@
             <td><span class="la-popup-tooltip" data-content="Thüringische Universitäts- und Landesbibliothek">ThULB</span> Jena</td>
         </tr>
         <tr>
-            <td colspan="3">Deutschland / Sonstige</td>
-        </tr>
+        </tbody>
+    </table>
+    <h2 class="ui header">
+        Deutschland / Sonstige
+    </h2>
+    <table class="ui striped fixed table">
+        <tbody>
+        <tr><th>Mitglieder</th><th>Ansprechpartner</th><th>Institution</th></tr>
         <tr>
             <td>AG Bibliotheken privater Hochschulen in der Sektion 4 des dbv (Gast) </td>
             <td><a href="mailto:Lene.Jensen@the-klu.org">Lene Jensen</a></td>
