@@ -29,8 +29,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <input type="text" class="propDefFilter" data-forTable="pdg${pdg.id}" placeholder="Merkmale einschränken ...">
+                                    </div>
                                 </div>
-                                <table class="ui celled la-js-responsive-table la-table compact table scrollContent">
+                                <table id="pdg${pdg.id}" class="ui celled la-js-responsive-table la-table compact table scrollContent">
                                     <tbody>
                                     <g:each in="${pdg.items.sort { it.propDef.getI10n('name') }}" var="propertyDefinitionGroupItem" status="i">
                                         <g:set var="pd" value="${propertyDefinitionGroupItem.propDef}"/>
@@ -50,7 +53,7 @@
                                                     </span>
                                                 </g:if>
                                             </td>
-                                            <td>
+                                            <td class="pdName">
                                                 ${pd.getI10n('name')}
                                             </td>
                                             <td>
@@ -102,8 +105,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <input type="text" class="propDefFilter" data-forTable="orphaned" placeholder="Merkmale einschränken ...">
+                                </div>
                             </div>
-                            <table class="ui celled la-js-responsive-table la-table compact table scrollContent">
+                            <table id="orphaned" class="ui celled la-js-responsive-table la-table compact table scrollContent">
                                 <tbody>
                                 <g:each in="${orphanedProperties.sort { it.getI10n('name') }}" var="pd" status="i">
                                     <tr>
@@ -122,7 +128,7 @@
                                                 </span>
                                             </g:if>
                                         </td>
-                                        <td>
+                                        <td class="pdName">
                                             ${pd.getI10n('name')}
                                         </td>
                                         <td>
@@ -176,9 +182,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <input type="text" class="propDefFilter" data-forTable="private" placeholder="Merkmale einschränken ...">
+                                    </div>
                                 </div>
                             </div>
-                            <table class="ui celled la-js-responsive-table la-table compact table scrollContent">
+                            <table id="private" class="ui celled la-js-responsive-table la-table compact table scrollContent">
                                 <tbody>
                                 <g:each in="${privateProperties.sort { it.getI10n('name') }}" var="pd" status="i">
                                     <tr>
@@ -197,7 +206,7 @@
                                                 </span>
                                             </g:if>
                                         </td>
-                                        <td>
+                                        <td class="pdName">
                                             ${pd.getI10n('name')}
                                         </td>
                                         <td>
