@@ -1799,6 +1799,91 @@ i.icon.la-list-icon:before {
 .la-display-none {
   display: none;
 }
+
+/****************************************
+        GASCO
+*****************************************/
+
+body[class*="gasco_"] {
+  background: #f5ede9;
+}
+
+.gasco {
+  display: flex;
+  flex-direction: column;
+}
+
+.gasco a {
+  color: #b50018;
+}
+
+.gasco .ui.secondary.menu {
+  font-size: 1.786rem;
+  background-color: white;
+}
+
+.gasco .ui.secondary.menu .item {
+  font-weight: 700;
+}
+
+.gasco .ui.secondary.menu .item:first-child {
+  margin: 0;
+}
+
+.gasco .ui.secondary.menu .item.active {
+  color: #b50018;
+  background: none;
+}
+
+.gasco h1.ui.header {
+  font-size: 3.063rem;
+  color: #33a5d9;
+}
+
+.gasco h2.ui.header {
+  font-size: 2.438rem;
+  color: #425259;
+}
+
+.gasco .ui.striped.table {
+  border-collapse: collapse;
+  width: 100%;
+  border-spacing: 5rem 2rem;
+}
+
+.gasco .ui.striped.table tbody > tr {
+  margin-top: 10px;
+}
+
+.gasco .ui.striped.table tbody > tr:nth-child(2n) {
+  background-color: #e4dfdc;
+}
+
+.gasco .ui.striped.table tbody > tr th:not(.la-th-column):not(.la-no-uppercase) {
+  font-size: 1rem;
+}
+
+.gasco .ui.striped.table tbody > tr > td,
+.gasco .ui.striped.table tbody > tr > th {
+  border-top: none;
+  padding: 8px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.gasco .ui.striped.table td:first-child,
+.gasco .ui.striped.table th:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+.gasco .ui.striped.table td:last-child,
+.gasco .ui.striped.table th:last-child {
+  border-radius: 0 20px 20px 0;
+}
+
+.gasco main.ui.container.main {
+  margin-top: 135px;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Button
  * https://github.com/fomantic/Fomantic-UI/

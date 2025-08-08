@@ -9,7 +9,7 @@
 </head>
 <body>
 
-        <main>
+        <main class="ui container main">
             <div class="ui stackable centered grid container la-login middle aligned">
                 <div class="row">
                     <div class="column">
@@ -164,7 +164,7 @@
             </div>--}%
         </main>
 
-        <laser:render template="/layouts/footer" />
+
 
     <laser:script file="${this.getGroovyPageFileName()}">
         document.forms['basicLoginForm'].elements['username'].focus();

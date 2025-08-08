@@ -199,7 +199,11 @@
         <sec:ifNotGranted roles="ROLE_USER">
             <laser:render template="/layouts/footer" />
         </sec:ifNotGranted>
-
+        <sec:ifAnyGranted roles="ROLE_USER">
+            <g:if test="${(controllerName == 'gasco')}">
+                <laser:render template="/public/gasco/footer" />
+            </g:if>
+        </sec:ifAnyGranted>
         %{-- global container for modals and ajax --}%
 
         <div id="dynamicModalContainer"></div>

@@ -2,7 +2,7 @@
 
 <laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}"/>
 
-<main class="ui main container">
+<div class="gasco">
     <g:render template="/public/gasco/nav" />
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
@@ -58,6 +58,5 @@
     <g:if test="${issueEntitlements}">
         <ui:paginate action="gascoDetails" controller="public" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
     </g:if>
-</main>
-
+</div>
 <laser:htmlEnd />

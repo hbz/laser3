@@ -1,12 +1,41 @@
 <%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
 
-<footer class="ui inverted vertical footer segment la-footer">
-    <div class="ui container">
+<footer class="ui inverted vertical footer segment la-footer" style="background: #425259;background: linear-gradient(90deg,rgba(66, 82, 89, 1) 0%, rgba(66, 82, 89, 1) 39%, rgba(245, 237, 234, 1) 100%);">
+    <div class="ui container" >
 
        <div class="ui stackable inverted divided equal height stackable grid center aligned">
+            <div class="ten wide column left aligned" style="opacity: 0.7">
+                <div class="ui horizontal inverted link list">
+                    <div class="item">
+                        <a class="content" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
+                    </div>
+                    <div class="item">
+                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.1.link3')}</a>
+                    </div>
+                    <div class="item">
+                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/datenschutz">${message(code:'dse')}</a>
+                    </div>
+                    <div class="item">
+                        <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
+                            ${message(code: 'landingpage.footer.4.link1')}
+                        </a>
+                    </div>
+                    <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
+                        <div class="item">
+                            <g:link controller="public" action="wcagFeedbackForm" class="content">
+                                ${message(code: 'landingpage.footer.4.link2')}
+                            </g:link>
+                        </div>
+                    </g:if>
+                    <div class="item">
+                        <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
+                            ${message(code: 'landingpage.footer.4.link4')}
+                        </g:link>
+                    </div>
+                </div>
+                <br>
 
-            <div class="five wide column left aligned" style="opacity: 0.7">
-                <g:link controller="home" aria-label="${message(code:'default.home.label')}" action="index" class="header item la-logo-item">
+                <g:link controller="home" aria-label="${message(code:'default.home.label')}" action="index" class="ui button">
                     <svg width="75.333344"
                             height="26.040001"
                             viewBox="0 0 75.33334 26.04">
@@ -45,83 +74,10 @@
                 </p>
             </div>
 
-            <div class="three wide column left aligned">
-                <h2 class="ui inverted header">
-                    ${message(code: 'landingpage.footer.1.head')}
-                </h2>
 
-                <div class="ui inverted link list">
-                    <div class="item">
-                        <i class="envelope icon"></i><a class="content" href="mailto:laser@hbz-nrw.de">${message(code: 'landingpage.footer.1.link1')}</a>
-                    </div>
-                    <div class="item">
-                        <i class="map signs icon"></i><a target="_blank" class="content" href="https://www.hbz-nrw.de/ueber-uns/kontakt/anreise">${message(code: 'landingpage.footer.1.link2')}</a>
-                    </div>
-                    <div class="item">
-                        <i class="file alternate icon"></i><a target="_blank" class="content" href="https://www.hbz-nrw.de/impressum">${message(code: 'landingpage.footer.1.link3')}</a>
-                    </div>
-                    <div class="item">
-                        <i class="lock icon"></i><a target="_blank" class="content" href="https://www.hbz-nrw.de/datenschutz">${message(code:'dse')}</a>
-                    </div>
-                </div>
-            </div>
 
             <div class="four wide column left aligned">
-               <h2 class="ui inverted header">
-                   ${message(code: 'landingpage.footer.4.head')}
-               </h2>
 
-               <div class="ui inverted link list">
-                   <div class="item">
-                       <icon:universalAccess />
-                       <a target="_blank" class="content" href="https://www.hbz-nrw.de/barrierefreiheit">
-                            ${message(code: 'landingpage.footer.4.link1')}
-                       </a>
-                   </div>
-                <g:if test="${ConfigMapper.getLaserSystemId() == 'LAS:eR-Productive' || ConfigMapper.getLaserSystemId() == 'local'}">
-                   <div class="item">
-                        <icon:universalAccess />
-                       <g:link controller="public" action="wcagFeedbackForm" class="content">
-                           ${message(code: 'landingpage.footer.4.link2')}
-                       </g:link>
-                   </div>
-                </g:if>
-                   <div class="item">
-                       <icon:universalAccess />
-                        <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
-                            ${message(code: 'landingpage.footer.4.link4')}
-                        </g:link>
-                   </div>
-               </div>
-           </div>
-            <div class="four wide column left aligned">
-                <h2 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h2>
-                <div class="ui inverted link list">
-                    <g:set var="gitUrl" value="${AppUtils.getMeta('git.remote.origin.url')?.replace('.git', '')}" />
-
-                    <g:link target="_blank" class="item" controller="public" action="releases">
-                        Version: ${AppUtils.getMeta('info.app.version')}
-                    </g:link>
-
-                    <g:if test="${AppUtils.getMeta('git.branch')}">
-                        <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.branch')}">
-                            Branch: ${AppUtils.getMeta('git.branch')}
-                        </a>
-                    </g:if>
-
-                    <div class="item">
-                        <g:if test="${AppUtils.getMeta('git.commit.id')}">
-                            <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.commit.id')}">
-                                Build: ${AppUtils.getMeta('info.app.build.date')}
-                            </a>
-                        </g:if>
-                        <g:else>
-                            Build: ${AppUtils.getMeta('info.app.build.date')}
-                        </g:else>
-                    </div>
-
-                    <!-- (${AppUtils.getMeta('info')}) -->
-                </div>
             </div>
 
         </div>
@@ -146,30 +102,12 @@ main {
     display: flex!important;
     flex-direction: column;
 }
-main.ui.container.main {
-    margin-top: 10px!important;
-}
-.la-login {
-    flex: 3!important; /* 3/4 of height of main */
-    display: flex!important;
-    height: 100vh;
-}
 
-img.la-hero-image {
-    max-height: 100%;
-    min-width: 100%;
-    object-fit: cover;
-    vertical-align: bottom;
-}
+
 .pushable>.pusher {
     overflow-y: visible!important;
     overflow-x: visible!important;
     min-height: auto!important;
 }
-.la-eye-catcher {
-    flex: 1!important; /* 1/4 of height of main */
-}
-.la-js-verticalNavi {
-    display: block!important;
-}
+
 </style>
