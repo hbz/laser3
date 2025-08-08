@@ -157,6 +157,7 @@ class PublicController {
                 content : [
                         'various'                       : ['Allgemein', 'General'],
                         'subscriptionInformationSheet'  : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
+                        'fillingOutSurveys'             : ['Umfragen und Kontakte ausfüllen', 'Complete surveys and contacts'],
                         'fileImport'                    : ['Anleitung zum Hochladen', 'Upload instructions']
                 ], // todo
                 topic   : 'various'

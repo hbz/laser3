@@ -6,7 +6,7 @@ In der **Übersicht** Ihres Einrichtungsprofils können Sie allgemeine Informati
 
 + **Rahmendaten:** Name, URL zur Website, Trägerschaft, Bibliothekstyp, Bundesland etc
 + **Fächergruppe:** diese Information benötigen die Konsortialstellen um Ihnen gezieltere Interessenanfragen über Umfragen senden zu können
-+ **XRechnung:** Auszufüllen, sofern Sie die Rechnungen elektronisch über eine Rechnungseingangsplattform beziehen möchte
++ **XRechnung:** Auszufüllen, sofern Sie die Rechnungen elektronisch über eine Rechnungseingangsplattform beziehen möchten. Ihre eingetragenen Daten werden in Rechnungstellungabfragen in Umfragen übertragen. 
 + **Verwendete Drittsysteme:** Bibliotheksysteme, Discovery-Systeme etc.
 + **Eigene  Merkmale:** Ergänzende Informations-Felder, die Sie als **Pro-Nutzender** individuell festlegen können. Dazu müssen Sie zunächst unter **Meine Einrichtung > Merkmale verwalten** eigene Merkmale erstellen. Mehr Informationen dazu finden Sie auf der angegebenen Seite
 

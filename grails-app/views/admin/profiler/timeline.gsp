@@ -82,7 +82,9 @@
                 name: '${ik}',
                         type: 'bar',
                         stack: 'total',
-                        animation: false,
+                        animation: true,
+                        animationDuration: 150,
+                        emphasis: { focus: 'series' },
                         data: [<% print itemValue.join(', ') %>]
                     });
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
 <laser:htmlStart message="menu.yoda.systemSettings" />
 
 <ui:breadcrumbs>
@@ -19,7 +19,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table table">
+    <table class="${CSS.ADMIN_TABLE}">
         <thead>
         <tr>
             <th>${message(code: 'default.setting.label')}</th>

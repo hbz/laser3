@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils" %>
 <laser:htmlStart message="menu.yoda.userRoleMatrix" />
 
 <ui:breadcrumbs>
@@ -18,7 +18,7 @@
                 <strong><i class="dropdown icon"></i> ${role.key} ( ${role.value.size()} Nutzer )</strong>
             </div>
             <div class="content">
-                <table class="ui celled la-js-responsive-table la-table compact table">
+                <table class="${CSS.ADMIN_TABLE}">
                     <tbody>
                         <g:each in="${role.value.toSorted{a,b -> a.username <=> b.username}}" var="user">
                             <tr>
