@@ -34,9 +34,11 @@
                             <g:each in="${semesterCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
+                            <%--
                             <g:if test="${semesterCols.size() > 1}">
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
+                            --%>
                             <th><g:message code="readerNumber.notes"/></th>
                             <th class="center aligned">
                                 <ui:optionsIcon />
@@ -76,6 +78,7 @@
                                     </g:if>
                                 </td>
                             </g:each>
+                            <%--
                             <g:if test="${semesterCols.size() > 1}">
                                 <td>
                                     <%
@@ -106,6 +109,7 @@
                                     </g:elseif>
                                 </td>
                             </g:if>
+                            --%>
                             <td>
                                 <ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
@@ -142,9 +146,11 @@
                             <g:each in="${yearCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
+                            <%--
                             <g:if test="${yearCols.size() > 1}">
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
+                            --%>
                             <th><g:message code="readerNumber.notes"/></th>
                             <th class="center aligned">
                                 <ui:optionsIcon />
@@ -184,9 +190,11 @@
                                         </g:if>
                                     </td>
                                 </g:each>
+                                <%--
                                 <g:if test="${yearCols.size() > 1}">
                                     <td><g:formatNumber number="${yearSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
                                 </g:if>
+                                --%>
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">

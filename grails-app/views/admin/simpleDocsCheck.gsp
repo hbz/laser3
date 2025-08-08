@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.FileUtils; de.laser.config.ConfigDefaults; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.ui.CSS; de.laser.utils.FileUtils; de.laser.config.ConfigDefaults; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.simpleDocsCheck" />
 
@@ -39,7 +39,7 @@
         <div class="header"><i class="${Icon.SYM.NO} red"></i> Doc-Einträge ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
     </div>
     <div class="content">
-        <table class="ui table very compact">
+        <table class="${CSS.ADMIN_HOVER_TABLE}">
             <thead>
                 <tr>
                     <th class="center aligned">#</th>

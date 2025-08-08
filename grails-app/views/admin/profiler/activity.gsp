@@ -1,14 +1,14 @@
 <%@ page import="de.laser.system.SystemActivityProfiler" %>
-<laser:htmlStart message="menu.yoda.profilerActivity">
+<laser:htmlStart message="menu.admin.profilerActivity">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <ui:crumb message="menu.yoda.profiler" class="active"/>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemActivityProfiler.executeQuery('select count(*) from SystemActivityProfiler')[0]}" />
+    <ui:h1HeaderWithIcon message="menu.admin.profiler" type="admin" total="${SystemActivityProfiler.executeQuery('select count(*) from SystemActivityProfiler')[0]}" />
 
     <g:render template="profiler/menu" />
 
@@ -30,12 +30,12 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.yoda = {
+        JSPC.app.profiler = {
             chart_config: {},
             charts: {}
         }
 
-        JSPC.app.yoda.chart_config.base = {
+        JSPC.app.profiler.chart_config.base = {
             xAxis: {
                 type: 'category',
                 boundaryGap: false,
@@ -94,9 +94,9 @@
             ]
         }
 
-        JSPC.app.yoda.chart_config.chart_0 = Object.assign({}, JSPC.app.yoda.chart_config.base);
+        JSPC.app.profiler.chart_config.chart_0 = Object.assign({}, JSPC.app.profiler.chart_config.base);
 
-        JSPC.app.yoda.chart_config.chart_0.series = [{
+        JSPC.app.profiler.chart_config.chart_0.series = [{
             data: [<% print activity.entrySet()[0].value[1].join(',') %>],
             name: 'Durchschnittl. Nutzer',
             type: 'bar',
@@ -107,11 +107,11 @@
         }]
 
         var chart = echarts.init( $('#ct-chart-0')[0] );
-        chart.setOption( JSPC.app.yoda.chart_config.chart_0 );
-        JSPC.app.yoda.charts.chart_0 = chart;
+        chart.setOption( JSPC.app.profiler.chart_config.chart_0 );
+        JSPC.app.profiler.charts.chart_0 = chart;
 
         $(window).resize(function () {
-            JSPC.app.yoda.charts.chart_0.resize();
+            JSPC.app.profiler.charts.chart_0.resize();
         });
     </laser:script>
 
@@ -124,17 +124,17 @@
                         <div id="ct-chart-${index}" class="echarts-wrapper"></div>
 
                         <laser:script file="${this.getGroovyPageFileName()}">
-                            JSPC.app.yoda.chart_config.chart_${index} = Object.assign({}, JSPC.app.yoda.chart_config.base);
+                            JSPC.app.profiler.chart_config.chart_${index} = Object.assign({}, JSPC.app.profiler.chart_config.base);
 
-                            JSPC.app.yoda.chart_config.chart_${index}.series[0].data = [<% print itemValue[1].join(',') %>];
-                            JSPC.app.yoda.chart_config.chart_${index}.series[1].data = [<% print itemValue[0].join(', ') %>];
+                            JSPC.app.profiler.chart_config.chart_${index}.series[0].data = [<% print itemValue[1].join(',') %>];
+                            JSPC.app.profiler.chart_config.chart_${index}.series[1].data = [<% print itemValue[0].join(', ') %>];
 
                             var chart = echarts.init( $('#ct-chart-${index}')[0] );
-                            chart.setOption( JSPC.app.yoda.chart_config.chart_${index} );
-                            JSPC.app.yoda.charts.chart_${index} = chart;
+                            chart.setOption( JSPC.app.profiler.chart_config.chart_${index} );
+                            JSPC.app.profiler.charts.chart_${index} = chart;
 
                             $(window).resize(function () {
-                                JSPC.app.yoda.charts.chart_${index}.resize();
+                                JSPC.app.profiler.charts.chart_${index}.resize();
                             });
                         </laser:script>
                     </div>

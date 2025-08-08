@@ -1,20 +1,20 @@
-<%@ page import="de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
-<laser:htmlStart message="menu.yoda.profilerCurrent">
+<%@ page import="de.laser.ui.CSS; de.laser.auth.User; de.laser.utils.DateUtils; de.laser.system.SystemActivityProfiler; de.laser.system.SystemProfiler" %>
+<laser:htmlStart message="menu.admin.profilerLive">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <ui:crumb message="menu.yoda.profilerCurrent" class="active"/>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.profilerLive" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
+    <ui:h1HeaderWithIcon message="menu.admin.profiler" type="admin" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
     <g:render template="profiler/menu" />
 
     <div class="ui fluid card">
         <div class="content">
-            <table class="ui table compact simple">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <tbody>
                 <g:each in="${users}" var="u">
                     <tr>

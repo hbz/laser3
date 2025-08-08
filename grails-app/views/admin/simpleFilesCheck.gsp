@@ -69,11 +69,11 @@
         <div class="header"><i class="${Icon.SYM.YES} yellow"></i> Dateien mit gültiger Doc.UUID-Referenz, aber unverschlüsselt: ${validFilesRaw.size()}</div>
     </div>
     <div class="content">
-        ${validFilesRaw.join(', ')}
+%{--        ${validFilesRaw.join(', ')}--}%
 
         <g:if test="${validFilesRaw}">
-            <br/>
-            <br/>
+%{--            <br/>--}%
+%{--            <br/>--}%
             <g:link controller="admin" action="simpleFilesCheck" params="${[encryptRawFiles: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="Unverschlüsselte Dateien verschlüsseln?"
@@ -87,11 +87,11 @@
         <div class="header"><i class="${Icon.SYM.NO} red"></i> Dateien ohne gültige Doc.UUID-Referenz: ${invalidFiles.size()}</div>
     </div>
     <div class="content">
-        ${invalidFiles.join(', ')}
+%{--        ${invalidFiles.join(', ')}--}%
 
         <g:if test="${invalidFiles}">
-            <br/>
-            <br/>
+%{--            <br/>--}%
+%{--            <br/>--}%
             <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"

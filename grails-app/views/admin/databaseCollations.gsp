@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
+<%@ page import="de.laser.ui.CSS; de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
 
 <laser:htmlStart message="menu.admin.databaseCollations" />
 
@@ -29,7 +29,7 @@
     </div>
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th>#</th>
@@ -103,7 +103,7 @@
     </div>
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
     <thead>
         <tr>
             <th></th>
@@ -150,7 +150,7 @@
     </div>
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
         <tr>
             <th></th>

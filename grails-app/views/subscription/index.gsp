@@ -221,7 +221,7 @@
 
 <div class="ui bottom attached tab active segment">
 
-    <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
+    <laser:render template="/templates/filter/tipp_ieFilter" model="[disableStatus: (tab != 'allIEs')]"/>
     <br>
 
     <div class="ui grid">
@@ -782,7 +782,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="exportHolding" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportHolding" params="${params + [exportKBart: true, tab: tab]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

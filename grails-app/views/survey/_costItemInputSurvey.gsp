@@ -302,7 +302,7 @@
         init: function(elem) {
             //console.log(this);
             this.costItemElement.change(function() {
-                console.log(JSPC.app.finance${idSuffix}.ciec);
+                //console.log(JSPC.app.finance${idSuffix}.ciec);
                 if(typeof(JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]) !== 'undefined')
                     JSPC.app.finance${idSuffix}.ciec.dropdown('set selected', JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]);
                 else
@@ -346,21 +346,29 @@
             });
             this.currentForm.submit(function(e){
                 e.preventDefault();
-                if(JSPC.app.finance${idSuffix}.percentOnOldPrice && JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
-                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                if(JSPC.app.finance${idSuffix}.costItemElement.length < 1) {
+                    alert("${message(code:'financials.newCosts.noCostElementAvailable')}");
                 }
-                else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
-                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
-                }
-                else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice && JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() >= 0) {
-                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
-                }
-                 else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn && JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
-                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                else if(JSPC.app.finance${idSuffix}.costItemElement.val() === 'null') {
+                    alert("${message(code:'financials.newCosts.noCostElementPicked')}");
                 }
                 else {
-                    alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
-                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                    if(JSPC.app.finance${idSuffix}.percentOnOldPrice && JSPC.app.finance${idSuffix}.percentOnOldPrice.val() >= 0){
+                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                    }
+                    else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                    }
+                    else if(JSPC.app.finance${idSuffix}.percentOnSurveyPrice && JSPC.app.finance${idSuffix}.percentOnSurveyPrice.val() >= 0) {
+                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                    }
+                    else if(JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn && JSPC.app.finance${idSuffix}.processSurveyCostItemsBulk_del_btn.val() != 0) {
+                        JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                    }
+                    else {
+                        alert("${message(code:'financials.newCosts.noCurrencyPicked')}");
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                    }
                 }
             });
         }

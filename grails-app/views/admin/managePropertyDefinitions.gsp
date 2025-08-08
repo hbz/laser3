@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.finance.CostInformationDefinition" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.finance.CostInformationDefinition" %>
 
 <laser:htmlStart message="menu.admin.managePropertyDefinitions" />
 
@@ -19,7 +19,7 @@
                         <g:message code="costInformationDefinition.label" /> (${entry.value.size()})
                     </div>
                     <div class="content">
-                        <table class="ui celled la-js-responsive-table la-table compact table">
+                        <table class="${CSS.ADMIN_TABLE}">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -135,7 +135,7 @@
                         <g:message code="propertyDefinition.${entry.key}.label" /> (${entry.value.size()})
                     </div>
                     <div class="content">
-                        <table class="ui celled la-js-responsive-table la-table compact table">
+                        <table class="${CSS.ADMIN_TABLE}">
                             <thead>
                             <tr>
                                 <th></th>

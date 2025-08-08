@@ -118,9 +118,33 @@
                 <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
             </tr>
             <tr>
+                <td> <button class="${Btn.POSITIVE_CLICKCONTROL}">POSITIVE_CLICKCONTROL</button> </td>
+                <td> Btn.POSITIVE_CLICKCONTROL </td>
+                <td> ${Btn.POSITIVE_CLICKCONTROL} </td>
+                <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
+            </tr>
+            <tr>
                 <td> <button class="${Btn.NEGATIVE_CLICKCONTROL}">NEGATIVE_CLICKCONTROL</button> </td>
                 <td> Btn.NEGATIVE_CLICKCONTROL </td>
                 <td> ${Btn.NEGATIVE_CLICKCONTROL} </td>
+                <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
+            </tr>
+            <tr>
+                <td> <button class="${Btn.SIMPLE_SINGLECLICK} yellow">SIMPLE_SINGLECLICK</button> </td>
+                <td> Btn.SIMPLE_SINGLECLICK <br/> yellow </td>
+                <td> ${Btn.SIMPLE_SINGLECLICK} (+ yellow) </td>
+                <td> Colors by declaration; <span class="ui text blue">default: none (blue)</span> </td>
+            </tr>
+            <tr>
+                <td> <button class="${Btn.POSITIVE_SINGLECLICK}">POSITIVE_SINGLECLICK</button> </td>
+                <td> Btn.POSITIVE_SINGLECLICK </td>
+                <td> ${Btn.POSITIVE_SINGLECLICK} </td>
+                <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
+            </tr>
+            <tr>
+                <td> <button class="${Btn.NEGATIVE_SINGLECLICK}">NEGATIVE_SINGLECLICK</button> </td>
+                <td> Btn.NEGATIVE_SINGLECLICK </td>
+                <td> ${Btn.NEGATIVE_SINGLECLICK} </td>
                 <td> <span class="ui text grey">Possibly Semantic UI-Trigger</span> </td>
             </tr>
             <tr>

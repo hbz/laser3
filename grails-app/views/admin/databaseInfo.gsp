@@ -1,4 +1,4 @@
-<%@ page import="de.laser.AdminController; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.ui.CSS; de.laser.AdminController; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.databaseInfo" />
 
@@ -14,7 +14,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th class="four wide">Konfiguration</th>
@@ -114,7 +114,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
             <tr>
                 <th>Datenbank</th>
@@ -149,7 +149,7 @@
         </div>
 
         <div data-tab="dbStatistics-1" class="ui bottom attached tab active">
-            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <thead>
                 <tr>
                     <th>Hits</th>
@@ -174,7 +174,7 @@
         </div>
 
         <div data-tab="dbStatistics-2" class="ui bottom attached tab">
-            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <thead>
                 <tr>
                     <th>max(s)</th>
@@ -208,7 +208,7 @@
         </div>
 
         <div data-tab="dbStatistics-3" class="ui bottom attached tab active">
-            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <thead>
                 <tr>
                     <th>Hits</th>
@@ -233,7 +233,7 @@
         </div>
 
         <div data-tab="dbStatistics-4" class="ui bottom attached tab">
-            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+            <table class="${CSS.ADMIN_HOVER_TABLE}">
                 <thead>
                 <tr>
                     <th>max(s)</th>
@@ -263,7 +263,7 @@
 <div class="ui fluid card">
     <div class="content">
 
-    <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+    <table class="${CSS.ADMIN_HOVER_TABLE}">
         <thead>
         <tr>
             <th class="one wide">#</th>
