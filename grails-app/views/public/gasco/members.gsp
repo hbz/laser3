@@ -1,7 +1,6 @@
 <%@ page import="de.laser.storage.BeanStore" %>
 <laser:htmlStart text="GASCO-Mitglieder" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}" />
 
-<div class="gasco">
     <g:render template="/public/gasco/nav" />
     <h1 class="ui header">
         Liste der GASCO-Mitglieder
@@ -172,5 +171,4 @@
         </tr>
         </tbody>
     </table>
-</div>
 <laser:htmlEnd />

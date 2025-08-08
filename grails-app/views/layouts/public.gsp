@@ -31,7 +31,7 @@
         <g:if test="${(controllerName == 'gasco')}">
             <g:set var="gasco" value="true"/>
         </g:if>
-        <div class="landingpage" >
+        <div class="${gasco ? 'gasco':'landingpage'}" >
             <g:if test="${!gasco}">
                     <laser:render template="/layouts/publicMenu" />
             </g:if>
