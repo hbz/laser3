@@ -33,12 +33,22 @@
                                 var $childCheckbox  =  $(this).closest('.la-checkAllArea').find('.checkbox');
                                 $childCheckbox.checkbox('uncheck');
                                 }
-                          });
+                        });
+                        $(".propDefFilter").on('input', function() {
+                            let table = $(this).attr('data-forTable');
+                            $("#"+table+" td.pdName:containsInsensitive_laser('"+$(this).val()+"')").parent("tr").show();
+                            $("#"+table+" td.pdName:not(:containsInsensitive_laser('"+$(this).val()+"'))").parent("tr").hide();
+                        });
                     }
                 }).modal('show');
 
                 }
         });
+
+        //own selector for case-insensitive :contains
+        jQuery.expr[':'].containsInsensitive_laser = function(a, i, m) {
+            return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+        };
     }
     </laser:script>
 </g:if>
