@@ -4,15 +4,18 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 <%
-    String instanceLabel
+    String instanceLabel, shortnameLabel
     if(instanceType == Vendor.class.name) {
         instanceLabel = message(code: 'vendor.plural')
+        shortnameLabel = message(code: 'default.abbreviatedName.label')
     }
     else if(instanceType == Provider.class.name) {
         instanceLabel = message(code: 'provider.plural.accusative')
+        shortnameLabel = message(code: 'default.abbreviatedName.label')
     }
     else {
         instanceLabel = message(code: 'org.institution.plural')
+        shortnameLabel = message(code: 'org.sortname.label')
     }
 %>
 <ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0, instanceLabel])}" hideSubmitButton="true" contentClass="scrolling">
@@ -70,7 +73,7 @@
         <thead>
             <tr>
                 <th><g:checkBox name="copyMailToggler" id="copyMailToggler" checked="true"/></th>
-                <th><g:message code="org.sortname.label"/></th>
+                <th>${shortnameLabel}</th>
                 <th>${RDStore.CCT_EMAIL.getI10n('value')}</th>
             </tr>
         </thead>
@@ -78,7 +81,14 @@
             <g:each in="${orgList}" var="org">
                 <tr id="org${org.id}">
                     <td><g:checkBox id="toCopyMail_${org.id}" name="copyMail" class="orgSelector" value="${org.id}" checked="true"/></td>
-                    <td>${org.sortname}</td>
+                    <td>
+                        <g:if test="${instanceType in [Provider.class.name, Vendor.class.name]}">
+                            ${org.abbreviatedName}
+                        </g:if>
+                        <g:else>
+                            ${org.sortname}
+                        </g:else>
+                    </td>
                     <td><span class="address"></span></td>
                 </tr>
             </g:each>

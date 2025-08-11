@@ -2142,11 +2142,13 @@ class SurveyService {
             otherSubscriptions.removeAll(contextSubscriptions)
             Set<String> subscribedHostPlatformURLs = TitleInstancePackagePlatform.executeQuery("select tipp.hostPlatformURL from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where sp.pkg = tipp.pkg and sp.subscription in (:subs)", [subs: contextSubscriptions])
             List ieDirectCount = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :tippStatus and ie not in (select igi.ie from IssueEntitlementGroupItem igi where igi.ieGroup = :ieGroup)", [subs: subs, tippStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
-            List ieIndirectCount = PermanentTitle.executeQuery("select count(*) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:subscribedHostPlatformURLs) and pt.subscription in (:otherSubs)", [subscribedHostPlatformURLs: subscribedHostPlatformURLs, otherSubs: otherSubscriptions])
+            subscribedHostPlatformURLs.collate(65000-otherSubscriptions.size()).each { subset ->
+                List ieIndirectCount = PermanentTitle.executeQuery("select count(*) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:subscribedHostPlatformURLs) and pt.subscription in (:otherSubs)", [subscribedHostPlatformURLs: subset, otherSubs: otherSubscriptions])
+                if(ieIndirectCount)
+                    count += ieIndirectCount[0]
+            }
             if(ieDirectCount)
                 count += ieDirectCount[0]
-            if(ieIndirectCount)
-                count += ieIndirectCount[0]
                 /*
                 List<GroovyRowResult> titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                         " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +

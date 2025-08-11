@@ -860,7 +860,8 @@ class ControlledListService {
             nameFilter += " and lower(${fieldName}) like :query "
             queryParams.query = "%${query.trim().toLowerCase()}%"
         }
-        Set<Map> result = TitleInstancePackagePlatform.executeQuery("select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg = :pkg and status = :status "+nameFilter+" group by ${fieldName} order by ${fieldName}", queryParams)
+        String queryStr = "select new map(${fieldName} as name, ${fieldName} as value) from TitleInstancePackagePlatform where ${fieldName} is not null and pkg = :pkg and status = :status "+nameFilter+" group by ${fieldName} order by ${fieldName}"
+        Set<Map> result = TitleInstancePackagePlatform.executeQuery(queryStr, queryParams)
 
         if(result.size() == 0){
             result << [name: messageSource.getMessage("titleInstance.no${StringUtils.capitalize(fieldName)}.label", null, LocaleUtils.getCurrentLocale()), value: null]

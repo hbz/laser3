@@ -438,8 +438,9 @@
                             <g:set var="ieGroup"
                                    value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
                             <div class="ui circular label">
+                                <%-- performance bottleneck @ /survey/surveyEvaluation/2433?surveyConfigID=2619 --%>
                                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                    <%-- ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / --%>${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                                 </g:if>
                                 <g:else>
                                     ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
