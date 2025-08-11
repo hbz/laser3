@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.BeanStore" %>
-<laser:htmlStart text="GASCO-Über uns" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'gasco'}" />
+<laser:htmlStart text="GASCO-Über uns" publicLayout="gasco" />
 
 <g:render template="/layouts/gasco/nav" />
 

@@ -30,13 +30,13 @@
         <laser:render template="/templates/system/serverIndicator" />
 
         <div class="landingpage">
-            <laser:render template="/layouts/menu" />
+            <laser:render template="/layouts/public/menu" />
 
             <main class="ui main container">
                 <g:layoutBody/>%{-- body here --}%
             </main>
 
-            <laser:render template="/layouts/footer" />
+            <laser:render template="/layouts/public/footer" />
 
             <laser:javascript src="laser.js"/>%{-- dont move --}%
 

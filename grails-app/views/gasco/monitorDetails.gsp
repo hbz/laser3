@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.BeanStore; de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'gasco'}" />
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" publicLayout="gasco" />
 
 <g:render template="/layouts/gasco/nav" />
 

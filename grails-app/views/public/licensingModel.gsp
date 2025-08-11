@@ -1,5 +1,5 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.storage.BeanStore" %>
-<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}" >
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting;" %>
+<laser:htmlStart text="Plan" description="${message(code:'metaDescription.licensingModel')}">
     <style>
         .ui.table thead tr:first-child > th {
             top: 48px !important;
