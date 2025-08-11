@@ -1713,12 +1713,17 @@ class FilterService {
             qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
         }
 
-        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+        if (params.subject_references) {
             base_qry += " and tipp.subjectReference in (:subjectReferences) "
-            qry_params.subjectReferences = params.list('subject_references')
+            Set<String> subjectReferences = []
+            if(params.subject_references instanceof String && params.subject_references.contains(',')) {
+                subjectReferences.addAll(params.subject_references.split(','))
+            }
+            else subjectReferences << params.subject_references
+            qry_params.subjectReferences = subjectReferences
         }
 
-        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+        if (params.series_names) {
             base_qry += " and lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = params.list('series_names').collect { String seriesName -> seriesName.toLowerCase() }
         }
@@ -1778,7 +1783,12 @@ class FilterService {
         if (params.publishers) {
             //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
             base_qry += "and lower(tipp.publisherName) in (:publishers) "
-            qry_params.publishers = params.list('publishers').collect { String publisherName -> publisherName.toLowerCase() }
+            Set<String> publishers = []
+            if(params.publishers instanceof String && params.publishers.contains(',')) {
+                publishers.addAll(params.publishers.split(',').collect { String publisherName -> publisherName.toLowerCase() })
+            }
+            else publishers << params.publishers.toLowerCase()
+            qry_params.publishers = publishers
         }
 
 
