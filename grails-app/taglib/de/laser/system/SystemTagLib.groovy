@@ -61,7 +61,7 @@ class SystemTagLib {
 
     def htmlStart = { attrs, body ->
 
-        String layout   = attrs.layout != 'public' ? 'laser' : 'public'
+        String layout   = ['public', 'laser', 'gasco'].contains(attrs.layout) ? attrs.layout : 'public'
         String title    = message(code: 'laser')
 
         if (attrs.text) {

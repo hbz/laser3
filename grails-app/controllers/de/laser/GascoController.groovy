@@ -17,12 +17,6 @@ class GascoController {
     SpringSecurityService springSecurityService
 
     @Secured(['permitAll'])
-    def index() {
-        Map<String, Object> result = [:]
-        render view: '/public/gasco/index', model: result
-    }
-
-    @Secured(['permitAll'])
     def members() {
         Map<String, Object> result = [:]
         render view: '/public/gasco/members', model: result
