@@ -4,7 +4,7 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
-<g:render template="/public/gasco/nav" />
+<g:render template="/layouts/gasco/nav" />
 
 <h1 class="ui header">
     <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />

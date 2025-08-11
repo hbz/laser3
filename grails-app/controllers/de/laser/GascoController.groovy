@@ -19,13 +19,13 @@ class GascoController {
     @Secured(['permitAll'])
     def members() {
         Map<String, Object> result = [:]
-        render view: '/public/gasco/members', model: result
+        render view: '/gasco/members', model: result
     }
 
     @Secured(['permitAll'])
     def about() {
         Map<String, Object> result = [:]
-        render view: '/public/gasco/about', model: result
+        render view: '/gasco/about', model: result
     }
 
     /**
@@ -122,7 +122,7 @@ class GascoController {
             throw e
         }
 
-        render view: '/public/gasco/monitor', model: result
+        render view: '/gasco/monitor', model: result
     }
 
     /**
@@ -193,7 +193,7 @@ class GascoController {
                 return
             }
         }
-        render view: '/public/gasco/monitorDetails', model: result
+        render view: '/gasco/monitorDetails', model: result
     }
 
     /**

@@ -2,7 +2,7 @@
 
 <laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'gasco'}" />
 
-<g:render template="/public/gasco/nav" />
+<g:render template="/layouts/gasco/nav" />
 
 <h1 class="ui header">
     <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" />

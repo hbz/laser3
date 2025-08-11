@@ -33,7 +33,7 @@
             <g:layoutBody/>%{-- body here --}%
         </main>
 
-        <laser:render template="/public/gasco/footer" />
+        <laser:render template="/layouts/gasco/footer" />
 
         <laser:javascript src="laser.js"/>%{-- dont move --}%
 
