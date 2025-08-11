@@ -4,6 +4,7 @@ import de.laser.Org
 import de.laser.exceptions.CreationException
 import de.laser.wekb.Platform
 
+@Deprecated
 class CounterCheck {
 
     Long timestamp

@@ -1369,10 +1369,4 @@ class AjaxJsonController {
             render result as JSON
         }
     }
-
-    @Secured(['ROLE_USER'])
-    def checkCounterAPIConnection() {
-        Map<String, Object> result = subscriptionService.checkCounterAPIConnection(params.platform, params.customerId, params.requestorId)
-        render result as JSON
-    }
 }
