@@ -16,6 +16,7 @@
     </ui:tabs>
     <div class="ui bottom attached tab active segment">
         <g:each in="${platforms}" var="platform">
+            <div class="counterCheckWrapper"></div>
             <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
                 <div class="ui message">
                     <div class="header">${message(code: 'default.usage.addRequestorIDs.info', args: [platform.name])}</div>
@@ -68,6 +69,7 @@
                     </div>
                 </div><!-- .message -->
                 <div class="field la-field-right-aligned">
+                    <input type="button" class="counterApiConnectionCheck ${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.usage.sushiCallCheck.trigger')}"/>
                     <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.add.label')}"/>
                 </div>
                 <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -144,6 +146,14 @@
             $('.csv').show();
             $('.xls').hide();
         }
+    });
+
+    $(".counterApiConnectionCheck").on('click', function() {
+        $.ajax({
+            url: "<g:createLink controller="ajaxHtml" action="checkCounterAPIConnection" params="[id: subscription.id]"/>"
+        }).done(function(response) {
+            $(".counterCheckWrapper").html(response);
+        });
     });
 </laser:script>
 

@@ -4,6 +4,7 @@ import de.laser.addressbook.Contact
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
@@ -13,10 +14,13 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.remote.Wekb
+import de.laser.stats.Counter4Report
+import de.laser.stats.CounterCheck
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
@@ -26,6 +30,7 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import groovy.xml.StreamingMarkupBuilder
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector

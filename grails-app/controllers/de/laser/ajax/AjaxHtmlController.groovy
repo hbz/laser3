@@ -3,10 +3,14 @@ package de.laser.ajax
 import de.laser.AlternativeName
 import de.laser.CacheService
 import de.laser.ControlledListService
+import de.laser.CustomerIdentifier
 import de.laser.CustomerTypeService
 import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
+import de.laser.EscapeService
+import de.laser.ExportClickMeService
+import de.laser.ExportService
 import de.laser.FileCryptService
 import de.laser.GenericOIDService
 import de.laser.GlobalService
@@ -17,9 +21,11 @@ import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.AccessService
 import de.laser.PropertyService
+import de.laser.StatsSyncService
 import de.laser.SurveyService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
+import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -85,7 +91,9 @@ import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.xml.StreamingMarkupBuilder
 import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
 
 import javax.servlet.ServletOutputStream
@@ -101,12 +109,14 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
-    AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
     CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService // custom
+    EscapeService escapeService
+    ExportService exportService
+    ExportClickMeService exportClickMeService
     FileCryptService fileCryptService
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -121,6 +131,7 @@ class AjaxHtmlController {
     TaskService taskService
     AccessService accessService
     PropertyService propertyService
+    StatsSyncService statsSyncService
     SurveyService surveyService
     WekbNewsService wekbNewsService
     WorkflowService workflowService
@@ -246,6 +257,129 @@ class AjaxHtmlController {
 //        result.surveysOffset = result.offset
 
         render template: '/myInstitution/surveys', model: result
+    }
+
+
+
+    @Secured(['ROLE_USER'])
+    def checkCounterAPIConnection() {
+        Map<String, Object> result = [:]
+        Subscription subscription = Subscription.get(params.id)
+        Map allPlatforms = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
+        List errorRows = []
+        Set<String> titleRow = ['Customer Key', 'Requestor ID', 'Error']
+        Set<Platform> subscribedPlatforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :sub', [sub: subscription])
+        if (allPlatforms) {
+            Calendar start = GregorianCalendar.getInstance(), end = GregorianCalendar.getInstance()
+            start.set(Calendar.MONTH, 0)
+            start.set(Calendar.DAY_OF_MONTH, 1)
+            end.set(Calendar.MONTH, 0)
+            end.set(Calendar.DAY_OF_MONTH, 31)
+            Date startDate = start.getTime(), endDate = end.getTime()
+            subscribedPlatforms.each { Platform plat ->
+                Map platformRecord
+                Map<String, String> statsSource
+                String defaultReport = null
+                if(allPlatforms.counter4ApiSources.containsKey(plat.gokbId)) {
+                    platformRecord = allPlatforms.counter4ApiSources.get(plat.gokbId)
+                    statsSource = exportService.prepareSushiCall(platformRecord)
+                }
+                else if(allPlatforms.counter5ApiSources.containsKey(plat.gokbId)) {
+                    platformRecord = allPlatforms.counter5ApiSources.get(plat.gokbId)
+                    statsSource = exportService.prepareSushiCall(platformRecord)
+                    Map<String, Object> availableReports = statsSyncService.fetchJSONData(statsSource.statsUrl, null, true)
+                    if(availableReports.containsKey('list'))
+                        defaultReport = "/"+availableReports.list[0]["Report_ID"].toLowerCase()
+                    else {
+                        defaultReport = "/pr"
+                        //ugly and temp fix for HERDT which as sole provider does not support platform reports yet ...
+                        if(plat.gokbId == "f4f4f5d6-9f8c-49cc-b47f-54fadee1e0d8")
+                            defaultReport = "/tr"
+                    }
+                }
+                Set<CustomerIdentifier> memberCustomerIdentifiers = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType = :subscrRole and ci.platform = :platform', [parent: subscription, subscrRole: RDStore.OR_SUBSCRIBER_CONS, platform: plat])
+                memberCustomerIdentifiers.each { CustomerIdentifier customerId ->
+                    Map checkResult = [:]
+                    if(statsSource.revision == AbstractReport.COUNTER_4) {
+                        StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
+                        Date now = new Date()
+                        def requestBody = requestBuilder.bind {
+                            mkp.xmlDeclaration()
+                            mkp.declareNamespace(x: "http://schemas.xmlsoap.org/soap/envelope/")
+                            mkp.declareNamespace(cou: "http://www.niso.org/schemas/sushi/counter")
+                            mkp.declareNamespace(sus: "http://www.niso.org/schemas/sushi")
+                            x.Envelope {
+                                x.Header {}
+                                x.Body {
+                                    cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now), ID: '?') {
+                                        sus.Requestor {
+                                            sus.ID(customerId.requestorKey)
+                                            sus.Name('?')
+                                            sus.Email('?')
+                                        }
+                                        sus.CustomerReference {
+                                            sus.ID(customerId.value)
+                                            sus.Name('?')
+                                        }
+                                        sus.ReportDefinition(Name: 'PR1', Release: 4) {
+                                            sus.Filters {
+                                                sus.UsageDateRange {
+                                                    sus.Begin(DateUtils.getSDF_yyyyMMdd().format(startDate))
+                                                    //if (currentYearEnd.before(calendarConfig.now))
+                                                    sus.End(DateUtils.getSDF_yyyyMMdd().format(endDate))
+                                                    /*else {
+                                                        sus.End(calendarConfig.now.format("yyyy-MM-dd"))
+                                                    }*/
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        checkResult = statsSyncService.fetchXMLData(statsSource.statsUrl, customerId, requestBody)
+                    }
+                    else if(statsSource.revision == AbstractReport.COUNTER_5) {
+                        String url = statsSource.statsUrl + defaultReport
+                        url += exportService.buildQueryArguments([revision: AbstractReport.COUNTER_5], platformRecord, customerId)
+                        if(platformRecord.counterR5SushiPlatform)
+                            url += "&platform=${platformRecord.counterR5SushiPlatform}"
+                        url += "&begin_date=${DateUtils.getSDF_yyyyMM().format(startDate)}&end_date=${DateUtils.getSDF_yyyyMM().format(endDate)}"
+                        checkResult = statsSyncService.fetchJSONData(url, customerId)
+                    }
+                    if(checkResult.containsKey('error')) {
+                        if(checkResult.error && !(checkResult.error in [3030, 3031, 3060])) {
+                            List errorRow = []
+                            errorRow << exportClickMeService.createTableCell(ExportClickMeService.FORMAT.XLS, customerId.value)
+                            errorRow << exportClickMeService.createTableCell(ExportClickMeService.FORMAT.XLS, customerId.requestorKey)
+                            String errMess = message(code: "default.stats.error.${checkResult.error}")
+                            if(errMess.contains('default.stats.error'))
+                                errMess = checkResult.error
+                            errorRow << exportClickMeService.createTableCell(ExportClickMeService.FORMAT.XLS, errMess)
+                            errorRows << errorRow
+                        }
+                    }
+                }
+            }
+            if(errorRows) {
+                String dir = GlobalService.obtainTmpFileLocation()
+                File f = new File(dir+"/${escapeService.escapeString(subscription.name)}_counterAPIErrors")
+                result.token = "${escapeService.escapeString(subscription.name)}_counterAPIErrors"
+                FileOutputStream fos = new FileOutputStream(f)
+                Map sheetData = [:]
+                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: titleRow, columnData: errorRows])
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                wb.write(fos)
+                fos.flush()
+                fos.close()
+                wb.dispose()
+            }
+            else result.success = true
+        }
+        else {
+            result.wekbUnavailable = true
+        }
+        render template: '/templates/stats/counterCheckResult', model: result
     }
 
     /**
