@@ -1,17 +1,14 @@
 <%@ page import="de.laser.storage.BeanStore; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}">
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" publicLayout="gasco">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
+<g:render template="/layouts/gasco/nav" />
 
-    <g:render template="/public/gasco/nav" />
-
-    <h1 class="ui header">
-        <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
-    </h1>
-
-
+<h1 class="ui header">
+    <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+</h1>
 
 <div class="ui grid">
     <div class="sixteen wide column">

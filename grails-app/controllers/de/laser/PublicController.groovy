@@ -47,6 +47,7 @@ class PublicController {
         String text = "User-agent: *\n"
 
         if (AppUtils.getCurrentServer() == AppUtils.PROD) {
+            text += "Disallow: /gasco/data/ \n"
             text += "Disallow: /gasco/details/ \n"
             text += "Disallow: /login/ \n"              // ERMS-6180
             text += "Disallow: /public/api/ \n"         // ERMS-6180

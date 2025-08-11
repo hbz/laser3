@@ -49,7 +49,6 @@
 </head>
 
 <body class="${controllerName}_${actionName}">
-
     %{-- skip to main content, bypass menu block (for screen reader) related to https://www.w3.org/TR/WCAG20-TECHS/G1.html--}%
     <ui:skipLink />
 
@@ -193,11 +192,6 @@
             </main>
         </div>
 
-        %{-- footer --}%
-
-        <sec:ifNotGranted roles="ROLE_USER">
-            <laser:render template="/layouts/footer" />
-        </sec:ifNotGranted>
         %{-- global container for modals and ajax --}%
 
         <div id="dynamicModalContainer"></div>

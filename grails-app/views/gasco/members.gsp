@@ -1,10 +1,12 @@
 <%@ page import="de.laser.storage.BeanStore" %>
-<laser:htmlStart text="GASCO-Mitglieder" layout="${BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser':'public'}" />
+<laser:htmlStart text="GASCO-Mitglieder" publicLayout="gasco" />
 
-    <g:render template="/public/gasco/nav" />
+    <g:render template="/layouts/gasco/nav" />
+
     <h1 class="ui header">
         Liste der GASCO-Mitglieder
     </h1>
+
     <table class="ui striped fixed table">
         <tbody>
         <tr><th>Mitglieder</th><th>Ansprechpartner</th><th>Institution</th></tr>
