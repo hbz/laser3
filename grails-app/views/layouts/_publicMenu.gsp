@@ -17,7 +17,7 @@
         <a href="${message(code:'url.wekb.' + currentServer)}" class="item" target="_blank">
             <i class="${Icon.WEKB}"></i> we:kb
         </a>
-        <g:link controller="gasco" class="item">
+        <g:link controller="gasco" action="monitor" class="item">
             <i class="${Icon.GASCO}"></i> ${message(code:'menu.public.gasco_monitor')}
         </g:link>
         <div class="right item">
