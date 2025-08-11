@@ -4,7 +4,7 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
-<div class="gasco">
+
     <g:render template="/public/gasco/nav" />
 
     <h1 class="ui header">
@@ -13,76 +13,76 @@
 
 
 
-    <div class="ui grid">
-        <div class="sixteen wide column">
-            <div class="ui la-gasco segment">
-                <g:form controller="gasco" action="monitor" method="get" class="ui small form">
+<div class="ui grid">
+    <div class="sixteen wide column">
+        <div class="ui segment">
+            <g:form controller="gasco" action="monitor" method="get" class="ui small form">
 
-                    <div class="field">
-                        <label for="search">${message(code: 'default.search.label')}</label>
+                <div class="field">
+                    <label for="search">${message(code: 'default.search.label')}</label>
 
-                        <div class="ui input">
-                            <input type="text" id="search" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
-                        </div>
+                    <div class="ui input">
+                        <input type="text" id="search" name="q" placeholder="${message(code: 'default.search.ph')}" value="${params.q}"/>
                     </div>
-                    <div class="field">
-                        <fieldset id="subscritionKind">
-                            <legend>${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
-                            <div class="inline fields la-filter-inline">
+                </div>
+                <div class="field">
+                    <fieldset id="subscritionKind">
+                        <legend>${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                        <div class="inline fields la-filter-inline">
 
-                                <%
-                                    List subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
-                                    subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
-                                %>
+                            <%
+                                List subkinds = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)
+                                subkinds -= RDStore.SUBSCRIPTION_KIND_LOCAL
+                            %>
 
-                                <g:each in="${subkinds}" var="subKind">
-                                        <g:if test="${subKind.value == RDStore.SUBSCRIPTION_KIND_NATIONAL.value}">
-                                            <div class="inline field js-nationallicence">
-                                        </g:if>
-                                        <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_ALLIANCE.value}">
-                                            <div class="inline field js-alliancelicence">
-                                        </g:elseif>
-                                        <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_CONSORTIAL.value}">
-                                            <div class="inline field js-consortiallicence">
-                                        </g:elseif>
-                                        <g:else>
-                                            <div class="inline field">
-                                        </g:else>
-                                            <div class="ui checkbox">
-                                                <label for="checkSubType-${subKind.id}">${subKind.getI10n('value')}</label>
-                                                <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
-                                                    <g:if test="${Params.getLongList(params, 'subKinds').contains(subKind.id)}"> checked="" </g:if>
-                                                    <g:if test="${initQuery}"> checked="" </g:if>
-                                                       tabindex="0">
-                                            </div>
+                            <g:each in="${subkinds}" var="subKind">
+                                    <g:if test="${subKind.value == RDStore.SUBSCRIPTION_KIND_NATIONAL.value}">
+                                        <div class="inline field js-nationallicence">
+                                    </g:if>
+                                    <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_ALLIANCE.value}">
+                                        <div class="inline field js-alliancelicence">
+                                    </g:elseif>
+                                    <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_CONSORTIAL.value}">
+                                        <div class="inline field js-consortiallicence">
+                                    </g:elseif>
+                                    <g:else>
+                                        <div class="inline field">
+                                    </g:else>
+                                        <div class="ui checkbox">
+                                            <label for="checkSubType-${subKind.id}">${subKind.getI10n('value')}</label>
+                                            <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
+                                                <g:if test="${Params.getLongList(params, 'subKinds').contains(subKind.id)}"> checked="" </g:if>
+                                                <g:if test="${initQuery}"> checked="" </g:if>
+                                                   tabindex="0">
                                         </div>
-                                </g:each>
+                                    </div>
+                            </g:each>
 
-                            </div>
-                        </fieldset>
-                    </div>
-                    <div class="field" id="js-consotial-authority">
-                        <fieldset>
-                            <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="field" id="js-consotial-authority">
+                    <fieldset>
+                        <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
-                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown clearable "
-                                optionKey="${{ Org.class.name + ':' + it.id }}"
-                                optionValue="${{ it.getName() }}"
-                                name="consortia" noSelection="${['' : message(code:'default.select.choose.label')]}" value="${params.consortia}"/>
-                        </fieldset>
+                        <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown clearable "
+                            optionKey="${{ Org.class.name + ':' + it.id }}"
+                            optionValue="${{ it.getName() }}"
+                            name="consortia" noSelection="${['' : message(code:'default.select.choose.label')]}" value="${params.consortia}"/>
+                    </fieldset>
 
-                    </div>
+                </div>
 
-                    <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
-                    </div>
+                <div class="field la-field-right-aligned">
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
+                </div>
 
-                </g:form>
-            </div>
+            </g:form>
         </div>
     </div>
 </div>
+
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.toggleFilterPart = function () {
             if ($('.js-consortiallicence input').prop('checked')) {
@@ -112,8 +112,8 @@
 </laser:script>
 
 <g:if test="${subscriptions}">
-
-<table class="ui celled la-js-responsive-table la-table table">
+<br><br>
+<table class="ui striped table">
     <thead>
     <tr>
         <th>${message(code:'sidewide.number')}</th>
