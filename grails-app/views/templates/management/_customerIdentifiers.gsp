@@ -16,6 +16,12 @@
     </ui:tabs>
     <div class="ui bottom attached tab active segment">
         <g:each in="${platforms}" var="platform">
+            <div class="ui teal progress progressIndicator" hidden="hidden">
+                <div class="bar">
+                    <div class="progress"></div>
+                </div>
+                <div class="label"></div>
+            </div>
             <div class="counterCheckWrapper"></div>
             <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
                 <div class="ui message">
@@ -127,6 +133,7 @@
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.csv').hide();
+    $('.progressIndicator').hide();
 
     $('.action .icon.button').click(function () {
          $(this).parent('.action').find('input:file').click();
@@ -149,11 +156,37 @@
     });
 
     $(".counterApiConnectionCheck").on('click', function() {
+        $('.progressIndicator').progress('set percent', 0);
+        $('.progressIndicator').show();
+        $(".counterCheckWrapper").hide();
         $.ajax({
             url: "<g:createLink controller="ajaxHtml" action="checkCounterAPIConnection" params="[id: subscription.id]"/>"
         }).done(function(response) {
-            $(".counterCheckWrapper").html(response);
+            $(".counterCheckWrapper").html(response).show();
         });
+        checkProgress();
     });
+
+    function checkProgress() {
+        let percentage = 0;
+        setTimeout(function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/checkCounterAPIConnection']"/>"
+            }).done(function(response){
+                percentage = response.percent;
+                $('.progressIndicator div.label').text(response.label);
+                if(percentage !== null)
+                    $('.progressIndicator').progress('set percent', percentage);
+                if($('.progressIndicator').progress('is complete')) {
+                    $('.progressIndicator').hide();
+                }
+                else {
+                    checkProgress();
+                }
+            }).fail(function(resp, status){
+                console.log(status+' '+resp);
+            });
+        }, 500);
+    }
 </laser:script>
 

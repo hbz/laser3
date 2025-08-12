@@ -97,6 +97,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
 
 import javax.servlet.ServletOutputStream
+import java.math.RoundingMode
 import java.nio.charset.Charset
 
 /**
@@ -263,6 +264,9 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def checkCounterAPIConnection() {
+        EhcacheWrapper userCache = contextService.getUserCache("/subscription/checkCounterAPIConnection")
+        userCache.put('progress', 0)
+        userCache.put('label', 'Bereite Überprüfung vor ...')
         Map<String, Object> result = [:]
         Subscription subscription = Subscription.get(params.id)
         Map allPlatforms = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
@@ -270,13 +274,14 @@ class AjaxHtmlController {
         Set<String> titleRow = ['Customer Key', 'Requestor ID', 'Error']
         Set<Platform> subscribedPlatforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :sub', [sub: subscription])
         if (allPlatforms) {
+            double platPercentage = (1/subscribedPlatforms.size())*100
             Calendar start = GregorianCalendar.getInstance(), end = GregorianCalendar.getInstance()
             start.set(Calendar.MONTH, 0)
             start.set(Calendar.DAY_OF_MONTH, 1)
             end.set(Calendar.MONTH, 0)
             end.set(Calendar.DAY_OF_MONTH, 31)
             Date startDate = start.getTime(), endDate = end.getTime()
-            subscribedPlatforms.each { Platform plat ->
+            subscribedPlatforms.eachWithIndex { Platform plat, int p ->
                 Map platformRecord
                 Map<String, String> statsSource
                 String defaultReport = null
@@ -291,14 +296,15 @@ class AjaxHtmlController {
                     if(availableReports.containsKey('list'))
                         defaultReport = "/"+availableReports.list[0]["Report_ID"].toLowerCase()
                     else {
-                        defaultReport = "/pr"
+                        defaultReport = "/pr_p1"
                         //ugly and temp fix for HERDT which as sole provider does not support platform reports yet ...
                         if(plat.gokbId == "f4f4f5d6-9f8c-49cc-b47f-54fadee1e0d8")
                             defaultReport = "/tr"
                     }
                 }
                 Set<CustomerIdentifier> memberCustomerIdentifiers = CustomerIdentifier.executeQuery('select ci from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType = :subscrRole and ci.platform = :platform', [parent: subscription, subscrRole: RDStore.OR_SUBSCRIBER_CONS, platform: plat])
-                memberCustomerIdentifiers.each { CustomerIdentifier customerId ->
+                memberCustomerIdentifiers.eachWithIndex { CustomerIdentifier customerId, int i ->
+                    userCache.put('label', "Überprüfe Kundennummer ${customerId.value}/${customerId.requestorKey} von ${customerId.customer.sortname}")
                     Map checkResult = [:]
                     if(statsSource.revision == AbstractReport.COUNTER_4) {
                         StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
@@ -359,6 +365,7 @@ class AjaxHtmlController {
                             errorRows << errorRow
                         }
                     }
+                    userCache.put('progress', (p*platPercentage)+(i/memberCustomerIdentifiers.size())*100)
                 }
             }
             if(errorRows) {
@@ -379,6 +386,7 @@ class AjaxHtmlController {
         else {
             result.wekbUnavailable = true
         }
+        userCache.put('progress', 100)
         render template: '/templates/stats/counterCheckResult', model: result
     }
 
