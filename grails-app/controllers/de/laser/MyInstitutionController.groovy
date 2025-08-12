@@ -3070,7 +3070,10 @@ class MyInstitutionController  {
             if (params.filename) {
                 filename = params.filename
             }
-            configMap = [function:[], position: [], type: [], sort: 'sortname']
+            configMap.function = []
+            configMap.position = []
+            configMap.type = []
+            configMap.sort = 'sortname'
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->

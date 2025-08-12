@@ -62,7 +62,7 @@ class AddressbookService {
         }
         String sort
         if(!params.sort || params.sort == "sortname")
-            sort = 'coalesce(org.sortname, vendor.abbreviatedName, provider.abbreviatedName) as sortname'
+            sort = 'coalesce(org.sortname, vendor.name, provider.name) as sortname'
         else sort = params.sort
 
         if (params.preferredSurveyPerson) {

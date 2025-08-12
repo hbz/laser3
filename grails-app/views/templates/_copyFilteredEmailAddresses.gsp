@@ -33,7 +33,11 @@
             <g:set var="org" value="${genericOIDService.resolveOID(row.getKey())}"/>
             <tr id="${row.getKey()}">
                 <td><g:checkBox id="toCopyMail_${org.id}" name="copyMail" class="orgSelector" value="${org.id}" checked="true"/></td>
-                <td>${org.name} (${org.sortname})</td>
+                <td>
+                    ${org.name}
+                    <g:if test="${org instanceof Org}">(${org.sortname})</g:if>
+                    <g:elseif test="${org.abbreviatedName}">(${org.abbreviatedName})</g:elseif>
+                </td>
                 <td><span class="address">${row.getValue().join('; ')}</span></td>
             </tr>
         </g:each>
