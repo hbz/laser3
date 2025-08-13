@@ -1,4 +1,4 @@
-<%@ page import="de.laser.api.v0.ApiManager; de.laser.system.SystemActivityProfiler; de.laser.utils.AppUtils;" %>
+<%@ page import="de.laser.system.MuleCache; de.laser.api.v0.ApiManager; de.laser.system.SystemActivityProfiler; de.laser.utils.AppUtils;" %>
 <laser:serviceInjection />
 
 %{-- menu: user --}%
@@ -37,6 +37,12 @@
         <div class="header grey">
             Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
         </div>
+        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV, AppUtils.QA] && MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD)}">
+            <div class="header grey">
+                Datenstand:
+                <g:formatDate date="${MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD).dateValue}" format="${message(code:'default.date.format.notime')}" />
+            </div>
+        </g:if>
         <div class="header grey">
             ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
         </div>

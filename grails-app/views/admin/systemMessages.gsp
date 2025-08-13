@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.system.SystemMessage" %>
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
@@ -19,7 +19,7 @@
 <br />
 
 <ui:msg class="info" showIcon="true" hideClose="true">
-    ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+    ${message(code: 'admin.systemMessage.info')}
     <br />
     <br />
     ${message(code: 'admin.help.markdown')}.
