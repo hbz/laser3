@@ -6,6 +6,7 @@ import de.laser.WekbNewsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
+import de.laser.utils.AppUtils
 import groovy.util.logging.Slf4j
 
 import java.time.LocalTime
@@ -55,10 +56,11 @@ class MuleJob extends AbstractJob {
                 wekbNewsService.clearCache()
             }
             if (timeCheck_0645) {
-                // TODO:
-//                userAccountService.expireUserAccounts()
-//                userAccountService.warnInactiveUserAccounts()
-
+                if (AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.PROD]) {
+                    // TODO:
+//                    userAccountService.expireUserAccounts()
+//                    userAccountService.warnInactiveUserAccounts()
+                }
                 systemService.sendSystemInsightMails()
             }
             wekbNewsService.updateCache()

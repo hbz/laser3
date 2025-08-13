@@ -2,9 +2,6 @@ package de.laser.system
 
 import de.laser.utils.AppUtils
 
-/**
- * This class lets configure some system-wide settings (e.g. MaintenanceMode, MailSending). Setting can be changed only by ROLE_YODA users
- */
 class MuleCache {
 
     static enum CFG {
