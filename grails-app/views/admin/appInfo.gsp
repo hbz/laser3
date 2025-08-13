@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.CSS; de.laser.helper.FutureHelper; java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.system.MuleCache; de.laser.ui.CSS; de.laser.helper.FutureHelper; java.time.Clock; de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -24,6 +24,14 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
+            <tr>
+                <td>Heartbeat</td>
+                <td>
+                    <g:if test="${MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT)}">
+                        <g:formatDate date="${MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT).dateValue}" format="${message(code:'default.date.format.noZ')}" />
+                    </g:if>
+                </td>
+            </tr>
             <tr><td>Timezone</td><td> ${Clock.systemDefaultZone()}</td></tr>
         </tbody>
     </table>
