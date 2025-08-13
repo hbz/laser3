@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
@@ -28,11 +29,12 @@ class UserAccountService {
     void warnInactiveUserAccounts() {
         List expiringAccounts = []
         LocalDate now = LocalDate.now()
-
-        // not expired and not warned - but inactivity since INACTIVITY_WARNING_AFTER_MONTHS
-        User.executeQuery("select u from User u where u.accountExpired = false and u.inactivityWarning is null and u.username != 'anonymous' order by u.username").each{ User usr ->
+        // not expired and not warned and not INST_ADM - but inactivity since INACTIVITY_WARNING_AFTER_MONTHS
+        User.executeQuery(
+                "select u from User u where u.accountExpired = false and u.inactivityWarning is null and u.formalRole != :fr and u.username != 'anonymous' order by u.username",
+                [fr: Role.findByAuthority('INST_ADM')]
+        ).each{ User usr ->
             LocalDate lastLogin = usr.lastLogin ? DateUtils.dateToLocalDate(usr.lastLogin) : DateUtils.dateToLocalDate(usr.dateCreated)
-            // TODO: ignore INST_ADM ?
             if (lastLogin.isBefore(now.minusMonths(INACTIVITY_WARNING_AFTER_MONTHS))) {
                 usr.inactivityWarning = new Date()
                 usr.save()
@@ -64,9 +66,11 @@ class UserAccountService {
         LocalDate now = LocalDate.now()
 
         // not expired, but warned since FLAG_EXPIRED_AFTER_ANOTHER_MONTHS
-        User.executeQuery("select u from User u where u.accountExpired = false and u.inactivityWarning != null and u.username != 'anonymous' order by u.username").each{ User usr ->
+        // INST_ADM ?
+        User.executeQuery(
+                "select u from User u where u.accountExpired = false and u.inactivityWarning != null and u.username != 'anonymous' order by u.username"
+        ).each{ User usr ->
             LocalDate lastWarning = DateUtils.dateToLocalDate(usr.inactivityWarning)
-            // TODO: ignore INST_ADM ?
             if (lastWarning.isBefore(now.minusMonths(FLAG_EXPIRED_AFTER_ANOTHER_MONTHS))) {
                 usr.accountExpired = true
                 usr.save()

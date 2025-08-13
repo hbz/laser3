@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6751    13.08.2025  rc-3.5  3.5.5       Andreas Feature     Performanzoptimierung bei der Umfrage-Ergebnissicht
+
+6755    13.08.2025  rc-3.5  3.5.5       David   Feature     Anzeige des Datums des Datenabzugs von Prod      
+
 6533    08.08.2025  dev     3.6         Andreas Feature     Suche innerhalb der Merkmalstabelle ermöglicht
 
 6744    07.08.2025  rc-3.5  3.5.4       Andreas Bug         500er wegen Teilung durch Null
