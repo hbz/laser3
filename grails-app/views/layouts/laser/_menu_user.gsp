@@ -16,10 +16,10 @@
         <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
 
         <ui:link addItemAttributes="true" controller="public" action="releases">
-            ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
+            ${message(code:'releaseNotes')}
         </ui:link>
         <ui:link addItemAttributes="true" controller="public" action="api">
-            ${message(code:'apiRelease')} (${ApiManager.VERSION})
+            ${message(code:'apiRelease')}
         </ui:link>
         <ui:link addItemAttributes="true" controller="public" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
