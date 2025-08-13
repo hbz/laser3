@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6514    13.08.2025  dev     3.6         Andreas Feature     Ausblenden der Auswahl für Umfrage bei Konsortialstellen
+
 6533    08.08.2025  dev     3.6         Andreas Feature     Suche innerhalb der Merkmalstabelle ermöglicht
 
 6751    13.08.2025  rc-3.5  3.5.5       Andreas Feature     Performanzoptimierung bei der Umfrage-Ergebnissicht

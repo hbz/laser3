@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
+ <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
 <%@ page import="de.laser.Org; de.laser.addressbook.Person; de.laser.addressbook.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
 <laser:htmlStart message="menu.institutions.publicContacts" />
@@ -78,7 +78,7 @@
                   model="${[persons       : visiblePersons,
                             showContacts  : true,
                             showOptions : true,
-                            tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position', 'preferredForSurvey']
+                            tmplConfigShow: tmplShowConfig
                   ]}"/>
 
     <ui:paginate action="contacts" controller="organisation" params="${params}"
