@@ -2375,8 +2375,6 @@ class SurveyControllerService {
                 }
             }
 
-            result.participants = result.participants.sort { it.org.sortname }
-
             if(!params.fileformat) {
                  List charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
                 if(result.surveyConfig.vendorSurvey) {
