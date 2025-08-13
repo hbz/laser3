@@ -11,12 +11,14 @@ import de.laser.FileCryptService
 import de.laser.GenericOIDService
 import de.laser.GlobalService
 import de.laser.HelpService
+import de.laser.IssueEntitlementGroup
 import de.laser.IssueEntitlementService
 import de.laser.OrgSetting
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.AccessService
 import de.laser.PropertyService
+import de.laser.SubscriptionService
 import de.laser.SurveyService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
@@ -101,7 +103,6 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
-    AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
@@ -118,6 +119,7 @@ class AjaxHtmlController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionControllerService subscriptionControllerService
+    SubscriptionService subscriptionService
     TaskService taskService
     AccessService accessService
     PropertyService propertyService
@@ -354,6 +356,26 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
 
         render template: '/survey/ieInfos', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSurveyTitlesCount() {
+        Map<String,Object> result = [:]
+        int titlesInIEGroup, titlesNotInIEGroup
+        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfig)
+        Subscription subParticipant = Subscription.get(params.subParticipant)
+        IssueEntitlementGroup ieGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)
+        if(surveyConfig.pickAndChoosePerpetualAccess) {
+            titlesInIEGroup = surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)
+            titlesNotInIEGroup = surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)
+        }
+        else {
+            titlesInIEGroup = surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)
+            titlesNotInIEGroup = subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)
+        }
+        result.titlesInIEGroup = titlesInIEGroup
+        result.titlesNotInIEGroup = titlesNotInIEGroup
+        render template: '/templates/survey/surveyTitlesCount', model: result
     }
 
     @Secured(['ROLE_USER'])
