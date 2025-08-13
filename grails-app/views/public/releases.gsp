@@ -12,7 +12,7 @@
 
 <div class="ui secondary pointing menu">
     <g:each in="${history.reverse()}" var="h">
-        <g:link controller="public" action="releases" id="${h}" class="item ${h == version ? 'active' : ''}">Version: ${h}</g:link>
+        <g:link controller="public" action="releases" id="${h}" class="item ${h == version ? 'active' : ''}">Version ${h}</g:link>
     </g:each>
 
     <g:link controller="public" action="api" class="item right floated"><icon:arrow /> ${message(code:'apiRelease')}</g:link>
