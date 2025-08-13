@@ -2,7 +2,7 @@ package de.laser.jobs
 
 import de.laser.WekbNewsService
 import de.laser.annotations.UnstableFeature
-import de.laser.config.ConfigMapper
+import de.laser.system.MuleCache
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
@@ -19,8 +19,6 @@ class HeartbeatJob extends AbstractJob {
     WekbNewsService wekbNewsService
 //    SimpMessagingTemplate brokerMessagingTemplate
 
-    static final int HEARTBEAT_IN_SECONDS = 5 * 60
-
     static triggers = {
     cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
     //cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0/10 * * * * ?"
@@ -34,7 +32,7 @@ class HeartbeatJob extends AbstractJob {
     //                  `- Second, 0-59
     }
 
-    static List<List> configurationProperties = [ ConfigMapper.QUARTZ_HEARTBEAT ]
+    static List<List> configurationProperties = []
 
     boolean isAvailable() {
         !jobIsRunning
@@ -49,7 +47,7 @@ class HeartbeatJob extends AbstractJob {
             return false
         }
         try {
-            ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date() )
+            MuleCache.updateEntry( MuleCache.CFG.SYSTEM_HEARTBEAT, new Date() )
             SystemActivityProfiler.update()
 
             // org.springframework.messaging.simp.SimpMessageSendingOperations extends org.springframework.messaging.core.MessageSendingOperations

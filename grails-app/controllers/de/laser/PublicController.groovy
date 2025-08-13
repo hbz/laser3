@@ -355,12 +355,14 @@ class PublicController {
     @Secured(['ROLE_USER'])
     def api() {
         Map<String, Object> result = [
-                history : [ 'legacy', '3.4', '3.7' ], // todo
-                version   : ApiManager.VERSION
+                history : [ 'legacy', '3', '4' ], // todo
         ]
+
+        String[] amv = ApiManager.VERSION.split('\\.')
         if (params.id) {
-            result.version = params.id
+            amv = params.id.toString().split('\\.')
         }
+        result.version = (amv.length >= 1) ? amv[0] : 'failed'
         result
     }
 

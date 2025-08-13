@@ -1322,8 +1322,8 @@ class SubscriptionController {
             if(params.pkgFilter)
                 targetPkg = [Package.get(params.pkgFilter)]
             Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
-            configMap.putAll(FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs'))
             configMap.putAll(params)
+            configMap.putAll(FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs'))
             Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
             Map<String, Object> selectedFields = [:]
             if(params.fileformat) {
