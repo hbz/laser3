@@ -13,6 +13,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.system.MuleCache
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -46,7 +47,7 @@ class BootStrapService {
      */
     void init (boolean quickStart) {
 
-        ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, null ) // config injection
+        MuleCache.updateEntry( MuleCache.CFG.SYSTEM_STARTUP, new Date() )
 
         if (Environment.isDevelopmentMode() && ! quickStart) {
             ConfigMapper.checkCurrentConfig()
