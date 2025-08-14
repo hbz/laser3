@@ -3095,7 +3095,7 @@ class SurveyService {
                                         CostItem ci
                                         if(pkg){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, pickedElement, pkg)
-                                        }else if(subscription){
+                                        }else if(surveyConfigSubscription){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, pickedElement, surveyConfigSubscription)
                                         }
                                         else {
