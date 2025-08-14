@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6762    14.08.2025  rc-3.5  3.5.5       David   Feature     Namensräume verwalten
+
+6761    14.08.2025  rc-3.5  3.5.5       Andreas Bug         fehlende Entfernt-Markierung von Paketen und Plattformen behoben
+
+6758    14.08.2025  rc-3.5  3.5.5       Andreas Bug         bei Mehrjahreslaufzeit wurde die Vererbung von Paketen nicht berücksichtigt
+
 6751    13.08.2025  rc-3.5  3.5.5       Andreas Feature     Performanzoptimierung bei der Umfrage-Ergebnissicht
 
 6755    13.08.2025  rc-3.5  3.5.5       David   Feature     Anzeige des Datums des Datenabzugs von Prod      
