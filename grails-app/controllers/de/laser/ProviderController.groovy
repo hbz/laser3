@@ -263,9 +263,9 @@ class ProviderController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, provider)
-            Set<Package> allPackages = provider.packages
+            Set<Package> allPackages = provider.packages.findAll { Package pkg -> pkg.packageStatus != RDStore.PACKAGE_STATUS_REMOVED }
             result.allPackages = allPackages
-            result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
+            result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform?.status != RDStore.PLATFORM_STATUS_REMOVED }.nominalPlatform.toSet()
             result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
             result.links = ProviderLink.executeQuery('select pl from ProviderLink pl where pl.from = :provider or pl.to = :provider', [provider: provider])

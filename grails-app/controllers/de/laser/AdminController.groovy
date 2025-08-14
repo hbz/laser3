@@ -891,8 +891,13 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def manageNamespaces() {
+        Map<String, Object> result = [
+            cmd:         params.cmd,
+            editable:    true,
+            currentLang: LocaleUtils.getCurrentLang()
+        ]
+
         IdentifierNamespace idnsInstance = new IdentifierNamespace(params)
-        Map detailsStats = [:]
 
         switch (request.method) {
             case 'GET':
@@ -910,23 +915,41 @@ class AdminController  {
                     }
                 }
                 else if (params.cmd == 'details') {
+                    result.detailsStats = [:]
+
+                    Closure getQuery = { obj ->
+                        return 'select i.value, i.' + obj + '.id from Identifier i join i.ns idns where idns = :idns and i.' + obj + ' is not null order by i.value, i.' + obj + '.id'
+                    }
 
                     if (idnsInstance) {
-                        detailsStats.putAt(g.createLink(controller:'license', action:'show') as String,
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.lic.id from Identifier i join i.ns idns where idns = :idns and i.lic is not null order by i.value, i.lic.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'org', action:'show') as String,
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.org.id from Identifier i join i.ns idns where idns = :idns and i.org is not null order by i.value, i.org.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'package', action:'show') as String,
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.pkg.id from Identifier i join i.ns idns where idns = :idns and i.pkg is not null order by i.value, i.pkg.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'subscription', action:'show') as String,
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.sub.id from Identifier i join i.ns idns where idns = :idns and i.sub is not null order by i.value, i.sub.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'tipp', action:'show') as String,
-                                IdentifierNamespace.executeQuery(
-                                        "select i.value, i.tipp.id from Identifier i join i.ns idns where idns = :idns and i.tipp is not null order by i.value, i.tipp.id", [idns: idnsInstance]))
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'license', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('lic') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'org', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('org') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'package', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('pkg') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'subscription', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('sub') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'tipp', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('tipp') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'provider', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('provider') as CharSequence, [idns: idnsInstance])
+                        )
+                        result.detailsStats.putAt(
+                                g.createLink(controller:'vendor', action:'show') as String,
+                                IdentifierNamespace.executeQuery(getQuery('vendor') as CharSequence, [idns: idnsInstance])
+                        )
                     }
                 }
                 break
@@ -947,37 +970,30 @@ class AdminController  {
                 break
         }
 
-        NativeQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
-SELECT * FROM (
-      SELECT idns.idns_ns,
-             idns.idns_id,
-             sum(CASE WHEN i.id_lic_fk is null THEN 0 ELSE 1 END)  lic,
-             sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
-             sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
-             sum(CASE WHEN i.id_sub_fk is null THEN 0 ELSE 1 END)  sub,
-             sum(CASE WHEN i.id_tipp_fk is null THEN 0 ELSE 1 END) tipp
-      FROM identifier i
-               JOIN identifier_namespace idns ON idns.idns_id = i.id_ns_fk
-      GROUP BY idns.idns_ns, idns.idns_id
-      order by idns.idns_ns
-) sq WHERE (
-    CASE WHEN sq.lic > 0 THEN 1 ELSE 0 END +
-    CASE WHEN sq.org > 0 THEN 1 ELSE 0 END +
-    CASE WHEN sq.pkg > 0 THEN 1 ELSE 0 END +
-    CASE WHEN sq.sub > 0 THEN 1 ELSE 0 END +
-    CASE WHEN sq.tipp > 0 THEN 1 ELSE 0 END
-    ) > 1; """)
+        result.identifierNamespaceInstance = idnsInstance
 
-        List globalNamespaceStats = sqlQuery.with { list() }
+        if (params.cmd != 'details') {
+            NativeQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
+                SELECT * FROM (
+                      SELECT idns.idns_ns,
+                             idns.idns_id,
+                             sum(CASE WHEN i.id_lic_fk is null THEN 0 ELSE 1 END)  lic,
+                             sum(CASE WHEN i.id_org_fk is null THEN 0 ELSE 1 END)  org,
+                             sum(CASE WHEN i.id_pkg_fk is null THEN 0 ELSE 1 END)  pkg,
+                             sum(CASE WHEN i.id_sub_fk is null THEN 0 ELSE 1 END)  sub,
+                             sum(CASE WHEN i.id_tipp_fk is null THEN 0 ELSE 1 END) tipp,
+                             sum(CASE WHEN i.id_provider_fk is null THEN 0 ELSE 1 END) prov,
+                             sum(CASE WHEN i.id_vendor_fk is null THEN 0 ELSE 1 END) ven
+                      FROM identifier i
+                               JOIN identifier_namespace idns ON idns.idns_id = i.id_ns_fk
+                      GROUP BY idns.idns_ns, idns.idns_id
+                      order by idns.idns_ns
+                ) sq WHERE (sq.lic + sq.org + sq.pkg + sq.sub + sq.tipp + sq.prov + sq.ven) > 0; """)
 
-        render view: 'manageNamespaces', model: [
-                editable: true, // TODO check role and editable !!!
-                cmd: params.cmd,
-                identifierNamespaceInstance: idnsInstance,
-                globalNamespaceStats: globalNamespaceStats,
-                detailsStats: detailsStats,
-                currentLang: LocaleUtils.getCurrentLang()
-        ]
+            result.globalNamespaceStats = sqlQuery.with { list() }
+        }
+
+        render view: 'manageNamespaces', model: result
     }
 
     /**
