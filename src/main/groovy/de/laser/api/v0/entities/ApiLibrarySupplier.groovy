@@ -13,9 +13,9 @@ import de.laser.traces.DeletedObject
 import grails.converters.JSON
 
 /**
- * An API representation of an {@link Vendor}
+ * An API representation of an {@link Vendor}, officially called library supplier
  */
-class ApiVendor {
+class ApiLibrarySupplier {
 
     /**
      * Locates the given {@link Vendor} and returns the object (or null if not found) and the request status for further processing
@@ -24,7 +24,7 @@ class ApiVendor {
      * @return {@link ApiBox}(obj: Vendor | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
      */
-    static ApiBox findVendorBy(String query, String value) {
+    static ApiBox findLibrarySupplierBy(String query, String value) {
         ApiBox result = ApiBox.get()
 
         switch(query) {
@@ -56,7 +56,7 @@ class ApiVendor {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Vendor(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Vendor.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
@@ -72,30 +72,30 @@ class ApiVendor {
     }
 
     /**
-     * Retrieves a list of vendors recorded in the app
+     * Retrieves a list of library suppliers recorded in the app
      * @return JSON
      */
-    static JSON getVendorList() {
+    static JSON getLibrarySupplierList() {
         Collection<Object> result = []
 
-        List<Vendor> vendors = Vendor.executeQuery('select v from Vendor v')
-        vendors.each { Vendor v ->
-            result << ApiUnsecuredMapReader.getVendorStubMap(v)
+        List<Vendor> librarySuppliers = Vendor.executeQuery('select v from Vendor v')
+        librarySuppliers.each { Vendor v ->
+            result << ApiUnsecuredMapReader.getLibrarySupplierStubMap(v)
         }
 
         return result ? new JSON(result) : null
     }
 
     /**
-     * Retrieves details of the given provider for the requesting institution
-     * @param vendor the {@link Vendor} whose details should be retrieved
+     * Retrieves details of the given library supplier for the requesting institution
+     * @param librarySupplier the {@link Vendor} whose details should be retrieved
      * @param context the institution ({@link Org})
      * @return JSON
      */
-    static getVendor(Vendor vendor, Org context) {
-        Map<String, Object> result = [:]
+    static getLibrarySupplier(Vendor librarySupplier, Org context) {
+        Map<String, Object> result
 
-        result = ApiUnsecuredMapReader.getVendorMap(vendor, context)
+        result = ApiUnsecuredMapReader.getLibrarySupplierMap(librarySupplier, context)
 
         return result ? new JSON(result) : null
     }

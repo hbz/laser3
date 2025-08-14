@@ -28,7 +28,7 @@ class ApiProvider {
                 result.obj = Provider.executeQuery('select id.provider from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
                 break
             case 'id':
-                result.obj = Provider.findAllById(Long.parseLong(value))
+                result.obj = Provider.get(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Provider.class.name)
@@ -43,8 +43,8 @@ class ApiProvider {
                     }
                 }
                 break
-            case 'gokbId':
-                result.obj = Provider.findAllByGokbId(value)
+            case 'wekbId':
+                result.obj = Provider.findByGokbId(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGokbID(value)
@@ -52,7 +52,7 @@ class ApiProvider {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Provider(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Provider.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST

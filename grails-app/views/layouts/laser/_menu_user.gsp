@@ -34,17 +34,18 @@
         </ui:link>
         <div class="divider"></div>
 
-        <div class="header grey">
-            Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
-        </div>
-        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV, AppUtils.QA] && MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD)}">
-            <div class="header grey">
-                Datenstand:
-                <g:formatDate date="${MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD).dateValue}" format="${message(code:'default.date.format.notime')}" />
-            </div>
-        </g:if>
-        <div class="header grey">
-            ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
+        <div class="header">
+            <p class="sc_grey">
+                Version: ${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')}
+            </p>
+            <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV, AppUtils.QA] && MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD)}">
+                <p class="sc_grey">
+                    Datenbasis: <g:formatDate date="${MuleCache.getEntry(MuleCache.CFG.SYSTEM_HEARTBEAT, AppUtils.PROD).dateValue}" format="${message(code:'default.date.format.notime')}" />
+                </p>
+            </g:if>
+            <p class="sc_grey">
+                ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
+            </p>
         </div>
     </div>
 </div>

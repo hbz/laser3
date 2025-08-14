@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.RefdataValue
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.Org
@@ -207,6 +208,16 @@ class ApiCostItem {
         result.budgetCodes = costItem.budgetcodes.collect { BudgetCode bc -> bc.value }.unique()
         result.orderNumber    = costItem.order?.orderNumber
         result.invoiceNumber  = costItem.invoice?.invoiceNumber
+        if(costItem.costInformationDefinition) {
+            result.costInformation = [
+                    token: costItem.costInformationDefinition.getI10n('name'),
+                    type: costItem.costInformationDefinition.validTypes[costItem.costInformationDefinition.type]['en'],
+                    value: costItem.getCostInformationValue()
+            ]
+            if(costItem.costInformationDefinition.type == RefdataValue.class.name) {
+                result.costInformation.refdataCategory = costItem.costInformationDefinition.refdataCategory
+            }
+        }
         result.surveyOrg = costItem.surveyOrg ?: null
 
         ApiToolkit.cleanUp(result, true, true)

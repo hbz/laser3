@@ -137,33 +137,16 @@ class ApiOAMonitor {
             //def context = org // TODO
 
             result.laserID      = org.laserID
-            result.gokbId       = org.gokbId
             result.name         = org.name
-            result.shortname    = org.sortname //deprecated and to be removed for 3.2
             result.sortname     = org.sortname
             result.region       = org.region?.value
             result.country      = org.country?.value
             result.libraryType  = org.libraryType?.value
             result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
 
-            //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
-            //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
-
-            // RefdataValues
-
-            result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-//            result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
-            result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
-
             // References
 
-            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address
-            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.addressbook.Contact
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-            //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
-            //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // de.laser.addressbook.PersonRole
-
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
 
@@ -181,7 +164,7 @@ class ApiOAMonitor {
      * @return JSON | FORBIDDEN
      * @see Subscription
      */
-    static requestSubscription(Subscription sub, Org context) {
+    static requestSubscription(Subscription sub, Org context, int max, int offset) {
         Map<String, Object> result = [:]
 
         boolean hasAccess = calculateAccess(sub)
@@ -204,7 +187,6 @@ class ApiOAMonitor {
             // RefdataValues
 
             result.form                 = sub.form?.value
-            result.isSlaved             = sub.instanceOf ? 'Yes' : 'No' // todo: ERMS-6219
             result.isMultiYear          = sub.isMultiYear ? 'Yes' : 'No'
             result.resource             = sub.resource?.value
             result.status               = sub.status?.value
@@ -243,7 +225,7 @@ class ApiOAMonitor {
             try {
                 Sql sql = GlobalService.obtainSqlConnection()
                 try {
-                    result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, sql)
+                    result.packages = getPackageCollectionWithTitleStubMaps(sub.packages, sql, max, offset)
                 }
                 finally {
                     sql.close()
@@ -313,23 +295,22 @@ class ApiOAMonitor {
      * @param list the list of subscribed packages whose titles should be enumerated
      * @return a {@link Collection} of packages with title stubs
      */
-    static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list, Sql sql) {
+    static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list, Sql sql, int max, int offset) {
         Collection<Object> result = []
 
-        list.each { subPkg ->
+        list.each { SubscriptionPackage subPkg ->
             Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.wekb.Package
 
             pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.wekb.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []
-            int total = sql.rows('select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg', qryParams)[0]['count'],
-            limit = 50000
-            for(int i = 0; i < total; i += limit) {
-                List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_laser_id as laserID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg limit ${limit} offset ${i}", qryParams)
-                Set<Long> idSubSet = tiRows.tipp_id.toSet()
-                String query = "select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id where id_value != '' and id_value != 'Unknown' and id_tipp_fk in (${idSubSet.join(',')}) group by id_tipp_fk"
-                List<GroovyRowResult> idRows = sql.rows(query)
+            int total = sql.rows('select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg', qryParams)[0]['count']
+            //for(int i = 0; i < total; i += limit) {
+            if(offset <= total) {
+                List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_laser_id as laserID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg limit :limit offset :offset", qryParams+[limit: max, offset: offset])
+                Set<Object> tippIDs = tiRows.tipp_id.toSet()
+                List<GroovyRowResult> idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id where id_value != '' and id_value != 'Unknown' and id_tipp_fk = any(:tippIDs) group by id_tipp_fk", [tippIDs: sql.getDataSource().getConnection().createArrayOf("bigint", tippIDs.toArray())])
                 Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
                 tiRows.each { GroovyRowResult tiRow ->
                     tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
@@ -350,6 +331,12 @@ class ApiOAMonitor {
             */
 
             pkg.titles = ApiToolkit.cleanUp(tmp, true, true)
+            pkg.recordTotalCount = total
+            pkg.recordCount = pkg.titles ? pkg.titles.size() : 0
+            pkg.offset = offset
+            pkg.max = max
+            pkg.currentPage = (offset/max)+1
+            pkg.totalPage = Math.ceil(total/max)
         }
 
         return ApiToolkit.cleanUp(result, true, false)

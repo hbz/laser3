@@ -70,6 +70,7 @@ class ApiIssueEntitlement {
      * @param ignoreRelation should a relation the issue entitlement has being ignored and thus not output?
      * @return Map<String, Object>
      */
+    @Deprecated
     static Map<String, Object> getIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
         Map<String, Object> result = [:]
         if (! ie) {
@@ -94,11 +95,11 @@ class ApiIssueEntitlement {
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+                result.tipp = ApiMapReader.getTippMap(ie.tipp.id, ApiReader.IGNORE_ALL) // de.laser.wekb.TitleInstancePackagePlatform
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_SUBSCRIPTION, context)
+                    result.tipp = ApiMapReader.getTippMap(ie.tipp.id, ApiReader.IGNORE_SUBSCRIPTION)
                     // de.laser.wekb.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
