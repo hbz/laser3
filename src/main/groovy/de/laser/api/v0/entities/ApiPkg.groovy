@@ -18,7 +18,7 @@ class ApiPkg {
 
     /**
 	 * Locates the given {@link Package} and returns the object (or null if not found) and the request status for further processing
-	 * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
+	 * @param the field to look for the identifier, one of {id, laserID, wekbId, ns:identifier}
 	 * @param the identifier value
      * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
