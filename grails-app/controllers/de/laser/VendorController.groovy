@@ -20,6 +20,7 @@ import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
 import de.laser.wekb.LibrarySystem
 import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
@@ -244,7 +245,7 @@ class VendorController {
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             */
-            Set<Package> allPackages = vendor.packages?.pkg.sort { Package pkg -> pkg.name }
+            Set<Package> allPackages = vendor.packages.findAll { PackageVendor pv -> pv.pkg.packageStatus != RDStore.PACKAGE_STATUS_REMOVED }.pkg.sort { Package pkg -> pkg.name }
             Set<Package> allMyPackages = Package.executeQuery('select sp.pkg from SubscriptionPackage sp, OrgRole oo join oo.sub s where sp.subscription = s and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             Set<Package> myPackages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr where pkg in (:myPkgs) and vr.subscription in (select s from OrgRole oo join oo.sub s where s.status = :current and oo.org = :context '+subscriptionConsortiumFilter+') order by pkg.name', [myPkgs: allMyPackages, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
             result.allPackages = allPackages
