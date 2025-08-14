@@ -15,7 +15,7 @@ class ApiPlatform {
 
     /**
      * Locates the given {@link Platform} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, wekbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Platform | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -25,16 +25,16 @@ class ApiPlatform {
 
         switch(query) {
             case 'id':
-                result.obj = Platform.findAllWhere(id: Long.parseLong(value))
+                result.obj = Platform.get(value)
                 break
             case 'laserID':
-                result.obj = Platform.findAllWhere(laserID: value)
+                result.obj = Platform.findByLaserID(value)
                 break
-            case 'gokbId':
-                result.obj = Platform.findAllWhere(gokbId: value)
+            case 'wekbId':
+                result.obj = Platform.findByGokbId(value)
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Platform(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Platform.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST

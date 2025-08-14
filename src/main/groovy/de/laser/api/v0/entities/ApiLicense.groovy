@@ -5,7 +5,6 @@ import de.laser.License
 import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Subscription
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
@@ -29,7 +28,7 @@ class ApiLicense {
 
         switch(query) {
             case 'id':
-                result.obj = License.findAllWhere(id: Long.parseLong(value))
+                result.obj = License.get(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), License.class.name)
@@ -37,7 +36,7 @@ class ApiLicense {
                 }
                 break
             case 'laserID':
-                result.obj = License.findAllWhere(laserID: value)
+                result.obj = License.findByLaserID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldLaserID(value)
@@ -45,7 +44,7 @@ class ApiLicense {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new License(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(License.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
@@ -169,7 +168,7 @@ class ApiLicense {
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
-        result.reference        = lic.reference
+        result.name             = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
 
         // erms-888
@@ -186,7 +185,6 @@ class ApiLicense {
         result.instanceOf       = ApiStubReader.requestLicenseStub(lic.instanceOf, context) // de.laser.License
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // de.laser.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // de.laser.DocContext
-        //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // de.laser.OnixplLicense
 
         result.linkedLicenses = []
         result.predecessors = []
@@ -239,7 +237,7 @@ class ApiLicense {
 
                 result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // de.laser.OrgRole
                 result.providers	 = ApiCollectionReader.getProviderCollection(lic.getProviders())
-                result.vendors		 = ApiCollectionReader.getVendorCollection(lic.getVendors())
+                result.librarySuppliers	 = ApiCollectionReader.getLibrarySuppliers(lic.getVendors())
             }
         }
 

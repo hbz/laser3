@@ -69,33 +69,6 @@ class ApiDoc {
     }
 
     /**
-     * Should return always null because ONIX PL is not in use in LAS:eR
-     * @return Doc | FORBIDDEN | null
-     */
-    static requestOnixPlDocument(License license, Org context){
-        def doc = license.onixplLicense?.doc
-        if (! doc) {
-            return null // not found
-        }
-
-        boolean hasAccess = false
-
-        DocContext.findAllByOwner(doc).each { dc ->
-            if (dc.license) {
-                dc.getLicense().getOrgRelations().each { orgRole ->
-                    // TODO check orgRole.roleType
-                    if (orgRole.getOrg().id == context?.id) {
-                        hasAccess = true
-                        doc = dc.getOwner()
-                    }
-                }
-            }
-        }
-
-        return (hasAccess ? doc : Constants.HTTP_FORBIDDEN)
-    }
-
-    /**
      * Assembles the given document attributes into a {@link Map}. The schema of the map can be seen in
      * schemas.gsp
      * @param doc the {@link Doc} which should be output

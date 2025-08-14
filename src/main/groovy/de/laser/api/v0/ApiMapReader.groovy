@@ -3,6 +3,7 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.addressbook.Person
+import de.laser.finance.PriceItem
 import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.sql.GroovyRowResult
 
@@ -43,25 +44,24 @@ class ApiMapReader {
     /**
      * Assembles the given title details into a {@link Map}. The schema may be viewed in schemas.gsp.
      * Access rights due wrapping object. Some relations may be blocked
-     * @param tipp the {@link TitleInstancePackagePlatform} subject of output
+     * @param tipp the {@link TitleInstancePackagePlatform} ID subject of output
      * @param ignoreRelation which relations should be blocked
-     * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
-    static Map<String, Object> getTippMap(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
+    static Map<String, Object> getTippMap(Long tippId, def ignoreRelation, Set priceItems = []) {
         Map<String, Object> result = [:]
-
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippId)
         if (! tipp) {
             return null
         }
 
         result.laserID           = tipp.laserID
-        result.gokbId            = tipp.gokbId
+        result.wekbId            = tipp.gokbId
         result.name             = tipp.name
         result.medium           = tipp.medium?.value
         result.status           = tipp.status?.value
         result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.wekb.TIPPCoverage
-        result.priceItems       = ApiCollectionReader.getPriceItemCollection(tipp.priceItems) //de.laser.finance.PriceItem with pi.tipp != null
+        result.priceItems       = priceItems //de.laser.finance.PriceItem with pi.tipp != null
         result.altnames          = ApiCollectionReader.getAlternativeNameCollection(tipp.altnames)
         result.firstAuthor       = tipp.firstAuthor
         result.firstEditor       = tipp.firstEditor
@@ -92,7 +92,6 @@ class ApiMapReader {
             if (ignoreRelation != ApiReader.IGNORE_PACKAGE) {
                 result.package = ApiUnsecuredMapReader.getPackageStubMap(tipp.pkg) // de.laser.wekb.Package
             }
-            //result.providers        = ApiCollectionReader.getOrgLinkCollection(tipp.orgs, ApiReader.IGNORE_TIPP, context) //de.laser.OrgRole
         }
         if (!(ignoreRelation in [ApiReader.IGNORE_SUBSCRIPTION, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE])) {
             //list here every property which may differ on entitlement level (= GlobalSourceSyncService's controlled properties, see getTippDiff() for the properties to be excluded here)
@@ -120,7 +119,7 @@ class ApiMapReader {
         }
 
         result.laserID           = row['tipp_laser_id']
-        result.gokbId            = row['tipp_gokb_id']
+        result.wekbId            = row['tipp_gokb_id']
         result.name              = row['tipp_name']
         result.altnames          = row['altnames'].collect { GroovyRowResult altNameRow -> altNameRow['altname_name'] }
         result.firstAuthor       = row['tipp_first_author']
@@ -156,7 +155,7 @@ class ApiMapReader {
 
         // References
         result.identifiers          = row['ids']       // de.laser.Identifier
-        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.wekb.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.wekb.Platform, fetch Package.nominalPlatform instead
         result.publishers           = row['publishers']
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
