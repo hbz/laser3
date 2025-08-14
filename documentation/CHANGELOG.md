@@ -13,6 +13,8 @@
 
 6758    14.08.2025  rc-3.5  3.5.5       Andreas Bug         bei Mehrjahreslaufzeit wurde die Vererbung von Paketen nicht berücksichtigt
 
+6727    14.08.2025  rc-3.5  3.5.5       Andreas Bug         
+
 6751    13.08.2025  rc-3.5  3.5.5       Andreas Feature     Performanzoptimierung bei der Umfrage-Ergebnissicht
 
 6755    13.08.2025  rc-3.5  3.5.5       David   Feature     Anzeige des Datums des Datenabzugs von Prod      
