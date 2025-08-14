@@ -6,7 +6,9 @@ import de.laser.wekb.Package
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
+import groovy.sql.Sql
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -16,36 +18,41 @@ class ApiPkg {
 
     /**
 	 * Locates the given {@link Package} and returns the object (or null if not found) and the request status for further processing
-	 * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
+	 * @param the field to look for the identifier, one of {id, laserID, wekbId, ns:identifier}
 	 * @param the identifier value
      * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
      */
-    static ApiBox findPackageBy(String query, String value) {
+    static ApiBox findPackageBy(String query, String value, int max) {
 		ApiBox result = ApiBox.get()
 
-        switch(query) {
-            case 'id':
-				result.obj = Package.findAllWhere(id: Long.parseLong(value))
-                break
-            case 'laserID':
-				result.obj = Package.findAllWhere(laserID: value)
-                break
-            case 'gokbId':
-				result.obj = Package.findAllWhere(gokbId: value)
-                break
-            case 'ns:identifier':
-				result.obj = Identifier.lookupObjectsByIdentifierString(new Package(), value)
-                break
-            default:
-				result.status = Constants.HTTP_BAD_REQUEST
-                return result
-                break
-        }
-		result.validatePrecondition_1()
+		if(max <= 20000) {
+			switch(query) {
+				case 'id':
+					result.obj = Package.get(value)
+					break
+				case 'laserID':
+					result.obj = Package.findByLaserID(value)
+					break
+				case 'wekbId':
+					result.obj = Package.findByGokbId(value)
+					break
+				case 'ns:identifier':
+					result.obj = Identifier.lookupObjectsByIdentifierString(Package.class.getSimpleName(), value)
+					break
+				default:
+					result.status = Constants.HTTP_BAD_REQUEST
+					return result
+					break
+			}
+			result.validatePrecondition_1()
 
-		if (result.obj instanceof Package) {
-			result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
+			if (result.obj instanceof Package) {
+				result.validateDeletedStatus_2('packageStatus', RDStore.PACKAGE_STATUS_DELETED)
+			}
+		}
+		else {
+			result.status = Constants.HTTP_BAD_REQUEST
 		}
 		result
     }
@@ -56,10 +63,10 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting the record
      * @return JSON
      */
-    static getPackage(Package pkg, Org context) {
+    static getPackage(Sql sql, Package pkg, Org context, int max, int offset) {
         Map<String, Object> result = [:]
 
-        result = getPackageMap(pkg, context)
+        result = getPackageMap(sql, pkg, context, max, offset)
 
         return result ? new JSON(result) : null
     }
@@ -71,13 +78,13 @@ class ApiPkg {
 	 * @param context the institution ({@link Org}) requesting
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getPackageMap(Package pkg, Org context) {
+	static Map<String, Object> getPackageMap(Sql sql, Package pkg, Org context, int max, int offset) {
 		Map<String, Object> result = [:]
 
 		pkg = GrailsHibernateUtil.unwrapIfProxy(pkg)
 
 		result.laserID        	    = pkg.laserID
-		result.gokbId           	= pkg.gokbId
+		result.wekbId           	= pkg.gokbId
 		result.name             	= pkg.name
 		result.altnames     		= ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
 
@@ -100,9 +107,18 @@ class ApiPkg {
 		//result.license          = ApiStubReader.requestLicenseStub(pkg.license, context) // de.laser.License
 		result.nominalPlatform  = ApiUnsecuredMapReader.getPlatformMap(pkg.nominalPlatform, context) // de.laser.wekb.Platform
 		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.wekb.Provider
-		result.vendors			= ApiCollectionReader.getVendorCollection(pkg.vendors?.vendor) //de.laser.wekb.Vendor
+		result.librarySuppliers	= ApiCollectionReader.getLibrarySuppliers(pkg.vendors?.vendor) //de.laser.wekb.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
-		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+		Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg order by tipp.sortname', [pkg: pkg, max: max, offset: offset])
+		int total = TitleInstancePackagePlatform.countByPkg(pkg)
+		//move to native sql
+		result.tipps            = ApiCollectionReader.getTippCollectionWithSQL(sql, tippIDs, ApiReader.IGNORE_ALL) // de.laser.wekb.TitleInstancePackagePlatform
+		result.recordTotalCount = total
+		result.recordCount = tippIDs ? tippIDs.size() : 0
+		result.offset = offset
+		result.max = max
+		result.currentPage = (offset/max)+1
+		result.totalPage = Math.ceil(total/max)
 
 		ApiToolkit.cleanUp(result, true, true)
 	}
