@@ -273,11 +273,11 @@ class ApiUnsecuredMapReader {
         }
         Map<String, Object> result = [:]
 
-        result.laserID      = vendor.laserID
-        result.wekbId       = vendor.gokbId
-        result.name         = vendor.name
-        result.sortname     = vendor.sortname
-        result.status       = vendor.status?.value
+        result.laserID      = librarySupplier.laserID
+        result.wekbId       = librarySupplier.gokbId
+        result.name         = librarySupplier.name
+        result.sortname     = librarySupplier.sortname
+        result.status       = librarySupplier.status?.value
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(librarySupplier.ids) // de.laser.Identifier
