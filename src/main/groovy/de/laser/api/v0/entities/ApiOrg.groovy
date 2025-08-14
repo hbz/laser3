@@ -23,7 +23,7 @@ class ApiOrg {
 
     /**
      * Locates the given {@link Org} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, laserID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -48,14 +48,6 @@ class ApiOrg {
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldLaserID(value)
-                    }
-                }
-                break
-            case 'gokbId':
-                result.obj = Org.findAllByGokbId(value)
-                if(!result.obj) {
-                    DeletedObject.withTransaction {
-                        result.obj = DeletedObject.findAllByOldGokbID(value)
                     }
                 }
                 break
