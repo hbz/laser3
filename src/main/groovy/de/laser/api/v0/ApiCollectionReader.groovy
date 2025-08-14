@@ -399,8 +399,8 @@ class ApiCollectionReader {
             coverageRows.addAll(sql.rows("select tc_tipp_fk, json_agg(json_build_object('startDate', coalesce(to_char(tc_start_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'startIssue', tc_start_issue, 'startVolume', tc_start_volume, 'endDate', coalesce(to_char(tc_end_date,'"+ApiToolkit.DATE_TIME_PATTERN_SQL+"'),''), 'endIssue', tc_end_issue, 'endVolume', tc_end_volume, 'coverageDepth', tc_coverage_depth, 'coverageNote', tc_coverage_note, 'embargo', tc_embargo, 'lastUpdated', tc_last_updated)) as coverages from tippcoverage where tc_tipp_fk = any(:tippIDs) group by tc_tipp_fk, tc_start_date, tc_start_volume, tc_start_issue", tippSubParams))
         //}
         List<GroovyRowResult> altNameRows = sql.rows("select altname_name from alternative_name where altname_tipp_fk = any(:tippIDs)", tippSubParams),
-        //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
-        packageOfSubscription = sql.rows("select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
+        //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_laser_id, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
+        packageOfSubscription = sql.rows("select pkg_laser_id, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId", pkgParams),
         packageIDs = sql.rows("select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId", pkgParams),
         packageAltNames = sql.rows("select altname_name from alternative_name where altname_pkg_fk = :pkgId", pkgParams)
         Map<Long, Map> priceItemMap = listPriceItemRows.collectEntries { GroovyRowResult row -> [row['pi_tipp_fk'], slurper.parseText(row['price_items'].toString())] },
@@ -420,7 +420,7 @@ class ApiCollectionReader {
                 //Subscription.withTransaction {
                     //println "now processing row ${i}"
                     //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
-                    Map<String, Object> ie = [laserID: row['ie_guid']]
+                    Map<String, Object> ie = [laserID: row['ie_laser_id']]
                     //ie.name = row['ie_name']
                     ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
                     ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
@@ -813,7 +813,7 @@ class ApiCollectionReader {
 
     static Collection<Object> getTippCollectionWithSQL(Sql sql, Collection<Long> list, def ignoreRelation) {
         Set<String> fieldClauses = []
-        fieldClauses << "tipp_guid as \"laserID\""
+        fieldClauses << "tipp_laser_id as \"laserID\""
         fieldClauses << "tipp_gokb_id as \"wekbId\""
         fieldClauses << "tipp_name as name"
         fieldClauses << "(select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium"
