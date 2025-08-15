@@ -77,7 +77,7 @@ class DatabaseUtils {
     }
 
 
-    static void debugHQL(String hql, Map params) {
+    static String debugHQL(String hql, Map params) {
         SessionFactory sf = BeanStore.get('sessionFactory') as SessionFactory
         Session session = sf.openSession()
 
@@ -108,16 +108,16 @@ class DatabaseUtils {
         }
         catch (Exception e) { println e.getMessage() }
 
-        println '+-------------- hql/sql/explain ---------------'
-        println '-   ' + hql
-        if (params.keySet()) {
-            println '-   ' + ('^ ' * params.keySet().size()) + params.toMapString()
-        }
-        println '-----'
-        println '->  ' + sql
-        println '-----'
-        println exp
-        println '-----'
+        String result = """
++----
+-   ${hql}
+${params.keySet() ? '-   ' + ('^ ' * params.keySet().size()) + params.toMapString() + '\n-----' : '-----'}
+->  ${sql}
+-----
+${exp}
+-----"""
+        println result
+        result
     }
 
     static def _debugHQL_retoken(Map.Entry entry) {
