@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6230    15.08.2025  dev     3.6         Andreas Feature     Umstrukturierung der Menüführung unter "Meine Merkmale"
+
 6762    14.08.2025  rc-3.5  3.5.5       David   Feature     Namensräume verwalten
 
 6761    14.08.2025  rc-3.5  3.5.5       Andreas Bug         fehlende Entfernt-Markierung von Paketen und Plattformen behoben
