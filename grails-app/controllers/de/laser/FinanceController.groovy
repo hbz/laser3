@@ -101,7 +101,7 @@ class FinanceController  {
                     importFile = request.getFile("excelFile")
                     if(importFile && importFile.size > 0) {
                         if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                            tableData = importService.readExcelFile(importFile, true)
+                            tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                         }
                     }
                 }
@@ -110,7 +110,7 @@ class FinanceController  {
                     if(importFile && importFile.size > 0) {
                         String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                         if (encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                         }
                         else if (!encoding) {
                             result.afterEnrichment = true
@@ -128,7 +128,7 @@ class FinanceController  {
                         String dir = GlobalService.obtainTmpFileLocation()
                         File f = new File(dir+"/${filename}_matchingErrors")
                         result.token = "${filename}_matchingErrors"
-                        if(!f.exists()) {
+                        //if(!f.exists()) {
                             FileOutputStream fos = new FileOutputStream(f)
                             if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
                                 result.fileformat = "xlsx" //for error file preparing
@@ -157,7 +157,7 @@ class FinanceController  {
                                 fos.flush()
                                 fos.close()
                             }
-                        }
+                        //}
                     }
                     params.remove("excelFile")
                     params.remove("csvFile")

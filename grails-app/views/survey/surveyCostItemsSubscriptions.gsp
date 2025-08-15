@@ -91,10 +91,10 @@
                         $('#bulkCostItems').toggleClass('hidden')
                         if ($('#bulkCostItems').hasClass('hidden')) {
                             $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
-                                                    } else {
-                                                        $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
-                                                    }
-                                                })
+                        } else {
+                            $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
+                        }
+                    })
                 </laser:script>
             </div>
 
@@ -209,6 +209,7 @@
                               model="[orgList       : surveyParticipantsHasAccess,
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow: tmplConfigShow,
+                                      missingCosts  : missingCosts,
                                       tableID       : 'costTable'
                               ]"/>
 
@@ -235,6 +236,7 @@
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow  : tmplConfigShow,
+                                      missingCosts  : missingCosts,
                                       tableID         : 'costTable'
                               ]"/>
 
