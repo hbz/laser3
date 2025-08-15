@@ -1845,6 +1845,7 @@ class CopyElementsService {
         try {
             packagesToTake.each { SubscriptionPackage subscriptionPackage ->
                 if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
+                    subscriptionService.cachePackageName("PackageTransfer_" + targetObject.id, subscriptionPackage.pkg.name)
                     List<OrgAccessPointLink> pkgOapls = []
                     if(subscriptionPackage.oapls)
                         pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
