@@ -13,6 +13,8 @@
 
 6758    14.08.2025  rc-3.5  3.5.5       Andreas Bug         bei Mehrjahreslaufzeit wurde die Vererbung von Paketen nicht berücksichtigt
 
+6727    14.08.2025  rc-3.5  3.5.5       Andreas Bug         
+
 6514    13.08.2025  dev     3.6         Andreas Feature     Ausblenden der Auswahl für Umfrage bei Konsortialstellen
 
 6533    08.08.2025  dev     3.6         Andreas Feature     Suche innerhalb der Merkmalstabelle ermöglicht
