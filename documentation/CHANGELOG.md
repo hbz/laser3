@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6765    15.08.2025  rc-3.5  3.5.5       Andreas Bug         Paketname wurde beim Übertrag nicht hinterlegt
+
 6230    15.08.2025  dev     3.6         Andreas Feature     Umstrukturierung der Menüführung unter "Meine Merkmale"
 
 6762    14.08.2025  rc-3.5  3.5.5       David   Feature     Namensräume verwalten
@@ -15,7 +17,7 @@
 
 6758    14.08.2025  rc-3.5  3.5.5       Andreas Bug         bei Mehrjahreslaufzeit wurde die Vererbung von Paketen nicht berücksichtigt
 
-6727    14.08.2025  rc-3.5  3.5.5       Andreas Bug         
+6727    14.08.2025  rc-3.5  3.5.5       Andreas Bug         500er beim Ergänzen von Rechungssummen behoben
 
 6514    13.08.2025  dev     3.6         Andreas Feature     Ausblenden der Auswahl für Umfrage bei Konsortialstellen
 
