@@ -4243,6 +4243,7 @@ class SurveyControllerService {
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_' + result.parentSuccessorSubscription.id)
                 pkgsToProcess.each { Package pkg ->
+                    subscriptionService.cachePackageName("PackageTransfer_" + result.parentSuccessorSubscription.id, pkg.name)
                     permittedSubs.each { Subscription selectedSub ->
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                         if (processOption =~ /^link/) {
