@@ -94,6 +94,7 @@ import de.laser.workflow.WorkflowHelper
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.xml.StreamingMarkupBuilder
+import io.micronaut.http.HttpStatus
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -357,7 +358,7 @@ class AjaxHtmlController {
                         checkResult = statsSyncService.fetchJSONData(url, customerId)
                     }
                     if(checkResult.containsKey('error')) {
-                        if(checkResult.error && !(checkResult.error in [3030, 3031, 3060])) {
+                        if(checkResult.error && !(checkResult.error in [3030, 3031, 3060]) && !(checkResult.error instanceof HttpStatus && checkResult.error.code == 202)) {
                             List errorRow = []
                             errorRow << exportClickMeService.createTableCell(ExportClickMeService.FORMAT.XLS, customerId.value)
                             errorRow << exportClickMeService.createTableCell(ExportClickMeService.FORMAT.XLS, customerId.requestorKey)
