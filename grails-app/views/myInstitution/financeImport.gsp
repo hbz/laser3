@@ -51,7 +51,7 @@
     </g:else>
 
 
-    <g:render template="/templates/genericFileImportForm" model="[processAction: 'processFinanceImport', subId: params.id]"/>
+    <g:render template="/templates/genericFileImportForm" model="[processAction: 'processFinanceImport', subId: params.id, fixedHeaderSetting: true]"/>
 </div>
 
 <g:render template="/public/markdownScript" />

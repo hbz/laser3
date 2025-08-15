@@ -91,12 +91,7 @@
                                 <input id="formatCSV" name="format" type="radio" value="${ExportClickMeService.FORMAT.CSV.toString()}" class="hidden formatSelection">
                                 <label for="formatCSV"><g:message code="default.import.upload.csv"/></label>
                             </div>
-                            <div class="field">
-                                <div class="ui checkbox toggle">
-                                    <g:checkBox name="fileContainsHeader" checked="true"/>
-                                    <label for="fileContainsHeader"><g:message code="default.import.fileContainsHeaders"/></label>
-                                </div>
-                            </div>
+                            <g:hiddenField name="fileContainsHeader" value="on"/>
                             <br>
                             <div class="ui action input xls">
                                 <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorXLS')}">

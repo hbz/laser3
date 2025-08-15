@@ -11,12 +11,17 @@
         <label for="formatCSV"><g:message code="default.import.upload.csv"/></label>
     </div>
 </div>
-<div class="field">
-    <div class="ui checkbox toggle">
-        <g:checkBox name="fileContainsHeader" checked="true"/>
-        <label for="fileContainsHeader"><g:message code="default.import.fileContainsHeaders"/></label>
+<g:if test="${fixedHeaderSetting}">
+    <g:hiddenField name="fileContainsHeader" value="on"/>
+</g:if>
+<g:else>
+    <div class="field">
+        <div class="ui checkbox toggle">
+            <g:checkBox name="fileContainsHeader" checked="true"/>
+            <label for="fileContainsHeader"><g:message code="default.import.fileContainsHeaders"/></label>
+        </div>
     </div>
-</div>
+</g:else>
 <div class="field">
     <div class="two fields">
         <div class="ui action input xls">

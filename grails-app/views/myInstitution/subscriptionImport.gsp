@@ -98,7 +98,7 @@
 <a href="${resource(dir: 'files', file: templatePathCSV)}" download="${templatePathCSV}" class="${Btn.ICON.SIMPLE} csv" style="margin-bottom: 1em" >
     <i class="${Icon.CMD.DOWNLOAD}"></i> <g:message code="myinst.subscriptionImport.template.csv"/>
 </a>
-<g:render template="/templates/genericFileImportForm" model="[processAction: 'processSubscriptionImport']"/>
+<g:render template="/templates/genericFileImportForm" model="[processAction: 'processSubscriptionImport', fixedHeaderSetting: true]"/>
 
 <g:render template="/public/markdownScript" />
 <laser:htmlEnd />

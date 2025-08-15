@@ -17,7 +17,7 @@
 
     <ui:msg class="warning" header="${message(code: 'message.attention')}" text="" message="myinst.subscriptionImport.attention" showIcon="true" hideClose="true" />
 
-    <g:render template="/templates/genericFileImportFormatSelector" model="[hideSubmitButtons: hideSubmitButtons]" />
+    <g:render template="/templates/genericFileImportFormatSelector" model="[hideSubmitButtons: hideSubmitButtons, fixedHeaderSetting: fixedHeaderSetting]" />
 </g:uploadForm>
 
 <g:render template="/templates/genericFileImportJS"/>
