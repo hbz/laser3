@@ -12,6 +12,12 @@
     </div>
 </div>
 <div class="field">
+    <div class="ui checkbox toggle">
+        <g:checkBox name="fileContainsHeader" checked="true"/>
+        <label for="fileContainsHeader"><g:message code="default.import.fileContainsHeaders"/></label>
+    </div>
+</div>
+<div class="field">
     <div class="two fields">
         <div class="ui action input xls">
             <input type="text" readonly="readonly" class="ui input" placeholder="${message(code: 'myinst.subscriptionImport.fileSelectorXLS')}">

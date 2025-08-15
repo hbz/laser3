@@ -2331,7 +2331,7 @@ class MyInstitutionController  {
             importFile = request.getFile("excelFile")
             if(importFile && importFile.size > 0) {
                 if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                    tableData = importService.readExcelFile(importFile)
+                    tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                 }
             }
         }
@@ -2340,7 +2340,7 @@ class MyInstitutionController  {
             if(importFile && importFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                 }
                 else {
                     flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
@@ -2358,7 +2358,7 @@ class MyInstitutionController  {
                 //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
                 String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir+"/${result.filename}_errors")
-                if(!f.exists()) {
+                //if(!f.exists()) {
                     List headerRow = financialData.errorRows.remove(0)
                     FileOutputStream fos = new FileOutputStream(f)
                     if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
@@ -2388,7 +2388,7 @@ class MyInstitutionController  {
                         fos.flush()
                         fos.close()
                     }
-                }
+                //}
                 result.errorCount = financialData.errorRows.size()
                 result.errMess = 'myinst.financeImport.post.error.matchingErrors'
                 result.token = "${result.filename}_errors"
@@ -2442,7 +2442,7 @@ class MyInstitutionController  {
             importFile = request.getFile("excelFile")
             if(importFile && importFile.size > 0) {
                 if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                    tableData = importService.readExcelFile(importFile)
+                    tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                 }
             }
         }
@@ -2451,7 +2451,7 @@ class MyInstitutionController  {
             if(importFile && importFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                 }
             }
         }

@@ -1906,10 +1906,12 @@ class FinanceService {
                                 ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, configMap.pickedElement)
                             }
                         }
+                        /*
                         else {
                             wrongIdentifierCounter++ //no unique identifier
                             wrongIdentifiers << idStr
                         }
+                        */
                     }
                     if (ci) {
                         BigDecimal parsedCost = null
@@ -1966,6 +1968,25 @@ class FinanceService {
                     wrongIdentifierCounter++
                     wrongIdentifiers << idStr
                 }
+            }
+        }
+        if(configMap.containsKey('surveyConfig')) {
+            List<SurveyOrg> surveyOrgs = SurveyOrg.findAllBySurveyConfig(configMap.surveyConfig)
+            if(surveyOrgs) {
+                Set<Long> missingCosts
+                if(configMap.pkg) {
+                    //ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, configMap.pickedElement, configMap.pkg)
+                    missingCosts = Org.executeQuery('select so.org.id from CostItem ci join ci.surveyOrg so where ci.owner = :context and ci.costItemElement = :pickedElement and ci.pkg = :pkg and ci.costInBillingCurrency = 0 and ci.id not in (:updatedIDs)', [context: contextOrg, pickedElement: configMap.pickedElement, pkg: configMap.pkg, updatedIDs: updatedIDs])
+                }
+                else if(configMap.surveyConfigSubscription) {
+                    //ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, configMap.pickedElement, configMap.surveyConfigSubscription)
+                    missingCosts = Org.executeQuery('select so.org.id from CostItem ci join ci.surveyOrg so where ci.owner = :context and ci.costItemElement = :pickedElement and ci.surveyConfigSubscription = :scs and ci.costInBillingCurrency = 0 and ci.id not in (:updatedIDs)', [context: contextOrg, pickedElement: configMap.pickedElement, scs: configMap.surveyConfigSubscription, updatedIDs: updatedIDs])
+                }
+                else {
+                    //ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, configMap.pickedElement)
+                    missingCosts = Org.executeQuery('select so.org.id from CostItem ci join ci.surveyOrg so where ci.owner = :context and ci.costItemElement = :pickedElement and ci.costInBillingCurrency = 0 and ci.id not in (:updatedIDs)', [context: contextOrg, pickedElement: configMap.pickedElement, updatedIDs: updatedIDs])
+                }
+                result.missingCosts = missingCosts
             }
         }
         result.missingCurrencyCounter = missingCurrencyCounter

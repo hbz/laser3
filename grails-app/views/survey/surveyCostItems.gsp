@@ -220,6 +220,7 @@
                           model="[orgList         : surveyParticipantsHasAccess,
                                   tmplShowCheckbox: editable,
                                   tmplConfigShow  : tmplConfigShow,
+                                  missingCosts  : missingCosts,
                                   tableID         : 'costTable'
                           ]"/>
 
@@ -246,6 +247,7 @@
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow  : tmplConfigShow,
+                                      missingCosts    : missingCosts,
                                       tableID         : 'costTable'
                               ]"/>
 
