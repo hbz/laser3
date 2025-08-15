@@ -13,7 +13,8 @@
 
         <ui:errors bean="${identifierNamespaceInstance}" />
 
-        <ui:form controller="admin" action="manageNamespaces">
+        <g:if test="${cmd != 'details'}"> %{-- TODO --}%
+            <ui:form controller="admin" action="manageNamespaces">
                 <div class="two fields">
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'name_de', 'error')} ">
                         <label for="name_de"><g:message code="default.name.label" /> (DE)</label>
@@ -50,13 +51,6 @@
                                   from="${IdentifierNamespace.AVAILABLE_NSTYPES}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>
-                </div>
-
-                <div class="two fields">
-                    <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'urlPrefix', 'error')} ">
-                        <label for="urlPrefix"><g:message code="identifierNamespace.urlPrefix.label" /></label>
-                        <g:textField name="urlPrefix"/>
-                    </div>
 
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'family', 'error')} ">
                         <label for="family"><g:message code="identifierNamespace.family.label" /></label>
@@ -64,15 +58,20 @@
                     </div>
                 </div>
 
-                <div class="two fields">
-                    <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'isUnique', 'error')} ">
-                        <label for="isUnique"><g:message code="identifierNamespace.unique.label" /></label>
-                        <g:checkBox name="isUnique" checked="true" />
-                    </div>
-
+                <div class="three fields">
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
                         <label for="validationRegex"><g:message code="identifierNamespace.validationRegex.label" /></label>
                         <g:textField name="validationRegex"/>
+                    </div>
+
+                    <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'urlPrefix', 'error')} ">
+                        <label for="urlPrefix"><g:message code="identifierNamespace.urlPrefix.label" /></label>
+                        <g:textField name="urlPrefix"/>
+                    </div>
+
+                    <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'isUnique', 'error')} ">
+                        <label for="isUnique"><g:message code="identifierNamespace.unique.label" /></label>
+                        <g:checkBox name="isUnique" checked="true" />
                     </div>
                 </div>
 
@@ -81,7 +80,8 @@
                 <button type="submit" class="${Btn.SIMPLE}">
                     <g:message code="default.button.create.label"/>
                 </button>
-        </ui:form>
+            </ui:form>
+        </g:if>
 
         <style>
             .ui.segment.grey .form { margin-bottom:0 }
@@ -90,7 +90,7 @@
 
         <g:if test="${cmd == 'details'}">
 
-            <g:link controller="admin" action="manageNamespaces" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>
+%{--            <g:link controller="admin" action="manageNamespaces" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>--}%
 
             <div class="ui fluid card">
                 <div class="content">
@@ -157,12 +157,13 @@
                 <table class="${CSS.ADMIN_TABLE}">
                     <thead>
 						<tr>
+                            <th></th>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
                             <th><g:message code="default.count.label"/></th>
 							<th><g:message code="default.name.label"/> (${currentLang})</th>
 							<th><g:message code="default.description.label"/> (${currentLang})</th>
-							<th><g:message code="identifierNamespace.family.label"/></th>
-							<th><g:message code="default.type.label"/></th>
+                            <th><g:message code="default.type.label"/></th>
+                            <th><g:message code="identifierNamespace.family.label"/></th>
                             <th><g:message code="identifierNamespace.validationRegex.label"/></th>
                             <th><g:message code="identifierNamespace.urlPrefix.label"/></th>
                             <th><g:message code="identifierNamespace.isFromLaser.label"/></th>
@@ -175,15 +176,14 @@
 							<tr>
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
-                                        ${idNs.ns}
                                         <g:if test="${!idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                            <span class="la-popup-tooltip" data-position="top left" data-content="${message(code:'default.hardData.not.tooltip')}">
                                                 <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
-                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
-                                            <i class="${Icon.PROP.IN_USE}"></i>
-                                        </span>
+                                    </td>
+                                    <td>
+                                        ${idNs.ns}
                                     </td>
                                     <td></td>
                                     <td>
@@ -203,9 +203,6 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <ui:xEditable owner="${idNs}" field="family"/>
-                                    </td>
-                                    <td>
                                         <g:if test="${!idNs.isHardData}">
                                             <ui:xEditable owner="${idNs}" field="nsType"/>
                                         </g:if>
@@ -214,20 +211,27 @@
                                         </g:else>
                                     </td>
                                     <td>
+                                        <ui:xEditable owner="${idNs}" field="family"/>
+                                    </td>
+                                    <td>
                                         <ui:xEditable owner="${idNs}" field="validationRegex"/>
                                     </td>
                                     <td>
                                         <ui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
-                                    <td>
-                                        ${idNs.isFromLaser}
+                                    <td class="center aligned">
+                                        <g:if test="${idNs.isFromLaser}">
+                                            <i class="${Icon.SYM.YES} green"></i>
+                                        </g:if>
                                     </td>
-                                    <td>
+                                    <td class="${idNs.isHardData ? 'center aligned' : ''}">
                                         <g:if test="${!idNs.isHardData}">
                                             <ui:xEditableBoolean owner="${idNs}" field="isUnique"/>
                                         </g:if>
                                         <g:else>
-                                            ${idNs.isUnique}
+                                            <g:if test="${idNs.isUnique}">
+                                                <i class="${Icon.SYM.YES} green"></i>
+                                            </g:if>
                                         </g:else>
                                     </td>
                                     <td>
@@ -243,15 +247,17 @@
                                 </g:if>
                                 <g:else>
                                     <td>
-                                        ${idNs.ns}
                                         <g:if test="${!idNs.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                            <span class="la-popup-tooltip" data-position="top left" data-content="${message(code:'default.hardData.not.tooltip')}">
                                                 <i class="${Icon.PROP.HARDDATA_NOT}"></i>
                                             </span>
                                         </g:if>
-                                        <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
+                                        <span class="la-popup-tooltip" data-position="top left" data-content="${message(code:'default.dataIsUsed.tooltip', args:[idNs.id])}">
                                             <i class="${Icon.PROP.IN_USE}"></i>
                                         </span>
+                                    </td>
+                                    <td>
+                                        ${idNs.ns}
                                     </td>
                                     <td>
                                         ${Identifier.countByNs(idNs)}
@@ -273,10 +279,10 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <ui:xEditable owner="${idNs}" field="family"/>
+                                        ${idNs.nsType}
                                     </td>
                                     <td>
-                                        ${idNs.nsType}
+                                        <ui:xEditable owner="${idNs}" field="family"/>
                                     </td>
                                     <td>
                                         ${idNs.validationRegex}
@@ -284,11 +290,15 @@
                                     <td>
                                         <ui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
-                                    <td>
-                                        ${idNs.isFromLaser}
+                                    <td class="center aligned">
+                                        <g:if test="${idNs.isFromLaser}">
+                                            <i class="${Icon.SYM.YES} green"></i>
+                                        </g:if>
                                     </td>
-                                    <td>
-                                        ${idNs.isUnique}
+                                    <td class="center aligned">
+                                        <g:if test="${idNs.isUnique}">
+                                            <i class="${Icon.SYM.YES} green"></i>
+                                        </g:if>
                                     </td>
                                     <td>
                                         <%
@@ -300,14 +310,16 @@
                                                     if (e[4] > 0) tooltip.add("Pakete: ${e[4]}")
                                                     if (e[5] > 0) tooltip.add("Lizenzen: ${e[5]}")
                                                     if (e[6] > 0) tooltip.add("TIPPs: ${e[6]}")
+                                                    if (e[7] > 0) tooltip.add("Anbieter: ${e[7]}")
+                                                    if (e[8] > 0) tooltip.add("Library Supplier: ${e[8]}")
                                                 }
                                             }
                                         %>
                                         <g:if test="${tooltip}">
-                                            <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
-                                                  class="la-long-tooltip la-popup-tooltip">
-                                                <g:link class="${Btn.MODERN.SIMPLE}" controller="admin" action="manageNamespaces"
-                                                        params="${[cmd: 'details', ns: idNs.id]}"><i class="${Icon.UI.INFO}"></i></g:link>
+                                            <span class="la-long-tooltip la-popup-tooltip" data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center">
+                                                <g:link class="${Btn.MODERN.SIMPLE}" controller="admin" action="manageNamespaces" target="_blank" params="${[cmd: 'details', ns: idNs.id]}">
+                                                    <i class="${Icon.UI.INFO}"></i>
+                                                </g:link>
                                             </span>
                                         </g:if>
                                     </td>
