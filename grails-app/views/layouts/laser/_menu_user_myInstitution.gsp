@@ -24,7 +24,7 @@
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
         <ui:securedMainNavItem addItemAttributes="true" instRole="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_props" />
 
         <div class="divider"></div>
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />

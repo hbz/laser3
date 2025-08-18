@@ -310,7 +310,7 @@ class SubscriptionController {
             MultipartFile importFile = request.getFile("excelFile")
             if(importFile && importFile.size > 0) {
                 if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                    tableData = importService.readExcelFile(importFile)
+                    tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                 }
             }
         }
@@ -319,7 +319,7 @@ class SubscriptionController {
             if(importFile && importFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char)
+                    tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                 }
                 else {
                     flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String

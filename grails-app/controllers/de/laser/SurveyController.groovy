@@ -927,7 +927,7 @@ class SurveyController {
                     importFile = request.getFile("excelFile")
                     if(importFile && importFile.size > 0) {
                         if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                            tableData = importService.readExcelFile(importFile, true)
+                            tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                         }
                     }
                 }
@@ -936,7 +936,7 @@ class SurveyController {
                     if(importFile && importFile.size > 0) {
                         String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
@@ -945,40 +945,39 @@ class SurveyController {
                     }
                 }
                 if(tableData) {
+                    SurveyConfig surveyConfig = ctrlResult.result.surveyConfig
                     String filename = importFile.originalFilename
                     RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
-                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, surveyConfig: ctrlResult.result.surveyConfig]
+                    Map<String, Object> configMap = [tableData: tableData, pickedElement: pickedElement, surveyConfig: surveyConfig]
                     ctrlResult.result.putAll(financeService.financeEnrichment(configMap))
                     if(ctrlResult.result.containsKey('wrongIdentifiers')) {
                         //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
                         String dir = GlobalService.obtainTmpFileLocation()
                         File f = new File(dir+"/${filename}_matchingErrors")
                         ctrlResult.result.token = "${filename}_matchingErrors"
-                        if(!f.exists()) {
-                            FileOutputStream fos = new FileOutputStream(f)
-                            if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
-                                ctrlResult.result.fileformat = "xlsx" //for error file preparing
-                                Map sheetData = [:]
-                                List errorCellRows = []
-                                ctrlResult.result.wrongIdentifiers.each { String errorRow ->
-                                    errorCellRows << [[field: errorRow, style: null]]
-                                }
-                                sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
-                                SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
-                                wb.write(fos)
-                                fos.flush()
-                                fos.close()
-                                wb.dispose()
+                        FileOutputStream fos = new FileOutputStream(f)
+                        if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
+                            ctrlResult.result.fileformat = "xlsx" //for error file preparing
+                            Map sheetData = [:]
+                            List errorCellRows = []
+                            ctrlResult.result.wrongIdentifiers.each { String errorRow ->
+                                errorCellRows << [[field: errorRow, style: null]]
                             }
-                            else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
-                                ctrlResult.result.fileformat = "csv" //for error file preparing
-                                String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
-                                fos.withWriter { Writer w ->
-                                    w.write(returnFile)
-                                }
-                                fos.flush()
-                                fos.close()
+                            sheetData.put(message(code: 'myinst.financeImport.post.error.matchingErrors.sheetName'), [titleRow: ['Identifiers'], columnData: errorCellRows])
+                            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.generateXLSXWorkbook(sheetData)
+                            wb.write(fos)
+                            fos.flush()
+                            fos.close()
+                            wb.dispose()
+                        }
+                        else if(params.format == ExportClickMeService.FORMAT.CSV.toString()) {
+                            ctrlResult.result.fileformat = "csv" //for error file preparing
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
                             }
+                            fos.flush()
+                            fos.close()
                         }
                     }
                 }
@@ -1025,7 +1024,7 @@ class SurveyController {
                     importFile = request.getFile("excelFile")
                     if(importFile && importFile.size > 0) {
                         if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                            tableData = importService.readExcelFile(importFile, true)
+                            tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                         }
                     }
                 }
@@ -1034,7 +1033,7 @@ class SurveyController {
                     if(importFile && importFile.size > 0) {
                         String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
@@ -1053,7 +1052,7 @@ class SurveyController {
                         String dir = GlobalService.obtainTmpFileLocation()
                         File f = new File(dir+"/${filename}_matchingErrors")
                         ctrlResult.result.token = "${filename}_matchingErrors"
-                        if(!f.exists()) {
+                        //if(!f.exists()) {
                             FileOutputStream fos = new FileOutputStream(f)
                             if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
                                 ctrlResult.result.fileformat = "xlsx" //for error file preparing
@@ -1078,7 +1077,7 @@ class SurveyController {
                                 fos.flush()
                                 fos.close()
                             }
-                        }
+                        //}
                     }
                 }
                 params.remove("csvFile")
@@ -1216,7 +1215,7 @@ class SurveyController {
                     importFile = request.getFile("excelFile")
                     if(importFile && importFile.size > 0) {
                         if (importFile.contentType in ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']) {
-                            tableData = importService.readExcelFile(importFile, true)
+                            tableData = importService.readExcelFile(importFile, params.fileContainsHeader == 'on')
                         }
                     }
                 }
@@ -1225,7 +1224,7 @@ class SurveyController {
                     if(importFile && importFile.size > 0) {
                         String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
-                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, true)
+                            tableData = importService.readCsvFile(importFile, encoding, params.separator as char, params.fileContainsHeader == 'on')
                         }
                         else if(!encoding) {
                             ctrlResult.result.afterEnrichment = true
@@ -1244,7 +1243,7 @@ class SurveyController {
                         String dir = GlobalService.obtainTmpFileLocation()
                         File f = new File(dir+"/${filename}_matchingErrors")
                         ctrlResult.result.token = "${filename}_matchingErrors"
-                        if(!f.exists()) {
+                        //if(!f.exists()) {
                             FileOutputStream fos = new FileOutputStream(f)
                             if(params.format == ExportClickMeService.FORMAT.XLS.toString()) {
                                 ctrlResult.result.fileformat = "xlsx" //for error file preparing
@@ -1269,7 +1268,7 @@ class SurveyController {
                                 fos.flush()
                                 fos.close()
                             }
-                        }
+                        //}
                     }
                 }
                 params.remove("csvFile")

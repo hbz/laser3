@@ -290,7 +290,7 @@
 
         </g:if>
 
-        <tr class="${org.isArchived() ? 'warning' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
+        <tr class="${org.isArchived() ? 'warning' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''} ${['surveyCostItem', 'surveyCostItemPackage', 'surveyCostItemSubscription'].any { String surveyCostConfig -> surveyCostConfig in tmplConfigShow } && org.id in missingCosts ? 'negative' : ''}">
 
         <g:if test="${tmplShowCheckbox}">
             <td>
@@ -1166,7 +1166,7 @@
         </tr>
     </g:each><!-- orgList -->
     </tbody>
-    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow || 'surveyCostItemSubsscription' in tmplConfigShow)}">
+    <g:if test="${orgList && (['surveySubCostItem', 'surveyCostItem', 'surveyCostItemPackage', 'surveyCostItemSubscription'].any { String surveyCostConfig -> surveyCostConfig in tmplConfigShow })}">
         <tfoot>
         <tr>
             <g:if test="${tmplShowCheckbox}">
@@ -1183,7 +1183,7 @@
                                      maxFractionDigits="2" type="number"/>)
                 </td>
             </g:if>
-            <g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow || 'surveyCostItemSubsscription' in tmplConfigShow}">
+            <g:if test="${['surveyCostItem', 'surveyCostItemPackage', 'surveyCostItemSubscription'].any { String surveyCostConfig -> surveyCostConfig in tmplConfigShow }}">
                 <td>
                     <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
                                        maxFractionDigits="2" type="number"/></strong>
