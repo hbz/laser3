@@ -1563,6 +1563,7 @@ class SurveyController {
         params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
+        params.isActive = true
 
         FilterService.Result fsr = filterService.getOrgComboQuery(params, ctrlResult.institution as Org)
 

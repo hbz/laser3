@@ -3605,13 +3605,13 @@ class MyInstitutionController  {
             }
         }
         else result.filterSet    = params.filterSet ? true : false
-        /*if(!params.subPerpetual) {
+        if(!params.isActive) {
             if(!params.filterSet) {
-                params.subPerpetual = "on"
+                params.isActive = true
                 result.filterSet = true
             }
         }
-        else result.filterSet    = params.filterSet ? true : false*/
+        else result.filterSet    = params.filterSet ? true : false
 
         params.comboType = result.comboType.value
         FilterService.Result fsr = filterService.getOrgComboQuery(params, contextService.getOrg())

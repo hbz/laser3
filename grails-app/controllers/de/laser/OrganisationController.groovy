@@ -1401,9 +1401,18 @@ class OrganisationController  {
     def markAsArchive() {
         Org org = Org.get(params.id)
         if (org) {
+            Set<User> activeAffiliatedUsers = User.findAllByFormalOrgAndEnabled(org, true)
             if (org.isArchived()) {
                 flash.error = "Die Einrichtung wurde bereits archiviert."
-            } else {
+            }
+            else if(activeAffiliatedUsers) {
+                flash.error = "Es gibt noch aktive Nutzerkennungen. Bitte vorher alle Accounts deaktivieren."
+            }
+            else {
+                Set<User> affiliatedUsers = User.findAllByFormalOrg(org)
+                affiliatedUsers.each { User usr ->
+                    deletionService.deleteUser(usr, null, false)
+                }
                 org.archiveDate = new Date()
                 org.save()
                 flash.message = "Die Einrichtung wurde archiviert."

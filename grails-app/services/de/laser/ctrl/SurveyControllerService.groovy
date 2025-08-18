@@ -278,6 +278,7 @@ class SurveyControllerService {
 
             params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
             params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            params.isActive = true
 
             if(params.subs){
                 params.subs = Params.getLongList(params, 'subs').collect {Subscription.get(it)}
@@ -291,6 +292,7 @@ class SurveyControllerService {
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+            cloneParams.isActive = true
 
             FilterService.Result countFsr = filterService.getOrgComboQuery(cloneParams, result.institution as Org)
             if (countFsr.isFilterSet) {
