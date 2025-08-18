@@ -338,6 +338,10 @@ class SubscriptionService {
 
         SwissKnife.setPaginationParams(result, params, contextUser)
 
+        if(!params.isActive && !params.filterSet) {
+            params.isActive = true
+        }
+
         FilterService.Result fsr = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
         if (fsr.isFilterSet) { params.filterSet = true }
         result.filterConsortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams)
@@ -413,6 +417,15 @@ class SubscriptionService {
             result.defaultSet = true
         }
         */
+
+        if(params.containsKey('isActive') ^ params.containsKey('isArchived')) {
+            if (params.isActive) {
+                query += " and roleT.org.archiveDate is null "
+            }
+            else if(params.isArchived) {
+                query += " and roleT.org.archiveDate is not null "
+            }
+        }
 
         if (params.identifier?.length() > 0) {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
@@ -839,6 +852,7 @@ class SubscriptionService {
                     subscription, subscription.status)
         }
         if(validSubChilds) {
+            validSubChilds = validSubChilds.findAll { Subscription s -> !s.getSubscriber().isArchived() }
             /*validSubChilds = validSubChilds?.sort { a, b ->
                 def sa = a.getSubscriberRespConsortia()
                 def sb = b.getSubscriberRespConsortia()

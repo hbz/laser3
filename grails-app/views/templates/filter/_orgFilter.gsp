@@ -82,6 +82,27 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('isArchived')}">
+                <div class="field">
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="isActive">${message(code: 'org.isActive.label')}</label>
+                                <input id="isActive" name="isActive" type="checkbox" <g:if test="${params.isActive}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="isArchived">${message(code: 'org.isArchived.label')}</label>
+                                <input id="isArchived" name="isArchived" type="checkbox" <g:if test="${params.isArchived}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('apiLevel')}">
                 <div class="field">
                     <label for="osApiLevel">

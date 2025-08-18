@@ -295,6 +295,16 @@ class FilterService {
             queryParams << [libraryType : Params.getLongList(params, "libraryType")]
         }
 
+        //rarely used; ^ is the Java XOR operator
+        if (params.containsKey('isActive') ^ params.containsKey('isArchived')) {
+            if (params.isActive) {
+                query << "o.archiveDate is null"
+            }
+            else if(params.isArchived) {
+                query << "o.archiveDate is not null"
+            }
+        }
+
         if ((params.subStatus || params.subValidOn || params.subPerpetual) && !params.filterPvd) {
             List<RefdataValue> subStatus
             String subQuery = "exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType"
