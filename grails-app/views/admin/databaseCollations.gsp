@@ -54,8 +54,15 @@
                             ${row.column_name}
                         </g:else>
                     </td>
-                    <td>${row.data_type}</td>
-                    <td>${row.index_name}</td>
+                    <td>
+                        ${row.data_type}
+                    </td>
+                    <td>
+                        ${row.index_name}
+                        <g:if test="${row.index_details && (row.index_details.contains(',') || row.index_details.contains('gin_trgm_ops'))}">
+                            <br /> ${row.index_details}
+                        </g:if>
+                    </td>
                     <g:if test="${! row.collation_name}">
                         <td></td>
                         <td class="disabled">${collate_current}</td>

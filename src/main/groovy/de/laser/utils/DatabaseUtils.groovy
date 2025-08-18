@@ -116,12 +116,10 @@ ${params.keySet() ? '-   ' + ('^ ' * params.keySet().size()) + params.toMapStrin
 -----
 ${exp}
 -----"""
-        println result
         result
     }
 
     static def _debugHQL_retoken(Map.Entry entry) {
-        println entry
         def val = entry.value
 
         if (val == null) {
