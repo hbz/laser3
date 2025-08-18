@@ -36,7 +36,7 @@
     </div>
 </div>
 
-<ui:msg class="info" header="Achtung" text="Die angezeigten Daten sind unvollständig und bieten nur eine Orientierungshilfe."/>
+<ui:msg class="info" header="Achtung" text="Die angezeigten Daten können unvollständig sein. Indizes werden NUR über das GORM-Mapping erkannt."/>
 
 <style>
     #table {

@@ -406,6 +406,7 @@ class AdminController  {
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions(),
+                    dbExtensions     : DatabaseInfo.getDatabaseExtensions(),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo(),
                     dbmVersion       : DatabaseInfo.getDbmVersion()
             ],
@@ -420,6 +421,7 @@ class AdminController  {
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions( DatabaseInfo.DS_STORAGE ),
+                    dbExtensions     : DatabaseInfo.getDatabaseExtensions( DatabaseInfo.DS_STORAGE ),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo( DatabaseInfo.DS_STORAGE ),
                     dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
             ]

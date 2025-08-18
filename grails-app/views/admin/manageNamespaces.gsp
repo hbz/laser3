@@ -83,6 +83,11 @@
             </ui:form>
         </g:if>
 
+        <style>
+            .ui.segment.grey .form { margin-bottom:0 }
+            .ui.segment.grey .form .fields { margin-bottom:0 }
+        </style>
+
         <g:if test="${cmd == 'details'}">
 
 %{--            <g:link controller="admin" action="manageNamespaces" class="${Btn.SIMPLE}"><g:message code="default.button.back"/></g:link>--}%

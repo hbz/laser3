@@ -152,7 +152,19 @@ class DatabaseInfo {
     static List<Map<String, Object>> getDatabaseUserFunctions(String dsIdentifier = DS_DEFAULT) {
         Sql sql = getSql(dsIdentifier)
         try {
-            List<GroovyRowResult> rows = sql.rows( "select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines where routine_type = 'FUNCTION' and specific_schema = 'public' order by function")
+            List<GroovyRowResult> rows = sql.rows( """
+                select routine_name as function, trim(split_part(split_part(routine_definition, ';', 1), '=', 2)) as version from information_schema.routines 
+                where routine_schema = 'public' and routine_type = 'FUNCTION' and external_name is null order by function;
+                """)
+            rows.collect{getGroovyRowResultAsMap(it) }
+        }
+        finally { sql.close() }
+    }
+
+    static List<Map<String, Object>> getDatabaseExtensions(String dsIdentifier = DS_DEFAULT) {
+        Sql sql = getSql(dsIdentifier)
+        try {
+            List<GroovyRowResult> rows = sql.rows( 'select extname as name, extversion as version from pg_extension')
             rows.collect{getGroovyRowResultAsMap(it) }
         }
         finally { sql.close() }
@@ -183,11 +195,17 @@ class DatabaseInfo {
         Sql sql = getSql(dsIdentifier)
         try {
             List<GroovyRowResult> rows = sql.rows("""
-                select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name,
-                    (select indexname from pg_indexes where tablename = table_name and indexdef like concat('% INDEX ', column_name, '_idx ON ', table_schema, '.', table_name, ' %')) as index_name
-                from information_schema.columns
-                where data_type in ('text', 'character varying') and table_schema = 'public'
-                order by table_schema, table_name, column_name;
+                select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name, indexdetails as index_details, indexname as index_name from (
+                    select table_schema, table_name, column_name, data_type, collation_catalog, collation_schema, collation_name
+                        from information_schema.columns
+                        where data_type in ('text', 'character varying') and table_schema = 'public'
+                ) as tc left join (
+                    select schemaname, tablename, substring(indexdef from position('(' in indexdef)) as indexdetails, indexname
+                        from pg_indexes
+                        where schemaname = 'public' and indexdef like 'CREATE INDEX%'
+                ) as idx
+                on (table_name = tablename and indexdetails like concat('%', column_name, '%'))
+                order by table_schema, table_name, column_name, indexname;
                 """)
 
             rows.collect{getGroovyRowResultAsMap(it) }

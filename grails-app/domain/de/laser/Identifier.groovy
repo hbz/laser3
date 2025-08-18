@@ -73,7 +73,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         id    column:'id_id'
         version column: 'id_version'
         ns    column:'id_ns_fk', index:'id_ns_value_idx'
-        value column:'id_value', index:'id_value_idx, id_ns_value_idx'
+        value column:'id_value', index:'id_value_idx, id_ns_value_idx, id_value_idx_trigram, id_value_idx_lower_trigram'
         note  column:'id_note',  type: 'text'
 
         lic   column:'id_lic_fk', index: 'id_lic_idx'

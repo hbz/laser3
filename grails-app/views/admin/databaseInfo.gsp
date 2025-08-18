@@ -66,6 +66,19 @@
                 </td>
             </tr>
             <tr>
+                <td>Extensions</td>
+                <td>
+                    <g:each in="${dbInfo.default.dbExtensions}" var="ext">
+                        ${ext.name}; Version ${ext.version}<br />
+                    </g:each>
+                </td>
+                <td>
+                    <g:each in="${dbInfo.storage.dbExtensions}" var="ext">
+                        ${ext.name}; Version ${ext.version}<br />
+                    </g:each>
+                </td>
+            </tr>
+            <tr>
                 <td>User defined functions</td>
                 <td>
                     <g:each in="${dbInfo.default.dbUserFunctions}" var="uf">

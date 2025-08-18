@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.utils.DatabaseUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -104,6 +105,27 @@ class DevController  {
             }
             result.executorService = executorService
             result.tasks = tasks
+        }
+        else if (result.view == 'test') {
+            String query1 = "select count(*) from Identifier where value like :idsearch"
+            Map  qparams1 = [idsearch: "%${params.idsearch}%"]
+            String debug1 = DatabaseUtils.debugHQL(query1, qparams1)
+
+            String query2 = "select count(*) from Identifier where lower(value) like lower(:idsearch)"
+            Map  qparams2 = [idsearch: "%${params.idsearch}%".toLowerCase()]
+            String debug2 = DatabaseUtils.debugHQL(query2, qparams2)
+
+            if (params.idsearch) {
+                long time1   = System.currentTimeMillis()
+                def matches1 = Identifier.executeQuery(query1, qparams1)[0]
+                List result1 = [qparams1.idsearch, matches1, System.currentTimeMillis()-time1, debug1]
+
+                long time2   = System.currentTimeMillis()
+                def matches2 = Identifier.executeQuery(query2, qparams2)[0]
+                List result2 = [qparams2.idsearch, matches2, System.currentTimeMillis()-time2, debug2]
+
+                result.idsearchresult = [result1, result2]
+            }
         }
         render view: 'klodav/' + result.view, model: result
     }
