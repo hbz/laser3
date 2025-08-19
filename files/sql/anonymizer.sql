@@ -523,7 +523,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties1() RETURNS VOID AS $$
 BEGIN
     UPDATE org_property SET
         op_note             = pg_temp.anon_lorem(op_note),
-        op_string_value     = pg_temp.anon_phrase(op_string_value, concat(to_char(op_date_created, 'DD.MM.YYYY'), ', ', op_is_public)),
+        op_string_value     = pg_temp.anon_phrase(op_string_value),
         op_url_value        = pg_temp.anon_url(op_url_value),
         op_long_value       = pg_temp.anon_bigint(op_long_value),
         op_dec_value        = pg_temp.anon_numeric(op_dec_value)
@@ -536,7 +536,7 @@ BEGIN
 
     UPDATE person_property SET
         pp_note             = pg_temp.anon_lorem(pp_note),
-        pp_string_value     = pg_temp.anon_phrase(pp_string_value, concat(to_char(pp_date_created, 'DD.MM.YYYY'), ', ', pp_is_public)),
+        pp_string_value     = pg_temp.anon_phrase(pp_string_value),
         pp_url_value        = pg_temp.anon_url(pp_url_value),
         pp_long_value       = pg_temp.anon_bigint(pp_long_value),
         pp_dec_value        = pg_temp.anon_numeric(pp_dec_value)
@@ -549,7 +549,7 @@ BEGIN
 
     UPDATE platform_property SET
         plp_note            = pg_temp.anon_lorem(plp_note),
-        plp_string_value    = pg_temp.anon_phrase(plp_string_value, concat(to_char(plp_date_created, 'DD.MM.YYYY'), ', ', plp_is_public)),
+        plp_string_value    = pg_temp.anon_phrase(plp_string_value),
         plp_url_value       = pg_temp.anon_url(plp_url_value),
         plp_long_value      = pg_temp.anon_bigint(plp_long_value),
         plp_dec_value       = pg_temp.anon_numeric(plp_dec_value)
@@ -562,7 +562,7 @@ BEGIN
 
     UPDATE provider_property SET
         prp_note            = pg_temp.anon_lorem(prp_note),
-        prp_string_value    = pg_temp.anon_phrase(prp_string_value, concat(to_char(prp_date_created, 'DD.MM.YYYY'), ', ', prp_is_public)),
+        prp_string_value    = pg_temp.anon_phrase(prp_string_value),
         prp_url_value       = pg_temp.anon_url(prp_url_value),
         prp_long_value      = pg_temp.anon_bigint(prp_long_value),
         prp_dec_value       = pg_temp.anon_numeric(prp_dec_value)
@@ -575,7 +575,7 @@ BEGIN
 
     UPDATE vendor_property SET
         vp_note             = pg_temp.anon_lorem(vp_note),
-        vp_string_value     = pg_temp.anon_phrase(vp_string_value, concat(to_char(vp_date_created, 'DD.MM.YYYY'), ', ', vp_is_public)),
+        vp_string_value     = pg_temp.anon_phrase(vp_string_value),
         vp_url_value        = pg_temp.anon_url(vp_url_value),
         vp_long_value       = pg_temp.anon_bigint(vp_long_value),
         vp_dec_value        = pg_temp.anon_numeric(vp_dec_value)
@@ -597,7 +597,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_properties2() RETURNS VOID AS $$
 BEGIN
     UPDATE subscription_property SET
         sp_note             = pg_temp.anon_lorem(sp_note),
-        sp_string_value     = pg_temp.anon_phrase(sp_string_value, concat(sp_id, ', ', to_char(sp_date_created, 'DD.MM.YYYY'), ', ', sp_is_public)),
+        sp_string_value     = pg_temp.anon_phrase(sp_string_value),
         sp_url_value        = pg_temp.anon_url(sp_url_value),
         sp_long_value       = pg_temp.anon_bigint(sp_long_value),
         sp_dec_value        = pg_temp.anon_numeric(sp_dec_value)
@@ -629,7 +629,7 @@ BEGIN
 
     UPDATE license_property SET
         lp_note             = pg_temp.anon_lorem(lp_note),
-        lp_string_value     = pg_temp.anon_phrase(lp_string_value, concat(lp_id, ', ', to_char(lp_date_created, 'DD.MM.YYYY'), ', ', lp_is_public)),
+        lp_string_value     = pg_temp.anon_phrase(lp_string_value),
         lp_url_value        = pg_temp.anon_url(lp_url_value),
         lp_long_value       = pg_temp.anon_bigint(lp_long_value),
         lp_dec_value        = pg_temp.anon_numeric(lp_dec_value),
@@ -701,7 +701,7 @@ DECLARE
     count_doc INT;
 BEGIN
     UPDATE doc SET
-        doc_title       = pg_temp.anon_phrase(doc_title, to_char(doc_date_created, 'DD.MM.YYYY')),
+        doc_title       = pg_temp.anon_phrase(doc_title),
         doc_content     = pg_temp.anon_lorem(doc_content, 4)
     WHERE doc_content_type = 0 AND
         doc_owner_fk NOT IN (
@@ -718,7 +718,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_tasks() RETURNS VOID AS $$
         count_task INT;
 BEGIN
     UPDATE task SET
-        tsk_title       = pg_temp.anon_phrase(tsk_title, to_char(tsk_date_created, 'DD.MM.YYYY')),
+        tsk_title       = pg_temp.anon_phrase(tsk_title),
         tsk_description = pg_temp.anon_lorem(tsk_description, 2)
     WHERE tsk_creator_fk NOT IN (
         SELECT usr_id FROM "user" WHERE usr_formal_org_fk IN (
@@ -737,7 +737,7 @@ CREATE OR REPLACE FUNCTION pg_temp.anon_mask_workflows() RETURNS VOID AS $$
         count_wf_checkpoint INT;
 BEGIN
     UPDATE wf_checklist SET
-        wfcl_title          = pg_temp.anon_phrase(wfcl_title, to_char(wfcl_date_created, 'DD.MM.YYYY')),
+        wfcl_title          = pg_temp.anon_phrase(wfcl_title),
         wfcl_description    = pg_temp.anon_lorem(wfcl_description, 2),
         wfcl_comment        = pg_temp.anon_lorem(wfcl_comment)
     WHERE wfcl_owner_fk NOT IN (
@@ -748,7 +748,7 @@ BEGIN
     RAISE NOTICE '%', pg_temp.anon_log_mask('wf_checklist (wfcl_title, wfcl_description, wfcl_comment)', count_wf_checklist);
 
     UPDATE wf_checkpoint SET
-        wfcp_title          = pg_temp.anon_phrase(wfcp_title, wfcp_position::TEXT),
+        wfcp_title          = pg_temp.anon_phrase(wfcp_title),
         wfcp_description    = pg_temp.anon_lorem(wfcp_description, 2),
         wfcp_comment        = pg_temp.anon_lorem(wfcp_comment)
     WHERE wfcp_checklist_fk IN (
@@ -827,7 +827,7 @@ BEGIN
 
     UPDATE survey_result SET
         surre_note                  = pg_temp.anon_lorem(surre_note),
-        surre_string_value          = pg_temp.anon_phrase(surre_string_value, concat(surre_id, ', ', to_char(surre_date_created, 'DD.MM.YYYY'), ', ', surre_is_public)),
+        surre_string_value          = pg_temp.anon_phrase(surre_string_value),
         surre_url_value             = pg_temp.anon_url(surre_url_value),
         surre_long_value            = pg_temp.anon_bigint(surre_long_value),
         surre_dec_value             = pg_temp.anon_numeric(surre_dec_value)
@@ -955,9 +955,9 @@ $$ LANGUAGE PLPGSQL;
 -- laser.anonymizer (2. usage)
 --
 
-CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTester BOOL DEFAULT FALSE) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION pg_temp.anonymize(acceptBetaTesters BOOL DEFAULT FALSE, ignoreCustomerIdentifiers BOOL DEFAULT FALSE, ignoreMails BOOL DEFAULT FALSE) RETURNS VOID AS $$
     DECLARE
-        VERSION CONSTANT TEXT = '07/08/2025';
+        VERSION CONSTANT TEXT = '18/08/2025';
         count_tmp INT;
 BEGIN
 
@@ -966,10 +966,11 @@ BEGIN
     RAISE NOTICE '--- version %', version;
     RAISE NOTICE '--- now %', to_char(now(), 'YYYY-MM-DD HH24:MI');
     RAISE NOTICE '--- ---------------------------------------- ---';
-    RAISE NOTICE '--- acceptBetaTester: %', acceptBetaTester;
-    RAISE NOTICE '--- ignoreCustomerIdentifier: %', acceptBetaTester;
+    RAISE NOTICE '--- acceptBetaTesters: %', acceptBetaTesters;
+    RAISE NOTICE '--- ignoreCustomerIdentifiers: %', ignoreCustomerIdentifiers;
+    RAISE NOTICE '--- ignoreMails: %', ignoreMails;
 
-    IF acceptBetaTester IS FALSE THEN
+    IF acceptBetaTesters IS FALSE THEN
         UPDATE org SET
             org_is_beta_tester = false
 --         WHERE org_guid NOT IN ('org:e6be24ff-98e4-474d-9ef8-f0eafd843d17', 'org:1d72afe7-67cb-4676-add0-51d3ae66b1b3'); -- QA/PROD
@@ -986,7 +987,7 @@ BEGIN
     RAISE NOTICE '--- masking data';
 
     PERFORM pg_temp.anon_mask_users();              -- Users
-    PERFORM pg_temp.anon_mask_orgs(acceptBetaTester);   -- Orgs (OrgSetting, CustomerIdentifier)
+    PERFORM pg_temp.anon_mask_orgs(ignoreCustomerIdentifiers);   -- Orgs (OrgSetting, CustomerIdentifier)
 
     PERFORM pg_temp.anon_mask_addressbook();         -- Person, Contact
     PERFORM pg_temp.anon_mask_finance();             -- Finance
@@ -999,17 +1000,20 @@ BEGIN
     PERFORM pg_temp.anon_mask_workflows();           -- Workflows
     PERFORM pg_temp.anon_mask_surveys();             -- Surveys
 
-    RAISE NOTICE '--- ---------------------------------------- ---';
-    RAISE NOTICE '--- deleting data';
+    IF ignoreMails IS FALSE THEN
+        RAISE NOTICE '--- ---------------------------------------- ---';
+        RAISE NOTICE '--- deleting data';
 
-    PERFORM pg_temp.anon_delete_mails();             -- Mails (Grails Asynchronous Mail Plugin)
+        PERFORM pg_temp.anon_delete_mails();        -- Mails (Grails Asynchronous Mail Plugin)
+    END IF;
 
     RAISE NOTICE '--- ---------------------------------------- ---';
 END;
 $$ LANGUAGE PLPGSQL;
 
--- LOCAL  : acceptBetaTester -> ignoreCustomerIdentifier = FALSE
--- DEV/QA : acceptBetaTester -> ignoreCustomerIdentifier = TRUE
+--[ LOCAL    acceptBetaTesters: FALSE, ignoreCustomerIdentifiers: FALSE, ignoreMails: FALSE  ]--
+--[ DEV      acceptBetaTesters: FALSE, ignoreCustomerIdentifiers: TRUE,  ignoreMails: TRUE   ]--
+--[ QA       acceptBetaTesters: TRUE,  ignoreCustomerIdentifiers: TRUE,  ignoreMails: TRUE   ]--
 
-SELECT pg_temp.anonymize(TRUE);
+SELECT pg_temp.anonymize(FALSE, FALSE, FALSE);
 
