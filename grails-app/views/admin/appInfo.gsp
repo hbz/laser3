@@ -73,37 +73,14 @@
                 <td>${dbInfo.storage.dbmVersion[0]} -> ${dbInfo.storage.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.storage.dbmVersion[2])}</td>
             </tr>
             <tr>
-                <g:if test="${! dbInfo.dbmUpdateOnStart}">
-                    <td class="error">DBM updateOnStart</td>
-                    <td colspan="2" class="error">${dbInfo.dbmUpdateOnStart}</td>
-                </g:if>
-                <g:else>
-                    <td>DBM updateOnStart</td>
-                    <td>${dbInfo.dbmUpdateOnStart}</td>
-                    <td>${dbInfo.dbmUpdateOnStart}</td>
-                </g:else>
+                <td>Database size</td>
+                <td>${dbInfo.default.dbSize}</td>
+                <td>${dbInfo.storage.dbSize}</td>
             </tr>
             <tr>
-                <td>Collations</td>
-                <td>
-                <%
-                    Set collations = [dbInfo.default.defaultCollate]
-                    DatabaseInfo.getAllTablesCollationInfo().each { it ->
-                        List c = it.value['collation'].findAll()
-                        if (! c.isEmpty()) { collations.addAll(c) }
-                    }
-                    collations.each { print it + '<br/>' }
-                %>
-                <td>
-                    <%
-                        collations = [dbInfo.storage.defaultCollate]
-                        DatabaseInfo.getAllTablesCollationInfo( DatabaseInfo.DS_STORAGE ).each { it ->
-                            List c = it.value['collation'].findAll()
-                            if (! c.isEmpty()) { collations.addAll(c) }
-                        }
-                        collations.each { print it + '<br/>' }
-                    %>
-                </td>
+                <td>Postgresql server</td>
+                <td>${DatabaseInfo.getServerInfo()}</td>
+                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
             </tr>
         <tbody>
     </table>

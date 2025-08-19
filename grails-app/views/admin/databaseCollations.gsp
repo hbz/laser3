@@ -58,10 +58,16 @@
                         ${row.data_type}
                     </td>
                     <td>
-                        ${row.index_name}
                         <g:if test="${row.index_details && (row.index_details.contains(',') || row.index_details.contains('gin_trgm_ops'))}">
-                            <br /> ${row.index_details}
+                            <strong class="${row.index_details.contains('gin_trgm_ops') ? 'sc_orange' : ''}">
+                                ${row.index_name}
+                            </strong>
+                            <br />
+                            ${row.index_details}
                         </g:if>
+                        <g:else>
+                            ${row.index_name}
+                        </g:else>
                     </td>
                     <g:if test="${! row.collation_name}">
                         <td></td>

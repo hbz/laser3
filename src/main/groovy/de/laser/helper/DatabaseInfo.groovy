@@ -243,14 +243,19 @@ class DatabaseInfo {
                                             where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
                                         siList << (clstn ? sql.firstRow(query) : null)
                                     }
-
-    //                                String query = """
-    //                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-    //                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
-    //                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
-    //                                println clstn + ' ' + c.index + ' = ' + siList
                                     result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
-                                } else {
+                                }
+                                if (c.comment) {
+                                    List<GroovyRowResult> siList = []
+                                    c.comment.split(',').each { cc ->
+                                        String query = """
+                                            select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+                                            where idx.relname='${clstn}' and indexrelname = '${cc.trim()}'"""
+                                        siList << (clstn ? sql.firstRow(query) : null)
+                                    }
+                                    result << [i++, cls.name, pp.name, pp.type, c.name, c.comment, siList]
+                                }
+                                if (!c.index && !c.comment) {
                                     result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                                 }
                             }
