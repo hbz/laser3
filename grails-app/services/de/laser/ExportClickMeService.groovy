@@ -4524,7 +4524,7 @@ class ExportClickMeService {
      * @param contactSources which set of contacts should be considered (public or private)?
      * @return the output in the desired format
      */
-    def exportSurveyCostItemsForOwner(SurveyConfig surveyConfig, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
+    def exportSurveyCostItemsForOwner(List<SurveyOrg> participants, SurveyConfig surveyConfig, Map<String, Object> selectedFields, FORMAT format, Set<String> contactSources) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -4541,7 +4541,7 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
-        List<CostItem> costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findAllBySurveyConfig(surveyConfig), RDStore.COST_ITEM_DELETED).sort {it.surveyOrg.org.sortname}
+        List<CostItem> costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNull(participants, RDStore.COST_ITEM_DELETED).sort { CostItem ci -> ci.surveyOrg.org.sortname}
 
         List exportData = []
         costItems.each { CostItem costItem ->
@@ -4552,8 +4552,7 @@ class ExportClickMeService {
         sheetData[messageSource.getMessage('financials.costItem', null, locale)] = [titleRow: titles, columnData: exportData]
 
         if (surveyConfig.packageSurvey) {
-            String sheetName = ''
-            costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNotNull(SurveyOrg.findAllBySurveyConfig(surveyConfig), RDStore.COST_ITEM_DELETED).sort { it.surveyOrg.org.sortname }
+            costItems = CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNotNull(participants, RDStore.COST_ITEM_DELETED).sort { CostItem ci -> ci.surveyOrg.org.sortname }
             selectedExportFields.put('pkg', [field: 'pkg.name', label: 'Package Name', message: 'package.label'])
             titles = _exportTitles(selectedExportFields, locale, null, null, contactSources, null, format)
 
@@ -4562,7 +4561,7 @@ class ExportClickMeService {
                 _setCostItemRow(costItem, selectedExportFields, exportData, format, contactSources)
             }
 
-            sheetName = messageSource.getMessage('surveyCostItemsPackages.label', null, locale)
+            String sheetName = messageSource.getMessage('surveyCostItemsPackages.label', null, locale)
             sheetData[sheetName] = [titleRow: titles, columnData: exportData]
         }
 
@@ -5017,8 +5016,8 @@ class ExportClickMeService {
 
         }else {
 
-            List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
-            List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+            List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndIdInList(result.surveyConfig, result.participants.id)
+            List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNullAndIdInList(result.surveyConfig, result.participants.id)
 
             //List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
             //List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
@@ -7826,7 +7825,7 @@ class ExportClickMeService {
                     }
                 }
                 else if(fieldKey == 'pickAndChoose') {
-                    titles.add(createTableCell(format,  "${messageSource.getMessage('surveyEvaluation.titles.currentAndFixedEntitlements', null, locale)}"))
+                    titles.add(createTableCell(format,  "${messageSource.getMessage('surveyEvaluation.titles.currentAndFixedEntitlements.export', null, locale)}"))
                     titles.add(createTableCell(format,  "${messageSource.getMessage('tipp.price.plural', null, locale)}"))
                     titles.add(createTableCell(format,  "Budget"))
                     titles.add(createTableCell(format,  "Diff."))

@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6760    19.08.2025  dev     3.6         Andreas Feature     Entfernen der Kuratorengruppe aus den Filtern
+
+6745    19.08.2025  dev     3.6         Andreas Feature     Exporte berücksichtigen eventuell eingestellte Filter
+
+6629    18.08.2025  dev     3.6         Andreas Feature     Aussieben von archivierten Einrichtungen
+
 6765    15.08.2025  rc-3.5  3.5.5       Andreas Bug         Paketname wurde beim Übertrag nicht hinterlegt
 
 6230    15.08.2025  dev     3.6         Andreas Feature     Umstrukturierung der Menüführung unter "Meine Merkmale"
