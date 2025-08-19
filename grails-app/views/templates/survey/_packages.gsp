@@ -3,7 +3,7 @@
 <g:if test="${!error}">
     <laser:render template="/templates/filter/packageGokbFilter" model="[filterConfig: [
             ['q', 'pkgStatus'],
-            ['provider', 'ddc', 'curatoryGroup'],
+            ['provider', 'ddc'],
             ['curatoryGroupType', 'automaticUpdates']
     ]]"/>
 </g:if>

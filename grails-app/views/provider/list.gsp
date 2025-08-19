@@ -29,7 +29,7 @@
             <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/providerFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'],  ['property&value', 'isMyX'], ['curatoryGroup', 'curatoryGroupType', '']],
+                                  tmplConfigShow: [['name', 'identifier', 'provStatus'], ['electronicBillings', 'invoiceDispatchs', 'invoicingVendors', 'inhouseInvoicing'],  ['property&value', 'isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>

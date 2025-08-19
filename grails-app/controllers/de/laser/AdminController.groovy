@@ -1413,7 +1413,7 @@ class AdminController  {
         result.user = contextService.getUser()
         configMap.putAll(SwissKnife.setPaginationParams(result, params, result.user))
         result.filterConfig = [['q', 'pkgStatus'],
-                               ['provider', 'ddc', 'curatoryGroup'],
+                               ['provider', 'ddc'],
                                ['curatoryGroupType', 'automaticUpdates']]
         result.tableConfig = ['lineNumber', 'name', 'status', 'counts', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay']
         if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))

@@ -2092,7 +2092,7 @@ class SubscriptionControllerService {
             result.archivingAgencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ARCHIVING_AGENCY)
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
             Set<Set<String>> filterConfig = [
-                    ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+                    ['q', 'provider', 'automaticUpdates']
             ]
             Map<String, Set<Set<String>>> filterAccordionConfig = [
                     'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]
