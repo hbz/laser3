@@ -2504,7 +2504,8 @@ class SurveyController {
                 return
             }
         }
-
+        Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+        result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
@@ -2520,7 +2521,7 @@ class SurveyController {
             Set<String> contactSwitch = []
             contactSwitch.addAll(params.list("contactSwitch"))
             contactSwitch.addAll(params.list("addressSwitch"))
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItemsForOwner(result.surveyConfig, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyCostItemsForOwner(result.participants, result.surveyConfig, selectedFields, ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
