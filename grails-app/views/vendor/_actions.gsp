@@ -7,11 +7,17 @@
         <g:if test="${editable}">
             <g:if test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
-                <g:if test="${editable}">
-                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor', ${vendor.id});"><g:message code="person.create_new.contactPersonForVendor.label"/></a>
-                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor', ${vendor.id});"><g:message code="address.add.addressForVendor.label"/></a>
-                </g:if>
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor', ${vendor.id});"><g:message code="person.create_new.contactPersonForVendor.label"/></a>
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor', ${vendor.id});"><g:message code="address.add.addressForVendor.label"/></a>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+            </g:if>
+            <g:if test="${actionName == 'show'}">
+                <g:if test="${!vendor.gokbId}">
+                    <div class="divider"></div>
+                    <g:link action="delete" id="${vendor.id}" class="item"><i class="${Icon.CMD.DELETE}"></i>
+                        ${message(code: 'deletion.vendor')}
+                    </g:link>
+                </g:if>
             </g:if>
         </g:if>
     </g:if>
@@ -32,16 +38,6 @@
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:if>
     </g:else>
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <g:if test="${actionName == 'show'}">
-            <g:if test="${!vendor.gokbId}">
-                <div class="divider"></div>
-                <g:link action="delete" id="${vendor.id}" class="item"><i class="${Icon.CMD.DELETE}"></i>
-                    ${message(code: 'deletion.vendor')}
-                </g:link>
-            </g:if>
-        </g:if>
-    </sec:ifAnyGranted>
 </ui:actionsDropdown>
 
 <g:if test="${contextService.isInstEditor()}">

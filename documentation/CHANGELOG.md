@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6772    20.08.2025  rc-3.5  3.5.5       Andreas Bug         falscher Getter bei der Absatznummer
+
 6760    19.08.2025  dev     3.6         Andreas Feature     Entfernen der Kuratorengruppe aus den Filtern
 
 6745    19.08.2025  dev     3.6         Andreas Feature     Exporte berücksichtigen eventuell eingestellte Filter
