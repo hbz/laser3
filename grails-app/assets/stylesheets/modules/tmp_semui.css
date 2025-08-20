@@ -253,6 +253,8 @@ h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; co
 *.sc_green      { color:#b5c334; }
 *.sc_orange     { color:#f3a43b; }
 *.sc_blue       { color:#357edd; }
+*.sc_teal       { color:#009c95; }
+*.sc_purple     { color:#9627ba; }
 *.sc_grey       { color:#808080; }
 *.sc_darkgrey   { color:#a9a9a9; }
 

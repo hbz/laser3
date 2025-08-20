@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import de.laser.annotations.TrigramIndex
 import de.laser.storage.BeanStore
 import de.laser.utils.CodeUtils
 import groovy.sql.GroovyRowResult
@@ -9,6 +10,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 
 import javax.sql.DataSource
+import java.lang.annotation.Annotation
 
 /**
  * This class keeps information ready about the database instances currently in service
@@ -222,11 +224,11 @@ class DatabaseInfo {
             int i = 0
 
             CodeUtils.getAllDomainClasses().each { cls ->
-                String clstn  = null
+                String clstable  = null
                 try {
-                    clstn = sf.getClassMetadata(cls).getTableName()
+                    clstable = sf.getClassMetadata(cls).getTableName()
                 } catch (Exception e) {
-                    clstn = null
+                    clstable = null
                 }
                 PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
                 if (pe) {
@@ -240,22 +242,24 @@ class DatabaseInfo {
                                     c.index.split(',').each { ci ->
                                         String query = """
                                             select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-                                            where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
-                                        siList << (clstn ? sql.firstRow(query) : null)
+                                            where idx.relname='${clstable}' and indexrelname = '${ci.trim()}'"""
+                                        siList << (clstable ? sql.firstRow(query) : null)
                                     }
                                     result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
                                 }
-                                if (c.comment) {
+                                Annotation ti = pp.reader.field().getAnnotation(TrigramIndex)
+                                if (ti) {
                                     List<GroovyRowResult> siList = []
-                                    c.comment.split(',').each { cc ->
+                                    ti.index().split(',').each { tti ->
                                         String query = """
                                             select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-                                            where idx.relname='${clstn}' and indexrelname = '${cc.trim()}'"""
-                                        siList << (clstn ? sql.firstRow(query) : null)
+                                            where idx.relname='${clstable}' and indexrelname = '${tti.trim()}'"""
+                                        siList << (clstable ? sql.firstRow(query) : null)
                                     }
-                                    result << [i++, cls.name, pp.name, pp.type, c.name, c.comment, siList]
+                                    result << [i++, cls.name, pp.name, pp.type, c.name, ti.index(), siList]
+
                                 }
-                                if (!c.index && !c.comment) {
+                                if (!c.index && !ti) {
                                     result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                                 }
                             }

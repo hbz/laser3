@@ -48,7 +48,7 @@
                     <td>${row.table_name}</td>
                     <td>
                         <g:if test="${row.column_name.endsWith('_de') || row.column_name.endsWith('_en')}">
-                            <strong><em>${row.column_name}</em></strong>
+                            <strong>${row.column_name}</strong>
                         </g:if>
                         <g:else>
                             ${row.column_name}
@@ -59,11 +59,13 @@
                     </td>
                     <td>
                         <g:if test="${row.index_details && (row.index_details.contains(',') || row.index_details.contains('gin_trgm_ops'))}">
-                            <strong class="${row.index_details.contains('gin_trgm_ops') ? 'sc_orange' : ''}">
-                                ${row.index_name}
-                            </strong>
-                            <br />
-                            ${row.index_details}
+                            <span class="${row.index_details.contains('gin_trgm_ops') ? 'sc_red' : ''}">
+                                <strong>
+                                    ${row.index_name}
+                                </strong>
+                                <br />
+                                ${row.index_details}
+                            </span>
                         </g:if>
                         <g:else>
                             ${row.index_name}
