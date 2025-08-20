@@ -10,11 +10,17 @@
         <g:if test="${editable}">
             <g:if test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
-                <g:if test="${editable}">
                     <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProvider', ${provider.id});"><g:message code="person.create_new.contactPersonForProvider.label"/></a>
                     <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider', ${provider.id});"><g:message code="address.add.addressForProvider.label"/></a>
-                </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+            </g:if>
+            <g:if test="${actionName == 'show'}">
+                <g:if test="${!provider.gokbId}">
+                    <div class="divider"></div>
+                    <g:link action="delete" id="${provider.id}" class="item"><i class="${Icon.CMD.DELETE}"></i>
+                        ${message(code: 'deletion.provider')}
+                    </g:link>
+                </g:if>
             </g:if>
         </g:if>
     </g:if>
@@ -34,16 +40,6 @@
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:if>
     </g:else>
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <g:if test="${actionName == 'show'}">
-            <g:if test="${!provider.gokbId}">
-                <div class="divider"></div>
-                <g:link action="delete" id="${provider.id}" class="item"><i class="${Icon.CMD.DELETE}"></i>
-                    ${message(code: 'deletion.provider')}
-                </g:link>
-            </g:if>
-        </g:if>
-    </sec:ifAnyGranted>
 </ui:actionsDropdown>
 
 <g:if test="${contextService.isInstEditor()}">
