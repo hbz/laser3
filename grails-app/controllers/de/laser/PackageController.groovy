@@ -86,7 +86,7 @@ class PackageController {
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [
-            ['q', 'provider', 'curatoryGroup', 'automaticUpdates']
+            ['q', 'provider', 'automaticUpdates']
         ]
         Map<String, Set<Set<String>>> filterAccordionConfig = [
             'package.search.generic.header': [['contentType', 'pkgStatus', 'ddc'], ['paymentType', 'openAccess', 'archivingAgency']]

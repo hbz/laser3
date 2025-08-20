@@ -2544,7 +2544,7 @@ class LicenseService {
                             paragraphableProps.each { PropertyDefinition propDef ->
                                 if (isParagraphSet(licPropertyMap, propDef)) {
                                     TextElement(id: "lp_${toSnakeCase(propDef.name)}_01") {
-                                        SortNumber(licPropertyMap.get(propDef.id).getParagraphNumber())
+                                        SortNumber(licPropertyMap.get(propDef.id).getParagraphNumberForONIXExport())
                                         Text(licPropertyMap.get(propDef.id).getParagraph())
                                     }
                                 }

@@ -6,6 +6,7 @@ import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
+import de.laser.helper.Params
 import de.laser.properties.LicenseProperty
 import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
@@ -4740,7 +4741,7 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output, rendered in the desired format
      */
-    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, withInstData, withProvData, withVenData, String tab, FORMAT format) {
+    def exportAddresses(List visiblePersons, List visibleAddresses, Map<String, Object> selectedFields, Map<String, Object> configMap, withInstData, withProvData, withVenData, String tab, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> configFields = getExportAddressFields(), selectedExportContactFields = [:], selectedExportAddressFields = [:], sheetData = [:]
         List instData = [], provData = [], venData = [], instAddresses = [], provAddresses = [], venAddresses = []
@@ -4788,7 +4789,12 @@ class ExportClickMeService {
         addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
             for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
                 String contactType = ''
-                PersonRole prsLink = p.roleLinks.find { PersonRole pr -> pr.org != null || pr.provider != null || pr.vendor != null }
+                PersonRole prsLink
+                if(configMap.function || configMap.position || configMap.type) {
+                    Set<RefdataValue> functions = Params.getRefdataList(configMap, 'function'), positions = Params.getRefdataList(configMap, 'position'), type = Params.getRefdataList(configMap, 'type')
+                    prsLink = p.roleLinks.find { PersonRole pr -> (pr.org != null || pr.provider != null || pr.vendor != null) && (pr.functionType in functions || pr.positionType in positions || pr.responsibilityType == type) }
+                }
+                else prsLink = p.roleLinks.find { PersonRole pr -> pr.org != null || pr.provider != null || pr.vendor != null }
                 if(prsLink.functionType)
                     contactType = prsLink.functionType.getI10n('value')
                 else if(prsLink.positionType)

@@ -344,7 +344,10 @@ class ProviderController {
      * Call to delete the given provider
      * @return the deletion view
      */
-    @Secured(['ROLE_ADMIN'])
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+    })
     def delete() {
         Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
 
