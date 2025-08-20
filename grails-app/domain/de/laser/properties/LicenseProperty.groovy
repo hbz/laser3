@@ -140,7 +140,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         newProp
     }
 
-    String getParagraphNumber() {
+    String getParagraphNumberForONIXExport() {
         paragraphNumber ?: '0'
     }
 
