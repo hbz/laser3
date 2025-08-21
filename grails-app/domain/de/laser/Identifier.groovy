@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.TrigramIndex
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
@@ -28,6 +29,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     IdentifierNamespace ns
     Identifier instanceOf
+    @TrigramIndex(index='id_value_idx_trigram', lower='id_value_idx_lower_trigram')
     String value
     String note = ""
 
@@ -73,7 +75,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         id    column:'id_id'
         version column: 'id_version'
         ns    column:'id_ns_fk', index:'id_ns_value_idx'
-        value column:'id_value', index:'id_value_idx, id_ns_value_idx, id_value_idx_trigram, id_value_idx_lower_trigram'
+        value column:'id_value', index:'id_value_idx,id_ns_value_idx'
         note  column:'id_note',  type: 'text'
 
         lic   column:'id_lic_fk', index: 'id_lic_idx'

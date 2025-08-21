@@ -1,5 +1,6 @@
 package de.laser.helper
 
+import de.laser.annotations.TrigramIndex
 import de.laser.storage.BeanStore
 import de.laser.utils.CodeUtils
 import groovy.sql.GroovyRowResult
@@ -7,8 +8,10 @@ import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.hibernate.SessionFactory
 
 import javax.sql.DataSource
+import java.lang.annotation.Annotation
 
 /**
  * This class keeps information ready about the database instances currently in service
@@ -213,23 +216,25 @@ class DatabaseInfo {
         finally { sql.close() }
     }
 
-    static List<List> getAllTablesWithGORMIndices() {
+    static List<List> getAllTablesWithGORMIndices(String dsIdentifier = DS_DEFAULT) {
         List<List> result = []
 
-        Sql sql = getSql(DS_DEFAULT)
+        Sql sql = getSql(dsIdentifier)
+        SessionFactory sfac = getSessionFactory(dsIdentifier)
+
         try {
-            def sf = BeanStore.get('sessionFactory')
             int i = 0
 
             CodeUtils.getAllDomainClasses().each { cls ->
-                String clstn  = null
+                String clstable  = null
                 try {
-                    clstn = sf.getClassMetadata(cls).getTableName()
+                    clstable = sfac.getClassMetadata(cls).getTableName() // dc.mapping.table must match database
                 } catch (Exception e) {
-                    clstn = null
+                    clstable = null
                 }
+
                 PersistentEntity pe = CodeUtils.getPersistentEntity(cls.name)
-                if (pe) {
+                if (clstable && pe) {
                     Map mapping = pe.mapping?.mappedForm?.columns
                     if (mapping) {
                         mapping.sort().each { prop ->
@@ -240,17 +245,24 @@ class DatabaseInfo {
                                     c.index.split(',').each { ci ->
                                         String query = """
                                             select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-                                            where idx.relname='${clstn}' and indexrelname = '${ci.trim()}'"""
-                                        siList << (clstn ? sql.firstRow(query) : null)
+                                            where idx.relname='${clstable}' and indexrelname = '${ci.trim()}'"""
+                                        siList << (clstable ? sql.firstRow(query) : null)
                                     }
-
-    //                                String query = """
-    //                                    select pg_size_pretty(pg_relation_size(indexrelid)) "index_size" from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
-    //                                    where idx.relname='${clstn}' and indexrelname = '${c.index}'"""
-    //                                GroovyRowResult si = clstn ? sql.firstRow(query) : null
-    //                                println clstn + ' ' + c.index + ' = ' + siList
                                     result << [i++, cls.name, pp.name, pp.type, c.name, c.index, siList]
-                                } else {
+                                }
+                                Annotation tia = pp.reader.field().getAnnotation(TrigramIndex)
+                                if (tia) {
+                                    List<GroovyRowResult> siList = []
+                                    String triIndex = (tia.index() + ',' + tia.lower()).split(',').findAll().join(',')
+                                    triIndex.split(',').each { ti ->
+                                        String query = """
+                                            select pg_size_pretty(pg_relation_size(indexrelid)) "idx_size", idx_scan from pg_stat_all_indexes idx join pg_class c on idx.relid = c.oid
+                                            where idx.relname='${clstable}' and indexrelname = '${ti.trim()}'"""
+                                        siList << (clstable ? sql.firstRow(query) : null)
+                                    }
+                                    result << [i++, cls.name, pp.name, pp.type, c.name, triIndex, siList]
+                                }
+                                if (!c.index && !tia) {
                                     result << [i++, cls.name, pp.name, pp.type, c.name, (prop.value.unique ? 'UNIQUE' : null), null]
                                 }
                             }
@@ -259,7 +271,9 @@ class DatabaseInfo {
                 }
             }
         }
-        finally { sql.close() }
+        finally {
+            sql.close()
+        }
 
         result
     }
@@ -328,5 +342,14 @@ class DatabaseInfo {
     static Sql getSql(String dsIdentifier) {
         DataSource dataSource = getDataSource(dsIdentifier)
         new Sql(dataSource)
+    }
+
+    static SessionFactory getSessionFactory(String dsIdentifier) {
+        if (dsIdentifier == DS_DEFAULT) {
+            BeanStore.get('sessionFactory') as SessionFactory
+        }
+        else if (dsIdentifier == DS_STORAGE) {
+            BeanStore.get('sessionFactory_storage') as SessionFactory
+        }
     }
 }

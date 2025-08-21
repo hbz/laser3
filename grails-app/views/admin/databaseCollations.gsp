@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.CSS; de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
-
+ 
 <laser:htmlStart message="menu.admin.databaseCollations" />
 
 <ui:breadcrumbs>
@@ -48,7 +48,7 @@
                     <td>${row.table_name}</td>
                     <td>
                         <g:if test="${row.column_name.endsWith('_de') || row.column_name.endsWith('_en')}">
-                            <strong><em>${row.column_name}</em></strong>
+                            <strong>${row.column_name}</strong>
                         </g:if>
                         <g:else>
                             ${row.column_name}
@@ -58,10 +58,18 @@
                         ${row.data_type}
                     </td>
                     <td>
-                        ${row.index_name}
                         <g:if test="${row.index_details && (row.index_details.contains(',') || row.index_details.contains('gin_trgm_ops'))}">
-                            <br /> ${row.index_details}
+                            <span class="${row.index_details.contains('gin_trgm_ops') ? 'sc_red' : ''}">
+                                <strong>
+                                    ${row.index_name}
+                                </strong>
+                                <br />
+                                ${row.index_details}
+                            </span>
                         </g:if>
+                        <g:else>
+                            ${row.index_name}
+                        </g:else>
                     </td>
                     <g:if test="${! row.collation_name}">
                         <td></td>

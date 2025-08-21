@@ -434,7 +434,7 @@ class AdminController  {
     def databaseIndices() {
 
         Map<String, Object> result = [
-                indices: DatabaseInfo.getAllTablesWithGORMIndices(),
+                indices: DatabaseInfo.getAllTablesWithGORMIndices(DatabaseInfo.DS_DEFAULT), // + DatabaseInfo.getAllTablesWithGORMIndices(DatabaseInfo.DS_STORAGE),
                 counts: [:]
                 ]
 
@@ -1313,13 +1313,13 @@ class AdminController  {
                 default: [
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
-                        defaultCollate   : DatabaseInfo.getDatabaseCollate(),
+                        dbSize           : DatabaseInfo.getDatabaseSize(),
                         dbmVersion       : DatabaseInfo.getDbmVersion()
                 ],
                 storage: [
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
-                        defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
+                        dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                         dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
                 ]
         ]

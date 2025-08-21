@@ -83,7 +83,7 @@
             </tr>
             <tr>
                 <td>Document storage</td>
-                <td colspan="2">${docStore.filesCount} Files -> ${docStore.folderSize} MB</td>
+                <td colspan="2">${docStore.folderPath}</td>
             </tr>
         </tbody>
     </table>
