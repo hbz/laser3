@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6763    21.08.2025  rc-3.5  3.5.5       Andreas Bug         Feldtrennerüberprüfung überbrückt
+
 6772    20.08.2025  rc-3.5  3.5.5       Andreas Bug         falscher Getter bei der Absatznummer
 
 6765    15.08.2025  rc-3.5  3.5.5       Andreas Bug         Paketname wurde beim Übertrag nicht hinterlegt
