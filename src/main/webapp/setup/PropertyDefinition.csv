@@ -248,6 +248,7 @@ Subscription Property,Metadata format,Format Metadaten,Metadata format,java.lang
 Subscription Property,Metadata management responsibility,Zuständigkeit Metadatenmanagement ,Metadata management responsibility,java.lang.String,,,,,"Wer ist für das Metadatenmanagement zuständig? (Kuratorium, Patenschaft)","Who is responsible for metadata management? (Board of Trustees, sponsorship)",
 Subscription Property,Metadata Source,Metadaten Quelle,Metadata Source,java.lang.String,,,,,Über welche Quelle können die Metadaten bezogen werden?,,
 Subscription Property,Metadata URL,Metadaten-URL,Metadata URL,java.net.URL,,,,,Über welche URL können Metadaten abgerufen werden?,Which URL can be called in order to retrieve metadata?,
+Subscription Property,Negotiator,Lizenzverhandler,Negotiator,java.lang.String,,,,,,,
 Subscription Property,Newcomer discount,Neueinsteigerrabatt,Newcomer discount,de.laser.RefdataValue,y.n,,,,Existiert ein zusätzlicher Neueinsteigerpreis?,,
 Subscription Property,Langzeitarchivierung,Langzeitarchivierung,Long-Term archiving,de.laser.RefdataValue,y.n,,,,,,
 Subscription Property,OA content receiver,OA - Auslieferung der OA-Inhalte: Empfänger,OA – delivery of OA content: receiver,de.laser.RefdataValue,oa.content.receiver,,true,,Wohin liefert der Verlag die OA-Inhalte aus?,Where does the editor deliver the OA contents?,
