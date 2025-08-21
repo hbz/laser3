@@ -9,6 +9,8 @@
 
 6779    21.08.2025  dev     3.6         Andreas Feature     obsolete Menüpunkte entfernt
 
+6763    21.08.2025  rc-3.5  3.5.5       Andreas Bug         Feldtrennerüberprüfung überbrückt
+
 6772    20.08.2025  rc-3.5  3.5.5       Andreas Bug         falscher Getter bei der Absatznummer
 
 6760    19.08.2025  dev     3.6         Andreas Feature     Entfernen der Kuratorengruppe aus den Filtern
