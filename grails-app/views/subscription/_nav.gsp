@@ -22,8 +22,6 @@
         </g:link>
     </g:else>
 
-    <ui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.changes.label" />
-
     <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
         <ui:subNavItem controller="subscription" action="members" counts="${currentMembersCounts}" params="${[id:params.id]}" message="subscription.details.consortiaMembers.label" />
     </g:if>

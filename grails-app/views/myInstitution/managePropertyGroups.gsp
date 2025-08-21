@@ -30,18 +30,18 @@
             <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <table class="ui sortable table la-js-responsive-table la-table compact">
                     <thead>
-                    <tr>
-                        <th><g:message code="default.order.label"/></th>
-                        <th><g:message code="default.name.label"/></th>
-                        <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
-                        <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
-                        <%-- removed as of ERMS-6520 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>--%>
-                        <g:if test="${editable}">
-                            <th class="center aligned">
-                                <ui:optionsIcon />
-                            </th>
-                        </g:if>
-                    </tr>
+                        <tr>
+                            <th><g:message code="default.order.label"/></th>
+                            <th><g:message code="default.name.label"/></th>
+                            <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
+                            <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
+                            <%-- removed as of ERMS-6520 <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>--%>
+                            <g:if test="${editable}">
+                                <th class="center aligned">
+                                    <ui:optionsIcon />
+                                </th>
+                            </g:if>
+                        </tr>
                     </thead>
                     <tbody>
                     <g:each in="${typeEntry.value}" var="pdGroup" status="i">
@@ -166,18 +166,32 @@
                         $("html").css("cursor", "auto");
                         var prop_descr_selector_controller = {
                             init: function () {
-                                $('#propDefGroupModal #prop_descr_selector').on('change', function () {
-                                    prop_descr_selector_controller.changeTable($(this).val())
-                                })
+                                if($('#propDefGroupModal #prop_descr_selector').length > 0) {
+                                    $('#propDefGroupModal #prop_descr_selector').on('change', function () {
+                                        prop_descr_selector_controller.changeTable($(this).val())
+                                    })
 
-                                $('#propDefGroupModal #prop_descr_selector').trigger('change')
+                                    $('#propDefGroupModal #prop_descr_selector').trigger('change')
+                                }
+                                else prop_descr_selector_controller.changeTable('ci');
                             },
                             changeTable: function (target) {
-                                $('#propDefGroupModal .table').addClass('hidden')
+                                $('#propDefGroupModal .table, #propDefGroupModal .propDefFilter').addClass('hidden')
                                 $('#propDefGroupModal .table input').attr('disabled', 'disabled')
 
-                                $('#propDefGroupModal .table[data-propDefTable="' + target + '"]').removeClass('hidden')
+                                $('#propDefGroupModal .table[data-propDefTable="' + target + '"], #propDefGroupModal .propDefFilter[data-propDefTable="' + target + '"]').removeClass('hidden')
                                 $('#propDefGroupModal .table[data-propDefTable="' + target + '"] input').removeAttr('disabled')
+
+                                $("#propDefGroupModal .propDefFilter").on('input', function() {
+                                    let table = $(this).attr('data-forTable');
+                                    $("#"+table+" td.pdName:containsInsensitive_laser('"+$(this).val()+"')").parent("tr").show();
+                                    $("#"+table+" td.pdName:not(:containsInsensitive_laser('"+$(this).val()+"'))").parent("tr").hide();
+                                });
+
+                                //own selector for case-insensitive :contains
+                                jQuery.expr[':'].containsInsensitive_laser = function(a, i, m) {
+                                    return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+                                };
                             }
                         }
                         prop_descr_selector_controller.init();
