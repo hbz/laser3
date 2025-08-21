@@ -194,7 +194,7 @@ class IssueEntitlementService {
                     ICSVParser csvp = new CSVParserBuilder().withSeparator(separator).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
                     CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
                     List<String[]> lines = csvr.readAll()
-                    if(lines[0].size() == 1) {
+                    if(lines[0].size() == 1 && !configMap.containsKey('withIDOnly')) {
                         wrongSeparator = true
                     }
                     else {
