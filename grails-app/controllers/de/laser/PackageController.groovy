@@ -512,45 +512,6 @@ class PackageController {
     }
 
     /**
-     * Shows the title changes done in the package
-     * @see PendingChange
-     */
-    @DebugInfo(isInstUser_denySupport = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport()
-    })
-    @Check404()
-    @Deprecated
-    def tippChanges() {
-        Map<String, Object> result = packageService.getResultGenerics(params)
-
-        Set<Long> packageHistory = []
-
-        String query = 'select pc.id from PendingChange pc where pc.pkg = :pkg and pc.oid = null and pc.status = :history ',
-               query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
-               query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history ',
-               query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :pkg and pc.oid = null and pc.status = :history '
-
-        packageHistory.addAll(PendingChange.executeQuery(query, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query1, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query2, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-        packageHistory.addAll(PendingChange.executeQuery(query3, [pkg: result.packageInstance, history: RDStore.PENDING_CHANGE_HISTORY]))
-
-        params.sort = params.sort ?: 'ts'
-        params.order = params.order ?: 'desc'
-        params.max = result.max
-        params.offset = result.offset
-
-        List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory.drop(result.max).take(result.max), params) : []
-        result.countPendingChanges = packageHistory.size()
-
-        result.num_change_rows = result.countPendingChanges
-        result.changes = changes
-
-        result
-    }
-
-    /**
      * For that no accidental call may occur ... ROLE_YODA is correct!
      * Lists duplicates package in the database
      */
@@ -604,12 +565,12 @@ class PackageController {
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
-        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        subscriptions = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
         result.num_sub_rows = subscriptions.size()
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        result.subscriptions = Subscription.findAllByIdInList(subscriptions.drop((int) result.offset).take((int) result.max))
 
         result
     }

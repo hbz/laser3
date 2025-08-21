@@ -1506,28 +1506,6 @@ class SubscriptionController {
     }
 
     /**
-     * Call to load the applied or pending changes to the given subscription
-     * @return the called tab with the changes of the given event type
-     */
-    @DebugInfo(isInstUser_denySupport = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport()
-    })
-    @Check404()
-    def entitlementChanges() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.entitlementChanges(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    /**
      * Call to list those titles of the package which have not been added to the subscription yet. The view
      * may be exported as KBART or Excel worksheet as well. The view contains also enrichment functionalities
      * such as preselection of titles based on identifiers or adding locally negotiated prices or coverage statements

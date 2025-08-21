@@ -66,11 +66,12 @@
 
                 <div class="scrollWrapper">
                     <g:if test="${costInformationsInUse}">
-                        <table class="ui table compact scrollContent">
+                        <input type="text" class="propDefFilter" data-forTable="ci" data-propDefTable="ci" placeholder="Merkmale einschränken ...">
+                        <table id="ci" class="ui table compact scrollContent" data-propDefTable="ci">
                             <tbody>
                                 <g:each in="${CostInformationDefinition.findAllByTenantIsNullOrTenant(contextService.getOrg(), [sort: 'name_' + LocaleUtils.getCurrentLang()])}" var="cif">
                                     <tr>
-                                        <td>
+                                        <td class="pdName">
                                             ${cif.getI10n('name')}
                                             <g:if test="${cif.tenant == contextService.getOrg()}"><i class="${Icon.PROP.IS_PRIVATE}"></i></g:if>
                                         </td>
@@ -103,7 +104,8 @@
                     </g:if>
                     <g:else>
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <table class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
+                            <input type="text" class="propDefFilter" data-forTable="pd_${pdDescr.replaceAll(' ', '_')}" data-propDefTable="${pdDescr}" placeholder="Merkmale einschränken ...">
+                            <table id="pd_${pdDescr.replaceAll(' ', '_')}" class="ui table compact hidden scrollContent" data-propDefTable="${pdDescr}">
                                 <tbody>
                                 <g:each in="${PropertyDefinition.findAllByTenantIsNullAndDescr(pdDescr, [sort: 'name_' + LocaleUtils.getCurrentLang()])}" var="pd">
 
@@ -114,7 +116,7 @@
                                 %>
                                 <g:each in="${matches}" var="pd"> --}%
                                     <tr>
-                                        <td>
+                                        <td class="pdName">
                                             ${pd.getI10n('name')}
                                         </td>
                                         <td>
