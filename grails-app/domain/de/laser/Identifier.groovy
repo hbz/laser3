@@ -29,7 +29,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     IdentifierNamespace ns
     Identifier instanceOf
-    @TrigramIndex(index = 'id_value_idx_trigram,id_value_idx_lower_trigram')
+    @TrigramIndex(index='id_value_idx_trigram', lower='id_value_idx_lower_trigram')
     String value
     String note = ""
 

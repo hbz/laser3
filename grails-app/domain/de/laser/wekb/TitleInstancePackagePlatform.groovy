@@ -7,6 +7,7 @@ import de.laser.OrgRole
 import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
+import de.laser.annotations.TrigramIndex
 import de.laser.auth.User
 import de.laser.base.AbstractBase
 import de.laser.convenience.Marker
@@ -55,6 +56,7 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
 
     Date accessStartDate
     Date accessEndDate
+    @TrigramIndex(lower='tipp_name_idx_lower_trigram')
     String name
     String sortname
     String normName
@@ -66,11 +68,15 @@ class TitleInstancePackagePlatform extends AbstractBase implements MarkerSupport
     RefdataValue medium
     Date dateFirstInPrint
     Date dateFirstOnline
+    @TrigramIndex(lower='tipp_summary_of_content_idx_lower_trigram')
     String summaryOfContent
     String volume
 
+    @TrigramIndex(lower='tipp_first_author_idx_lower_trigram')
     String firstAuthor
+    @TrigramIndex(lower='tipp_first_editor_idx_lower_trigram')
     String firstEditor
+    @TrigramIndex(lower='tipp_publisher_name_idx_lower_trigram')
     String publisherName
 
     Integer editionNumber

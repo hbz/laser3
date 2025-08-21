@@ -158,15 +158,16 @@
                 <th>Feld</th>
                 <th>Typ</th>
                 <th>Mapping</th>
-                <th class="center aligned">&lArr;</th>
-                <th class="center aligned">&rArr;</th>
+                <th class="center aligned">count(*)</th>
+                <th class="center aligned">ref.</th>
                 <th>Index</th>
                 <th>Größe</th>
-                <th class="center aligned">*</th>
+                <th class="center aligned">Usage</th>
             </tr>
         </thead>
         <tbody>
             <g:each in="${indices}" var="row" status="i">
+%{--            <g:each in="${indices.sort{ (it[1].split('\\.').last() + it[2]).toString() }}" var="row" status="i">--}%
                 <g:set var="isDisabled"     value="${tables_internal1.contains(i) || tables_internal2.contains(i) || tables_collections.contains(i)}" />
                 <g:set var="calcCssUnique"  value="${row[5] == 'UNIQUE' ? 'unique' : ''}" />
                 <g:set var="calcCssTrigram" value="${row[5]?.contains('_trigram') ? 'trigram' : ''}" />
@@ -208,7 +209,7 @@
                                 ${idx['idx_size']}
                             </g:if>
                             <g:else>
-                                <span class="sc_red">FAILED</span>
+                                <strong class="sc_red">FAILED</strong>
                             </g:else>
                             <br />
                         </g:each>
@@ -219,7 +220,7 @@
                                 ${dformat.format(idx['idx_scan'])}
                             </g:if>
                             <g:else>
-                                <span class="sc_red">FAILED</span>
+                                <strong class="sc_red">FAILED</strong>
                             </g:else>
                             <br />
                         </g:each>

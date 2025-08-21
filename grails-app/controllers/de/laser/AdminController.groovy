@@ -434,7 +434,7 @@ class AdminController  {
     def databaseIndices() {
 
         Map<String, Object> result = [
-                indices: DatabaseInfo.getAllTablesWithGORMIndices(),
+                indices: DatabaseInfo.getAllTablesWithGORMIndices(DatabaseInfo.DS_DEFAULT), // + DatabaseInfo.getAllTablesWithGORMIndices(DatabaseInfo.DS_STORAGE),
                 counts: [:]
                 ]
 

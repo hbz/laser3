@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.CSS; de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
-
+ 
 <laser:htmlStart message="menu.admin.databaseCollations" />
 
 <ui:breadcrumbs>

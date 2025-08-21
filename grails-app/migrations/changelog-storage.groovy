@@ -5,5 +5,6 @@ databaseChangeLog = {
     include file: 'changelogs/2024-02-13-storage.groovy'
     include file: 'changelogs/2025-07-11-storage.groovy'
 
-    //include file: 'changelogs/trigrams-storage.groovy' // move to end
+    //include file: 'changelogs/collations-storage.groovy'  // move to end
+    //include file: 'changelogs/trigrams-storage.groovy'    // move to end
 }
