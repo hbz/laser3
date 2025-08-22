@@ -164,9 +164,9 @@
         </g:else>
     </div>
 
-  <g:if test="${licenses && compare}">
+  <%--<g:if test="${licenses && compare}">
       <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'menu.my.comp_lic')}" />
-  </g:if>
+  </g:if>--%>
 
 </g:form>
 

@@ -11,6 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
  * This controller manages calls when entities should be compared against each other
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
+@Deprecated
 class CompareController  {
 
     ContextService contextService
@@ -24,6 +25,7 @@ class CompareController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
+    @Deprecated
     def compareLicenses() {
         Map<String, Object> result = [:]
 
@@ -49,6 +51,7 @@ class CompareController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
+    @Deprecated
     def compareSubscriptions() {
         Map<String, Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
@@ -82,6 +85,7 @@ class CompareController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
+    @Deprecated
     def loadNextBatch() {
         Map<String, Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextService.getUser())

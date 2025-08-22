@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.survey.SurveyConfigSubscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
+<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.ExportClickMeService; de.laser.survey.SurveyConfigSubscription; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -237,9 +237,125 @@
                 <div class="ui divider"></div>
             </g:if>
 
-            <ui:actionsDropdownItem controller="survey" action="allSurveyProperties" params="[id: params.id]"
+            <%-- set to modal --%>
+            <ui:actionsDropdownItem data-ui="modal"
+                                    href="#createSurveyPropertyModal"
                                     message="survey.SurveyProp.all"/>
 
+            <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
+
+                <g:form class="ui form" action="actionsForSurveyProperty" method="post" params="[id: surveyInfo?.id, actionForSurveyProperty: 'createSurveyProperty']">
+
+                    <div class="field">
+                        <label for="pd_name" class="property-label">Name</label>
+                        <input type="text" name="pd_name" id="pd_name"/>
+                    </div>
+
+                    <div class="field">
+                        <label for="pd_expl" class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
+                        <textarea class="ui textarea la-textarea-resize-vertical" name="pd_expl" id="pd_expl" rows="2"></textarea>
+                    </div>
+
+                    <div class="fields">
+
+                        <div class="field six wide">
+                            <label for="pd_descr" class="property-label">${message(code: 'default.description.label')}</label>
+                            <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
+                            <select name="pd_descr" id="pd_descr" class="ui dropdown clearable">
+                                <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
+                                    <option value="${pd}"><g:message code="propertyDefinition.${pd}.label"
+                                                                     default="${pd}"/></option>
+                                </g:each>
+                            </select>
+                        </div>
+
+                        <div class="field five wide">
+                            <label for="pd_type" class="property-label"><g:message code="default.type.label"/></label>
+                            <g:select class="ui dropdown clearable"
+                                      from="${PropertyDefinition.validTypes.entrySet()}"
+                                      optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
+                                      name="pd_type"
+                                      id="pd_type"/>
+                        </div>
+
+                        %{--<div class="field four wide">
+                            <label class="property-label">Optionen</label>
+
+                            <g:checkBox type="text" name="pd_mandatory"/> ${message(code: 'default.mandatory.tooltip')}
+                            <br />
+                            <g:checkBox type="text"
+                                        name="pd_multiple_occurrence"/> ${message(code: 'default.multipleOccurrence.tooltip')}
+                        </div>--}%
+
+                    </div>
+
+                    <div class="fields">
+                        <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
+                            <label class="property-label"><g:message code="refdataCategory.label"/></label>
+                            <select class="ui search selection dropdown clearable remoteRefdataSearch" name="refdatacategory"></select>
+
+                            <div class="ui grid" style="margin-top:1em">
+                                <div class="ten wide column">
+                                    <g:each in="${propertyService.getRefdataCategoryUsage()}" var="cat">
+
+                                        <p class="hidden" data-prop-def-desc="${cat.key}">
+                                            Häufig verwendete Kategorien: <br />
+
+                                            <%
+                                                List catList = cat.value?.take(3)
+                                                catList = catList.collect { entry ->
+                                                    '&nbsp; - ' + (RefdataCategory.getByDesc(entry[0]))?.getI10n('desc')
+                                                }
+                                                println catList.join('<br />')
+                                            %>
+
+                                        </p>
+                                    </g:each>
+                                </div>
+
+                                <div class="six wide column">
+                                    <br />
+                                    <a href="<g:createLink controller="myInstitution" action="manageRefdatas"/>" target="_blank">
+                                        <i class="icon window maximize outline"></i>
+                                        Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
+                                    </a>
+                                </div>
+                            </div><!-- .grid -->
+                        </div>
+                    </div>
+
+                </g:form>
+            </ui:modal>
+
+            <laser:script file="${this.getGroovyPageFileName()}">
+
+                $('#pd_descr').change(function() {
+                    $('#pd_type').trigger('change');
+                });
+
+                $('#pd_type').change(function() {
+                    var selectedText = $( "#pd_type option:selected" ).val();
+                    if( selectedText == "${RefdataValue.name}") {
+                    $("#remoteRefdataSearchWrapper").show();
+
+                    var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
+                    if ($pMatch) {
+                        $( "p[data-prop-def-desc]" ).addClass('hidden')
+                        $pMatch.removeClass('hidden')
+                    }
+                }
+                else {
+                    $("#remoteRefdataSearchWrapper").hide();
+                }
+            });
+
+            $('#pd_type').trigger('change');
+
+            c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
+
+            $(".la-popup").popup({
+            });
+            </laser:script>
             <div class="ui divider"></div>
 
 

@@ -2125,6 +2125,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    @Deprecated
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SurveyControllerService.STATUS_ERROR) {
