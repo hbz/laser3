@@ -692,6 +692,30 @@
             description: The title stock of this package.
             items:
               $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Package"
+          max:
+            type: integer
+            description: Maximum count of records per page. Defaults to 20000
+            example: 1000
+          offset:
+            type: integer
+            description: Record offset from which records are being displayed. Defaults to 0
+            example: 5000
+          totalPage:
+            type: integer
+            description: Total count of pages
+            example: 18
+          currentPage:
+            type: integer
+            description: Current page loaded
+            example: 4
+          recordCount:
+            type: integer
+            description: Count of records on this page
+            example: 212
+          recordTotalCount:
+            type: integer
+            description: Count of total records in the given object, from all pages
+            example: 212356
           librarySuppliers:
             type: array
             description: A set of linked librarySuppliers to this package.
@@ -1542,6 +1566,30 @@
       allOf:
         - $ref: "#/components/schemas/Package_in_CostItem"
       properties:
+        max:
+          type: integer
+          description: Maximum count of records per page. Defaults to 20000
+          example: 1000
+        offset:
+          type: integer
+          description: Record offset from which records are being displayed. Defaults to 0
+          example: 5000
+        totalPage:
+          type: integer
+          description: Total count of pages
+          example: 18
+        currentPage:
+          type: integer
+          description: Current page loaded
+          example: 4
+        recordCount:
+          type: integer
+          description: Count of records on this page
+          example: 212
+        recordTotalCount:
+          type: integer
+          description: Count of total records in the given object, from all pages
+          example: 212356
         issueEntitlements:
           type: array
           items:
