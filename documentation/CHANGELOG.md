@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6784    22.08.2025  dev     3.6         Andreas Feature     Auskommentierung bzw. Stillegung der Vergleichsfunktionen
+
 6780    22.08.2025  dev     3.6         Andreas Feature     Umbau der Umfragemerkmal-Sicht
 
 6779    21.08.2025  dev     3.6         Andreas Feature     obsolete Menüpunkte entfernt

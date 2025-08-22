@@ -8,7 +8,7 @@
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
         </g:if>
-        <ui:actionsDropdownItem notActive="true" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+        <%--<ui:actionsDropdownItem notActive="true" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />--%>
     </ui:actionsDropdown>
 </g:if>
 <g:elseif test="${actionName == 'currentLicenses'}">
@@ -17,7 +17,7 @@
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
             <div class="divider"></div>
-            <ui:actionsDropdownItem notActive="true" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+            <%--<ui:actionsDropdownItem notActive="true" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />--%>
         </ui:actionsDropdown>
     </g:if>
 </g:elseif>
