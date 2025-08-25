@@ -362,10 +362,10 @@
 
 </div>
 
-    <g:if test="${compare}">
+    <%--<g:if test="${compare}">
         <br />
         <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'menu.my.comp_sub')}" />
-    </g:if>
+    </g:if>--%>
 
 </g:form>
 
