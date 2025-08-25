@@ -734,7 +734,9 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
+                            log.debug("select * from cost_item where ci_id in (${consCostItems.join(',')}) order by ci_cost_in_billing_currency desc nulls last")
                             result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec where ci.id in (:idPart) '+sortClause, [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)]).toSet()
+                            log.debug(result.cons.costItems.toListString())
                             result.cons.sums = calculateResults(consCostItems)
                             result.cons.ids = consCostItems
                         }
@@ -762,7 +764,7 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = CostItem.executeQuery('select ci from CostItem ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.id in (:idPart) order by '+configMap.sortConfig.subscrSort + ' ' + configMap.sortConfig.subscrOrder + ', ciec.value desc nulls first, cie.value_'+LocaleUtils.getCurrentLang(), [idPart: subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)]).toSet()
+                            result.subscr.costItems = CostItem.executeQuery('select ci from CostItem ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.id in (:idPart) '+sortClause, [idPart: subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)]).toSet()
                             result.subscr.sums = calculateResults(subscrCostItems)
                             result.subscr.ids = subscrCostItems
                         }

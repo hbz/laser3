@@ -70,18 +70,23 @@ class FinanceControllerService {
         }else if(result.showBulkCostItems == 'false'){
             params.remove('max')
         }
+        String order = params.order
+        if(params.order == 'desc') {
+            order += ' nulls last'
+        }
+        else order += ' nulls first'
 
         if(params.ownSort) {
             result.sortConfig.ownSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
-            result.sortConfig.ownOrder = params.order
+            result.sortConfig.ownOrder = order
         }
         if(params.consSort) {
             result.sortConfig.consSort = (params.sort.contains("oo.org") || params.sort.contains("ci.")) ? params.sort : 'ci.'+params.sort
-            result.sortConfig.consOrder = params.order
+            result.sortConfig.consOrder = order
         }
         if(params.subscrSort) {
             result.sortConfig.subscrSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
-            result.sortConfig.subscrOrder = params.order
+            result.sortConfig.subscrOrder = order
         }
         if (params.forExport) {
             result.max = 1000000
