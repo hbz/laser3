@@ -719,7 +719,8 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)]).toSet()
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)])
+                            result.own.costItems = uniqueCostItems
                             result.own.sums = calculateResults(ownCostItems)
                             result.own.ids = ownCostItems
                         }
@@ -734,9 +735,8 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            log.debug("select * from cost_item where ci_id in (${consCostItems.join(',')}) order by ci_cost_in_billing_currency desc nulls last")
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec where ci.id in (:idPart) '+sortClause, [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)]).toSet()
-                            log.debug(result.cons.costItems.toListString())
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec where ci.id in (:idPart) '+sortClause, [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)])
+                            result.cons.costItems = uniqueCostItems
                             result.cons.sums = calculateResults(consCostItems)
                             result.cons.ids = consCostItems
                         }
@@ -750,7 +750,8 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub  join sub.orgRelations oo where ci.id in (:idPart) '+sortClause , [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)]).toSet()
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub  join sub.orgRelations oo where ci.id in (:idPart) '+sortClause , [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)])
+                            result.cons.costItems = uniqueCostItems
                             result.cons.sums = calculateResults(consCostItems)
                             result.cons.ids = consCostItems
                         }
@@ -764,7 +765,8 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = CostItem.executeQuery('select ci from CostItem ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.id in (:idPart) '+sortClause, [idPart: subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)]).toSet()
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.id in (:idPart) '+sortClause, [idPart: subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)])
+                            result.subscr.costItems = uniqueCostItems
                             result.subscr.sums = calculateResults(subscrCostItems)
                             result.subscr.ids = subscrCostItems
                         }
@@ -834,7 +836,8 @@ class FinanceService {
                     result.own = [count:ownSubscriptionCostItems.size()]
                     prf.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
-                        result.own.costItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)]).toSet()
+                        Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)])
+                        result.own.costItems = uniqueCostItems
                         result.own.ids = ownSubscriptionCostItems.id
                         result.own.sums = calculateResults(ownSubscriptionCostItems.id)
                     }
@@ -896,7 +899,7 @@ class FinanceService {
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
                         result.subscr.ids = consortialMemberSubscriptionCostItems
-                        result.subscr.costItems = CostItem.executeQuery('select ci from CostItem ci ' +
+                        Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
                                 'join ci.sub sub ' +
                                 'left join ci.pkg pkg ' +
                                 'join sub.instanceOf subC ' +
@@ -905,7 +908,8 @@ class FinanceService {
                                 'join ci.owner orgC ' +
                                 'left join ci.costItemElement cie ' +
                                 'left join ci.costItemElementConfiguration ciec ' +
-                                'where ci.id in (:idPart)', [idPart: consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)]).toSet()
+                                'where ci.id in (:idPart)', [idPart: consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)])
+                        result.subscr.costItems = uniqueCostItems
                     }
                     break
                 default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")
