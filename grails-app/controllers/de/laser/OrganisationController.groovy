@@ -559,7 +559,7 @@ class OrganisationController  {
         }
 
         if ( ! params.value){
-            String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
+            String p = plt.provider.name + (plt.provider.abbreviatedName ? " (${plt.provider.abbreviatedName})" : '') + ' : ' + plt.name
             flash.error = message(code: 'org.customerIdentifier.create.err.missingvalue', args: [p]) as String
             redirect(url: request.getHeader('referer'))
             return
@@ -677,7 +677,7 @@ class OrganisationController  {
         }
         if ( ! params.value){
             Platform plt = customeridentifier.platform
-            String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
+            String p = plt.provider.name + (plt.provider.abbreviatedName ? " (${plt.provider.abbreviatedName})" : '') + ' : ' + plt.name
             flash.error = message(code: 'org.customerIdentifier.edit.err.missingvalue', args: [p]) as String
             redirect(url: request.getHeader('referer'))
             return
