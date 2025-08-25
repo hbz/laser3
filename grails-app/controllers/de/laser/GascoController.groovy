@@ -81,7 +81,7 @@ class GascoController {
                     query += "    ( genfunc_filter_matcher(s.name, :q) = true  "
 
                     query += " or exists ("
-                    query += "    select pvr from s.providerRelations as pvr where genfunc_filter_matcher(pvr.provider.name, :q) = true or genfunc_filter_matcher(pvr.provider.sortname, :q) = true "
+                    query += "    select pvr from s.providerRelations as pvr where genfunc_filter_matcher(pvr.provider.name, :q) = true or genfunc_filter_matcher(pvr.provider.abbreviatedName, :q) = true "
                     query += "    )"
                     query += " ))"
 
