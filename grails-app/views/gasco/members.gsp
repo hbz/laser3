@@ -23,7 +23,7 @@
         <tr>
             <td>Schweiz <br> <a href="http://www.consortium.ch/" target=" _blank">Konsortium der Schweizer Hochschulbibliotheken</a></td>
             <td><a href="mailto:susanne.aerni@slsp.ch">Susanne Aerni</a></td>
-            <td><span class="la-popup-tooltip" data-content="care of">c/o</span> <span class="la-popup-tooltip" data-content="Bibliothek der eidgenössischen technischen Hochschule">B ETH</span>Zürich</td>
+            <td><span class="la-popup-tooltip" data-content="care of">c/o</span> <span class="la-popup-tooltip" data-content="Bibliothek der eidgenössischen technischen Hochschule">B ETH</span> Zürich</td>
         </tr>
         </tbody>
     </table>
@@ -42,13 +42,13 @@
         </tr>
         <tr>
             <td>Bayern<br><a href="https://www.bsb-muenchen.de/kompetenzzentren-und-landesweite-dienste/landesweite-aufgaben-und-dienste/bayern-konsortium/" target=" _blank">Bayern-Konsortium</a></td>
-            <td><a href="mailto:schaeffler@bsb-muenchen.de">Dr. Hildegard Schäffler</a> <br><i>(Vorsitzende der <spnd data-content="German, Austrian and Swiss Consortia Organisation"><span class="la-popup-tooltip" data-content="German, Austrian and Swiss Consortia Organisation">GASCO</span></abbr>)</i></td>
+            <td><a href="mailto:schaeffler@bsb-muenchen.de">Dr. Hildegard Schäffler</a> <br><i>(Vorsitzende der <abbr><span class="la-popup-tooltip" data-content="German, Austrian and Swiss Consortia Organisation">GASCO</span></abbr>)</i></td>
             <td><span class="la-popup-tooltip" data-content="Bayrische Staatsbibliothek">BSB</span> München</td>
         </tr>
         <tr>
-            <td>Berlin-Brandenburg&nbsp; <br> <a href="http://althoffkonsortium.wordpress.com" target=" _blank">Friedrich-Althoff-Konsortium <spnd data-content="eingetragener Verein"><span class="la-popup-tooltip" data-content="eingetragener Verein">e.V.</span></abbr></a></td>
+            <td>Berlin-Brandenburg&nbsp; <br> <a href="http://althoffkonsortium.wordpress.com" target=" _blank">Friedrich-Althoff-Konsortium <abbr><span class="la-popup-tooltip" data-content="eingetragener Verein">e.V.</span></abbr></a></td>
             <td><a href="mailto:fak-office@zib.de">Dr. Ursula Stanek</a> <br><i>(Stellvertretende Vorsitzende der <span class="la-popup-tooltip" data-content="German, Austrian and Swiss Consortia Organisation">GASCO</span>)</i></td>
-            <td><span class="la-popup-tooltip" data-content=" Staatsbibliothek zu Berlin - Preussischer Kulturbesitz ">SBB-PK</span> Berlin</td>
+            <td><span class="la-popup-tooltip" data-content="Friedrich-Althoff-Konsortium e.V.">FAK</span> Berlin</td>
         </tr>
         <tr>
             <td>Bremen</td>
