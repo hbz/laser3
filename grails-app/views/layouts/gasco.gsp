@@ -24,23 +24,19 @@
     <g:render template="/layouts/favicon" />
 </head>
 
-    <body class="public ${controllerName}_${actionName}">
+    <body class="gasco ${controllerName}_${actionName}">
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
         <laser:render template="/templates/system/serverIndicator" />
 
-        <div class="landingpage">
-            <laser:render template="/layouts/public/menu" />
+        <main class="ui main container">
+            <g:layoutBody/>%{-- body here --}%
+        </main>
 
-            <main class="ui main container">
-                <g:layoutBody/>%{-- body here --}%
-            </main>
+        <laser:render template="/layouts/gasco/footer" />
 
-            <laser:render template="/layouts/public/footer" />
+        <laser:javascript src="laser.js"/>%{-- dont move --}%
 
-            <laser:javascript src="laser.js"/>%{-- dont move --}%
-
-            <laser:scriptBlock/>%{-- dont move --}%
-        </div>
+        <laser:scriptBlock/>%{-- dont move --}%
     </body>
 </html>

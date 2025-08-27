@@ -1,5 +1,6 @@
 package de.laser.system
 
+import de.laser.storage.BeanStore
 import de.laser.ui.Btn
 import de.laser.utils.SwissKnife
 
@@ -57,11 +58,16 @@ class SystemTagLib {
 
     // DO NOT use for templates, pdf or email generation
 
-    // <laser:htmlStart text="" message="" description="" />
+    // <laser:htmlStart text="" message="" description="" publicLayout="only_if_NOT_logged_in" />
 
     def htmlStart = { attrs, body ->
 
-        String title = message(code: 'laser')
+        // layout:
+        // laser - if logged in
+        // public or attrs.publicLayout - if not logged in
+
+        String layout   = BeanStore.getSpringSecurityService().isLoggedIn() ? 'laser' : (attrs.publicLayout ? attrs.publicLayout : 'public')
+        String title    = message(code: 'laser')
 
         if (attrs.text) {
             title = title + ' : ' + attrs.text
@@ -74,7 +80,7 @@ class SystemTagLib {
         laser.serviceInjection()
 
         out << '<!doctype html><html><head>'
-        out << '<meta name="layout" content="laser">'
+        out << '<meta name="layout" content="' + layout + '">'
 
         if (attrs.description) {
             out << '<meta name="description" content="' + attrs.description + '">'
