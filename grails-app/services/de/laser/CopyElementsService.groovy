@@ -311,11 +311,16 @@ class CopyElementsService {
                Date newEndDate = null
 
                use(TimeCategory) {
-                   if(subMember.isMultiYear && subMember.endDate){
-                       def duration = subMember.endDate - subMember.startDate
-                       newStartDate = subMember.endDate + 1.day
-                       newEndDate = newStartDate + duration.days.day
-                   }
+                   if (subMember.isMultiYear && subMember.endDate) {
+                       if (subMember.isCurrentMultiYearSubscriptionToParentSub()) {
+                           newStartDate = subMember.startDate
+                           newEndDate = subMember.endDate
+                       } else {
+                           def duration = subMember.endDate - subMember.startDate
+                           newStartDate = subMember.endDate + 1.day
+                           newEndDate = newStartDate + duration.days.day
+                       }
+                    }
 
                }
 
