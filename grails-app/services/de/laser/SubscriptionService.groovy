@@ -750,6 +750,36 @@ class SubscriptionService {
     }
 
     /**
+     * Retrieves a list of subscriptions eligible as copy targets. The list may be filtered
+     * @param params a parameter map containing filter settings
+     * @return a (filtered) list of subscriptions
+     */
+    List getMySubscriptions_copyTargets(Map params, boolean onlyIds = false) {
+
+        String base_qry
+        Map qry_params = [:]
+
+        if (contextService.getOrg().isCustomerType_Consortium()) {
+            base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    " AND s.instanceOf is null "
+            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()]
+        }
+        else {
+            base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+
+            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS], 'activeInst': contextService.getOrg(), 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        }
+
+        if (params.status) {
+            base_qry += " and s.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
+        }
+        base_qry += " order by lower(trim(s.name)) asc"
+
+        Subscription.executeQuery( (onlyIds ? "select s.id " : "select s ") + base_qry, qry_params)
+    }
+
+    /**
      * Retrieves consortial parent subscriptions matching the given filter
      * @param params the filter parameter map
      * @return a list of consortial parent subscriptions matching the given filter

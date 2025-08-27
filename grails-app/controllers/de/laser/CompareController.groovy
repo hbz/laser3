@@ -15,6 +15,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class CompareController  {
 
     ContextService contextService
+    @Deprecated
     CompareService compareService
     GenericOIDService genericOIDService
 
