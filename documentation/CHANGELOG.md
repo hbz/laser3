@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6792    27.08.2025  rc-3.5  3.5.5       Andreas Feature     zusätzliche Sortierung nach Merkmalswert
+
 6785    25.08.2025  rc-3.5  3.5.5       Andreas Feature     Erweitern der zulässigen TLD-Zeichenbereiche
 
 6763    21.08.2025  rc-3.5  3.5.5       Andreas Bug         Feldtrennerüberprüfung überbrückt
