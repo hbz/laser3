@@ -248,7 +248,7 @@ class ManagementService {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
-                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                    subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,result.user,result.institution).subIDs)
                 }
             }
             else {
@@ -354,7 +354,7 @@ class ManagementService {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
-                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                    subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,result.user,result.institution).subIDs)
                 }
                 else {
                     //fallback
@@ -808,7 +808,7 @@ class ManagementService {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
-                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                    subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,result.user,result.institution).subIDs)
                 }
             }
             else {
@@ -1064,7 +1064,7 @@ class ManagementService {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
-                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                    subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,result.user,result.institution).subIDs)
                 }
             }
             else {
@@ -1137,7 +1137,7 @@ class ManagementService {
                     subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
                 }
                 else if(controller instanceof MyInstitutionController) {
-                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                    subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,result.user,result.institution).subIDs)
                 }
             }
             else {
@@ -1250,7 +1250,7 @@ class ManagementService {
                 subscriptions = subscriptionControllerService.getFilteredSubscribers(params,owner).sub
             }
             else if(params.takeSelectedSubs.contains('/myInstitution/')) {
-                subscriptions = subscriptionService.getMySubscriptions(params,contextService.getUser(),contextService.getOrg()).allSubscriptions
+                subscriptions = Subscription.findAllByIdInList(subscriptionService.getMySubscriptions(params,contextService.getUser(),contextService.getOrg()).subIDs)
             }
         }
         else {

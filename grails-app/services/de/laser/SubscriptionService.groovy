@@ -172,7 +172,7 @@ class SubscriptionService {
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
-        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        subscriptions = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //impossible to sort in nothing ...
         if(params.sort == "provider") {
             subscriptions.sort { Subscription s1, Subscription s2 ->
@@ -224,7 +224,6 @@ class SubscriptionService {
                 cmp
             }
         }
-        result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
@@ -233,8 +232,8 @@ class SubscriptionService {
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         prf.setBenchmark('end properties')
-        result.subIDs = subscriptions.collect { Subscription s -> s.id }
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        result.subIDs = subscriptions
+        result.subscriptions = Subscription.findAllByIdInList(subscriptions.drop((int) result.offset).take((int) result.max))
         prf.setBenchmark('fetch licenses')
         if(subscriptions)
             result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
