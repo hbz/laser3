@@ -6,7 +6,7 @@
         <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
-            <div class="divider"></div>
+            <%--<div class="divider"></div>--%>
         </g:if>
         <%--<ui:actionsDropdownItem notActive="true" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />--%>
     </ui:actionsDropdown>
@@ -16,8 +16,8 @@
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-            <div class="divider"></div>
-            <%--<ui:actionsDropdownItem notActive="true" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />--%>
+            <%--<div class="divider"></div>
+            <ui:actionsDropdownItem notActive="true" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />--%>
         </ui:actionsDropdown>
     </g:if>
 </g:elseif>
