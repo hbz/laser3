@@ -52,7 +52,7 @@
         %{--                                </g:if>--}%
 
         <div class="divider"></div>
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+        <%--<ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />--%>
     </div>
 </div>
