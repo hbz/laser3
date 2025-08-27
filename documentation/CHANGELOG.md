@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6790    26.08.2025  dev     3.6         Andreas Bug         Platformüberprüfung war fehlerhaft
+
 6784    22.08.2025  dev     3.6         Andreas Feature     Auskommentierung bzw. Stillegung der Vergleichsfunktionen
 
 6780    22.08.2025  dev     3.6         Andreas Feature     Umbau der Umfragemerkmal-Sicht
