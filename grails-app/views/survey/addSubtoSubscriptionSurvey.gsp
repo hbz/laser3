@@ -55,7 +55,7 @@
 
         <div class="field">
             <label>${message(code: 'surveyconfig.invoicingInformation.short')} <i data-content="${message(code:'surveyconfig.invoicingInformation.info')}" data-position="top center" class="question icon circular la-popup-tooltip"></i></label>
-            <div class="ui checkbox">
+            <div class="ui checkbox invoicingInformation">
                 <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>
             </div>
         </div>
@@ -89,9 +89,11 @@
     $('.subSurveyUseForTransferCheckbox').checkbox({
      onChecked: function() {
              $('.mandatoryCheckbox').checkbox('check');
+             $('.invoicingInformation').checkbox('check');
         },
         onUnchecked: function() {
           $('.mandatoryCheckbox').checkbox('uncheck');
+          $('.invoicingInformation').checkbox('uncheck');
         }
  });
 </laser:script>
