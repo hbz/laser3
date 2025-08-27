@@ -74,7 +74,6 @@ class SurveyService {
     AddressbookService addressbookService
     AuditService auditService
     BatchQueryService batchQueryService
-    CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
@@ -84,6 +83,7 @@ class SurveyService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PackageService packageService
+    PropertyService propertyService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionsQueryService subscriptionsQueryService
@@ -2626,7 +2626,7 @@ class SurveyService {
                         objects << result.subscription
                     }
                     objects << result.successorSubscription
-                    result = result + compareService.compareProperties(objects)
+                    result = result + propertyService.compareProperties(objects)
                 }
             }
         }

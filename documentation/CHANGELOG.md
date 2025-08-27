@@ -9,6 +9,8 @@
 
 6790    26.08.2025  dev     3.6         Andreas Bug         Platformüberprüfung war fehlerhaft
 
+6785    25.08.2025  rc-3.5  3.5.5       Andreas Feature     Erweitern der zulässigen TLD-Zeichenbereiche
+
 6784    22.08.2025  dev     3.6         Andreas Feature     Auskommentierung bzw. Stillegung der Vergleichsfunktionen
 
 6780    22.08.2025  dev     3.6         Andreas Feature     Umbau der Umfragemerkmal-Sicht

@@ -707,63 +707,68 @@ class FinanceService {
                 switch(dataToDisplay) {
                     case "own":
                         prf.setBenchmark("before own query")
-                        String subFilter = filterQuery.subFilter
+                        String subFilter = filterQuery.subFilter, sortClause = 'order by ' + configMap.sortConfig.ownSort + ' ' + configMap.sortConfig.ownOrder
                         subFilter = subFilter.replace(" and oo.org in (:filterConsMembers) ","")
                         Map<String,Object> ownFilter = [:]
                         ownFilter.putAll(filterQuery.filterData)
                         ownFilter.remove('filterConsMembers')
-                        Set<CostItem> ownCostItems = CostItem.executeQuery(
-                                'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
-                                        genericExcludes + subFilter + filterQuery.ciFilter +
-                                'order by ' + configMap.sortConfig.ownSort + ' ' + configMap.sortConfig.ownOrder,
+                        Set<Long> ownCostItems = CostItem.executeQuery(
+                                'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
+                                        genericExcludes + subFilter + filterQuery.ciFilter + sortClause,
                                 [owner:org,sub:sub]+genericExcludeParams+ownFilter)
                         prf.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
-                            result.own.sums = calculateResults(ownCostItems.id)
-                            result.own.ids = ownCostItems.id
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)])
+                            result.own.costItems = uniqueCostItems
+                            result.own.sums = calculateResults(ownCostItems)
+                            result.own.ids = ownCostItems
                         }
                         break
                     case "cons":
                         prf.setBenchmark("before cons query")
-                        List consCostItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec ' +
+                        String sortClause = 'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc nulls first'+', cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first'
+                        List<Long> consCostItems = CostItem.executeQuery('select ci.id from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec ' +
                                 'where ci.owner = :owner and sub.instanceOf = :sub '+filterQuery.subFilter+' and oo.roleType in (:roleTypes) ' + genericExcludes + filterQuery.ciFilter +
-                                'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc nulls first'+', cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',
+                                sortClause,
                                 [owner: org, sub: sub, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                            result.cons.sums = calculateResults(consCostItems.id)
-                            result.cons.ids = consCostItems.id
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec where ci.id in (:idPart) '+sortClause, [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)])
+                            result.cons.costItems = uniqueCostItems
+                            result.cons.sums = calculateResults(consCostItems)
+                            result.cons.ids = consCostItems
                         }
                         break
                     case "consAtSubscr":
                         prf.setBenchmark("before cons at subscr")
-                        Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
-                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter +
-                                'order by '+ configMap.sortConfig.consSort + ' ' + configMap.sortConfig.consOrder,
+                        String sortClause = 'order by '+ configMap.sortConfig.consSort + ' ' + configMap.sortConfig.consOrder
+                        Set<Long> consCostItems = CostItem.executeQuery('select ci.id from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
+                            filterQuery.subFilter + genericExcludes + filterQuery.ciFilter + sortClause,
                             [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                            result.cons.sums = calculateResults(consCostItems.id)
-                            result.cons.ids = consCostItems.id
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub  join sub.orgRelations oo where ci.id in (:idPart) '+sortClause , [idPart: consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)])
+                            result.cons.costItems = uniqueCostItems
+                            result.cons.sums = calculateResults(consCostItems)
+                            result.cons.ids = consCostItems
                         }
                         break
                     case "subscr":
                         prf.setBenchmark("before subscr")
-                        Set<CostItem> subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
-                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter + ' order by ' + configMap.sortConfig.subscrSort + ' ' + configMap.sortConfig.subscrOrder + ', ciec.value desc nulls first, cie.value_'+LocaleUtils.getCurrentLang(),
+                        String sortClause = ' order by ' + configMap.sortConfig.subscrSort + ' ' + configMap.sortConfig.subscrOrder + ', ciec.value desc nulls first, cie.value_'+LocaleUtils.getCurrentLang()
+                        Set<Long> subscrCostItems = CostItem.executeQuery('select ci.id from CostItem as ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.owner in :owner and sub = :sub and ci.isVisibleForSubscriber = true'+
+                                 genericExcludes + filterQuery.subFilter + filterQuery.ciFilter + sortClause,
                                  [owner:[sub.getConsortium()],sub:sub]+genericExcludeParams+filterQuery.filterData)
                         prf.setBenchmark("assembling map")
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
-                            result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
-                            result.subscr.sums = calculateResults(subscrCostItems.id)
-                            result.subscr.ids = subscrCostItems.id
+                            Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci left join ci.costItemElementConfiguration ciec left join ci.costItemElement cie join ci.sub sub where ci.id in (:idPart) '+sortClause, [idPart: subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)])
+                            result.subscr.costItems = uniqueCostItems
+                            result.subscr.sums = calculateResults(subscrCostItems)
+                            result.subscr.ids = subscrCostItems
                         }
                         break
                 }
@@ -812,27 +817,27 @@ class FinanceService {
                     }
                     String subJoin = filterQuery.subFilter || filterQuery.filterData.filterCISub || instanceFilter ? "join ci.sub sub " : ""
                     String subFilter = filterQuery.subFilter+instanceFilter
+                    String sortClause = "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', ciec.value, cie.value_'+LocaleUtils.getCurrentLang()
                     subFilter = subFilter.replace(" and oo.org in (:filterConsMembers) ","")
                     Map<String,Object> ownFilter = [:]
                     ownFilter.putAll(filterQuery.filterData)
                     ownFilter.remove('filterConsMembers')
-                    String queryStringBase = "select ci from CostItem ci ${subJoin} left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
-                        "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+
-                        "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', ciec.value, cie.value_'+LocaleUtils.getCurrentLang()
+                    String queryStringBase = "select ci.id from CostItem ci ${subJoin} left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
+                        "where ci.owner = :org ${genericExcludes+subFilter+filterQuery.ciFilter} "+sortClause
                     prf.setBenchmark("execute own query")
-                    Set<CostItem> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
+                    Set<Long> ownSubscriptionCostItems = CostItem.executeQuery(queryStringBase,[org:org]+genericExcludeParams+ownFilter)
                     if(!filterQuery.subFilter && !filterQuery.filterData.containsKey('filterCISub')) {
                         ownFilter.remove('filterSubStatus')
-                        String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
-                                "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
-                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder + ', ciec.value desc, cie.value_' + LocaleUtils.getCurrentLang()
+                        String queryWithoutSub = "select ci.id from CostItem ci left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
+                                "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+sortClause
                         prf.setBenchmark("execute second own query")
                         ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
                     }
                     result.own = [count:ownSubscriptionCostItems.size()]
                     prf.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
-                        result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                        Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idPart)', [idPart: ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)])
+                        result.own.costItems = uniqueCostItems
                         result.own.ids = ownSubscriptionCostItems.id
                         result.own.sums = calculateResults(ownSubscriptionCostItems.id)
                     }
@@ -840,7 +845,8 @@ class FinanceService {
                 //get consortial costs
                 case "cons":
                     prf.setBenchmark("execute cons query")
-                    Set<CostItem> consortialCostRows = CostItem.executeQuery('select ci from CostItem ci ' +
+                    String sortClause = 'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' desc'
+                    Set<Long> consortialCostRows = CostItem.executeQuery('select ci.id from CostItem ci ' +
                         'left join ci.costItemElementConfiguration ciec ' +
                         'left join ci.costItemElement cie ' +
                         'join ci.owner orgC ' +
@@ -851,22 +857,32 @@ class FinanceService {
                         'join sub.orgRelations oo ' +
                         'where orgC = :org and orgC = roleC.org and roleMC.roleType = :consortialType and oo.roleType in (:subscrType)'+
                         genericExcludes+filterQuery.subFilter+filterQuery.ciFilter+
-                        'order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' desc',
+                        sortClause,
                         [org:org,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]+genericExcludeParams+filterQuery.filterData)
                     result.cons = [count:consortialCostRows.size()]
                     if(consortialCostRows) {
-                        Set<CostItem> consortialCostItems = consortialCostRows
+                        Set<CostItem> consortialCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
+                                'left join ci.costItemElementConfiguration ciec ' +
+                                'left join ci.costItemElement cie ' +
+                                'join ci.owner orgC ' +
+                                'join ci.sub sub ' +
+                                'join sub.instanceOf subC ' +
+                                'join subC.orgRelations roleC ' +
+                                'join sub.orgRelations roleMC ' +
+                                'join sub.orgRelations oo ' +
+                                'where ci.id in (:idPart) '+sortClause, [idPart: consortialCostRows.drop(configMap.offsets.consOffset).take(configMap.max)])
                         prf.setBenchmark("map assembly")
-                        result.cons.ids = consortialCostRows.id
+                        result.cons.ids = consortialCostRows
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
-                        result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
-                        result.cons.sums = calculateResults(consortialCostItems.id)
+                        result.cons.costItems = consortialCostItems
+                        result.cons.sums = calculateResults(consortialCostRows)
                     }
                     break
                 //get membership costs
                 case "subscr":
                     prf.setBenchmark("execute subscr query")
-                    Set<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
+                    String sortClause = ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first'
+                    Set<Long> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci.id from CostItem ci '+
                         'join ci.sub sub ' +
                         'left join ci.pkg pkg ' +
                         'join sub.instanceOf subC ' +
@@ -877,13 +893,23 @@ class FinanceService {
                         'left join ci.costItemElementConfiguration ciec ' +
                         'where orgC = roleC.org and roleC.roleType = :consType and oo.org = :org and oo.roleType = :subscrType and ci.isVisibleForSubscriber = true'+
                         genericExcludes + filterQuery.subFilter + filterQuery.ciFilter +
-                        ' order by '+configMap.sortConfig.subscrSort+' '+configMap.sortConfig.subscrOrder+', sub.name, ciec.value desc, cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',
+                        sortClause,
                         [org:org,consType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrType:RDStore.OR_SUBSCRIBER_CONS]+genericExcludeParams+filterQuery.filterData)
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
-                        result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems.id)
-                        result.subscr.ids = consortialMemberSubscriptionCostItems.id
-                        result.subscr.costItems = consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
+                        result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
+                        result.subscr.ids = consortialMemberSubscriptionCostItems
+                        Set<CostItem> uniqueCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
+                                'join ci.sub sub ' +
+                                'left join ci.pkg pkg ' +
+                                'join sub.instanceOf subC ' +
+                                'join subC.orgRelations roleC ' +
+                                'join sub.orgRelations oo ' +
+                                'join ci.owner orgC ' +
+                                'left join ci.costItemElement cie ' +
+                                'left join ci.costItemElementConfiguration ciec ' +
+                                'where ci.id in (:idPart)', [idPart: consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)])
+                        result.subscr.costItems = uniqueCostItems
                     }
                     break
                 default: log.info("display call ${dataToDisplay} not handled here ... skipping ...")

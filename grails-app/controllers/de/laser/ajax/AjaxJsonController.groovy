@@ -75,7 +75,6 @@ import java.text.SimpleDateFormat
 class AjaxJsonController {
 
     CacheService cacheService
-    CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
     DataConsistencyService dataConsistencyService
@@ -228,7 +227,7 @@ class AjaxJsonController {
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedObjs = showConnectedObjs
 
-        data = compareService.getMySubscriptions(queryParams)
+        data = subscriptionService.getMySubscriptions_copyTargets(queryParams)
         if (contextService.getOrg().isCustomerType_Consortium()) {
             if (showSubscriber) {
                 List parents = data.clone()
@@ -269,7 +268,7 @@ class AjaxJsonController {
         queryParams.showSubscriber = showSubscriber
         queryParams.showConnectedLics = showConnectedLics
 
-        data = compareService.getMyLicenses(queryParams)
+        data = licenseService.getMyLicenses(queryParams)
         if (contextService.getOrg().isCustomerType_Consortium()) {
             if (showSubscriber) {
                 List parents = data.clone()

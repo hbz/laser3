@@ -2709,6 +2709,51 @@ class LicenseService {
     String toSnakeCase(String input) {
         input.replaceAll(/[:()-]/, "").replaceAll(/[ \/]/,"_").toLowerCase()
     }
+
+    /**
+     * Retrieves a list of licenses eligible as copy targets. The list may be filtered
+     * @param params a parameter map containing filter settings
+     * @return a (filtered) list of licenses
+     */
+    List getMyLicenses(Map params, boolean onlyIds = false) {
+
+        String base_qry
+        Map qry_params
+
+        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
+
+        } else if (contextService.getOrg().isCustomerType_Consortium()) {
+            base_qry = """from License as l where (
+                    exists ( select o from l.orgRelations as o where ( 
+                    ( o.roleType = :roleTypeC 
+                        AND o.org = :lic_org 
+                        AND l.instanceOf is null
+                        AND NOT exists (
+                        select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL
+                    )
+                )
+            )))"""
+            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
+        } else {
+            base_qry = """from License as l where (
+                exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
+            )"""
+            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
+        }
+
+        if (params.status) {
+            base_qry += " and l.status.id in (:status) "
+            qry_params.put('status', Params.getLongList(params, 'status'))
+        }
+        base_qry += " order by lower(trim(l.reference)) asc"
+
+        License.executeQuery( (onlyIds ? "select l.id " : "select l ") + base_qry, qry_params)
+    }
+
     Map<String, Object> getCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result             = [:]
         result.user            = contextService.getUser()

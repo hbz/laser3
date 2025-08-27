@@ -48,16 +48,15 @@ import java.util.concurrent.ExecutorService
 class CopyElementsService {
 
     BatchQueryService batchQueryService
-    CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
     DocstoreService docstoreService
     ExecutorService executorService
     FormService formService
     GenericOIDService genericOIDService
-    GlobalService globalService
     LicenseService licenseService
     MessageSource messageSource
+    PropertyService propertyService
     SubscriptionService subscriptionService
     TaskService taskService
     WorkflowService workflowService
@@ -2018,7 +2017,7 @@ class CopyElementsService {
      * @return the inverted tree property-object map
      */
     Map regroupObjectProperties(List<Object> objectsToCompare) {
-        compareService.compareProperties(objectsToCompare)
+        propertyService.compareProperties(objectsToCompare)
     }
 
     /**
