@@ -143,9 +143,11 @@ body {
 
 main {
     flex: 1;
-    display: flex;
+    display: flex!important;
     flex-direction: column;
-
+}
+main.ui.container.main {
+    margin-top: 10px!important;
 }
 .la-login {
     flex: 3!important; /* 3/4 of height of main */
