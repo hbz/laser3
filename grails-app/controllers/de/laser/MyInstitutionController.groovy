@@ -1332,34 +1332,35 @@ class MyInstitutionController  {
             }
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
-        switch(params.fileformat) {
-            case 'xlsx':
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS)
-                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-                return
-            case 'pdf':
-                Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.PDF)
+            Set<Subscription> allSubscriptions = Subscription.findAllByIdInList(result.subIDs)
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS)
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(allSubscriptions, selectedFields, ExportClickMeService.FORMAT.PDF)
 
-                byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
-                response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
-                response.setContentType('application/pdf')
-                response.outputStream.withStream { it << pdf }
-                return
-            case 'csv':
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV))
-                }
-                out.close()
-                return
+                    byte[] pdf = PdfUtils.getPdf(pdfOutput, PdfUtils.LANDSCAPE_DYNAMIC, '/templates/export/_individuallyExportPdf')
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportSubscriptions(allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV))
+                    }
+                    out.close()
+                    return
+            }
         }
         result
     }
@@ -4454,26 +4455,26 @@ join sub.orgRelations or_sub where
             }
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
-
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS, true)
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV,  true))
+            Set<Subscription> allSubscriptions = Subscription.findAllByIdInList(result.allSubscriptions)
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(allSubscriptions, selectedFields, ExportClickMeService.FORMAT.XLS, true)
+                    response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    wb.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    wb.dispose()
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportSubscriptions(allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV,  true))
+                    }
+                    out.close()
             }
-            out.close()
         }
 
         render view: customerTypeService.getCustomerTypeDependingView('currentSubscriptionsTransfer'), model: result
