@@ -143,7 +143,7 @@ class PublicController {
     @Secured(['ROLE_USER'])
     def api() {
         Map<String, Object> result = [
-                history : [ 'legacy', '3', '4' ], // todo
+                history : ApiManager.HISTORY
         ]
 
         String[] amv = ApiManager.VERSION.split('\\.')
