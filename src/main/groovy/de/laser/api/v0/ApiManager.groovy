@@ -40,6 +40,8 @@ class ApiManager {
      */
     static final VERSION = '3.7'
 
+    static HISTORY = [ '4', '3', 'legacy' ]
+
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
      * the request. If the requests are granted, the object and eventual stubs are being returned. See the return list
