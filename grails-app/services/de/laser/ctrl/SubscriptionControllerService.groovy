@@ -1583,9 +1583,16 @@ class SubscriptionControllerService {
                                             }
                                             if (params.customerIdentifier || params.requestorKey) {
                                                 result.subscription.packages.each { SubscriptionPackage sp ->
-                                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
-                                                    if (!ci.save())
-                                                        log.error(ci.errors.getAllErrors().toListString())
+                                                    CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(cm, sp.pkg.nominalPlatform)
+                                                    if(!ci) {
+                                                        ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                                        if (!ci.save())
+                                                            log.error(ci.errors.getAllErrors().toListString())
+                                                    }
+                                                    else {
+                                                        Object[] errArgs = [sp.pkg.nominalPlatform.name, ci.value, ci.requestorKey]
+                                                        result.existingCustomerIdentifier = errArgs
+                                                    }
                                                 }
                                             }
                                         }

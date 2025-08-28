@@ -876,6 +876,9 @@ class SubscriptionController {
                     flash.message = message(code: 'subscription.details.addMembers.option.selectMembersWithFile.selectProcess', args: [ctrlResult.result.selectSubMembersWithImport.processCount, ctrlResult.result.selectSubMembersWithImport.processRow])
                 }
             }
+            if(ctrlResult.result.existingCustomerIdentifier) {
+                flash.error = message(code: 'subscription.details.addMembers.existingCustomerIdentifier', args: ctrlResult.result.existingCustomerIdentifier)
+            }
 
             redirect controller: 'subscription', action: 'members', params: [id: ctrlResult.result.subscription.id]
             return

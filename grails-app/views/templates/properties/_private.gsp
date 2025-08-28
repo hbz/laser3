@@ -10,7 +10,16 @@
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${contextService.isInstEditor()} --%>
 <g:set var="overwriteEditable" value="${editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )}" />
 
-<g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextService.getOrg().id && cp.tenant?.id == contextService.getOrg().id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() }}"/>
+<g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextService.getOrg().id && cp.tenant?.id == contextService.getOrg().id }.sort{ cpA, cpB ->
+    int result = cpA.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() <=> cpB.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase()
+    if(!result)
+        result = cpA.stringValue <=> cpB.stringValue
+    if(!result)
+        result = cpA.longValue <=> cpB.longValue
+    if(!result)
+        result = cpA.dateValue <=> cpB.dateValue
+    result
+}}"/>
 <g:if test="${privateProperties || ( overwriteEditable && ownobj instanceof Person )}">
 
     <h3 class="ui header">
