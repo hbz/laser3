@@ -18,7 +18,7 @@
         <ui:link addItemAttributes="true" controller="public" action="releases">
             ${message(code:'releaseNotes')}
         </ui:link>
-        <ui:link addItemAttributes="true" controller="public" action="api">
+        <ui:link addItemAttributes="true" controller="public" action="api" id="${ApiManager.HISTORY[0]}">
             ${message(code:'apiRelease')}
         </ui:link>
         <ui:link addItemAttributes="true" controller="public" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
