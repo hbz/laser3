@@ -38,7 +38,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '3.7'
+    static final VERSION = '4.0'
 
     static HISTORY = [ '4', '3', 'legacy' ]
 
@@ -60,7 +60,7 @@ class ApiManager {
      *     <li>NOT_IMPLEMENTED: if requested method(object type) is not supported</li>
      * </ul>
      */
-    static read(String obj, String query, String value, String ezbOrgId, Org contextOrg, String format, Date changedFrom = null) {
+    static read(String obj, String query, String value, String ezbOrgId, Org contextOrg, String format, Date changedFrom = null, int max, int offset) {
         def result
 
         boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
@@ -173,7 +173,7 @@ class ApiManager {
                 return Constants.HTTP_FORBIDDEN
             }
 
-            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value, max)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
@@ -249,12 +249,12 @@ class ApiManager {
                 return Constants.HTTP_FORBIDDEN
             }
 
-            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value, max)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
                 if(tmp.obj instanceof Subscription)
-                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
+                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg, max, offset)
             }
         }
         else if (checkValidRequest('organisation')) {
@@ -279,11 +279,23 @@ class ApiManager {
         }
         else if (checkValidRequest('package')) {
 
-            ApiBox tmp = ApiPkg.findPackageBy(query, value)
+            ApiBox tmp = ApiPkg.findPackageBy(query, value, max)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiPkg.getPackage((Package) tmp.obj, contextOrg)
+                try {
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    try {
+                        result = ApiPkg.getPackage(sql, (Package) tmp.obj, contextOrg, max, offset)
+                    }
+                    finally {
+                        sql.close()
+                    }
+                }
+                catch (NativeSqlException e) {
+                    log.error(e.getMessage())
+                    result = Constants.HTTP_SERVICE_UNAVAILABLE
+                }
             }
         }
         else if (checkValidRequest('platform')) {
@@ -343,7 +355,7 @@ class ApiManager {
 
         else if (checkValidRequest('subscription')) {
 
-            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value)
+            ApiBox tmp = ApiSubscription.findSubscriptionBy(query, value, max)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
@@ -351,7 +363,7 @@ class ApiManager {
                     try {
                         Sql sql = GlobalService.obtainSqlConnection()
                         try {
-                        result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
+                            result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, max, offset, sql)
                         }
                         finally {
                             sql.close()
@@ -378,16 +390,16 @@ class ApiManager {
         }
         else if (checkValidRequest('vendor')) {
 
-            ApiBox tmp = ApiVendor.findVendorBy(query, value)
+            ApiBox tmp = ApiLibrarySupplier.findLibrarySupplierBy(query, value)
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiVendor.getVendor((Vendor) tmp.obj, contextOrg)
+                result = ApiLibrarySupplier.getLibrarySupplier((Vendor) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('vendorList')) {
 
-            result = ApiVendor.getVendorList()
+            result = ApiLibrarySupplier.getLibrarySupplierList()
         }
         else {
             result = Constants.HTTP_NOT_IMPLEMENTED

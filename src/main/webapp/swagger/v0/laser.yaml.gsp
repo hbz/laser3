@@ -38,7 +38,7 @@ components:
       in: query
       schema:
         type: string
-        default: globalUID
+        default: laserID
       required: true
       description: Identifier type for this query
 
@@ -87,6 +87,24 @@ components:
       required: false
       description: Date from which changes should be considered
 
+    max:
+      name: max
+      in: query
+      schema:
+        type: int
+        minimum: 0
+        maximum: 20000
+      required: false
+      description: Maximum count of records per page. Default and maximum is 20000
+
+    offset:
+      name: offset
+      in: query
+      schema:
+        type: int
+      required: false
+      description: Record offset number. Default is 0
+
 <g:if test="${apiContext}">
     context:
       name: context
@@ -95,7 +113,7 @@ components:
         type: string
         default: ${apiContext}
       required: true
-      description: Concrete globalUID of context organisation
+      description: Concrete laserID of context organisation
 </g:if>
 <g:else>
     context:
@@ -104,7 +122,7 @@ components:
       schema:
         type: string
       required: true
-      description: Concrete globalUID of context organisation
+      description: Concrete laserID of context organisation
 </g:else>
 
     ezbOrgId:
