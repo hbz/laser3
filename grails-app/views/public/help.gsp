@@ -34,7 +34,7 @@
                 <div class="item">
                     <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                     <div class="content">
-                        <g:link controller="public" action="api">${message(code:'apiRelease')} (${ApiManager.VERSION})</g:link>
+                        <g:link controller="public" action="api" id="${ApiManager.HISTORY[0]}">${message(code:'apiRelease')} (${ApiManager.VERSION})</g:link>
                     </div>
                 </div>
                 <div class="item">
