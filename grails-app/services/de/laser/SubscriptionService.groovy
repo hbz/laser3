@@ -286,30 +286,28 @@ class SubscriptionService {
         result.filterSet = tmpQ[2]
         Set<Subscription> subscriptionsFromQuery
         Set<Subscription> subscriptions
-        subscriptionsFromQuery = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        subscriptionsFromQuery = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
         //candidate for ugliest bugfix ever ...
 
         params.sort = params.sort ?: 'provider'
         params.order = params.order ?: 'asc'
-        if(params.sort){
-            String newSort = "sub.${params.sort}"
-            if(params.sort == 'provider'){
-                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.providerRelations oo where (sub.id in (:subscriptions)) order by oo.provider.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id])
-                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
-            }else if(params.sort == 'vendor'){
-                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.vendorRelations oo where (sub.id in (:subscriptions)) order by oo.vendor.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery.id])
-                subscriptions = subscriptions + Subscription.executeQuery("select sub from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery.id])
-            }
-            else {
-                subscriptions = Subscription.executeQuery("select sub from Subscription sub join sub.providerRelations oo where sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.provider.name, sub.name ", [subscriptions: subscriptionsFromQuery.id])
-            }
+        String newSort = "sub.${params.sort}"
+        if(params.sort == 'provider'){
+            subscriptions = Subscription.executeQuery("select sub.id from Subscription sub join sub.providerRelations oo where (sub.id in (:subscriptions)) order by oo.provider.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery])
+            subscriptions = subscriptions + Subscription.executeQuery("select sub.id from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery])
+        }else if(params.sort == 'vendor'){
+            subscriptions = Subscription.executeQuery("select sub.id from Subscription sub join sub.vendorRelations oo where (sub.id in (:subscriptions)) order by oo.vendor.name " + params.order + ", sub.name ", [subscriptions: subscriptionsFromQuery])
+            subscriptions = subscriptions + Subscription.executeQuery("select sub.id from Subscription sub where sub.id in (:subscriptions) order by sub.name ", [subscriptions: subscriptionsFromQuery])
+        }
+        else {
+            subscriptions = Subscription.executeQuery("select sub.id from Subscription sub join sub.providerRelations oo where sub.id in (:subscriptions) order by " + newSort + " " + params.order + ", oo.provider.name, sub.name ", [subscriptions: subscriptionsFromQuery])
         }
 
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
             result.num_sub_rows = subscriptions.size()
 
-        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        result.subscriptions = Subscription.findAllByIdInList(subscriptions.drop((int) result.offset).take((int) result.max))
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 

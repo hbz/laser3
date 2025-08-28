@@ -282,7 +282,7 @@ class LicenseController {
         }
         else {
             result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
-            allSubscriptions.addAll(result.allSubscriptions)
+            allSubscriptions.addAll(Subscription.findAllByIdInList(result.subIDs))
             action = 'linkLicenseToSubs'
         }
         if(formService.validateToken(params)) {
