@@ -21,44 +21,49 @@ class ApiSubscription {
 
     /**
 	 * Locates the given {@link Subscription} and returns the object (or null if not found) and the request status for further processing
-	 * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+	 * @param the field to look for the identifier, one of {id, laserID, namespace:id}
 	 * @param the identifier value with namespace, if needed
      * @return {@link ApiBox}(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
 	 * @see ApiBox#validatePrecondition_1()
      */
-    static ApiBox findSubscriptionBy(String query, String value) {
+    static ApiBox findSubscriptionBy(String query, String value, int max) {
 		ApiBox result = ApiBox.get()
 
-        switch(query) {
-            case 'id':
-				result.obj = Subscription.findAllById(Long.parseLong(value))
-				if(!result.obj) {
-					DeletedObject.withTransaction {
-						result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Subscription.class.name)
+		if(max <= 20000) {
+			switch(query) {
+				case 'id':
+					result.obj = Subscription.get(value)
+					if(!result.obj) {
+						DeletedObject.withTransaction {
+							result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Subscription.class.name)
+						}
 					}
-				}
-                break
-            case 'globalUID':
-				result.obj = Subscription.findAllByGlobalUID(value)
-				if(!result.obj) {
-					DeletedObject.withTransaction {
-						result.obj = DeletedObject.findAllByOldGlobalUID(value)
+					break
+				case 'laserID':
+					result.obj = Subscription.findByGlobalUID(value)
+					if(!result.obj) {
+						DeletedObject.withTransaction {
+							result.obj = DeletedObject.findAllByOldGlobalUID(value)
+						}
 					}
-				}
-                break
-            case 'ns:identifier':
-				result.obj = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
-                break
-            default:
-				result.status = Constants.HTTP_BAD_REQUEST
-				return result
-                break
-        }
-		result.validatePrecondition_1()
+					break
+				case 'ns:identifier':
+					result.obj = Identifier.lookupObjectsByIdentifierString(Subscription.class.getSimpleName(), value)
+					break
+				default:
+					result.status = Constants.HTTP_BAD_REQUEST
+					return result
+					break
+			}
+			result.validatePrecondition_1()
 
-		/*if (result.obj instanceof Subscription) {
-			result.validateDeletedStatus_2('status', RDStore.SUBSCRIPTION_DELETED)
-		}*/
+			/*if (result.obj instanceof Subscription) {
+                result.validateDeletedStatus_2('status', RDStore.SUBSCRIPTION_DELETED)
+            }*/
+		}
+        else {
+			result.status = Constants.HTTP_BAD_REQUEST
+		}
 		result
     }
 
@@ -95,12 +100,12 @@ class ApiSubscription {
 	 * @param context the institution ({@link Org}) requesting the subscription
      * @return JSON | FORBIDDEN
      */
-    static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool, Sql sql = null){
+    static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool, int max, int offset, Sql sql = null){
         Map<String, Object> result = [:]
 
 		boolean hasAccess = isInvoiceTool || calculateAccess(sub, context)
         if (hasAccess) {
-            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context, isInvoiceTool, sql)
+            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context, isInvoiceTool, max, offset, sql)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -159,12 +164,12 @@ class ApiSubscription {
 	 * @param isInvoiceTool is the hbz invoice tool doing the request?
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool, Sql sql = null){
+	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool, int max, int offset, Sql sql = null){
 		Map<String, Object> result = [:]
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
-		result.globalUID            	= sub.globalUID
+		result.laserID	            	= sub.globalUID
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
@@ -227,10 +232,10 @@ class ApiSubscription {
 
 		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 		result.providers	 = ApiCollectionReader.getProviderCollection(sub.getProviders())
-		result.vendors		 = ApiCollectionReader.getVendorCollection(sub.getVendors())
+		result.librarySuppliers	= ApiCollectionReader.getLibrarySuppliers(sub.getVendors())
 
 		// TODO refactoring with issueEntitlementService
-		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context, sql) // de.laser.SubscriptionPackage
+		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context, max, offset, sql) // de.laser.SubscriptionPackage
 
 		// Ignored
 

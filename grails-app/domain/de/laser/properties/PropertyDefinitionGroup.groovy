@@ -92,7 +92,7 @@ class PropertyDefinitionGroup {
         List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Class propertyClass = getOwnerClass(currentObject)
-        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner order by pd.${localizedName}"
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.dateValue"
         result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds]))
         /*
         currentObject?.propertySet?.each{ cp ->
@@ -131,7 +131,7 @@ class PropertyDefinitionGroup {
         List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Class propertyClass = getOwnerClass(currentObject)
-        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and prop.tenant = :tenant order by pd.${localizedName}"
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and prop.tenant = :tenant order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.dateValue"
         result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds, tenant: tenant]))
         /*
         currentObject?.propertySet?.each{ cp ->

@@ -81,7 +81,7 @@ class ApiDeletedObject {
 
         DeletedObject.withTransaction {
             delObj = GrailsHibernateUtil.unwrapIfProxy(delObj)
-            result.globalUID                = delObj.oldGlobalUID
+            result.laserID                  = delObj.oldGlobalUID
             result.dateCreated          	= ApiToolkit.formatInternalDate(delObj.dateCreated)
             result.endDate              	= ApiToolkit.formatInternalDate(delObj.oldEndDate)
             result.lastUpdated          	= ApiToolkit.formatInternalDate(delObj.oldLastUpdated)

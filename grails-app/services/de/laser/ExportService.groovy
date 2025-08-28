@@ -1320,21 +1320,6 @@ class ExportService {
 								}
 								DecimalFormat df = new DecimalFormat("###,##0.00")
 								df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
-								if (showPriceDate && priceItems) {
-									//listprice_eur
-									PriceItem eur = priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }
-									PriceItem gbp = priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
-									PriceItem usd = priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
-									titleRow.put("List Price EUR", eur ? df.format(eur.listPrice) : ' ')
-									//listprice_gbp
-									titleRow.put("List Price GBP", gbp ? df.format(gbp.listPrice) : ' ')
-									//listprice_usd
-									titleRow.put("List Price USD", usd ? df.format(usd.listPrice) : ' ')
-								}
-								if (showOtherData) {
-									titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format(tipp.dateFirstOnline) : ' ')
-									titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format(tipp.dateFirstOnline) : ' ')
-								}
 							}
 							else {
 								if (reportType == Counter4Report.JOURNAL_REPORT_1) {

@@ -265,8 +265,8 @@ class CostItem extends AbstractBase
     }
 
     String getCostInformationValue() {
-        if (costInformationStringValue)      { return stringValue }
-        if (costInformationRefValue)         { return refValue.getI10n('value') }
+        if (costInformationStringValue)      { return costInformationStringValue }
+        if (costInformationRefValue)         { return costInformationRefValue.getI10n('value') }
     }
 
     /**

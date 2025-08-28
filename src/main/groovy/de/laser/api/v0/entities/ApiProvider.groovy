@@ -15,7 +15,7 @@ class ApiProvider {
 
     /**
      * Locates the given {@link de.laser.wekb.Provider} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the field to look for the identifier, one of {id, laserID, wekbId, ns:identifier}
      * @param the identifier value
      * @return {@link ApiBox}(obj: Provider | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -28,23 +28,23 @@ class ApiProvider {
                 result.obj = Provider.executeQuery('select id.provider from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
                 break
             case 'id':
-                result.obj = Provider.findAllById(Long.parseLong(value))
+                result.obj = Provider.get(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Provider.class.name)
                     }
                 }
                 break
-            case 'globalUID':
-                result.obj = Provider.findAllByGlobalUID(value)
+            case 'laserID':
+                result.obj = Provider.findByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGlobalUID(value)
                     }
                 }
                 break
-            case 'gokbId':
-                result.obj = Provider.findAllByGokbId(value)
+            case 'wekbId':
+                result.obj = Provider.findByGokbId(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
                         result.obj = DeletedObject.findAllByOldGokbID(value)
@@ -52,7 +52,7 @@ class ApiProvider {
                 }
                 break
             case 'ns:identifier':
-                result.obj = Identifier.lookupObjectsByIdentifierString(new Provider(), value)
+                result.obj = Identifier.lookupObjectsByIdentifierString(Provider.class.getSimpleName(), value)
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
