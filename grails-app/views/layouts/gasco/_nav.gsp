@@ -3,9 +3,9 @@
 <div class="ui tablet computer only padded grid ">
     <div class="ui secondary top ${BeanStore.getSpringSecurityService().isLoggedIn() ? '':'fixed'} fluid menu">
         <div class="ui container" role="none">
-            <a class="header item">
-                <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'media', file: 'gasco/gasco-small.png')}"/>
-            </a>
+            <g:link class="header item" controller="gasco" action="about">
+                <img class="ui fluid image" alt="GASCO" src="${resource(dir: 'media', file: 'gasco/gasco-small.png')}"/>
+            </g:link>
             <nav class="right menu" id="GASCOMenue">
                 <g:link controller="gasco" action="about" class="item${actionName == 'about' ? ' active' : ''}">Über uns</g:link>
                 <g:link controller="gasco" action="members" class="item${actionName == 'members' ? ' active' : ''}">GASCO-Mitglieder</g:link>
