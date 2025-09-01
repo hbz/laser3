@@ -49,7 +49,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   noSelection="${[null: message(code: 'default.select.choose.label')]}"
-                                  value="${costItem?.costItemElement?.id}"/>
+                                  value="${selectedCostItemElementID}"/>
                 </g:if>
                 <g:else>
                     ${message(code: 'financials.costItemElement.noneDefined')}

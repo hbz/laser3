@@ -220,7 +220,8 @@
                           model="[orgList         : surveyParticipantsHasAccess,
                                   tmplShowCheckbox: editable,
                                   tmplConfigShow  : tmplConfigShow,
-                                  tableID         : 'costTable'
+                                  tableID         : 'costTable',
+                                  idForSelectAllCheckBox: 'surveyParticipantsHasAccess'
                           ]"/>
 
         </div>
@@ -246,7 +247,8 @@
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow  : tmplConfigShow,
-                                      tableID         : 'costTable'
+                                      tableID         : 'costTable2',
+                                      idForSelectAllCheckBox: 'surveyParticipantsHasNotAccess'
                               ]"/>
 
             </div>
