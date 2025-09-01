@@ -654,8 +654,8 @@
                             <g:if test="${surveyConfig}">
                                 <g:set var="notfinish"
                                        value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(surveyConfig).size()}"/>
-                                <g:link controller="survey" action="surveyEvaluation"
-                                        id="${surveyConfig.surveyInfo.id}" params="[tab: 'participantsViewAllNotFinish']">
+                                <g:link controller="survey" action="participantsReminder"
+                                        id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
                                     ${notfinish}
                                 </g:link>
                             </g:if>

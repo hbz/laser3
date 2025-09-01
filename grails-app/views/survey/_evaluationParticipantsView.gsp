@@ -186,13 +186,13 @@
     <g:set var="sumDiffGBP" value="${0}"/>
 
 
-    <table class="ui compact celled sortable table la-js-responsive-table la-table">
+    <table id="tableSurveyParticipantsHasAccess" class="ui compact celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
             <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <th>
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        <g:checkBox name="orgListToggler" id="surveyParticipantsHasAccess" checked="false"/>
                     </g:if>
                 </th>
             </g:if>
@@ -825,12 +825,12 @@
         <g:set var="sumDiffUSD" value="${0}"/>
         <g:set var="sumDiffGBP" value="${0}"/>
 
-        <table class="ui celled sortable table la-js-responsive-table la-table">
+        <table id="tableSurveyParticipantsHasNotAccess" class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                     <th>
-                        <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        <g:checkBox name="orgListToggler" id="surveyParticipantsHasNotAccess" checked="false"/>
                     </th>
                 </g:if>
 
@@ -1476,12 +1476,21 @@
 <laser:render template="/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">
-        $('#orgListToggler').click(function () {
+    <g:if test="${showCheckboxForParticipantsHasAccess}">
+        $('#surveyParticipantsHasAccess').click(function () {
             if ($(this).prop('checked')) {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+                $("#tableSurveyParticipantsHasAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
             } else {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+                $("#tableSurveyParticipantsHasAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+            }
+        })
+    </g:if>
+    <g:if test="${showCheckboxForParticipantsHasNoAccess}">
+        $('#surveyParticipantsHasNotAccess').click(function () {
+            if ($(this).prop('checked')) {
+                $("#tableSurveyParticipantsHasNotAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+            } else {
+                $("#tableSurveyParticipantsHasNotAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
     </g:if>
