@@ -83,8 +83,11 @@
 
                     <laser:render template="/templates/filter/orgFilterTable"
                                   model="[orgList         : surveyParticipantsHasAccess,
+                                          idForSelectAllCheckBox: 'surveyParticipantsHasAccess',
                                           tmplShowCheckbox: editable,
-                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.subs ? 'surveySubInfo' : '')]
+                                          tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.subs ? 'surveySubInfo' : '')],
+                                          tableID         : 'costTable',
+                                          idForSelectAllCheckBox: 'surveyParticipantsHasAccess'
                                   ]"/>
 
 
@@ -108,8 +111,11 @@
 
                         <laser:render template="/templates/filter/orgFilterTable"
                                       model="[orgList         : surveyParticipantsHasNotAccess,
+                                              idForSelectAllCheckBox: 'surveyParticipantsHasNotAccess',
                                               tmplShowCheckbox: editable,
-                                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.subs ? 'surveySubInfo' : '')]
+                                              tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'libraryType', (surveyConfig.subscription || params.subs ? 'surveySubInfo' : '')],
+                                              tableID         : 'costTable2',
+                                              idForSelectAllCheckBox: 'surveyParticipantsHasNotAccess'
                                       ]"/>
 
                         <br/>

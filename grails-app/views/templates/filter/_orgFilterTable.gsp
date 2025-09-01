@@ -14,6 +14,8 @@
     <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
 </g:if>
 
+<g:set var="idForSelectAllCheckBox" value="${idForSelectAllCheckBox ?: 'orgListToggler'}"/>
+
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
@@ -21,7 +23,7 @@
         <g:if test="${tmplShowCheckbox}">
             <th>
                 <g:if test="${orgList}">
-                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                    <g:checkBox name="orgListToggler" id="${idForSelectAllCheckBox}" checked="false"/>
                 </g:if>
             </th>
         </g:if>
@@ -1207,11 +1209,11 @@
 
 <g:if test="${tmplShowCheckbox}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#orgListToggler').click(function () {
+        $("#${idForSelectAllCheckBox}").click(function () {
             if ($(this).prop('checked')) {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+                $("#${tableID} tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
             } else {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+                $("#${tableID} tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
