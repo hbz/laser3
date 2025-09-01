@@ -10,10 +10,7 @@ Unter der Spalte **Optionen** können Sie sehen, ob es aktuelle Umfragen zu der 
 
 Über den **Export** können Sie die gewünschten Lizenzen und Lizenzinformationen exportieren. Es werden ausschließlich die Lizenzen exportiert, die über die Filter in der Übersicht angezeigt werden. 
 
-**Pro-Nutzende** haben zudem die Möglichkeit über den Zauberstab folgende Aktionen durchzuführen:
- + Neue Lizenzen manuell anlegen
- + Lizenzen massenweise über eine Templatedatei hochladen
- + und unterschiedliche Lizenzen miteinander zu vergleichen
+**Pro-Nutzende** haben zudem die Möglichkeit über den Zauberstab neue Lizenzen anzulegen oder Sie über den Import in LAS:eR hochzuladen. 
 
 
 
