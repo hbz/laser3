@@ -136,52 +136,78 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-                    ${message(code: 'exportClickMe.subscription.costItems')}: ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
+                    ${message(code: 'exportClickMe.subscription.costItems')}:
+
+                    <g:if test="${actionName == 'surveyCostItems'}">
+                        <%
+                            def tmpParams = params.clone()
+                            tmpParams.remove("sort")
+                        %>
+                        <g:if test="${sortOnSubCostItemsUp}">
+                            <g:link action="surveyCostItems"
+                                    params="${tmpParams + [sortOnSubCostItemsDown: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow down circle icon blue"></i>
+                            </span></g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link action="surveyCostItems"
+                                    params="${tmpParams + [sortOnSubCostItemsUp: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow up circle icon blue"></i>
+                            </span></g:link>
+                        </g:else>
+                    </g:if>
+                    ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}:
 
-                    <g:set var="costItemElements"
+            %{--        <g:set var="costItemElements"
                            value="${costItemsByCostItemElement ? costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))} : [RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE]}"/>
+--}%
 
-                    <g:if test="${costItemElements}">
-                        <g:if test="${actionName == 'surveyCostItems'}">
-                            <%
-                                def tmpParams = params.clone()
-                                tmpParams.remove("sort")
-                            %>
-                            <g:if test="${sortOnCostItemsUp}">
-                                <g:link action="surveyCostItems"
-                                        params="${tmpParams + [sortOnCostItemsDown: true]}"><span
-                                        class="la-popup-tooltip"
-                                        data-position="top right"
-                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                    <i class="arrow down circle icon blue"></i>
-                                </span></g:link>
-                            </g:if>
-                            <g:else>
-                                <g:link action="surveyCostItems"
-                                        params="${tmpParams + [sortOnCostItemsUp: true]}"><span
-                                        class="la-popup-tooltip"
-                                        data-position="top right"
-                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                    <i class="arrow up circle icon blue"></i>
-                                </span></g:link>
-                            </g:else>
+                    <g:if test="${actionName == 'surveyCostItems'}">
+                        <%
+                            def tmpParams2 = params.clone()
+                            tmpParams2.remove("sort")
+                        %>
+                        <g:if test="${sortOnCostItemsUp}">
+                            <g:link action="surveyCostItems"
+                                    params="${tmpParams2 + [sortOnCostItemsDown: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow down circle icon blue"></i>
+                            </span></g:link>
                         </g:if>
-
-
-                        %{--<ui:select name="selectedCostItemElementID"
-                                   from="${costItemElements}"
-                                   optionKey="id"
-                                   optionValue="value"
-                                   value="${selectedCostItemElementID}"
-                                   class="ui dropdown clearable"
-                                   id="selectedCostItemElementID"
-                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
+                        <g:else>
+                            <g:link action="surveyCostItems"
+                                    params="${tmpParams2 + [sortOnCostItemsUp: true]}"><span
+                                    class="la-popup-tooltip"
+                                    data-position="top right"
+                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                <i class="arrow up circle icon blue"></i>
+                            </span></g:link>
+                        </g:else>
                     </g:if>
+
+
+                %{--<ui:select name="selectedCostItemElementID"
+                           from="${costItemElements}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${selectedCostItemElementID}"
+                           class="ui dropdown clearable"
+                           id="selectedCostItemElementID"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
+
                     ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
@@ -190,12 +216,12 @@
                     ${message(code: 'surveyCostItems.label')}:
                         <g:if test="${actionName == 'surveyCostItemsPackages'}">
                             <%
-                                def tmpParams2 = params.clone()
-                                tmpParams2.remove("sort")
+                                def tmpParams3 = params.clone()
+                                tmpParams3.remove("sort")
                             %>
                             <g:if test="${sortOnCostItemsUp}">
                                 <g:link action="surveyCostItemsPackages"
-                                        params="${tmpParams2 + [sortOnCostItemsDown: true]}"><span
+                                        params="${tmpParams3 + [sortOnCostItemsDown: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"
                                         data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
@@ -204,7 +230,7 @@
                             </g:if>
                             <g:else>
                                 <g:link action="surveyCostItemsPackages"
-                                        params="${tmpParams2 + [sortOnCostItemsUp: true]}"><span
+                                        params="${tmpParams3 + [sortOnCostItemsUp: true]}"><span
                                         class="la-popup-tooltip"
                                         data-position="top right"
                                         data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
@@ -221,12 +247,12 @@
                     ${message(code: 'surveyCostItems.label')}:
                     <g:if test="${actionName == 'surveyCostItemSubscriptions'}">
                         <%
-                            def tmpParams3 = params.clone()
-                            tmpParams3.remove("sort")
+                            def tmpParams4 = params.clone()
+                            tmpParams4.remove("sort")
                         %>
                         <g:if test="${sortOnCostItemsUp}">
                             <g:link action="surveyCostItemSubscriptions"
-                                    params="${tmpParams3 + [sortOnCostItemsDown: true]}"><span
+                                    params="${tmpParams4 + [sortOnCostItemsDown: true]}"><span
                                     class="la-popup-tooltip"
                                     data-position="top right"
                                     data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
@@ -235,7 +261,7 @@
                         </g:if>
                         <g:else>
                             <g:link action="surveyCostItemSubscriptions"
-                                    params="${tmpParams2 + [sortOnCostItemsUp: true]}"><span
+                                    params="${tmpParams4 + [sortOnCostItemsUp: true]}"><span
                                     class="la-popup-tooltip"
                                     data-position="top right"
                                     data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
