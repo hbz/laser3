@@ -768,12 +768,21 @@ body[class*="gasco_"].pushable>.pusher {
     background:@gascoPink;
 }
 
-.gasco {
+.gascoContainer {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+.gasco {
     a {
         color: @gascoRed;
+    }
+    .gasco-tooltip {
+        &:hover {
+            background-color: @gascoRed;
+            cursor: help;
+            color: white;
+        }
     }
     .ui.button {
         background-color:@gascoRed;

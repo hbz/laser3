@@ -1809,7 +1809,7 @@ body[class*="gasco_"].pushable > .pusher {
   background: #f5ede9;
 }
 
-.gasco {
+.gascoContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -1817,6 +1817,12 @@ body[class*="gasco_"].pushable > .pusher {
 
 .gasco a {
   color: #b50018;
+}
+
+.gasco .gasco-tooltip:hover {
+  background-color: #b50018;
+  cursor: help;
+  color: white;
 }
 
 .gasco .ui.button {
