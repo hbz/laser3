@@ -35,6 +35,7 @@ class PropertyService {
     ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource
+    ComparisonService comparisonService
 
     /**
      * Chops the order clause from the given query
