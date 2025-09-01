@@ -23,7 +23,7 @@
         <tr>
             <td>Schweiz <br> <a href="http://www.consortium.ch/" target=" _blank">Konsortium der Schweizer Hochschulbibliotheken</a></td>
             <td><a href="mailto:susanne.aerni@slsp.ch">Susanne Aerni</a></td>
-            <td><span class="la-popup-tooltip" data-content="care of">c/o</span> <span class="la-popup-tooltip" data-content="Bibliothek der eidgenössischen technischen Hochschule">B ETH</span>Zürich</td>
+            <td><span class="la-popup-tooltip" data-content="care of">c/o</span> <span class="la-popup-tooltip" data-content="Bibliothek der eidgenössischen technischen Hochschule">B ETH</span> Zürich</td>
         </tr>
         </tbody>
     </table>
@@ -48,7 +48,7 @@
         <tr>
             <td>Berlin-Brandenburg&nbsp; <br> <a href="http://althoffkonsortium.wordpress.com" target=" _blank">Friedrich-Althoff-Konsortium <spnd data-content="eingetragener Verein"><span class="la-popup-tooltip" data-content="eingetragener Verein">e.V.</span></abbr></a></td>
             <td><a href="mailto:fak-office@zib.de">Dr. Ursula Stanek</a> <br><i>(Stellvertretende Vorsitzende der <span class="la-popup-tooltip" data-content="German, Austrian and Swiss Consortia Organisation">GASCO</span>)</i></td>
-            <td><span class="la-popup-tooltip" data-content=" Staatsbibliothek zu Berlin - Preussischer Kulturbesitz ">SBB-PK</span> Berlin</td>
+            <td><span class="la-popup-tooltip" data-content=" Staatsbibliothek zu Berlin - Preussischer Kulturbesitz ">FAK</span> Berlin</td>
         </tr>
         <tr>
             <td>Bremen</td>

@@ -28,11 +28,6 @@
                                 </g:link>
                             </div>
                         </g:if>
-                        <div class="item">
-                            <g:link target="_blank" controller="public" action="wcagEasyLanguage" class="content">
-                                ${message(code: 'landingpage.footer.4.link4')}
-                            </g:link>
-                        </div>
                     </div>
                 </div>
                 <p>
@@ -49,7 +44,7 @@
 
 
 
-            <div class="four wide column left aligned">
+            <div class="four wide column left aligned" style="box-shadow: -1px 0 0 0 rgba(34, 36, 38, .15);">
                 <g:link  controller="home" action="index" class="ui red right floated button">
                     Zum LAS:eR-System
                     <i class="arrow right icon"></i>

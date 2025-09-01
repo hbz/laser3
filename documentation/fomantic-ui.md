@@ -23,7 +23,7 @@ Change one file back after installing Fomantic UI: in files/frontend/semantic/ta
 
     nvm install lts
 
-5. list all the installed node versions with
+5. list all the installed node versions with<<<<<
 
 
     nvm list

@@ -518,7 +518,8 @@ i.icon.la-list-icon{
         GASCO
 *****************************************/
 
-body[class*="gasco_"]{
+body[class*="gasco_"],
+body[class*="gasco_"].pushable>.pusher {
     background:@gascoPink;
 }
 
@@ -535,8 +536,8 @@ body[class*="gasco_"]{
         &.red,
         &.primary,
         &.la-modern-button{
-            background-color:@gascoRed;
-            color:white;
+            background-color:@gascoRed!important;
+            color:white!important;
         }
         &.secondary {
             background-color:@gascoGray;
@@ -568,6 +569,9 @@ body[class*="gasco_"]{
                 background: none;
             }
         }
+    }
+    .ui.menu:not(.vertical) .item {
+        color: @gascoRed;
     }
     h1.ui.header {
         font-size: 3.063rem;
