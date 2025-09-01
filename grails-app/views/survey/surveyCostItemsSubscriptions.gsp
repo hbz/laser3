@@ -210,7 +210,8 @@
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow: tmplConfigShow,
                                       missingCosts  : missingCosts,
-                                      tableID       : 'costTable'
+                                      tableID         : 'costTable',
+                                      idForSelectAllCheckBox: 'surveyParticipantsHasAccess'
                               ]"/>
 
 
@@ -237,7 +238,8 @@
                                       tmplShowCheckbox: editable,
                                       tmplConfigShow  : tmplConfigShow,
                                       missingCosts  : missingCosts,
-                                      tableID         : 'costTable'
+                                      tableID         : 'costTable2',
+                                      idForSelectAllCheckBox: 'surveyParticipantsHasNotAccess'
                               ]"/>
 
                     </g:if>

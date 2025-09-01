@@ -1089,7 +1089,11 @@ class CopyElementsService {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
-                    newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    if(targetObject instanceof SurveyConfig){
+                        newTask.surveyConfig = targetObject
+                    }else{
+                        newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    }
                     _save(newTask, flash)
                 }
             }
@@ -1149,7 +1153,11 @@ class CopyElementsService {
                     if(dctx.id in toShare)
                         newDocContext.isShared = true
                     else newDocContext.isShared = false
-                    newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    if(targetObject instanceof SurveyConfig){
+                        newDocContext.surveyConfig = targetObject
+                    }else{
+                        newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    }
                     newDocContext.owner = newDoc
                     _save(newDocContext, flash)
                 }
@@ -1332,7 +1340,11 @@ class CopyElementsService {
                         if(dctx.id in toShare)
                             newDocContext.isShared = true
                         else newDocContext.isShared = false
-                        newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                        if(targetObject instanceof SurveyConfig){
+                            newDocContext.surveyConfig = targetObject
+                        }else{
+                            newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                        }
                         newDocContext.owner = newDoc
                         _save(newDocContext, flash)
 
