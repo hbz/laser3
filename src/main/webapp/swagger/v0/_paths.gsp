@@ -41,7 +41,7 @@
         - Lists
       summary: Retrieving a list of owner related cost items
       description: >
-        Supported are queries by following identifiers: *globalUID*. Optional identifier/constraint *timestamp* is supported.
+        Supported are queries by following identifiers: *laserID*. Optional identifier/constraint *timestamp* is supported.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -108,7 +108,7 @@
         - Objects
       summary: Retrieving a single license
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -143,7 +143,7 @@
         - Lists
       summary: Retrieving a list of owner related licenses
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -209,7 +209,7 @@
         - Objects
       summary: Retrieving a single organisation
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -243,7 +243,7 @@
         - Objects
       summary: Retrieving a single provider
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID*, *wekbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -301,11 +301,13 @@
         - Objects
       summary: Retrieving a single package
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *wekbId*, *laserID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/max"
+        - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -336,7 +338,7 @@
       - Objects
       summary: Retrieving a single platform
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *wekbId*, *laserID*, *identifier* and *ns:identifier*. *ns:identifier* value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -443,11 +445,13 @@
       - Objects
       summary: Retrieving a single subscription
       description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+        Supported are queries by following identifiers: *laserID*, *identifier* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
 
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/max"
+        - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -478,7 +482,7 @@
         - Lists
       summary: Retrieving a list of owner related subscriptions
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -511,7 +515,7 @@
         - Objects
       summary: Retrieving a single vendor
       description: >
-        Supported are queries by following identifiers: *globalUID*, *gokbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *laserID*, *wekbId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -569,7 +573,7 @@
         - "Special: EZB"
       summary: Retrieving the interlibrary loan (ILL) indicators for a given license
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
+        Supported are queries by following identifiers: *laserID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -731,6 +735,8 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/max"
+        - $ref: "#/components/parameters/offset"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -750,64 +756,65 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /statistic/packages/list:
-
-    get:
-      tags:
-        - "Special: Nationaler Statistikserver"
-      summary: Retrieving a list of appropriate packages
-      description: >
-        Retrieving a list of packages related to organisations that have granted the data exchange
-
-      parameters:
-        - $ref: "#/components/parameters/authorization"
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PlaceholderList"
-        401:
-          $ref: "#/components/responses/notAuthorized"
-        403:
-          $ref: "#/components/responses/forbidden"
-        404:
-          description: Valid request, but no appropriate packages found
-        406:
-          $ref: "#/components/responses/notAcceptable"
-
-
-  /statistic/packages:
-
-    get:
-      tags:
-        - "Special: Nationaler Statistikserver"
-      summary: Retrieving a single package with more information
-      description: >
-        **EXPERIMENTAL**
-
-      parameters:
-        - $ref: "#/components/parameters/q"
-        - $ref: "#/components/parameters/v"
-        - $ref: "#/components/parameters/authorization"
-        - $ref: "#/components/parameters/debug"
-
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PlaceholderObject"
-        400:
-          $ref: "#/components/responses/badRequest"
-        401:
-          $ref: "#/components/responses/notAuthorized"
-        403:
-          $ref: "#/components/responses/forbidden"
-        404:
-          description: Valid request, but package not found
-        406:
-          $ref: "#/components/responses/notAcceptable"
+# /statistic/packages/list:
+#
+#   get:
+#     tags:
+#       - "Special: Nationaler Statistikserver"
+#     summary: Retrieving a list of appropriate packages
+#     description: >
+#       Retrieving a list of packages related to organisations that have granted the data exchange
+#
+#     parameters:
+#       - $ref: "#/components/parameters/authorization"
+#
+#     responses:
+#       200:
+#         description: OK
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/PlaceholderList"
+#       401:
+#         $ref: "#/components/responses/notAuthorized"
+#       403:
+#         $ref: "#/components/responses/forbidden"
+#       404:
+#         description: Valid request, but no appropriate packages found
+#       406:
+#         $ref: "#/components/responses/notAcceptable"
+#
+#
+# /statistic/packages:
+#
+#   get:
+#     tags:
+#       - "Special: Nationaler Statistikserver"
+#     summary: Retrieving a single package with more information
+#     description: >
+#       **EXPERIMENTAL**
+#
+#     parameters:
+#       - $ref: "#/components/parameters/q"
+#       - $ref: "#/components/parameters/v"
+#       - $ref: "#/components/parameters/authorization"
+#       - $ref: "#/components/parameters/debug"
+#
+#     responses:
+#       200:
+#         description: OK
+#         content:
+#           application/json:
+#             schema:
+#               $ref: "#/components/schemas/PlaceholderObject"
+#       400:
+#         $ref: "#/components/responses/badRequest"
+#       401:
+#         $ref: "#/components/responses/notAuthorized"
+#       403:
+#         $ref: "#/components/responses/forbidden"
+#       404:
+#         description: Valid request, but package not found
+#       406:
+#         $ref: "#/components/responses/notAcceptable"
+#
