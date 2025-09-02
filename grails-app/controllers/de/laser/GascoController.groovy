@@ -183,10 +183,10 @@ class GascoController {
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-                query += " order by LOWER(ie.tipp.sortname)"
 
-                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams, [max: result.max, offset: result.offset])
-                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
+                result.issueEntitlements = IssueEntitlement.executeQuery(query +" order by LOWER(ie.tipp.sortname)", queryParams, [max: result.max, offset: result.offset])
+                query = query.replace('SELECT ie ', "select count(*) ")
+                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery(query, queryParams)[0]
             }
             else {
                 redirect controller: 'gasco', action: 'monitor'
