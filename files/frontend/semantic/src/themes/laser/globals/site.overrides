@@ -117,12 +117,6 @@ aside.ui.accordion .title:not(.ui) {
             box-shadow: 0px 12px 0px 0px @blue;
         }
     }
-    .logo {
-        height: auto;
-        width: 144px;
-        padding-right: 2rem;
-
-    }
     .ui.segment {
         padding: 2em 1em;
         background: transparent;
