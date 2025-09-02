@@ -57,7 +57,7 @@
     </div>
 
     <g:if test="${issueEntitlements}">
-        <ui:paginate action="details" controller="gasco" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
+        <ui:paginate action="details" controller="gasco" params="${params}" max="${max}" total="${issueEntitlementsFilterCount}"/>
     </g:if>
 </div>
 <laser:htmlEnd />
