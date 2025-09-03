@@ -24,7 +24,7 @@
     <g:render template="/layouts/favicon" />
 </head>
 
-    <body class="gasco ${controllerName}_${actionName}">
+    <body class="gascoContainer ${controllerName}_${actionName}">
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
         <laser:render template="/templates/system/serverIndicator" />

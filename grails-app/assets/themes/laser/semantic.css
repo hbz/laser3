@@ -1345,12 +1345,6 @@ aside.ui.accordion .title:not(.ui) {
   box-shadow: 0px 12px 0px 0px #004678;
 }
 
-.landingpage .logo {
-  height: auto;
-  width: 144px;
-  padding-right: 2rem;
-}
-
 .landingpage .ui.segment {
   padding: 2em 1em;
   background: transparent;
@@ -1804,11 +1798,12 @@ i.icon.la-list-icon:before {
         GASCO
 *****************************************/
 
-body[class*="gasco_"] {
+body[class*="gasco_"],
+body[class*="gasco_"].pushable > .pusher {
   background: #f5ede9;
 }
 
-.gasco {
+.gascoContainer {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -1816,6 +1811,12 @@ body[class*="gasco_"] {
 
 .gasco a {
   color: #b50018;
+}
+
+.gasco .gasco-tooltip:hover {
+  background-color: #b50018;
+  cursor: help;
+  color: white;
 }
 
 .gasco .ui.button {
@@ -1826,8 +1827,8 @@ body[class*="gasco_"] {
 .gasco .ui.button.red,
 .gasco .ui.button.primary,
 .gasco .ui.button.la-modern-button {
-  background-color: #b50018;
-  color: white;
+  background-color: #b50018 !important;
+  color: white!important;
 }
 
 .gasco .ui.button.secondary {
@@ -1861,6 +1862,10 @@ body[class*="gasco_"] {
 .gasco .ui.secondary.menu .item.active {
   color: #b50018;
   background: none;
+}
+
+.gasco .ui.menu:not(.vertical) .item {
+  color: #b50018;
 }
 
 .gasco h1.ui.header {

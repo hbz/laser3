@@ -1084,6 +1084,9 @@ class CopyElementsService {
             } else if (sourceObject instanceof License) {
                 task = Task.findByLicenseAndId(sourceObject, tsk)
             }
+            else if (sourceObject instanceof SurveyConfig) {
+                task = Task.findBySurveyConfigAndId(sourceObject, tsk)
+            }
             if (task) {
                 if (task.status != RDStore.TASK_STATUS_DONE) {
                     Task newTask = new Task()
