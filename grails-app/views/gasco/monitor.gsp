@@ -198,12 +198,12 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="monitorData" data-key="${sub.id}">
-                                <i class="${Icon.UI.INFO}"></i>
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink la-popup-tooltip" data-content="Weitere Informationen" controller="gasco" action="monitorData" data-key="${sub.id}">
+                                    <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <span data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                            <span role="tooltip" data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
                                 <i class="icon grey minus circle"></i>
                             </span>
                         </g:else>
