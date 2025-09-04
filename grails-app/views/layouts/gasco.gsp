@@ -3,7 +3,7 @@
 
 <g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 
-<html>
+<html lang="de">
 <head>
     <meta charset="utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
