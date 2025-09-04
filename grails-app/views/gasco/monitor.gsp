@@ -120,7 +120,7 @@
                 <span id="js-consortium-header">${message(code:'gasco.table.consortium')}</span>
                 <span id="js-negotiator-header">${message(code:'gasco.table.negotiator')}</span>
             </th>
-            <th> </th>
+            <th>Informationen</th>
         </tr>
         </thead>
         <tbody>
