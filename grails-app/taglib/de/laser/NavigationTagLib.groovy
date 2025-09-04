@@ -237,7 +237,7 @@ class NavigationTagLib {
             out << link(allLinkAttrs, '<i class="list icon"></i>')
         }
         else {
-            out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
+            out << '<div class="disabled item la-popup-tooltip" role="tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
 
         // Custom Input

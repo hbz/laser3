@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6774    01.09.2025  rc-3.5  3.5.5       Ingrid Feature      Neue View zum Thema API
+
 6734    01.09.2025  rc-3.5  3.5.5       Ingrid Feature      GASCO Neuer Webauftritt
 
 6792    27.08.2025  rc-3.5  3.5.5       Andreas Feature     zusätzliche Sortierung nach Merkmalswert
