@@ -117,12 +117,6 @@ aside.ui.accordion .title:not(.ui) {
             box-shadow: 0px 12px 0px 0px @blue;
         }
     }
-    .logo {
-        height: auto;
-        width: 144px;
-        padding-right: 2rem;
-
-    }
     .ui.segment {
         padding: 2em 1em;
         background: transparent;
@@ -513,4 +507,164 @@ i.icon.la-list-icon{
 }
 .la-display-none {
     display: none;
+}
+/****************************************
+        GASCO
+*****************************************/
+
+body[class*="gasco_"],
+body[class*="gasco_"].pushable>.pusher {
+    background:@gascoPink;
+}
+.gascoContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.gasco {
+    a {
+        color: @gascoRed;
+    }
+    .gasco-tooltip {
+        &:hover {
+            background-color: @gascoRed;
+            cursor: help;
+            color: white;
+        }
+    }
+    .ui.button {
+        background-color:@gascoRed;
+        border-radius: 1.25rem;
+        &.red,
+        &.primary,
+        &.la-modern-button{
+            background-color:@gascoRed!important;
+            color:white!important;
+        }
+        &.secondary {
+            background-color:@gascoGray;
+        }
+    }
+
+
+    .ui.divided.inverted.horizontal.list>.item {
+        font-size: 1.563rem;
+        border-color: #ffffff;
+        &:first-child {
+            padding-left:0;
+        }
+    }
+
+
+    .ui.secondary.menu {
+        font-size: 1.786rem;
+        background-color: white;
+        .item {
+            &:first-child {
+                margin: 0;
+                padding-left:0;
+            }
+            font-weight: 700;
+            color: @gascoTeal;
+            &.active{
+                color: @gascoRed;
+                background: none;
+            }
+        }
+    }
+    .ui.menu:not(.vertical) .item {
+        color: @gascoRed;
+    }
+    h1.ui.header {
+        font-size: 3.063rem;
+        color: @gascoTurquoise;
+    }
+    h2.ui.header {
+        font-size: 2.438rem;
+        color: @gascoTeal;
+    }
+    .ui.striped.table {
+      thead tr:first-child>th {
+        background-color: transparent;
+      }
+      border-collapse: collapse;
+      width: 100%;
+      border-spacing: 5rem 2rem;
+      tbody {
+        &>tr {
+            &:nth-child(2n) {
+                background-color: @gascoGraylight;
+            }
+          margin-top: 10px;
+          th:not(.la-th-column):not(.la-no-uppercase) {
+              font-size: 1rem;
+          }
+          &>td,&>th{
+            border-top: none;
+            padding: 8px;
+            padding-top: 1.25rem;
+            padding-bottom: 1.25rem;
+          }
+        }
+      }
+
+
+      td:first-child,
+      th:first-child {
+        border-radius: 1.25rem 0 0 1.25rem;
+      }
+      td:last-child,
+      th:last-child {
+        border-radius: 0 1.25rem 1.25rem 0;
+      }
+    }
+    input[type=text],
+    .ui.search.dropdown>input.search,
+    .ui.selection.dropdown {
+        background-color: transparent!important;
+        border-radius: 1.25rem!important;
+    }
+
+    .ui.segment {
+        border: 1px solid @gascoTeal;
+        border-radius: 1.25rem;
+        background-color: transparent;
+         &.la-filter {
+            border: 1px solid @gascoTeal;
+            border-radius: 1.25rem;
+            background-color: transparent;
+        }
+    }
+
+    // Accordion for 'see more content'
+    .ui.segments.la-accordion-segments {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid @laDecorationColor;
+      &:last-child {
+        border-bottom:none;
+      }
+      > .segment {
+        border-top: none;
+      }
+      .ui.segment:nth-child(2).content {
+        .ui.table thead tr:first-child > th,
+        .ui.table thead tr:nth-child(2) > th{
+          background: #f4f8f9;
+        }
+        background:#f5ede996;
+      }
+    }
+    .ui.image.label .detail.js-copyTopic {
+        background: @gascoRed;
+    }
+    .ui.card {
+        border: 1px solid @gascoTeal;
+        border-radius: 1.25rem;
+    }
+
+    main.ui.container.main {
+        margin-top: 135px;
+    }
 }

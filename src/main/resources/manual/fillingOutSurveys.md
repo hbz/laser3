@@ -5,7 +5,6 @@ Umfragen sind die primäre Kommunikationsmethode in LAS:eR. Über sie können di
 Sie starten immer in der **Übersicht**, in der Sie grundlegende Informationen zu der Lizenz erhalten. 
 Dort können die Konsortialstellen einen Erklärungstext hinterlegen, die Lizenzkosten aufführen oder Dokumente zur Sichtung hochladen. Auch besitzt jede Umfrage *Merkmale*, die einrichtungsseitig ausgefüllt werden müssen/können. 
 Ob es sich um ein Pflichtmerkmal handelt, erkennen Sie an dem gelben Stern in der Spalte *Pflicht*.
-![Pflichtstern]({{url_laser_static}}/media/survey/01_PflichtsternUmfrage.png "Pflichtstern" tiny)
 
 Darüber hinaus kann eine Umfrage weitere Unterseiten besitzen. Diese werden über die Leiste unter dem Feld *Umfrage-Ersteller* navigiert. Durch einen Klick auf den Reiternamen gelangen Sie zu den neuen Ansichten. 
 Die Reiter *Übersicht, Umfrage-Kontakte* und *zusätzliche Infos* tauchen in jeder Umfrage auf. 

@@ -121,6 +121,8 @@ class ApiController {
         String value   = params.get('v', '')
         String ezbOrgId   = params.get('ezbOrgId', '')
         String changedFrom = params.get('changedFrom', '')
+        int max = params.containsKey('max') ? params.int('max') : 20000
+        int offset = params.containsKey('offset') ? params.int('offset') : 0
         String context = params.get('context')
         String format
 
@@ -200,7 +202,9 @@ class ApiController {
                             (String) ezbOrgId,
                             (Org) contextOrg,
                             format,
-                            changedDate
+                            changedDate,
+                            max,
+                            offset
                     )
 
                     if (result instanceof Doc) {
@@ -249,6 +253,7 @@ class ApiController {
             response.setCharacterEncoding(Constants.UTF8)
             response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
             response.setStatus(status)
+            log.debug("API Call [${apiOrg?.id}] - (Code: ${status}, Time: ${responseTime}, Length: ${respStruct.length().toString()})")
             render respStruct
             /*
             if (debugMode) {

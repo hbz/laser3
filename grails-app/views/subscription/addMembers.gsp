@@ -278,18 +278,22 @@
 
                                                     <div class="field">
                                                         <g:if test="${validPackagesNextSub}">
-                                                            <div class="grouped fields">
-                                                                <div class="field">
-                                                                    <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
-                                                                        <input type="checkbox" id="linkAllPackages_${nextSub.id}"
-                                                                               name="linkAllPackages_${nextSub.id}">
-                                                                        <label for="linkAllPackages"><g:message
-                                                                                code="myinst.addMembers.linkAllPackages"/></label>
+                                                            <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                                                <g:hiddenField name="linkAllPackages_${nextSub.id}" value="on"/>
+                                                                <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <div class="grouped fields">
+                                                                    <div class="field">
+                                                                        <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
+                                                                            <input type="checkbox" id="linkAllPackages_${nextSub.id}"
+                                                                                   name="linkAllPackages_${nextSub.id}">
+                                                                            <label for="linkAllPackages"><g:message
+                                                                                    code="myinst.addMembers.linkAllPackages"/></label>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
 
-                                                                <div class="field">
-                                                                    <g:if test="${nextSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                                                    <div class="field">
                                                                         <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
                                                                             <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
                                                                                    name="linkWithEntitlements_${nextSub.id}">
@@ -300,9 +304,9 @@
                                                                                   optionKey="id" optionValue="${{ it.getPackageName() }}"
                                                                                   from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
                                                                                   noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
-                                                                    </g:if>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </g:else>
                                                         </g:if>
                                                         <g:else>
                                                             <g:message code="subscriptionsManagement.noValidPackages"/>

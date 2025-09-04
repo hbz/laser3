@@ -49,7 +49,6 @@ class ConfigMapper {
     static final List NOTIFICATIONS_JOB_ACTIVE                = ['notificationsJobActive', Boolean]
 
     static final List PGDUMP_PATH           = ['pgDumpPath', String]
-    static final List QUARTZ_HEARTBEAT      = ['quartzHeartbeat', Date]
     static final List REPORTING             = ['reporting', Map]
 
     static final List SHOW_DEBUG_INFO                       = ['showDebugInfo',  Boolean]
@@ -77,7 +76,6 @@ class ConfigMapper {
             MULE_JOB_ACTIVE,
             NOTIFICATIONS_EMAIL_FROM, NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, NOTIFICATIONS_EMAIL_REPLY_TO, NOTIFICATIONS_JOB_ACTIVE,
             PGDUMP_PATH,
-            QUARTZ_HEARTBEAT,
             REPORTING,
             SHOW_DEBUG_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
             WEKB_API_USERNAME, WEKB_API_PASSWORD, WEKB_SERVER_URL
@@ -125,11 +123,7 @@ class ConfigMapper {
     }
 
     static def setConfig(String token, def value) {
-        if (token == QUARTZ_HEARTBEAT[0]) {
-            log.debug 'Changing grailsApplication.config -> ' + token + ' = ' + value
-        } else {
-            log.warn 'Changing grailsApplication.config -> ' + token + ' = ' + value
-        }
+        log.warn 'Changing grailsApplication.config -> ' + token + ' = ' + value
 
         Holders.grailsApplication.config.put(token, value)
     }
@@ -207,9 +201,6 @@ class ConfigMapper {
     }
     static String getPgDumpPath(int output = LOGGER) {
         readConfig( PGDUMP_PATH, output )
-    }
-    static Date getQuartzHeartbeat(int output = LOGGER) {
-        readConfig( QUARTZ_HEARTBEAT, output ) as Date
     }
     static Map getReporting(int output = LOGGER) {
         readConfig( REPORTING, output ) as Map

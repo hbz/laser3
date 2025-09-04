@@ -2132,21 +2132,22 @@ class SurveyService {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
 
         if(contextSubscriptions.size() > 0 && issueEntitlementGroup) {
-            Set<Subscription> subs = []
+            Set<Long> subs = []
             contextSubscriptions.each { Subscription s ->
-                subs << s
+                subs << s.id
                 if (s.instanceOf && auditService.getAuditConfig(s.instanceOf, 'holdingSelection'))
-                    subs << s.instanceOf
+                    subs << s.instanceOf.id
             }
-            Set<Subscription> otherSubscriptions = subscriptionService.getSubscriptionsWithPossiblePerpetualTitles(subscription.getSubscriber())
-            otherSubscriptions.removeAll(contextSubscriptions)
-            Set<String> subscribedHostPlatformURLs = TitleInstancePackagePlatform.executeQuery("select tipp.hostPlatformURL from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where sp.pkg = tipp.pkg and sp.subscription in (:subs)", [subs: contextSubscriptions])
-            List ieDirectCount = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :tippStatus and ie not in (select igi.ie from IssueEntitlementGroupItem igi where igi.ieGroup = :ieGroup)", [subs: subs, tippStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
-            List ieIndirectCount = PermanentTitle.executeQuery("select count(*) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (:subscribedHostPlatformURLs) and pt.subscription in (:otherSubs)", [subscribedHostPlatformURLs: subscribedHostPlatformURLs, otherSubs: otherSubscriptions])
-            if(ieDirectCount)
-                count += ieDirectCount[0]
+            Set<Long> otherSubscriptions = subscriptionService.getSubscriptionsWithPossiblePerpetualTitles(subscription.getSubscriber())
+            otherSubscriptions.removeAll(contextSubscriptions.id)
+            //log.debug("select count(*) as col_0_0_ from permanent_title permanentt0_ inner join title_instance_package_platform titleinsta1_ on permanentt0_.pt_tipp_fk=titleinsta1_.tipp_id where (titleinsta1_.tipp_host_platform_url in (select titleinsta2_.tipp_host_platform_url from title_instance_package_platform titleinsta2_ cross join subscription_package subscripti3_ where subscripti3_.sp_pkg_fk=titleinsta2_.tipp_pkg_fk and (subscripti3_.sp_sub_fk in (${contextSubscriptions.id.join(',')})) and titleinsta2_.tipp_status_rv_fk!=3310)) and (permanentt0_.pt_subscription_fk in (${otherSubscriptions.join(',')}))")
+            //Set<String> subscribedHostPlatformURLs = TitleInstancePackagePlatform.executeQuery("select tipp.hostPlatformURL from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where sp.pkg = tipp.pkg and sp.subscription in (:subs)", [subs: contextSubscriptions])
+            List ieIndirectCount = PermanentTitle.executeQuery("select count(*) from PermanentTitle pt join pt.tipp tipp where tipp.hostPlatformURL in (select th.hostPlatformURL from TitleInstancePackagePlatform th, SubscriptionPackage sp where sp.pkg = th.pkg and sp.subscription in (:subs) and th.status != :removed) and pt.subscription.id in (:otherSubs)", [subs: contextSubscriptions, removed: RDStore.TIPP_STATUS_REMOVED, otherSubs: otherSubscriptions])
             if(ieIndirectCount)
                 count += ieIndirectCount[0]
+            List ieDirectCount = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id in (:subs) and ie.perpetualAccessBySub.id in (:subs) and ie.status = :tippStatus and ie not in (select igi.ie from IssueEntitlementGroupItem igi where igi.ieGroup = :ieGroup)", [subs: subs, tippStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+            if(ieDirectCount)
+                count += ieDirectCount[0]
                 /*
                 List<GroovyRowResult> titles = sql.rows("select count(*) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                         " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
@@ -3094,7 +3095,7 @@ class SurveyService {
                                         CostItem ci
                                         if(pkg){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, pickedElement, pkg)
-                                        }else if(subscription){
+                                        }else if(surveyConfigSubscription){
                                             ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndSurveyConfigSubscription(surveyOrg, contextOrg, pickedElement, surveyConfigSubscription)
                                         }
                                         else {

@@ -560,19 +560,19 @@ class PropertyService {
         if (! orphanedIds.isEmpty()) {
             switch (obj.class.simpleName) {
                 case License.class.simpleName:
-                    String query = "select prop from LicenseProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    String query = "select prop from LicenseProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.decValue"
                     result = LicenseProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Subscription.class.simpleName:
-                    String query = "select prop from SubscriptionProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    String query = "select prop from SubscriptionProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.decValue"
                     result = SubscriptionProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Org.class.simpleName:
-                    String query = "select prop from OrgProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    String query = "select prop from OrgProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.decValue"
                     result = OrgProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
                 case Platform.class.simpleName:
-                    String query = "select prop from PlatformProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}"
+                    String query = "select prop from PlatformProperty prop join prop.type pd where prop.id in (:orphanedIds) order by pd.${localizedName}, prop.stringValue, prop.longValue, prop.decValue"
                     result = PlatformProperty.executeQuery(query, [orphanedIds: orphanedIds])
                     break
             }

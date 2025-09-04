@@ -1,15 +1,19 @@
-<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.storage.BeanStore; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}">
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" publicLayout="gasco">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
+<div class="gasco">
+    <g:render template="/layouts/gasco/nav" />
 
-    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" type="gasco" />
+    <h1 class="ui header">
+        <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+    </h1>
 
     <div class="ui grid">
-        <div class="eleven wide column">
-            <div class="ui la-gasco segment">
-                <g:form action="gasco" controller="public" method="get" class="ui small form">
+        <div class="sixteen wide column">
+            <div class="ui segment">
+                <g:form controller="gasco" action="monitor" method="get" class="ui small form">
 
                     <div class="field">
                         <label for="search">${message(code: 'default.search.label')}</label>
@@ -74,10 +78,8 @@
                 </g:form>
             </div>
         </div>
-        <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco-logo.jpg')}"/>
-        </div>
     </div>
+
     <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.toggleFilterPart = function () {
                 if ($('.js-consortiallicence input').prop('checked')) {
@@ -107,8 +109,8 @@
     </laser:script>
 
     <g:if test="${subscriptions}">
-
-    <table class="ui celled la-js-responsive-table la-table table">
+    <br><br>
+    <table class="ui striped table">
         <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>
@@ -118,7 +120,7 @@
                 <span id="js-consortium-header">${message(code:'gasco.table.consortium')}</span>
                 <span id="js-negotiator-header">${message(code:'gasco.table.negotiator')}</span>
             </th>
-            <th> </th>
+            <th>Informationen</th>
         </tr>
         </thead>
         <tbody>
@@ -151,7 +153,7 @@
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
                                 <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <g:link controller="gasco" action="monitorDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
@@ -196,12 +198,12 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
-                                <i class="${Icon.UI.INFO}"></i>
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink la-popup-tooltip" data-content="Weitere Informationen" controller="gasco" action="monitorData" data-key="${sub.id}">
+                                    <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <span data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                            <span role="tooltip" data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
                                 <i class="icon grey minus circle"></i>
                             </span>
                         </g:else>
@@ -363,10 +365,11 @@
             })
         });
 
-%{--        tooltip.init('#gascoFlyout');--}%
+    %{--        tooltip.init('#gascoFlyout');--}%
     </laser:script>
 
     </g:if>%{-- {subscriptions} --}%
+</div>
 
 <style>
 #gascoFlyout .filter .button {

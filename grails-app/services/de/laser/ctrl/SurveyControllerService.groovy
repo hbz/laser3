@@ -407,6 +407,32 @@ class SurveyControllerService {
 
             }
 
+            if (result.participants && (params.sortOnSubCostItemsDown || params.sortOnSubCostItemsUp) && !params.sort) {
+                String orderByQuery = " order by c.costInBillingCurrency ASC"
+
+                if (params.sortOnSubCostItemsUp) {
+                    result.sortOnSubCostItemsUp = true
+                    orderByQuery = " order by c.costInBillingCurrency DESC"
+                    params.remove('sortOnSubCostItemsUp')
+                } else {
+                    params.remove('sortOnSubCostItemsDown')
+                }
+
+                if(result.surveyConfig.subscription) {
+                    String queryCostItemSub = "select orgR.org from CostItem as c join c.sub cSub join cSub.orgRelations orgR where c.surveyConfigSubscription is null and c.sub is not null and c.pkg is null " +
+                            "and orgR.roleType in :roleTypes and cSub.instanceOf = :instanceOfSub and orgR.org in (select surOrg.org from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) " +
+                            "and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
+
+                    result.participants = CostItem.executeQuery(queryCostItemSub, [surConfig      : result.surveyConfig,
+                                                                                   owner          : result.surveyInfo.owner,
+                                                                                   status         : RDStore.COST_ITEM_DELETED,
+                                                                                   roleTypes      : [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS],
+                                                                                   instanceOfSub  : result.surveyConfig.subscription,
+                                                                                   costItemElement: Long.valueOf(result.selectedCostItemElementID)])
+                }
+
+            }
+
             if(result.surveyConfig.subscription){
                 String queryCostItemSub = "select c from CostItem as c where (c.surveyConfigSubscription is null and c.sub is not null and c.pkg is null) and c.sub in " +
                         "(select sub from Subscription sub join sub.orgRelations orgR where orgR.roleType in :roleTypes and sub.instanceOf = :instanceOfSub and orgR.org.id in (select surOrg.org from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig)) " +
@@ -2375,8 +2401,6 @@ class SurveyControllerService {
                 }
             }
 
-            result.participants = result.participants.sort { it.org.sortname }
-
             if(!params.fileformat) {
                  List charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
                 if(result.surveyConfig.vendorSurvey) {
@@ -4245,6 +4269,7 @@ class SurveyControllerService {
             executorService.execute({
                 Thread.currentThread().setName('PackageTransfer_' + result.parentSuccessorSubscription.id)
                 pkgsToProcess.each { Package pkg ->
+                    subscriptionService.cachePackageName("PackageTransfer_" + result.parentSuccessorSubscription.id, pkg.name)
                     permittedSubs.each { Subscription selectedSub ->
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                         if (processOption =~ /^link/) {

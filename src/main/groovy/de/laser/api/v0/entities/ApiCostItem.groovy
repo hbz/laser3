@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.RefdataValue
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.Org
@@ -20,7 +21,7 @@ class ApiCostItem {
 
     /**
      * Locates the given {@link CostItem} and returns the object (or null if not found) and the request status for further processing
-     * @param the field to look for the identifier, one of {id, globalUID}
+     * @param the field to look for the identifier, one of {id, laserID}
      * @param the identifier value
      * @return {@link ApiBox}(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
      * @see ApiBox#validatePrecondition_1()
@@ -37,7 +38,7 @@ class ApiCostItem {
                     }
                 }
                 break
-            case 'globalUID':
+            case 'laserID':
                 result.obj = CostItem.findAllByGlobalUID(value)
                 if(!result.obj) {
                     DeletedObject.withTransaction {
@@ -159,7 +160,7 @@ class ApiCostItem {
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
 
-        result.globalUID           = costItem.globalUID
+        result.laserID             = costItem.globalUID
 
         result.costInBillingCurrency            = costItem.costInBillingCurrency
         result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax
@@ -207,6 +208,16 @@ class ApiCostItem {
         result.budgetCodes = costItem.budgetcodes.collect { BudgetCode bc -> bc.value }.unique()
         result.orderNumber    = costItem.order?.orderNumber
         result.invoiceNumber  = costItem.invoice?.invoiceNumber
+        if(costItem.costInformationDefinition) {
+            result.costInformation = [
+                    token: costItem.costInformationDefinition.getI10n('name'),
+                    type: costItem.costInformationDefinition.validTypes[costItem.costInformationDefinition.type]['en'],
+                    value: costItem.getCostInformationValue()
+            ]
+            if(costItem.costInformationDefinition.type == RefdataValue.class.name) {
+                result.costInformation.refdataCategory = costItem.costInformationDefinition.refdataCategory
+            }
+        }
         result.surveyOrg = costItem.surveyOrg ?: null
 
         ApiToolkit.cleanUp(result, true, true)

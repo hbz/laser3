@@ -7,6 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6774    01.09.2025  rc-3.5  3.5.5       Ingrid Feature      Neue View zum Thema API
+
+6734    01.09.2025  rc-3.5  3.5.5       Ingrid Feature      GASCO Neuer Webauftritt
+
+6792    27.08.2025  rc-3.5  3.5.5       Andreas Feature     zusätzliche Sortierung nach Merkmalswert
+
+6785    25.08.2025  rc-3.5  3.5.5       Andreas Feature     Erweitern der zulässigen TLD-Zeichenbereiche
+
+6763    21.08.2025  rc-3.5  3.5.5       Andreas Bug         Feldtrennerüberprüfung überbrückt
+
+6772    20.08.2025  rc-3.5  3.5.5       Andreas Bug         falscher Getter bei der Absatznummer
+
+6765    15.08.2025  rc-3.5  3.5.5       Andreas Bug         Paketname wurde beim Übertrag nicht hinterlegt
+
+6762    14.08.2025  rc-3.5  3.5.5       David   Feature     Namensräume verwalten
+
+6761    14.08.2025  rc-3.5  3.5.5       Andreas Bug         fehlende Entfernt-Markierung von Paketen und Plattformen behoben
+
+6758    14.08.2025  rc-3.5  3.5.5       Andreas Bug         bei Mehrjahreslaufzeit wurde die Vererbung von Paketen nicht berücksichtigt
+
+6727    14.08.2025  rc-3.5  3.5.5       Andreas Bug         500er beim Ergänzen von Rechungssummen behoben
+
+6751    13.08.2025  rc-3.5  3.5.5       Andreas Feature     Performanzoptimierung bei der Umfrage-Ergebnissicht
+
+6755    13.08.2025  rc-3.5  3.5.5       David   Feature     Anzeige des Datums des Datenabzugs von Prod      
+
 6744    07.08.2025  rc-3.5  3.5.4       Andreas Bug         500er wegen Teilung durch Null
 
 6740    05.08.2025  rc-3.5  3.5.4       Andreas Bug         Umfrage-Kosten konnten ohne Element angelegt werden

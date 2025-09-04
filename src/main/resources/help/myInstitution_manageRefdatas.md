@@ -1,1 +1,1 @@
-Hier finden Sie eine Übersicht aller vorgebenen Referenzwerte, die bei den jeweiligen Merkmalen ausgewählt werden können. 
+Hier finden Sie eine Übersicht aller in LAS:eR vorhandener Referenzwerte, die bei den eigenen Merkmalen mit dem ausgewählten Wertetyp *Referenzwert* ausgewählt werden können. 

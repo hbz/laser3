@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.ui.CSS; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.system.SystemSetting" %>
 <laser:htmlStart message="menu.yoda.systemSettings" />
 
 <ui:breadcrumbs>
@@ -13,7 +13,7 @@
     <g:set var="systemInsightEnabled" value="${SystemSetting.findByName('SystemInsight').value == 'true'}" />
 
     <ui:msg class="info" hideClose="true">
-        <icon:pointingHand /> ${message(code: 'system.maintenanceMode.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+        <icon:pointingHand /> ${message(code: 'system.maintenanceMode.info')}
     </ui:msg>
 
 <div class="ui fluid card">

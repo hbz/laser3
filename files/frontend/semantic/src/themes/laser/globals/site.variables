@@ -155,17 +155,18 @@
 
 @secondaryColor      : @lightBlack;
 
+/*-------------------
+    GASCO Colors
+--------------------*/
 
-
-
-
-
-
-
-
-
-
-
+@gascoPink      : #f5ede9;
+@gascoRed       : #b50018;
+@gascoTurquoise : #2490C2;
+@gascoTeal      : #425259;
+@gascoTealLight : #728e96;
+@gascoBlack     : #1d1d1b;
+@gascoGray      : #606060;
+@gascoGraylight : #e4dfdc;
 
 
 

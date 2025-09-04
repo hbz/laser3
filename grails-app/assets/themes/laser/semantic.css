@@ -1345,12 +1345,6 @@ aside.ui.accordion .title:not(.ui) {
   box-shadow: 0px 12px 0px 0px #004678;
 }
 
-.landingpage .logo {
-  height: auto;
-  width: 144px;
-  padding-right: 2rem;
-}
-
 .landingpage .ui.segment {
   padding: 2em 1em;
   background: transparent;
@@ -1798,6 +1792,186 @@ i.icon.la-list-icon:before {
 
 .la-display-none {
   display: none;
+}
+
+/****************************************
+        GASCO
+*****************************************/
+
+body[class*="gasco_"],
+body[class*="gasco_"].pushable > .pusher {
+  background: #f5ede9;
+}
+
+.gascoContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.gasco a {
+  color: #b50018;
+}
+
+.gasco .gasco-tooltip:hover {
+  background-color: #b50018;
+  cursor: help;
+  color: white;
+}
+
+.gasco .ui.button {
+  background-color: #b50018;
+  border-radius: 1.25rem;
+}
+
+.gasco .ui.button.red,
+.gasco .ui.button.primary,
+.gasco .ui.button.la-modern-button {
+  background-color: #b50018 !important;
+  color: white!important;
+}
+
+.gasco .ui.button.secondary {
+  background-color: #606060;
+}
+
+.gasco .ui.divided.inverted.horizontal.list > .item {
+  font-size: 1.563rem;
+  border-color: #ffffff;
+}
+
+.gasco .ui.divided.inverted.horizontal.list > .item:first-child {
+  padding-left: 0;
+}
+
+.gasco .ui.secondary.menu {
+  font-size: 1.786rem;
+  background-color: white;
+}
+
+.gasco .ui.secondary.menu .item {
+  font-weight: 700;
+  color: #425259;
+}
+
+.gasco .ui.secondary.menu .item:first-child {
+  margin: 0;
+  padding-left: 0;
+}
+
+.gasco .ui.secondary.menu .item.active {
+  color: #b50018;
+  background: none;
+}
+
+.gasco .ui.menu:not(.vertical) .item {
+  color: #b50018;
+}
+
+.gasco h1.ui.header {
+  font-size: 3.063rem;
+  color: #2490C2;
+}
+
+.gasco h2.ui.header {
+  font-size: 2.438rem;
+  color: #425259;
+}
+
+.gasco .ui.striped.table {
+  border-collapse: collapse;
+  width: 100%;
+  border-spacing: 5rem 2rem;
+}
+
+.gasco .ui.striped.table thead tr:first-child > th {
+  background-color: transparent;
+}
+
+.gasco .ui.striped.table tbody > tr {
+  margin-top: 10px;
+}
+
+.gasco .ui.striped.table tbody > tr:nth-child(2n) {
+  background-color: #e4dfdc;
+}
+
+.gasco .ui.striped.table tbody > tr th:not(.la-th-column):not(.la-no-uppercase) {
+  font-size: 1rem;
+}
+
+.gasco .ui.striped.table tbody > tr > td,
+.gasco .ui.striped.table tbody > tr > th {
+  border-top: none;
+  padding: 8px;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+.gasco .ui.striped.table td:first-child,
+.gasco .ui.striped.table th:first-child {
+  border-radius: 1.25rem 0 0 1.25rem;
+}
+
+.gasco .ui.striped.table td:last-child,
+.gasco .ui.striped.table th:last-child {
+  border-radius: 0 1.25rem 1.25rem 0;
+}
+
+.gasco input[type=text],
+.gasco .ui.search.dropdown > input.search,
+.gasco .ui.selection.dropdown {
+  background-color: transparent!important;
+  border-radius: 1.25rem !important;
+}
+
+.gasco .ui.segment {
+  border: 1px solid #425259;
+  border-radius: 1.25rem;
+  background-color: transparent;
+}
+
+.gasco .ui.segment.la-filter {
+  border: 1px solid #425259;
+  border-radius: 1.25rem;
+  background-color: transparent;
+}
+
+.gasco .ui.segments.la-accordion-segments {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 1px solid #d3dae3;
+}
+
+.gasco .ui.segments.la-accordion-segments:last-child {
+  border-bottom: none;
+}
+
+.gasco .ui.segments.la-accordion-segments > .segment {
+  border-top: none;
+}
+
+.gasco .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content {
+  background: #f5ede996;
+}
+
+.gasco .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:first-child > th,
+.gasco .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:nth-child(2) > th {
+  background: #f4f8f9;
+}
+
+.gasco .ui.image.label .detail.js-copyTopic {
+  background: #b50018;
+}
+
+.gasco .ui.card {
+  border: 1px solid #425259;
+  border-radius: 1.25rem;
+}
+
+.gasco main.ui.container.main {
+  margin-top: 135px;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Button
@@ -47469,11 +47643,6 @@ dd {
 }
 
 .ui.segment.la-search {
-  background: #f1ebe5;
-  border: none;
-}
-
-.ui.segment.la-gasco {
   background: #f1ebe5;
   border: none;
 }

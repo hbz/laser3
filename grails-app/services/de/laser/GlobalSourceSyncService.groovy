@@ -122,7 +122,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.getUri()} since ${oldDate}")
                 SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
-                String componentType
+                String componentType = null
                 /*
                     structure:
                     { packageUUID: [
@@ -153,11 +153,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     if(result) {
-                        Set<String> permanentlyDeletedTitles = []
-                        if(source.rectype == RECTYPE_TIPP) {
-                            permanentlyDeletedTitles = getPermanentlyDeletedTitles(sdf.format(oldDate))
-                        }
-                        processScrollPage(result, componentType, sdf.format(oldDate), null, permanentlyDeletedTitles)
+                        Set<String> permanentlyDeletedRecords = getPermanentlyDeletedRecords(componentType, sdf.format(oldDate))
+                        processScrollPage(result, componentType, sdf.format(oldDate), null, permanentlyDeletedRecords)
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
@@ -247,7 +244,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Thread.currentThread().setName("PackageReload")
                 String componentType = 'TitleInstancePackagePlatform'
                 //preliminary: build up list of all deleted components
-                Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles()
+                Set<String> permanentlyDeletedTitles = getPermanentlyDeletedRecords(componentType)
                 /*
                     structure:
                     { packageUUID: [
@@ -612,11 +609,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param componentType the object type (TitleInstancePackagePlatform or Org) to update
      * @param changedSince the timestamp from which new records should be loaded
      * @param pkgFilter an optional package filter to restrict the data to be loaded
-     * @param permanentlyDeletedTitles a set of keys of permanently deleted titles in order to clear them in LAS:eR too
+     * @param permanentlyDeletedRecords a set of keys of permanently deleted records in order to clear them in LAS:eR too
      * @throws SyncException if an error occurs during the update process
      * @returns a {@link Set} of we:kb title UUIDs (used only for RECTYPE_TIPP)
      */
-    Set<String> processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
+    Set<String> processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedRecords = []) throws SyncException {
         Set<String> wekbTippUUIDs = []
         if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
             int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
@@ -657,7 +654,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     try {
                                         log.debug("now processing record #${i}, total #${i+offset}")
                                         Package pkg = createOrUpdatePackage(record)
-                                        if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
+                                        if(pkg.packageStatus in [RDStore.PACKAGE_STATUS_REMOVED, Constants.PERMANENTLY_DELETED]) {
                                             log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
                                             log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
                                             log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
@@ -676,6 +673,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
                                     }
                                 }
+                                permanentlyDeletedRecords.each { String key ->
+                                    Package pkg = Package.findByGokbId(key)
+                                    if(pkg) {
+                                        pkg.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
+                                        pkg.save()
+                                        log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                                        log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                        log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
+                                        log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                                    }
+                                }
                                 break
                             case RECTYPE_PLATFORM:
                                 result.records.each { record ->
@@ -687,11 +695,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
                                     }
                                 }
+                                permanentlyDeletedRecords.each { String key ->
+                                    Platform platform = Platform.findByGokbId(key)
+                                    if(platform) {
+                                        log.warn("Platform found, set cascading delete ...")
+                                        platform.status = RDStore.PLATFORM_STATUS_REMOVED
+                                        platform.save()
+                                    }
+                                }
                                 break
                             case RECTYPE_TIPP:
                                 wekbTippUUIDs.addAll( result.records.collect { tipp -> tipp.uuid } )
                                 if(offset == 0)
-                                    updateRecords(result.records, offset, permanentlyDeletedTitles)
+                                    updateRecords(result.records, offset, permanentlyDeletedRecords)
                                 else updateRecords(result.records, offset)
                                 break
                             case RECTYPE_VENDOR:
@@ -776,6 +792,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:record.uuid])
                         }
                     }
+                    permanentlyDeletedRecords.each { String key ->
+                        Package pkg = Package.findByGokbId(key)
+                        if(pkg) {
+                            pkg.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
+                            pkg.save()
+                            log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                            log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                            log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp.pkg = :pkg and pt.tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED])} permanent title (tipps) really deleted")
+                            log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                        }
+                    }
                     break
                 case RECTYPE_PLATFORM:
                     result.records.each { record ->
@@ -787,9 +814,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
                         }
                     }
+                    permanentlyDeletedRecords.each { String key ->
+                        Platform platform = Platform.findByGokbId(key)
+                        if(platform) {
+                            log.warn("Platform found, set cascading delete ...")
+                            platform.status = RDStore.PLATFORM_STATUS_REMOVED
+                            platform.save()
+                        }
+                    }
                     break
                 case RECTYPE_TIPP: wekbTippUUIDs.addAll( result.records.collect { tipp -> tipp.uuid } )
-                    updateRecords(result.records, 0, permanentlyDeletedTitles)
+                    updateRecords(result.records, 0, permanentlyDeletedRecords)
                     break
                 case RECTYPE_VENDOR:
                     result.records.each { record ->
@@ -2151,7 +2186,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param changedFrom the time from when deletions should be fetched
      * @return a {@link Set} of UUIDs pointing to deleted titles
      */
-    Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
+    Set<String> getPermanentlyDeletedRecords(String componentType, String changedFrom = null) {
         Set<String> result = []
         Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE, sort: 'lastUpdated']
         if(changedFrom)
@@ -2160,7 +2195,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         boolean more = true
         int offset = 0
         while(more) {
-            result.addAll(recordBatch.records.findAll { record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
+            result.addAll(recordBatch.records.findAll { record -> record.componentType == componentType }.collect { record -> record.uuid })
             more = recordBatch.currentPage < recordBatch.lastPage
             if(more) {
                 offset += MAX_TIPP_COUNT_PER_PAGE

@@ -1,13 +1,14 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper; org.grails.web.util.GrailsApplicationAttributes" %>
 <!doctype html>
 
-<html>
+<g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}" />
 
+<html>
 <head>
     <meta charset="utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
     <meta name="viewport" content="initial-scale = 1.0">
-    <g:if test="${AppUtils.getCurrentServer() == AppUtils.PROD && ConfigMapper.getGoogleSiteVerificationToken()}">
+    <g:if test="${currentServer == AppUtils.PROD && ConfigMapper.getGoogleSiteVerificationToken()}">
         <meta name="google-site-verification" content="${ConfigMapper.getGoogleSiteVerificationToken()}" />
     </g:if>
 
@@ -23,19 +24,23 @@
     <g:render template="/layouts/favicon" />
 </head>
 
-    <body class="public">
-
+    <body class="public ${controllerName}_${actionName}">
         <ui:skipLink />%{-- skip to main content - for screenreader --}%
 
-        <g:layoutBody/>%{-- body here --}%
-    
-        <div id="Footer">
-            <div class="clearfix"></div>
+        <laser:render template="/templates/system/serverIndicator" />
+
+        <div class="landingpage">
+            <laser:render template="/layouts/public/menu" />
+
+            <main class="ui main container">
+                <g:layoutBody/>%{-- body here --}%
+            </main>
+
+            <laser:render template="/layouts/public/footer" />
+
+            <laser:javascript src="laser.js"/>%{-- dont move --}%
+
+            <laser:scriptBlock/>%{-- dont move --}%
         </div>
-
-        <laser:javascript src="laser.js"/>%{-- dont move --}%
-
-        <laser:scriptBlock/>%{-- dont move --}%
-
     </body>
 </html>

@@ -211,7 +211,7 @@ class IconTagLib {
             }
         }
         if (hideSurroundingMarkup) {
-            out << '<div class="la-inline-flexbox la-popup-tooltip"'
+            out << '<div class="la-inline-flexbox la-popup-tooltip" role="tooltip"'
             if (hideTooltip){
                 out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
             }

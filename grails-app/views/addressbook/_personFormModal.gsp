@@ -384,7 +384,7 @@
     $.fn.form.settings.rules.isMinimalOneContactFilled = function() {
         if ($(".la-js-contactContent").val().length > 0) {
             if ($(this).parents('.contactField').find('.contentType select').val() == ${RDStore.CCT_EMAIL.id}){
-                let pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+                let pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/; //the maximum length of a TLD is 63 characters, according to https://www.rfc-editor.org/rfc/rfc1034 and https://data.iana.org/TLD/tlds-alpha-by-domain.txt
                 return pattern.test($(this).val()) ? true : false ;
             }
             else {

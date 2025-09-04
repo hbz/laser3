@@ -186,13 +186,13 @@
     <g:set var="sumDiffGBP" value="${0}"/>
 
 
-    <table class="ui compact celled sortable table la-js-responsive-table la-table">
+    <table id="tableSurveyParticipantsHasAccess" class="ui compact celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
             <g:if test="${showCheckboxForParticipantsHasAccess}">
                 <th>
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        <g:checkBox name="orgListToggler" id="surveyParticipantsHasAccess" checked="false"/>
                     </g:if>
                 </th>
             </g:if>
@@ -303,6 +303,8 @@
 
             <g:set var="participant"
                    value="${surveyOrg.org}"/>
+            <g:set var="subParticipant"
+                   value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
             <g:set var="surResults" value="[]"/>
             <g:each in="${surveyConfig.getSortedProperties()}" var="surveyProperty">
                 <% surResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participant, surveyConfig, surveyProperty) %>
@@ -420,8 +422,6 @@
                     </g:if>
 
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
-                        <g:set var="subParticipant"
-                               value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
 
                         <g:set var="diffEUR" value="${0}"/>
                         <g:set var="diffUSD" value="${0}"/>
@@ -434,19 +434,7 @@
                         <g:set var="sumListPriceSelectedIEsGBP"
                                value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
 
-                        <td class="center aligned">
-                            <g:set var="ieGroup"
-                                   value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
-                            <div class="ui circular label">
-                                <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                    ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
-                                </g:if>
-                                <g:else>
-                                    ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
-                                </g:else>
-                            </div>
-
-                        </td>
+                        <td class="center aligned surveyTitlesCount" data-surveyConfig="${surveyConfig.id}" data-subParticipant="${subParticipant.id}"></td>
                         <td>
                             <g:if test="${sumListPriceSelectedIEsEUR > 0}">
                                 <g:formatNumber
@@ -837,12 +825,12 @@
         <g:set var="sumDiffUSD" value="${0}"/>
         <g:set var="sumDiffGBP" value="${0}"/>
 
-        <table class="ui celled sortable table la-js-responsive-table la-table">
+        <table id="tableSurveyParticipantsHasNotAccess" class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <g:if test="${showCheckboxForParticipantsHasNoAccess}">
                     <th>
-                        <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        <g:checkBox name="orgListToggler" id="surveyParticipantsHasNotAccess" checked="false"/>
                     </th>
                 </g:if>
 
@@ -1077,19 +1065,7 @@
                             <g:set var="sumListPriceSelectedIEsGBP"
                                    value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subParticipant, surveyConfig, RDStore.CURRENCY_GBP)}"/>
 
-                            <td class="center aligned">
-                                <g:set var="ieGroup"
-                                       value="${IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subParticipant)}"/>
-                                <div class="ui circular label">
-                                    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                        ${surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(subParticipant, surveyConfig)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
-                                    </g:if>
-                                    <g:else>
-                                        ${subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subParticipant, ieGroup)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
-                                    </g:else>
-                                </div>
-
-                            </td>
+                            <td class="center aligned surveyTitlesCount" data-surveyConfig="${surveyConfig.id}" data-subParticipant="${subParticipant.id}"></td>
                             <td>
                                 <g:if test="${sumListPriceSelectedIEsEUR > 0}">
                                     <br>
@@ -1500,90 +1476,113 @@
 <laser:render template="/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">
-        $('#orgListToggler').click(function () {
+    <g:if test="${showCheckboxForParticipantsHasAccess}">
+        $('#surveyParticipantsHasAccess').click(function () {
             if ($(this).prop('checked')) {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+                $("#tableSurveyParticipantsHasAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
             } else {
-                $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+                $("#tableSurveyParticipantsHasAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
+            }
+        })
+    </g:if>
+    <g:if test="${showCheckboxForParticipantsHasNoAccess}">
+        $('#surveyParticipantsHasNotAccess').click(function () {
+            if ($(this).prop('checked')) {
+                $("#tableSurveyParticipantsHasNotAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', true)
+            } else {
+                $("#tableSurveyParticipantsHasNotAccess tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
     </g:if>
     <g:if test="${showTransferFields}">
+        JSPC.app.adjustDropdown = function () {
+            var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
 
+            url = url + '?'
 
- JSPC.app.adjustDropdown = function () {
-        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
-
-        url = url + '?'
-
-        var status = $("select#status").serialize()
-        if (status) {
-            url = url + '&' + status
-        }
-        var selectedSubIds = [];
-        <g:if test="${params.surveySubscriptions}">
-            <g:each in="${params.list('surveySubscriptions')}" var="subId">
+            var status = $("select#status").serialize()
+            if (status) {
+                url = url + '&' + status
+            }
+            var selectedSubIds = [];
+            <g:if test="${params.surveySubscriptions}">
+                <g:each in="${params.list('surveySubscriptions')}" var="subId">
                     selectedSubIds.push(${subId});
-            </g:each>
-        </g:if>
+                </g:each>
+            </g:if>
 
-        var dropdownSelectedObjects = $('#targetSubscriptionId');
+            var dropdownSelectedObjects = $('#targetSubscriptionId');
 
-        dropdownSelectedObjects.empty();
-        dropdownSelectedObjects.append($('<option></option>').attr('value', '').text("${message(code: 'default.select.choose.label')}"));
+            dropdownSelectedObjects.empty();
+            dropdownSelectedObjects.append($('<option></option>').attr('value', '').text("${message(code: 'default.select.choose.label')}"));
 
-    $.ajax({
-            url: url,
-            success: function (data) {
-                $.each(data, function (key, entry) {
-        <g:if test="${params.surveySubscriptions}">
-            if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
-               dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
-                    }else{
-                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
-                    }
-        </g:if>
-        <g:else>
-            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
-        </g:else>
-        });
-     }
-});
-}
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        <g:if test="${params.surveySubscriptions}">
+                            if(jQuery.inArray(entry.value, selectedSubIds) >=0 ){
+                                dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                            }
+                            else{
+                                dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                            }
+                        </g:if>
+                        <g:else>
+                            dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                        </g:else>
+                   });
+               }
+            });
+        }
 
-JSPC.app.adjustDropdown();
+        JSPC.app.adjustDropdown();
 
     </g:if>
     JSPC.app.propertiesChanged = function (propertyDefinitionId) {
         $.ajax({
             url: '<g:createLink controller="survey" action="showPropertiesChanged" params="[tab: params.tab, surveyConfigID: surveyConfig.id, id: surveyInfo.id]"/>&propertyDefinitionId='+propertyDefinitionId,
-        success: function(result){
-            $("#dynamicModalContainer").empty();
-            $("#modalPropertiesChanged").remove();
+            success: function(result){
+                $("#dynamicModalContainer").empty();
+                $("#modalPropertiesChanged").remove();
 
-            $("#dynamicModalContainer").html(result);
-            $("#dynamicModalContainer .ui.modal").modal('show');
-        }
-    });
-}
+                $("#dynamicModalContainer").html(result);
+                $("#dynamicModalContainer .ui.modal").modal('show');
+            }
+        });
+    }
 
-$('.normalExport').click(function(e) {
-    e.preventDefault();
-    $('#globalLoadingIndicator').show();
-    $("#downloadWrapper").hide();
-    $.ajax({
-        url: $(this).attr('href'),
-        type: 'POST',
-        contentType: false
-    }).done(function(response){
-        $("#downloadWrapper").html(response).show();
-        $('#globalLoadingIndicator').hide();
-    }).fail(function(resp, status){
-        $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen').show();
-        $('#globalLoadingIndicator').hide();
+    $('.normalExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $("#downloadWrapper").hide();
+        $.ajax({
+            url: $(this).attr('href'),
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response).show();
+            $('#globalLoadingIndicator').hide();
+        }).fail(function(resp, status){
+            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen').show();
+            $('#globalLoadingIndicator').hide();
+        });
     });
-});
+
+    $('.surveyTitlesCount').each(function(){
+        let wrapper = $(this);
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="getSurveyTitlesCount"/>',
+            data: {
+                surveyConfig: $(this).attr("data-surveyConfig"),
+                subParticipant: $(this).attr("data-subParticipant")
+            }
+        }).done(function(response){
+            wrapper.html(response);
+        }).fail(function(resp, status){
+            console.log(status+' '+resp);
+        });
+    });
 
 </laser:script>
 

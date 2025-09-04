@@ -311,11 +311,16 @@ class CopyElementsService {
                Date newEndDate = null
 
                use(TimeCategory) {
-                   if(subMember.isMultiYear && subMember.endDate){
-                       def duration = subMember.endDate - subMember.startDate
-                       newStartDate = subMember.endDate + 1.day
-                       newEndDate = newStartDate + duration.days.day
-                   }
+                   if (subMember.isMultiYear && subMember.endDate) {
+                       if (subMember.isCurrentMultiYearSubscriptionToParentSub()) {
+                           newStartDate = subMember.startDate
+                           newEndDate = subMember.endDate
+                       } else {
+                           def duration = subMember.endDate - subMember.startDate
+                           newStartDate = subMember.endDate + 1.day
+                           newEndDate = newStartDate + duration.days.day
+                       }
+                    }
 
                }
 
@@ -1080,12 +1085,19 @@ class CopyElementsService {
             } else if (sourceObject instanceof License) {
                 task = Task.findByLicenseAndId(sourceObject, tsk)
             }
+            else if (sourceObject instanceof SurveyConfig) {
+                task = Task.findBySurveyConfigAndId(sourceObject, tsk)
+            }
             if (task) {
                 if (task.status != RDStore.TASK_STATUS_DONE) {
                     Task newTask = new Task()
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
-                    newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    if(targetObject instanceof SurveyConfig){
+                        newTask.surveyConfig = targetObject
+                    }else{
+                        newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    }
                     _save(newTask, flash)
                 }
             }
@@ -1145,7 +1157,11 @@ class CopyElementsService {
                     if(dctx.id in toShare)
                         newDocContext.isShared = true
                     else newDocContext.isShared = false
-                    newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    if(targetObject instanceof SurveyConfig){
+                        newDocContext.surveyConfig = targetObject
+                    }else{
+                        newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                    }
                     newDocContext.owner = newDoc
                     _save(newDocContext, flash)
                 }
@@ -1328,7 +1344,11 @@ class CopyElementsService {
                         if(dctx.id in toShare)
                             newDocContext.isShared = true
                         else newDocContext.isShared = false
-                        newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                        if(targetObject instanceof SurveyConfig){
+                            newDocContext.surveyConfig = targetObject
+                        }else{
+                            newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
+                        }
                         newDocContext.owner = newDoc
                         _save(newDocContext, flash)
 
@@ -1845,6 +1865,7 @@ class CopyElementsService {
         try {
             packagesToTake.each { SubscriptionPackage subscriptionPackage ->
                 if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
+                    subscriptionService.cachePackageName("PackageTransfer_" + targetObject.id, subscriptionPackage.pkg.name)
                     List<OrgAccessPointLink> pkgOapls = []
                     if(subscriptionPackage.oapls)
                         pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)

@@ -875,11 +875,11 @@ class SubscriptionService {
         }
     }
 
-    Set<Subscription> getSubscriptionsWithPossiblePerpetualTitles(Org subscriber) {
+    Set<Long> getSubscriptionsWithPossiblePerpetualTitles(Org subscriber) {
         //local subscriptions
-        Set<Subscription> candidateSubscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType = :local", [subscriber: subscriber, local: RDStore.OR_SUBSCRIBER])
+        Set<Long> candidateSubscriptions = Subscription.executeQuery("select oo.sub.id from OrgRole oo where oo.org = :subscriber and oo.roleType = :local", [subscriber: subscriber, local: RDStore.OR_SUBSCRIBER])
         //consortial subscriptions with activated inheritance
-        candidateSubscriptions.addAll(Subscription.executeQuery("select s.instanceOf from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')", [subscriber: subscriber, subscrCons: RDStore.OR_SUBSCRIBER_CONS]))
+        candidateSubscriptions.addAll(Subscription.executeQuery("select s.instanceOf.id from OrgRole oo join oo.sub s where oo.org = :subscriber and oo.roleType = :subscrCons and s.instanceOf.id in (select ac.referenceId from AuditConfig ac where ac.referenceField = 'holdingSelection')", [subscriber: subscriber, subscrCons: RDStore.OR_SUBSCRIBER_CONS]))
         candidateSubscriptions
     }
 

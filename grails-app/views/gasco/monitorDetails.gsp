@@ -1,8 +1,12 @@
-<%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.storage.BeanStore; de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}" publicLayout="gasco" />
+<div class="gasco">
+    <g:render template="/layouts/gasco/nav" />
 
-    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
+    <h1 class="ui header">
+        <g:message code="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" />
+    </h1>
 
     <ui:filter simple="true">
         <form class="ui form">
@@ -52,8 +56,8 @@
         </div>
     </div>
 
-<g:if test="${issueEntitlements}">
-    <ui:paginate action="gascoDetails" controller="public" params="${params}" max="${max}" total="${issueEntitlementsCount}"/>
-</g:if>
-
+    <g:if test="${issueEntitlements}">
+        <ui:paginate action="details" controller="gasco" params="${params}" max="${max}" total="${issueEntitlementsFilterCount}"/>
+    </g:if>
+</div>
 <laser:htmlEnd />
